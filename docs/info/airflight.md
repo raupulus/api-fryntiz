@@ -18,6 +18,8 @@ corregir lo otro.
 | `registration` | string\|null | — | matrícula, opcional | `"EC-NBA"` |
 | `aircraft_type` | string\|null | — | tipo ICAO de aeronave, opcional | `"A320"` |
 | `category` | string\|null | — | categoría de emisor ADS-B, opcional | `"A3"` |
+| `wtc` | string\|null | — | Wake Turbulence Category OACI, opcional | `"M"` |
+| `aircraft_desc` | string\|null | — | descripción OACI fuselaje/propulsión, opcional | `"L2J"` |
 | `flight` | string\|null | — | callsign sin espacios | `"RYR11CL"` |
 | `squawk` | string\|null | — | 4 dígitos octales | `"7105"` |
 | `lat` | float\|null | grados decimales WGS84 (°) | -90 a 90 | `36.623623` |
@@ -28,6 +30,8 @@ corregir lo otro.
 | `vert_rate` | float\|null | **metros por segundo (m/s)** | -100 a 100 | `-21.1` |
 | `messages` | int\|null | conteo de tramas | ≥ 0 | `86` |
 | `rssi` | float\|null | dBFS | -100 a 0 | `-24.7` |
+| `nic` | int\|null | — | 0 a 11 | `8` |
+| `rc` | float\|null | **metros (m)** | ≥ 0 | `185.2` |
 | `emergency` | string\|null | cadena de estado | `none`, `general`, `lifeguard`... | `"general"` |
 | `seen` / `seen_pos` | — | — | no se persisten (siempre `null` en el sondeo real) | `null` |
 
@@ -36,7 +40,8 @@ corregir lo otro.
 Comprobado campo por campo contra el payload real que construye
 `upload_data_to_api.php::getDbData()` en `dump1090-to-db` (commits `94175ca`
 "incluye category en el payload" y `328b06b` "resolución local y subida de
-matrícula/tipo"), no de memoria:
+matrícula/tipo"), no de memoria. `wtc`/`aircraft_desc`/`nic`/`rc` (2026-09-15,
+segunda ronda) siguen el mismo patrón:
 
 | Campo que manda la Raspberry | ¿Validado en `StoreAirFlightRequest`/`StoreBatchAirFlightRequest`? | ¿Dónde se guarda? |
 |---|---|---|
@@ -44,7 +49,9 @@ matrícula/tipo"), no de memoria:
 | `registration` | Sí | `airflight_airplanes.registration` |
 | `aircraft_type` | Sí | `airflight_airplanes.aircraft_type` |
 | `category` | Sí | `airflight_airplanes.category` |
-| `flight`, `squawk`, `lat`, `lon`, `altitude`, `vert_rate`, `track`, `speed`, `messages`, `rssi`, `emergency` | Sí | `airflight_routes` (una fila por sondeo, vía `routeFieldsOnly()`) |
+| `wtc` | Sí | `airflight_airplanes.wtc` |
+| `aircraft_desc` | Sí | `airflight_airplanes.aircraft_desc` |
+| `flight`, `squawk`, `lat`, `lon`, `altitude`, `vert_rate`, `track`, `speed`, `messages`, `rssi`, `nic`, `rc`, `emergency` | Sí | `airflight_routes` (una fila por sondeo, vía `routeFieldsOnly()`) |
 | `seen`, `seen_pos` | Sí (validados, pero no se persisten a propósito — ver tabla de arriba) | — |
 
 `country`/`flag`/`route_last_at` no están en esta lista porque la Raspberry
@@ -359,6 +366,8 @@ editarlos a mano — divergiría de lo que reporta el propio receptor ADS-B.
 | `registration` | string\|null | Matrícula, resuelta por el receptor (ver más arriba) |
 | `aircraft_type` | string(10)\|null | Tipo ICAO de aeronave, resuelto por el receptor (ver más arriba) |
 | `category` | string\|null | Categoría de emisor ADS-B, decodificada del Mode S (ver más arriba) |
+| `wtc` | string(1)\|null | Wake Turbulence Category OACI (L/M/H/J), resuelta por el receptor |
+| `aircraft_desc` | string(5)\|null | Descripción OACI de fuselaje/propulsión (ej. L2J), resuelta por el receptor |
 | `seen_last_at` | timestamp | Última vez detectado (cualquier sondeo) |
 | `seen_first_at` | timestamp | Primera vez detectado |
 | `route_last_at` | timestamp\|null | Último sondeo con posición real (ver más arriba) |
@@ -398,6 +407,8 @@ dibuja lo que le llega en `trail`; el filtrado vive en el backend.
 | `seen_at` | timestamp | — | Momento de detección |
 | `messages` | int | — | Número de mensajes recibidos (≥0) |
 | `rssi` | decimal | dBFS | Intensidad de señal (-100 a 0) |
+| `nic` | int\|null | — | Navigation Integrity Category (0-11), fiabilidad de `lat`/`lon` de esta fila |
+| `rc` | decimal\|null | **metros (m)** | Radius of Containment, de la misma posición que `nic` |
 
 ## Relaciones
 

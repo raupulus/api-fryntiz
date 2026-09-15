@@ -47,6 +47,12 @@
   > **Qué tiene que hacer un cliente que leyera sin token:** emitir uno con
   > `airflight:read`. Sin él, las lecturas responden `401`.
 
+  > ⚠️ **Cambio de contrato del 2026-09-15 (2).** `POST /aircrafts` y `POST
+  > /aircrafts/batch` aceptan ahora `wtc`, `aircraft_desc` (del avión, mismo
+  > origen que `registration`/`aircraft_type`) y `nic`, `rc` (de la posición
+  > de esa misma fila: fiabilidad del `lat`/`lon` que trae el sondeo).
+  > Opcionales los cuatro.
+
   > ⚠️ **Cambio de contrato del 2026-09-15.** `POST /aircrafts` y `POST
   > /aircrafts/batch` aceptan ahora `category` (opcional). Se decodifica
   > directo del mensaje Mode S, no depende de ninguna base externa. Ya se
@@ -173,10 +179,14 @@ por fechas; no son recursos distintos.
       "registration": "EC-NBA",
       "aircraft_type": "A320",
       "category": null,
+      "wtc": "M",
+      "aircraft_desc": "L2J",
       "flight": "IBE1234",
       "squawk": "1000",
       "lat": 36.71,
       "lon": -6.42,
+      "nic": 8,
+      "rc": 185.2,
       "altitude": 3500,
       "vert_rate": 0,
       "speed": 210.5,
@@ -209,10 +219,14 @@ por fechas; no son recursos distintos.
       "registration": "EC-NBA",
       "aircraft_type": "A320",
       "category": null,
+      "wtc": "M",
+      "aircraft_desc": "L2J",
       "flight": "IBE1234",
       "squawk": "1000",
       "lat": 36.71,
       "lon": -6.42,
+      "nic": 8,
+      "rc": 185.2,
       "altitude": 3500,
       "vert_rate": 0,
       "speed": 210.5,
@@ -242,16 +256,19 @@ por fechas; no son recursos distintos.
   - Unidades: `altitude` en metros, `speed`/`vert_rate` en m/s,
     `lat`/`lon`/`track` en grados, `rssi` en dBFS — ver el aviso de unidades
     al principio de este documento.
-  - `id`, `icao`, `registration`, `aircraft_type`, `category`, `created_at`
-    pertenecen al avión. `registration`/`aircraft_type` los resuelve el
-    receptor (opcionales, `null` si no encontró el ICAO en su base local) —
-    ver el aviso de cambio de contrato del 2026-09-14 más arriba.
+  - `id`, `icao`, `registration`, `aircraft_type`, `category`, `wtc`,
+    `aircraft_desc`, `created_at` pertenecen al avión. `registration`/
+    `aircraft_type`/`wtc`/`aircraft_desc` los resuelve el receptor
+    (opcionales, `null` si no encontró el ICAO en su base local) — ver el
+    aviso de cambio de contrato del 2026-09-14 más arriba.
   - `flight`, `squawk`, `altitude`, `vert_rate`, `speed`, `track`, `rssi`,
     `emergency`, `messages` y `seen` vienen del **último mensaje recibido**
     (`latestRoute`), sea cual sea su contenido.
-  - `lat`, `lon` y `seen_pos` vienen de la **última posición real conocida**
-    (`latestPosition`) — es decir, de la última ruta con `lat`/`lon` no
-    nulos, que puede ser un mensaje **anterior** al de `latestRoute`.
+  - `lat`, `lon`, `seen_pos`, `nic` y `rc` vienen de la **última posición real
+    conocida** (`latestPosition`) — es decir, de la última ruta con `lat`/`lon`
+    no nulos, que puede ser un mensaje **anterior** al de `latestRoute`. `nic`/
+    `rc` describen la fiabilidad de esa misma posición, no tienen sentido
+    sueltos de ella.
 
     Por qué la distinción (cambio del 2026-09-08): un receptor ADS-B manda
     identificación, altitud y posición en mensajes Mode S separados. Si el
@@ -263,8 +280,8 @@ por fechas; no son recursos distintos.
   - Si el avión no tiene ningún mensaje (`latestRoute` nulo), todos los
     campos de esta lista salen `null` salvo `rssi` (ver abajo).
   - Si el avión no tiene ninguna posición real conocida (`latestPosition`
-    nulo, aunque sí tenga mensajes), `lat`, `lon` y `seen_pos` salen `null`
-    sin que eso afecte al resto de campos.
+    nulo, aunque sí tenga mensajes), `lat`, `lon`, `seen_pos`, `nic` y `rc`
+    salen `null` sin que eso afecte al resto de campos.
   - `rssi` sale `-100.0` (float) si el mensaje no trae RSSI, nunca `null`.
   - `trail` es el recorrido conocido como lista de pares `[lon, lat]`
     (el más antiguo primero), limitado a los últimos 50 puntos, acotado a la
@@ -289,6 +306,8 @@ por fechas; no son recursos distintos.
 | `registration` | string\|null | opcional, máx. 20. La resuelve el receptor contra su base local de matrículas, no esta API; `null` si no la encontró |
 | `aircraft_type` | string\|null | opcional, máx. 10. Tipo ICAO de aeronave (ej. `A320`), mismo origen que `registration` |
 | `category` | string\|null | opcional, máx. 10. Categoría de emisor ADS-B (`A0`-`A7`, `B0`-`B7`...), decodificada del propio Mode S |
+| `wtc` | string\|null | opcional, máx. 1. Wake Turbulence Category OACI (`L`/`M`/`H`/`J`), mismo origen que `registration` |
+| `aircraft_desc` | string\|null | opcional, máx. 5. Descripción OACI de fuselaje/propulsión (ej. `L2J`), mismo origen que `registration` |
 | `flight` | string\|null | opcional, máx. 20 |
 | `squawk` | string\|null | opcional, máx. 10 |
 | `lat` | number\|null | opcional, grados decimales WGS84 (°), entre -90 y 90 |
@@ -301,6 +320,8 @@ por fechas; no son recursos distintos.
 | `seen_pos` | number\|null | opcional (mismo caso que `seen`, no se persiste) |
 | `messages` | int\|null | opcional, mín. 0 |
 | `rssi` | number\|null | opcional, entre -100 y 0 (dBFS; siempre negativo o cero) |
+| `nic` | int\|null | opcional, entre 0 y 11. Navigation Integrity Category: fiabilidad de la posición (`lat`/`lon`) de esta misma petición |
+| `rc` | number\|null | opcional, mín. 0. Radius of Containment en metros, de la misma posición que `nic` |
 | `emergency` | string\|null | opcional, máx. 20. Cadena corta del decodificador ADS-B (`none`, `general`, `lifeguard`, `minfuel`, `nordo`, `unlawful`, `downed`, `reserved`...); sin lista cerrada de valores |
 | `hardware_device_info` | object\|null | opcional. Último estado conocido del receptor (batería, temperatura, uptime...). Mismos campos que `PUT /hardware/devices/{device}/status`; solo tiene efecto si esta misma petición trae también `hardware_device_id` — sin dispositivo no hay a quién aplicarle el estado, y se ignora sin error. Contrato completo en [`hardware.md`](./hardware.md) |
 
@@ -327,10 +348,14 @@ por fechas; no son recursos distintos.
     "registration": "EC-NBA",
     "aircraft_type": "A320",
     "category": null,
+    "wtc": "M",
+    "aircraft_desc": "L2J",
     "flight": "IBE1234",
     "squawk": "1000",
     "lat": 36.71,
     "lon": -6.42,
+    "nic": 8,
+    "rc": 185.2,
     "altitude": 3500,
     "vert_rate": -3.5,
     "speed": 210.5,
@@ -378,6 +403,8 @@ Existe porque el receptor manda hasta 500 aeronaves por barrido; partirlo en
 | `data.*.registration` | string\|null | opcional, máx. 20. Ver `registration` del alta individual |
 | `data.*.aircraft_type` | string\|null | opcional, máx. 10. Ver `aircraft_type` del alta individual |
 | `data.*.category` | string\|null | opcional, máx. 10. Ver `category` del alta individual |
+| `data.*.wtc` | string\|null | opcional, máx. 1. Ver `wtc` del alta individual |
+| `data.*.aircraft_desc` | string\|null | opcional, máx. 5. Ver `aircraft_desc` del alta individual |
 | `data.*.flight` | string\|null | opcional, máx. 20 |
 | `data.*.squawk` | string\|null | opcional, máx. 10 |
 | `data.*.lat` | number\|null | opcional, grados decimales WGS84 (°), entre -90 y 90 |
@@ -390,6 +417,8 @@ Existe porque el receptor manda hasta 500 aeronaves por barrido; partirlo en
 | `data.*.seen_pos` | number\|null | opcional (no se persiste) |
 | `data.*.messages` | int\|null | opcional, mín. 0 |
 | `data.*.rssi` | number\|null | opcional, entre -100 y 0 (dBFS) |
+| `data.*.nic` | int\|null | opcional, entre 0 y 11. Ver `nic` del alta individual |
+| `data.*.rc` | number\|null | opcional, mín. 0. Ver `rc` del alta individual |
 | `data.*.emergency` | string\|null | opcional, máx. 20 |
 | `hardware_device_info` | object\|null | opcional. Igual que en el alta individual: solo tiene efecto si el lote trae también `hardware_device_id` en la raíz |
 

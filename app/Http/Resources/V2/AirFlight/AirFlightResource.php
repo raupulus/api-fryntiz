@@ -49,10 +49,16 @@ class AirFlightResource extends JsonResource
             'registration' => $this->registration,
             'aircraft_type' => $this->aircraft_type,
             'category' => $this->category,
+            'wtc' => $this->wtc,
+            'aircraft_desc' => $this->aircraft_desc,
             'flight' => $route?->flight,
             'squawk' => $route?->squawk,
             'lat' => $position?->lat,
             'lon' => $position?->lon,
+            // Fiabilidad de ESTA posición (lat/lon de arriba), no de
+            // `$route`: NIC/RC no significan nada sin una posición asociada.
+            'nic' => $position?->nic,
+            'rc' => $position?->rc,
             'altitude' => $route?->altitude,
             'vert_rate' => $route?->vert_rate,
             'speed' => $route?->speed,

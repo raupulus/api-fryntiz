@@ -32,6 +32,8 @@ use function file_exists;
  * @property string|null $icao Código ICAO 24 bits (6 dígitos hexadecimales)
  * @property string|null $registration Matrícula de la aeronave, resuelta por el receptor
  * @property string|null $aircraft_type Tipo ICAO de aeronave, resuelto por el receptor
+ * @property string|null $wtc Wake Turbulence Category OACI (L/M/H/J), resuelta por el receptor
+ * @property string|null $aircraft_desc Descripción OACI de fuselaje/propulsión (ej. L2J), resuelta por el receptor
  * @property string|null $country País de origen del avión
  * @property string|null $category Categoría del avión
  * @property string|null $seen_first_at Indica momento en el que se ha visto por primera vez
@@ -81,6 +83,8 @@ class AirFlightAirPlane extends BaseModel
         'icao',
         'registration',
         'aircraft_type',
+        'wtc',
+        'aircraft_desc',
         'country',
         'category',
         'flag',

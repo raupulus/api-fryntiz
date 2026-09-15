@@ -55,6 +55,8 @@ class AirFlightPersistenceTest extends ApiTestCase
             'registration' => 'EC-NBA',
             'aircraft_type' => 'A320',
             'category' => 'A3',
+            'wtc' => 'M',
+            'aircraft_desc' => 'L2J',
             'flight' => 'IBE3245 ',
             'squawk' => '7010',
             'lat' => 36.7412,
@@ -64,6 +66,8 @@ class AirFlightPersistenceTest extends ApiTestCase
             'track' => 218.0,
             'vert_rate' => -3.5,
             'rssi' => -12.4,
+            'nic' => 8,
+            'rc' => 185.2,
             'emergency' => 'none',
             'seen' => 0.4,
             'seen_pos' => 1.2,
@@ -226,6 +230,46 @@ class AirFlightPersistenceTest extends ApiTestCase
         $aircraft = AirFlightAirPlane::query()->latest('id')->first();
 
         $this->assertSame('A3', $aircraft?->category);
+    }
+
+    /**
+     * `wtc`/`aircraft_desc` (avión) y `nic`/`rc` (ruta): mismo origen que
+     * registration/aircraft_type/category — datos que ya resuelve el
+     * receptor, aquí solo hay que aceptarlos y guardarlos.
+     */
+    #[Test]
+    public function wtc_and_aircraft_desc_are_stored_on_the_aircraft(): void
+    {
+        $this->postJson(
+            $this->apiUrl('airflight/aircrafts'),
+            $this->probe(),
+            $this->moduleHeaders($this->user, TokenAbilities::AIRFLIGHT_WRITE)
+        )->assertStatus(201);
+
+        $aircraft = AirFlightAirPlane::query()->latest('id')->first();
+
+        $this->assertSame('M', $aircraft?->wtc);
+        $this->assertSame('L2J', $aircraft?->aircraft_desc);
+    }
+
+    /**
+     * `nic`/`rc` describen la fiabilidad de la posición de esa misma fila,
+     * por eso viven en `airflight_routes`, no en el avión.
+     */
+    #[Test]
+    public function nic_and_rc_are_stored_on_the_route(): void
+    {
+        $this->postJson(
+            $this->apiUrl('airflight/aircrafts'),
+            $this->probe(),
+            $this->moduleHeaders($this->user, TokenAbilities::AIRFLIGHT_WRITE)
+        )->assertStatus(201);
+
+        $aircraft = AirFlightAirPlane::query()->latest('id')->first();
+        $route = AirFlightRoute::query()->where('airplane_id', $aircraft->id)->latest('id')->first();
+
+        $this->assertSame(8, $route?->nic);
+        $this->assertEqualsWithDelta(185.2, (float) $route?->rc, 0.001);
     }
 
     /**

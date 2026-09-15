@@ -31,6 +31,8 @@ use Illuminate\Support\Carbon;
  * @property string|null $seen_at Momento en el que recibió el último mensaje de este avión
  * @property int|null $messages Número total de mensajes de modo s recibidos desde esta aeronave
  * @property float|null $rssi rssi promedio reciente (potencia de señal), en dbfs; esto siempre será negativo.
+ * @property int|null $nic Navigation Integrity Category (0-11), fiabilidad de esta posición
+ * @property float|null $rc Radius of Containment en metros, de esta posición
  * @property string|null $emergency Indica si hay señal de emergencia
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
@@ -86,6 +88,8 @@ class AirFlightRoute extends BaseModel
         'seen_at',
         'messages',
         'rssi',
+        'nic',
+        'rc',
         'emergency',
     ];
 

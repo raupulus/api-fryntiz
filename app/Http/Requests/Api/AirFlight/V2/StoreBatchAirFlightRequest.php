@@ -33,6 +33,9 @@ class StoreBatchAirFlightRequest extends BaseFormRequest
             'data.*.aircraft_type' => ['nullable', 'string', 'max:10'],
             // Ver StoreAirFlightRequest: decodificada del propio Mode S.
             'data.*.category' => ['nullable', 'string', 'max:10'],
+            // Ver StoreAirFlightRequest: mismo origen que registration/aircraft_type.
+            'data.*.wtc' => ['nullable', 'string', 'max:1'],
+            'data.*.aircraft_desc' => ['nullable', 'string', 'max:5'],
             'data.*.flight' => ['nullable', 'string', 'max:20'],
             'data.*.squawk' => ['nullable', 'string', 'max:10'],
             'data.*.lat' => ['nullable', 'numeric', 'between:-90,90'],
@@ -47,6 +50,9 @@ class StoreBatchAirFlightRequest extends BaseFormRequest
             'data.*.seen_pos' => ['nullable', 'numeric'],
             'data.*.messages' => ['nullable', 'integer', 'min:0'],
             'data.*.rssi' => ['nullable', 'numeric', 'between:-100,0'],
+            // Ver StoreAirFlightRequest: fiabilidad de esta misma posición.
+            'data.*.nic' => ['nullable', 'integer', 'between:0,11'],
+            'data.*.rc' => ['nullable', 'numeric', 'min:0'],
             'data.*.emergency' => ['nullable', 'string', 'max:20'],
         ];
     }

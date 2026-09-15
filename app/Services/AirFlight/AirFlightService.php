@@ -23,10 +23,11 @@ class AirFlightService
      * El sondeo trae dos cosas distintas y van a dos tablas distintas:
      *
      * - **el avión** (`icao`, `registration`, `aircraft_type`, `category`,
-     *   `route_last_at`, `country`, `flag`) → `airflight_airplanes`, una fila
-     *   por aparato;
+     *   `wtc`, `aircraft_desc`, `route_last_at`, `country`, `flag`) →
+     *   `airflight_airplanes`, una fila por aparato;
      * - **la posición** (`lat`, `lon`, `altitude`, `speed`, `track`, `squawk`,
-     *   `flight`, `messages`) → `airflight_routes`, una fila por sondeo.
+     *   `flight`, `messages`, `nic`, `rc`) → `airflight_routes`, una fila por
+     *   sondeo.
      *
      * Antes esto era un único `AirFlightAirPlane::create($data)`. De los 11
      * campos validados, el `$fillable` sólo dejaba pasar `icao`; los otros diez
@@ -63,7 +64,7 @@ class AirFlightService
         // vez", así que se aplican tanto en alta como en avión ya existente.
         // Solo si vienen con valor: igual que `routeFieldsOnly()`, nunca se
         // borra un dato ya guardado con uno vacío.
-        foreach (['registration', 'aircraft_type', 'category'] as $field) {
+        foreach (['registration', 'aircraft_type', 'category', 'wtc', 'aircraft_desc'] as $field) {
             if (array_key_exists($field, $data) && $data[$field] !== null && trim((string) $data[$field]) !== '') {
                 $aircraft->{$field} = trim((string) $data[$field]);
             }
@@ -191,7 +192,7 @@ class AirFlightService
     {
         $path = [];
 
-        foreach (['squawk', 'flight', 'lat', 'lon', 'altitude', 'vert_rate', 'track', 'speed', 'messages', 'rssi', 'emergency'] as $field) {
+        foreach (['squawk', 'flight', 'lat', 'lon', 'altitude', 'vert_rate', 'track', 'speed', 'messages', 'rssi', 'nic', 'rc', 'emergency'] as $field) {
             if (array_key_exists($field, $data) && $data[$field] !== null && $data[$field] !== '') {
                 $path[$field] = is_string($data[$field]) ? trim($data[$field]) : $data[$field];
             }

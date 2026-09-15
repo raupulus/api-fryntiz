@@ -39,6 +39,11 @@ class StoreAirFlightRequest extends BaseFormRequest
             // directamente del mensaje Mode S — no viene de ninguna base
             // externa, a diferencia de registration/aircraft_type.
             'category' => ['nullable', 'string', 'max:10'],
+            // Wake Turbulence Category OACI (L/M/H/J) y descripción de
+            // fuselaje/propulsión (ej. "L2J") — mismo origen que
+            // registration/aircraft_type, misma base local del receptor.
+            'wtc' => ['nullable', 'string', 'max:1'],
+            'aircraft_desc' => ['nullable', 'string', 'max:5'],
             'flight' => ['nullable', 'string', 'max:20'],
             'squawk' => ['nullable', 'string', 'max:10'],
             'lat' => ['nullable', 'numeric', 'between:-90,90'],
@@ -70,6 +75,10 @@ class StoreAirFlightRequest extends BaseFormRequest
             // migración). -100 es ya por debajo del suelo de ruido real de
             // cualquier receptor SDR de este tipo.
             'rssi' => ['nullable', 'numeric', 'between:-100,0'],
+            // Fiabilidad de ESTA posición (lat/lon de la misma fila), no
+            // telemetría nueva sin relación con lo que ya se guarda.
+            'nic' => ['nullable', 'integer', 'between:0,11'],
+            'rc' => ['nullable', 'numeric', 'min:0'],
             // Cadena corta del decodificador ADS-B: "none", "general",
             // "lifeguard", "minfuel", "nordo", "unlawful", "downed",
             // "reserved"... Sin `in:` cerrado porque no hay garantía de que
