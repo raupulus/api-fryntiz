@@ -22,9 +22,9 @@ class AirFlightService
      *
      * El sondeo trae dos cosas distintas y van a dos tablas distintas:
      *
-     * - **el avión** (`icao`, `registration`, `aircraft_type`, y con el tiempo
-     *   `country`, `category`, `flag`) → `airflight_airplanes`, una fila por
-     *   aparato;
+     * - **el avión** (`icao`, `registration`, `aircraft_type`, `category`,
+     *   `route_last_at`, y con el tiempo `country`/`flag`) →
+     *   `airflight_airplanes`, una fila por aparato;
      * - **la posición** (`lat`, `lon`, `altitude`, `speed`, `track`, `squawk`,
      *   `flight`, `messages`) → `airflight_routes`, una fila por sondeo.
      *
@@ -57,14 +57,13 @@ class AirFlightService
             $aircraft->seen_first_at = now();
         }
 
-        // Matrícula y tipo: los resuelve el receptor contra su base local
-        // (ver docs/future/airflight-registro-de-matriculas.md), no esta API.
-        // Se aplican tanto en alta como en avión ya existente —a diferencia
-        // de `user_id`/`hardware_device_id`, no son "quién lo vio la primera
-        // vez" sino un dato fijo del aparato que puede llegar en cualquier
-        // sondeo—, y sólo si vienen con valor: igual que `routeFieldsOnly()`,
-        // nunca se borra un dato ya guardado con uno vacío.
-        foreach (['registration', 'aircraft_type'] as $field) {
+        // Matrícula, tipo y categoría: datos fijos del aparato (no de la
+        // posición), que pueden llegar en cualquier sondeo — a diferencia de
+        // `user_id`/`hardware_device_id`, no son "quién lo vio la primera
+        // vez", así que se aplican tanto en alta como en avión ya existente.
+        // Solo si vienen con valor: igual que `routeFieldsOnly()`, nunca se
+        // borra un dato ya guardado con uno vacío.
+        foreach (['registration', 'aircraft_type', 'category'] as $field) {
             if (array_key_exists($field, $data) && $data[$field] !== null && trim((string) $data[$field]) !== '') {
                 $aircraft->{$field} = trim((string) $data[$field]);
             }
@@ -86,6 +85,17 @@ class AirFlightService
             // en vez de asumir que la posición nueva es esta.
             if ($newRoute->lat !== null && $newRoute->lon !== null) {
                 $aircraft->setRelation('latestPosition', $newRoute);
+
+                // `route_last_at`: "el momento del último registro CON RUTA
+                // VÁLIDA" (comentario de la migración), es decir con
+                // posición real — no cualquier mensaje, igual que
+                // `latestPosition` frente a `latestRoute`. Ningún código lo
+                // mantenía al día (el único método que lo leía,
+                // `getRecentsAircrafts()`, no tiene ningún caller): se
+                // actualiza aquí, en cada sondeo con posición, en vez de
+                // depender de un comando aparte.
+                $aircraft->route_last_at = $newRoute->seen_at;
+                $aircraft->save();
             }
         }
 

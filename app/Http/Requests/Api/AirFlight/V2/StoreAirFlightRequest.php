@@ -35,6 +35,10 @@ class StoreAirFlightRequest extends BaseFormRequest
             // null si el receptor no encontró el ICAO en esa base.
             'registration' => ['nullable', 'string', 'max:20'],
             'aircraft_type' => ['nullable', 'string', 'max:10'],
+            // Categoría de emisor ADS-B (A0-A7, B0-B7...), decodificada
+            // directamente del mensaje Mode S — no viene de ninguna base
+            // externa, a diferencia de registration/aircraft_type.
+            'category' => ['nullable', 'string', 'max:10'],
             'flight' => ['nullable', 'string', 'max:20'],
             'squawk' => ['nullable', 'string', 'max:10'],
             'lat' => ['nullable', 'numeric', 'between:-90,90'],

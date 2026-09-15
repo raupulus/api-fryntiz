@@ -31,6 +31,8 @@ class StoreBatchAirFlightRequest extends BaseFormRequest
             // Ver StoreAirFlightRequest: resueltas por el receptor, no aquí.
             'data.*.registration' => ['nullable', 'string', 'max:20'],
             'data.*.aircraft_type' => ['nullable', 'string', 'max:10'],
+            // Ver StoreAirFlightRequest: decodificada del propio Mode S.
+            'data.*.category' => ['nullable', 'string', 'max:10'],
             'data.*.flight' => ['nullable', 'string', 'max:20'],
             'data.*.squawk' => ['nullable', 'string', 'max:10'],
             'data.*.lat' => ['nullable', 'numeric', 'between:-90,90'],

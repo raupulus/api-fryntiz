@@ -47,6 +47,14 @@
   > **Qué tiene que hacer un cliente que leyera sin token:** emitir uno con
   > `airflight:read`. Sin él, las lecturas responden `401`.
 
+  > ⚠️ **Cambio de contrato del 2026-09-15.** `POST /aircrafts` y `POST
+  > /aircrafts/batch` aceptan ahora `category` (opcional). Se decodifica
+  > directo del mensaje Mode S, no depende de ninguna base externa. Ya se
+  > podía mandar antes, pero `StoreAirFlightRequest`/`StoreBatchAirFlightRequest`
+  > no lo declaraban en `rules()`: `->validated()` lo descartaba en silencio.
+  > Un cliente que ya lo mandaba no tiene que cambiar nada; a partir de este
+  > cambio, lo que mande sí se guarda.
+
   > ⚠️ **Cambio de contrato del 2026-09-14.** `POST /aircrafts` y `POST
   > /aircrafts/batch` aceptan ahora `registration` y `aircraft_type`
   > (opcionales). Los resuelve el receptor contra su base local de
@@ -280,6 +288,7 @@ por fechas; no son recursos distintos.
 | `icao` | string | `required`, máx. 10 |
 | `registration` | string\|null | opcional, máx. 20. La resuelve el receptor contra su base local de matrículas, no esta API; `null` si no la encontró |
 | `aircraft_type` | string\|null | opcional, máx. 10. Tipo ICAO de aeronave (ej. `A320`), mismo origen que `registration` |
+| `category` | string\|null | opcional, máx. 10. Categoría de emisor ADS-B (`A0`-`A7`, `B0`-`B7`...), decodificada del propio Mode S |
 | `flight` | string\|null | opcional, máx. 20 |
 | `squawk` | string\|null | opcional, máx. 10 |
 | `lat` | number\|null | opcional, grados decimales WGS84 (°), entre -90 y 90 |
@@ -368,6 +377,7 @@ Existe porque el receptor manda hasta 500 aeronaves por barrido; partirlo en
 | `data.*.icao` | string | `required`, máx. 10 |
 | `data.*.registration` | string\|null | opcional, máx. 20. Ver `registration` del alta individual |
 | `data.*.aircraft_type` | string\|null | opcional, máx. 10. Ver `aircraft_type` del alta individual |
+| `data.*.category` | string\|null | opcional, máx. 10. Ver `category` del alta individual |
 | `data.*.flight` | string\|null | opcional, máx. 20 |
 | `data.*.squawk` | string\|null | opcional, máx. 10 |
 | `data.*.lat` | number\|null | opcional, grados decimales WGS84 (°), entre -90 y 90 |
@@ -428,4 +438,4 @@ cada petición trae hasta 500 filas).
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-14
+> Creado: 2026-08-30 · Última revisión: 2026-09-15

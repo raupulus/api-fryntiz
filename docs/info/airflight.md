@@ -17,6 +17,7 @@ corregir lo otro.
 | `icao` | string | — | 6 hex | `"4ca61f"` |
 | `registration` | string\|null | — | matrícula, opcional | `"EC-NBA"` |
 | `aircraft_type` | string\|null | — | tipo ICAO de aeronave, opcional | `"A320"` |
+| `category` | string\|null | — | categoría de emisor ADS-B, opcional | `"A3"` |
 | `flight` | string\|null | — | callsign sin espacios | `"RYR11CL"` |
 | `squawk` | string\|null | — | 4 dígitos octales | `"7105"` |
 | `lat` | float\|null | grados decimales WGS84 (°) | -90 a 90 | `36.623623` |
@@ -67,6 +68,33 @@ guardado — solo se escribe si llega con valor.
 **Alcance de este cambio**: solo lo que se suba a partir de ahora. Los
 aviones ya guardados se quedan con `registration`/`aircraft_type` a `null`
 hasta que el receptor vuelva a reportarlos — no ha corrido ningún backfill.
+
+### `category` y `route_last_at`: se dejan de depender de comandos manuales (2026-09-15)
+
+Auditoría real (dump de producción, 2026-09-15) encontró que la mayoría de
+aviones recientes tenían `country`, `category`, `route_last_at`, `flag`,
+`registration` y `aircraft_type` a `null` a la vez. Tres causas distintas, no
+una:
+
+- **`category`** (categoría de emisor ADS-B, ej. `"A3"`, decodificada del
+  propio Mode S — no depende de ninguna base externa) sí la manda el
+  capturador, pero `StoreAirFlightRequest`/`StoreBatchAirFlightRequest` no la
+  declaraban en `rules()`: `->validated()` la descartaba en silencio antes de
+  llegar a `AirFlightService::addAircraft()`. **Arreglado**: ya se valida y se
+  guarda, mismo patrón que `registration`/`aircraft_type` (solo si llega con
+  valor, nunca borra uno ya guardado).
+- **`route_last_at`** ("el momento del último registro con ruta válida") no lo
+  mantenía ningún código — el único método que lo leía,
+  `AirFlightAirPlane::getRecentsAircrafts()`, no tiene ningún caller en toda
+  la app. **Arreglado**: `addAircraft()` lo actualiza ahora en cada sondeo con
+  posición real (`lat`/`lon` no nulos), igual que `latestPosition` frente a
+  `latestRoute`.
+- **`country`/`flag`** siguen dependiendo de `php artisan airflight:fix`
+  (`app/Console/Commands/AirflightFixCommand.php`), que calcula ambos a
+  partir del rango ICAO (`AirFlightAirPlane::searchHex()`) — **no** de nada
+  que mande el receptor. Ese comando no está programado en ningún sitio
+  (`routes/console.php`): el último avión con `country` en el dump auditado
+  era del 2026-09-02. Sigue pendiente, deliberadamente fuera de este cambio.
 
 ### Corrección sobre una confusión propia (2026-09-08 → 09)
 
@@ -300,9 +328,10 @@ editarlos a mano — divergiría de lo que reporta el propio receptor ADS-B.
 | `icao` | string(10) | Código ICAO del avión (identificador único transponder) |
 | `registration` | string\|null | Matrícula, resuelta por el receptor (ver más arriba) |
 | `aircraft_type` | string(10)\|null | Tipo ICAO de aeronave, resuelto por el receptor (ver más arriba) |
-| `category` | string | Categoría del avión |
-| `seen_last_at` | timestamp | Última vez detectado |
+| `category` | string\|null | Categoría de emisor ADS-B, decodificada del Mode S (ver más arriba) |
+| `seen_last_at` | timestamp | Última vez detectado (cualquier sondeo) |
 | `seen_first_at` | timestamp | Primera vez detectado |
+| `route_last_at` | timestamp\|null | Último sondeo con posición real (ver más arriba) |
 
 ### `trail()` — traza para la línea de vuelo del mapa
 
@@ -551,4 +580,4 @@ cuyo caso sí son un duplicado exacto, tengan o no posición.
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-14
+> Creado: 2026-05-25 · Última revisión: 2026-09-15

@@ -54,6 +54,7 @@ class AirFlightPersistenceTest extends ApiTestCase
             'icao' => $icao,
             'registration' => 'EC-NBA',
             'aircraft_type' => 'A320',
+            'category' => 'A3',
             'flight' => 'IBE3245 ',
             'squawk' => '7010',
             'lat' => 36.7412,
@@ -204,6 +205,65 @@ class AirFlightPersistenceTest extends ApiTestCase
 
         $this->assertSame('EC-NBA', $aircraft->registration);
         $this->assertSame('A320', $aircraft->aircraft_type);
+    }
+
+    /**
+     * `category` (categoría de emisor ADS-B) se decodifica directo del Mode S,
+     * no depende de ninguna base externa — a diferencia de registration/
+     * aircraft_type. Hasta este cambio, `StoreAirFlightRequest` no la
+     * validaba y `->validated()` la descartaba en silencio aunque el
+     * capturador la mandara.
+     */
+    #[Test]
+    public function category_is_stored_when_present(): void
+    {
+        $this->postJson(
+            $this->apiUrl('airflight/aircrafts'),
+            $this->probe(),
+            $this->moduleHeaders($this->user, TokenAbilities::AIRFLIGHT_WRITE)
+        )->assertStatus(201);
+
+        $aircraft = AirFlightAirPlane::query()->latest('id')->first();
+
+        $this->assertSame('A3', $aircraft?->category);
+    }
+
+    /**
+     * `route_last_at` ("el momento del último registro con ruta válida",
+     * comentario de la migración) tiene que reflejar la última posición REAL
+     * (lat/lon), no cualquier sondeo — igual que `latestPosition` frente a
+     * `latestRoute`. Nada lo mantenía al día antes de este cambio.
+     */
+    #[Test]
+    public function route_last_at_is_updated_when_a_probe_carries_a_real_position(): void
+    {
+        $this->postJson(
+            $this->apiUrl('airflight/aircrafts'),
+            $this->probe(),
+            $this->moduleHeaders($this->user, TokenAbilities::AIRFLIGHT_WRITE)
+        )->assertStatus(201);
+
+        $aircraft = AirFlightAirPlane::query()->latest('id')->first();
+
+        $this->assertNotNull($aircraft?->route_last_at);
+    }
+
+    /**
+     * Un sondeo sin posición (un squawk o una altitud sueltos) no debe tocar
+     * `route_last_at`: no es "una ruta válida", es telemetría sin lat/lon.
+     */
+    #[Test]
+    public function route_last_at_is_not_set_without_a_real_position(): void
+    {
+        $this->postJson(
+            $this->apiUrl('airflight/aircrafts'),
+            ['icao' => '3444d2', 'squawk' => '7010'],
+            $this->moduleHeaders($this->user, TokenAbilities::AIRFLIGHT_WRITE)
+        )->assertStatus(201);
+
+        $aircraft = AirFlightAirPlane::query()->latest('id')->first();
+
+        $this->assertNull($aircraft?->route_last_at);
     }
 
     /**
