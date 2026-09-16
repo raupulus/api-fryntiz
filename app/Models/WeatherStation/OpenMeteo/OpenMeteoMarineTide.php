@@ -6,13 +6,14 @@ namespace App\Models\WeatherStation\OpenMeteo;
 
 use App\Enums\TideExtremeTypeEnum;
 use App\Models\BaseModels\BaseModel;
+use App\Support\WeatherStation\TideExtremesCalculator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Carbon;
 
 /**
  * Un extremo de marea (pleamar o bajamar) de Chipiona, calculado por
- * {@see \App\Support\WeatherStation\TideExtremesCalculator} sobre la serie
+ * {@see TideExtremesCalculator} sobre la serie
  * horaria de Open-Meteo Marine.
  *
  * @property int $id
@@ -62,7 +63,7 @@ class OpenMeteoMarineTide extends BaseModel
     }
 
     /**
-     * Guarda los extremos calculados por {@see \App\Support\WeatherStation\TideExtremesCalculator::extremes()}.
+     * Guarda los extremos calculados por {@see TideExtremesCalculator::extremes()}.
      *
      * Clave natural: `happens_at` redondeado al minuto. Dos sondeos con
      * ventanas de predicción solapadas producen el mismo extremo con una

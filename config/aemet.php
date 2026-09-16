@@ -233,6 +233,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Ozono total en superficie (red especial de espectrofotómetros Brewer)
+    |--------------------------------------------------------------------------
+    |
+    | `red/especial/ozono` devuelve las 7 estaciones Brewer nacionales en un CSV.
+    | La más cercana a Chipiona (~50 km en línea recta a través del Golfo de
+    | Cádiz / Doñana) y única en toda Andalucía es Moguer (El Arenosillo, INTA),
+    | con indicativo `5860E`. Solo se guarda esta estación.
+    |
+    */
+    'ozone_station_code' => env('AEMET_OZONE_STATION_CODE', '5860E'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Estaciones de observación convencional
     |--------------------------------------------------------------------------
     |

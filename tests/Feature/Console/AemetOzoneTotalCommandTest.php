@@ -30,23 +30,35 @@ class AemetOzoneTotalCommandTest extends TestCase
         "Estación";"Indicativo";"OZONO"
         "A Coruña";"1387";"289"
         "Izaña";"C430E";"284"
+        "Moguer (El Arenosillo)";"5860E";"310"
         "Madrid, Ciudad Universitaria";"3194U";"303"
         CSV;
 
     #[Test]
-    public function it_parses_and_persists_a_row_per_station(): void
+    public function it_persists_only_the_configured_station_by_default(): void
     {
         $this->fakeAemetOzoneTotal(self::CSV_BODY);
 
         $this->artisan('aemet:ozone-total')->assertExitCode(0);
 
-        $this->assertSame(3, AEMETOzoneTotal::count());
+        $this->assertSame(1, AEMETOzoneTotal::count());
 
-        $coruna = AEMETOzoneTotal::where('station_code', '1387')->first();
-        $this->assertNotNull($coruna);
-        $this->assertSame('A Coruña', $coruna->station_name);
-        $this->assertSame(289, $coruna->ozone_value);
-        $this->assertSame('2026-09-13', $coruna->measured_on->toDateString());
+        $moguer = AEMETOzoneTotal::where('station_code', '5860E')->first();
+        $this->assertNotNull($moguer);
+        $this->assertSame('Moguer (El Arenosillo)', $moguer->station_name);
+        $this->assertSame(310, $moguer->ozone_value);
+        $this->assertSame('2026-09-13', $moguer->measured_on->toDateString());
+    }
+
+    #[Test]
+    public function it_can_persist_all_stations_if_wildcard_configured(): void
+    {
+        config(['aemet.ozone_station_code' => '*']);
+        $this->fakeAemetOzoneTotal(self::CSV_BODY);
+
+        $this->artisan('aemet:ozone-total')->assertExitCode(0);
+
+        $this->assertSame(4, AEMETOzoneTotal::count());
     }
 
     #[Test]
@@ -57,7 +69,18 @@ class AemetOzoneTotalCommandTest extends TestCase
         $this->artisan('aemet:ozone-total')->assertExitCode(0);
         $this->artisan('aemet:ozone-total')->assertExitCode(0);
 
-        $this->assertSame(3, AEMETOzoneTotal::count());
+        $this->assertSame(1, AEMETOzoneTotal::count());
+    }
+
+    #[Test]
+    public function a_csv_without_the_configured_station_does_not_crash(): void
+    {
+        config(['aemet.ozone_station_code' => '9999Z']);
+        $this->fakeAemetOzoneTotal(self::CSV_BODY);
+
+        $this->artisan('aemet:ozone-total')->assertExitCode(0);
+
+        $this->assertSame(0, AEMETOzoneTotal::count());
     }
 
     #[Test]

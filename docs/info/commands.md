@@ -144,7 +144,9 @@ Todos usan el trait `ValidatesAemetPayload` para validar el payload antes de per
 > retraso, así que pedirlo a diario sólo gastaba cuota sin traer nada nuevo.
 > Se renombró a `aemet:ozone-profile` y se movió a semanal, y se dio de alta
 > `aemet:ozone-total` como comando nuevo para el producto que de verdad faltaba
-> (modelo `AEMETOzoneTotal`, tabla `meteorology_aemet_ozone_total`). Detalle en
+> (modelo `AEMETOzoneTotal`, tabla `meteorology_aemet_ozone_total`). A partir del
+> 2026-09-16 guarda únicamente la estación de Moguer - El Arenosillo (`5860E`), la
+> más cercana a Chipiona y única en Andalucía. Detalle en
 > [`docs/future/archived/revisar-aemet.md`](../future/revisar-aemet.md).
 
 ⚠️ `aemet:check-api-key` no trae datos: comprueba la clave. Existe porque la
@@ -506,4 +508,4 @@ worker de cola, sí.
 
 ---
 
-> Creado: 2026-05-26 · Última revisión: 2026-09-14
+> Creado: 2026-05-26 · Última revisión: 2026-09-16

@@ -17,7 +17,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Log;
 
 use function asset;
-use function base_convert;
 use function base_path;
 use function file_exists;
 

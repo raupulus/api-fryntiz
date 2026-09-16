@@ -789,15 +789,21 @@ class AEMETHelper
      *
      * Formato real (verificado 2026-09-14, CSV en UTF-8):
      *
+     * Por defecto filtra y devuelve únicamente la estación configurada en
+     * `config('aemet.ozone_station_code')` (Moguer - El Arenosillo, `5860E`,
+     * la más cercana a Chipiona y única en Andalucía).
+     *
+     * Estructura del cuerpo:
      *   "CAPA DE OZONO"
-     *   "13-09-26"
+     *   "14-09-26"
      *   "Estación";"Indicativo";"OZONO"
      *   "A Coruña";"1387";"289"
      *   …
      *
+     * @param  string|null  $stationCode  Indicativo climatológico para filtrar (ej. '5860E'), o '*' para todas.
      * @return array<int,array{station_name:string,station_code:string,ozone_value:int,measured_on:string}>|null
      */
-    public static function getOzoneTotal(): ?array
+    public static function getOzoneTotal(?string $stationCode = null): ?array
     {
         $url = self::getUrl('ozono_total');
         $curl = self::getCurl($url);
@@ -837,6 +843,8 @@ class AEMETHelper
             return null;
         }
 
+        $targetStation = $stationCode ?? (string) config('aemet.ozone_station_code', '5860E');
+        $filterStation = $targetStation !== '' && $targetStation !== '*';
         $rows = [];
 
         foreach (array_slice($lines, 3) as $line) {
@@ -846,18 +854,32 @@ class AEMETHelper
                 continue;
             }
 
-            [$stationName, $stationCode, $ozoneValue] = $fields;
+            [$stationName, $rawCode, $ozoneValue] = $fields;
 
             if (! is_numeric($ozoneValue)) {
                 continue;
             }
 
+            $code = trim($rawCode);
+
+            if ($filterStation && $code !== $targetStation) {
+                continue;
+            }
+
             $rows[] = [
                 'station_name' => trim($stationName),
-                'station_code' => trim($stationCode),
+                'station_code' => $code,
                 'ozone_value' => (int) $ozoneValue,
                 'measured_on' => $measuredOn,
             ];
+        }
+
+        if ($filterStation && $rows === []) {
+            Log::warning('AEMET getOzoneTotal() La estación configurada no aparece en el CSV de ozono total.', [
+                'station_code' => $targetStation,
+            ]);
+
+            return null;
         }
 
         return $rows === [] ? null : $rows;

@@ -6,6 +6,7 @@ namespace App\Services\WeatherStation;
 
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\RequestException;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\Log;
 class OpenMeteoMarineService
 {
     /**
-     * @return array{times: array<int,string>, heights: array<int,float>, generated_at: \Illuminate\Support\Carbon}|null
+     * @return array{times: array<int,string>, heights: array<int,float>, generated_at: Carbon}|null
      */
     public function fetchSeaLevelHeights(): ?array
     {

@@ -283,7 +283,7 @@ pasa a la vista (server-rendered, sin Vue):
 | Sol (orto/ocaso) | AEMET | `WeatherStationController::todaySunTimes()`, sobre `AEMETPrediction::sunrise/sunset` (predicción horaria, `orto`/`ocaso` de AEMET, repetidos en cada hora del día) de hoy; si aún no ha llegado, cae a la fila más reciente. Se muestra dentro de la tarjeta "Sol y Luna", junto a la fase lunar |
 | Marea | Open-Meteo Marine | Próximo extremo de `open_meteo_marine_tides` (ver más abajo y [open-meteo-marine.md](apis/open-meteo-marine.md)) |
 | Estado de la mar | AEMET | `App\Support\WeatherStation\SeaStateExtractor` sobre el texto libre de `AEMETCoast` (subzona de Chipiona), mostrado dentro de la tarjeta de Marea |
-| Ozono | AEMET | Último registro de `AEMETOzoneTotal` (`meteorology_aemet_ozone_total`) |
+| Ozono | AEMET | Último registro de `AEMETOzoneTotal` (`meteorology_aemet_ozone_total`), priorizando la estación configurada en `config('aemet.ozone_station_code')` (Moguer - El Arenosillo, `5860E`, ~50 km de Chipiona) |
 | Aviso AEMET | AEMET | El aviso vigente de mayor gravedad en la provincia de Cádiz (`AEMETAdverseEvents::current()->inZone('6111')`), o "sin avisos" |
 
 Justo encima de "Datos de los sensores" hay un banner con la última alerta
@@ -445,4 +445,4 @@ como `HasOneThrough` a través del dispositivo.
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-14
+> Creado: 2026-05-25 · Última revisión: 2026-09-16

@@ -251,7 +251,13 @@ class WeatherStationController extends Controller
 
         $moon = MoonPhase::forDate(Carbon::now());
         $sun = $this->todaySunTimes();
-        $ozone = AEMETOzoneTotal::query()->latest('measured_on')->latest('created_at')->first();
+        $ozoneStation = (string) config('aemet.ozone_station_code', '5860E');
+        $ozone = AEMETOzoneTotal::query()
+            ->when($ozoneStation !== '', fn ($query) => $query->where('station_code', $ozoneStation))
+            ->latest('measured_on')
+            ->latest('created_at')
+            ->first()
+            ?? AEMETOzoneTotal::query()->latest('measured_on')->latest('created_at')->first();
         $aemetAlert = $this->highestCurrentAemetAlert();
         $gdacsLatestActive = GdacsEvent::query()->active()->orderByDesc('last_modified_at')->first();
         $nextTide = OpenMeteoMarineTide::query()->upcoming()->orderBy('happens_at')->first();
@@ -314,7 +320,7 @@ class WeatherStationController extends Controller
 
                 return $severityDiff !== 0
                     ? $severityDiff
-                    : ($b->effective_at?->timestamp ?? 0) <=> ($a->effective_at?->timestamp ?? 0);
+                    : ($b->effective_at->timestamp ?? 0) <=> ($a->effective_at->timestamp ?? 0);
             })
             ->first();
     }
