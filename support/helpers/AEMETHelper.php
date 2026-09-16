@@ -864,6 +864,245 @@ class AEMETHelper
     }
 
     /**
+     * Índice UV máximo previsto para la ciudad configurada
+     * (`config('aemet.uvi_city_code')`, Cádiz capital por defecto —
+     * `11012`, no confundir con el municipio de Chipiona).
+     *
+     * Verificado en directo (2026-09-16): raíz `dict`, no `list` — uno de los
+     * dos únicos productos así en toda la API (el otro es valores extremos
+     * climatológicos, no implementado). `CIUDAD` trae 59 capitales; aquí se
+     * filtra a la propia.
+     *
+     * @return array{uv_index:int,valid_date:string,elaborated_at:string,modified_at:string}|null
+     */
+    public static function getUvi(): ?array
+    {
+        $url = self::getUrl('predictionUvi');
+        $curl = self::getCurl($url);
+
+        if (! $curl || empty($curl['datos'])) {
+            return null;
+        }
+
+        $body = self::getCurl($curl['datos']);
+
+        if (! is_array($body) || ! isset($body['CIUDAD']) || ! is_array($body['CIUDAD'])) {
+            Log::error('AEMET getUvi() Respuesta sin la forma esperada (sin "CIUDAD").');
+
+            return null;
+        }
+
+        $cityCode = (string) config('aemet.uvi_city_code');
+        $city = null;
+
+        foreach ($body['CIUDAD'] as $entry) {
+            if (($entry['id'] ?? null) === $cityCode) {
+                $city = $entry;
+                break;
+            }
+        }
+
+        if ($city === null || ! isset($city['uv']) || ! is_numeric($city['uv'])) {
+            Log::warning('AEMET getUvi() La ciudad configurada no aparece en la respuesta, o sin valor de UV.', [
+                'city_code' => $cityCode,
+            ]);
+
+            return null;
+        }
+
+        if (empty($body['FECHA_VALIDEZ']) || empty($body['FECHA_ELABORACION']) || empty($body['FECHA_MOD'])) {
+            Log::error('AEMET getUvi() Faltan fechas en la respuesta.');
+
+            return null;
+        }
+
+        try {
+            return [
+                'uv_index' => (int) $city['uv'],
+                'valid_date' => Carbon::parse($body['FECHA_VALIDEZ'])->toDateString(),
+                'elaborated_at' => Carbon::parse($body['FECHA_ELABORACION'])->toIso8601String(),
+                'modified_at' => Carbon::parse($body['FECHA_MOD'])->toIso8601String(),
+            ];
+        } catch (Throwable $e) {
+            Log::error('AEMET getUvi() No se han podido parsear las fechas de la respuesta.', [
+                'message' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
+    }
+
+    /**
+     * Observación convencional (dato real, no predicción) de la estación
+     * indicada — últimas ~12h, un registro por hora.
+     *
+     * Ya mapea los nombres de campo de AEMET a los de
+     * `AEMETStationObservation` (`ta`→`temperature`, `fint`→`observed_at`…).
+     * No incluye `station_zone`: eso lo decide el llamante (el comando sabe
+     * qué zona corresponde a cada `idema`, este método no).
+     *
+     * De los 39 campos que declara la API (5 obligatorios), solo se mapean
+     * los que interesan a la tabla — ver
+     * docs/future/archived/revisar-aemet.md para el resto y por qué se
+     * descartaron. Un campo ausente en la respuesta llega como `null`, no
+     * como error: es el comportamiento documentado, no un fallo.
+     *
+     * @return array<int, array{station_id:string, observed_at:string, temperature:float|null, temperature_min:float|null, temperature_max:float|null, dew_point:float|null, humidity:float|null, precipitation_mm:float|null, pressure:float|null, visibility:float|null, snow_depth:float|null, wind_speed:float|null, wind_gust:float|null, wind_direction:float|null, wind_gust_direction:float|null}>|null
+     */
+    public static function getStationObservation(string $idema): ?array
+    {
+        $url = self::$URL.'/observacion/convencional/datos/estacion/'.$idema;
+        $curl = self::getCurl($url);
+
+        if (! $curl || empty($curl['datos'])) {
+            return null;
+        }
+
+        $body = self::getCurl($curl['datos']);
+
+        if (! is_array($body)) {
+            Log::error('AEMET getStationObservation() Respuesta con forma inesperada.', ['idema' => $idema]);
+
+            return null;
+        }
+
+        $fieldMap = [
+            'ta' => 'temperature',
+            'tamin' => 'temperature_min',
+            'tamax' => 'temperature_max',
+            'tpr' => 'dew_point',
+            'hr' => 'humidity',
+            'prec' => 'precipitation_mm',
+            'pres' => 'pressure',
+            'vis' => 'visibility',
+            'nieve' => 'snow_depth',
+            'vv' => 'wind_speed',
+            'vmax' => 'wind_gust',
+            'dv' => 'wind_direction',
+            'dmax' => 'wind_gust_direction',
+        ];
+
+        $rows = [];
+
+        foreach ($body as $raw) {
+            if (! is_array($raw) || empty($raw['idema']) || empty($raw['fint'])) {
+                continue;
+            }
+
+            $row = [
+                'station_id' => (string) $raw['idema'],
+                'observed_at' => (string) $raw['fint'],
+            ];
+
+            foreach ($fieldMap as $aemetField => $ownField) {
+                $row[$ownField] = isset($raw[$aemetField]) && is_numeric($raw[$aemetField])
+                    ? (float) $raw[$aemetField]
+                    : null;
+            }
+
+            $rows[] = $row;
+        }
+
+        return $rows === [] ? null : $rows;
+    }
+
+    /**
+     * Predicción diaria del municipio configurado (`AEMETHelper::$PATHS['predictionDaily']`,
+     * `11016` — Chipiona). Hasta 7 días por sondeo, una fila por día.
+     *
+     * Estructura verificada contra la API real el 2026-09-16 (no es la de la
+     * horaria con otros tramos, como se asumió al principio: `viento` y
+     * `rachaMax` van separados, no hay `precipitacion` en mm ni `orto`/`ocaso`,
+     * y sí hay `uvMax`). Cada campo de día puede venir con varios tramos
+     * (hasta 7 para los días más próximos, ninguno para los más lejanos, donde
+     * el array trae un único elemento sin `periodo`); aquí siempre se coge el
+     * valor del día completo (`periodo === '00-24'`, o el único elemento si no
+     * hay más de uno) — ver docs/future/archived/revisar-aemet.md.
+     *
+     * @return array<int, array<string, mixed>>|null
+     */
+    public static function getDailyPrediction(): ?array
+    {
+        $url = self::getUrl('predictionDaily');
+        $curl = self::getCurl($url);
+
+        if (! $curl || empty($curl['datos'])) {
+            return null;
+        }
+
+        $body = self::getCurl($curl['datos']);
+
+        if (! is_array($body) || empty($body[0]['elaborado']) || ! isset($body[0]['prediccion']['dia']) || ! is_array($body[0]['prediccion']['dia'])) {
+            Log::error('AEMET getDailyPrediction() Respuesta con forma inesperada.');
+
+            return null;
+        }
+
+        $elaboratedAt = (string) $body[0]['elaborado'];
+        $rows = [];
+
+        foreach ($body[0]['prediccion']['dia'] as $day) {
+            if (! is_array($day) || empty($day['fecha'])) {
+                continue;
+            }
+
+            $sky = self::wholeDayEntry($day['estadoCielo'] ?? []);
+            $rainProb = self::wholeDayEntry($day['probPrecipitacion'] ?? []);
+            $snow = self::wholeDayEntry($day['cotaNieveProv'] ?? []);
+            $wind = self::wholeDayEntry($day['viento'] ?? []);
+            $gust = self::wholeDayEntry($day['rachaMax'] ?? []);
+
+            $rows[] = [
+                'date' => (string) $day['fecha'],
+                'elaborated_at' => $elaboratedAt,
+                'sky_status' => (isset($sky['descripcion']) && $sky['descripcion'] !== '') ? (string) $sky['descripcion'] : null,
+                'sky_status_code' => (isset($sky['value']) && $sky['value'] !== '') ? (string) $sky['value'] : null,
+                'rain_prob' => isset($rainProb['value']) && is_numeric($rainProb['value']) ? (int) $rainProb['value'] : null,
+                'snow_level' => (isset($snow['value']) && $snow['value'] !== '') ? (string) $snow['value'] : null,
+                'wind_direction' => (isset($wind['direccion']) && $wind['direccion'] !== '') ? (string) $wind['direccion'] : null,
+                'wind_speed' => isset($wind['velocidad']) && is_numeric($wind['velocidad']) ? (float) $wind['velocidad'] : null,
+                'wind_gust' => isset($gust['value']) && is_numeric($gust['value']) ? (float) $gust['value'] : null,
+                'temperature_max' => $day['temperatura']['maxima'] ?? null,
+                'temperature_min' => $day['temperatura']['minima'] ?? null,
+                'thermal_sensation_max' => $day['sensTermica']['maxima'] ?? null,
+                'thermal_sensation_min' => $day['sensTermica']['minima'] ?? null,
+                'humidity_max' => $day['humedadRelativa']['maxima'] ?? null,
+                'humidity_min' => $day['humedadRelativa']['minima'] ?? null,
+                // AEMET no lo manda para todos los días del rango (verificado:
+                // ausente en los dos últimos de siete).
+                'uv_max' => isset($day['uvMax']) && is_numeric($day['uvMax']) ? (int) $day['uvMax'] : null,
+            ];
+        }
+
+        return $rows === [] ? null : $rows;
+    }
+
+    /**
+     * El valor del día completo dentro de un array de tramos: el que tiene
+     * `periodo === '00-24'`, o el único elemento si no hay más de uno (los
+     * días más lejanos no traen `periodo` en absoluto). Devuelve `[]` si no
+     * hay nada que valga — así el llamante no necesita comprobar null antes
+     * de indexar.
+     *
+     * @param  array<int, array<string, mixed>>  $entries
+     * @return array<string, mixed>
+     */
+    private static function wholeDayEntry(array $entries): array
+    {
+        if (count($entries) === 1 && ! isset($entries[0]['periodo'])) {
+            return $entries[0];
+        }
+
+        foreach ($entries as $entry) {
+            if (($entry['periodo'] ?? null) === '00-24') {
+                return $entry;
+            }
+        }
+
+        return $entries[0] ?? [];
+    }
+
+    /**
      * Devuelve los datos registrados para la capa de ozono.
      *
      * De la API vuelve un archivo que proceso para devolver un array con los

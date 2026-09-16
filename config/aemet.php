@@ -197,5 +197,43 @@ return [
         'ozone' => 12 * 3600,
         // "Cada 24h" — hora solar verdadera, que no coincide con UTC ni con la local
         'sun_radiation' => 12 * 3600,
+        // "Una vez al día"
+        'uvi' => 12 * 3600,
+        // "Continuamente", TTL sugerido 30-60 min
+        'station_observation' => 30 * 60,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | UVI (índice de radiación ultravioleta)
+    |--------------------------------------------------------------------------
+    |
+    | `prediccion/especifica/uvi/0` trae 59 capitales; solo se guarda la
+    | propia. El id es el código INE de Cádiz capital, VERIFICADO en directo
+    | contra la API el 2026-09-16 (no es el mismo código que el municipio de
+    | Chipiona) — ver docs/future/archived/revisar-aemet.md.
+    |
+    */
+    'uvi_city_code' => env('AEMET_UVI_CITY_CODE', '11012'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Estaciones de observación convencional
+    |--------------------------------------------------------------------------
+    |
+    | Las tres más cercanas a Chipiona, VERIFICADAS en directo el 2026-09-16
+    | contra `observacion/convencional/datos/estacion/{idema}` — las tres dan
+    | dato real. Ojo: el `idema` de este producto no tiene por qué coincidir
+    | con el que usa el inventario de valores climatológicos para la misma
+    | estación física (Rota es `5910X` aquí, `5910` allí) — ver
+    | docs/future/archived/revisar-aemet.md antes de añadir o cambiar una.
+    |
+    | Clave = `station_zone` que se guarda en cada fila; valor = `idema`.
+    |
+    */
+    'stations' => [
+        'chipiona_eca' => env('AEMET_STATION_CHIPIONA', '5906X'),
+        'rota_base_naval' => env('AEMET_STATION_ROTA', '5910X'),
+        'almonte' => env('AEMET_STATION_ALMONTE', '5858X'),
     ],
 ];

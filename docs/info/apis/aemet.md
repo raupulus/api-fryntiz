@@ -16,7 +16,7 @@ cuánto, qué guardamos y qué hay que vigilar.
 ## 1. Las piezas
 
 ```
-Comandos artisan (9 productos + 1 de vigilancia)
+Comandos artisan (12 productos + 1 de vigilancia)
         │
         │  \AEMETHelper::getLoQueSea()     ← parsea cada producto
         ▼
@@ -133,12 +133,15 @@ cuota.
 | Avisos adversos (CAP) | `aemet:adverse-events` | cada 30 min | 20 min |
 | Contaminación | `aemet:contamination` | cada hora | 1 h |
 | Predicción horaria | `aemet:hourly-prediction` | cada 3 h | 3 h |
+| Predicción diaria | `aemet:daily-prediction` | cada 6 h | 3 h |
 | Predicción de playas | `aemet:beaches` | diario | 6 h |
 | Predicción de costa | `aemet:coast` | diario | 6 h |
 | Alta mar | `aemet:high-sea` | diario 08:15 | 6 h |
 | Radiación solar | `aemet:sun-radiation` | diario 08:25 | 12 h |
 | Perfil de ozono (sondeo) | `aemet:ozone-profile` | lunes 12:30 | días |
 | Ozono total (superficie) | `aemet:ozone-total` | diario 08:30 | 12-24 h |
+| Índice UV | `aemet:uvi` | diario 08:35 | 12 h |
+| Observación de estaciones | `aemet:station-observations` | cada 30 min | 30-60 min |
 | **Vigilancia de la clave** | `aemet:check-api-key` | diario 08:00 | — |
 
 Horas en `Europe/Madrid`, fijadas para que no se muevan con el cambio de hora.
@@ -173,6 +176,58 @@ publicación, así que va en la tanda de la mañana, 5 min detrás del último.
 > producto que en realidad es texto/CSV. Nada de esto lo llama ningún comando
 > real hoy (los comandos usan `AEMETHelper`), pero ya no son una trampa para
 > quien retome la migración descrita en el punto 8.
+
+> **Predicción diaria, UVI y observación de estaciones, nuevos (2026-09-16).**
+>
+> - **`aemet:uvi`** guarda el índice UV máximo previsto de una sola ciudad
+>   (`config('aemet.uvi_city_code')`, Cádiz capital — `id 11012`, verificado en
+>   directo; **no** es el código de municipio de Chipiona, que es otro
+>   catálogo). `AEMETHelper::getUvi()` filtra la ciudad propia de las 59 que
+>   trae la respuesta. Tabla `meteorology_aemet_uvi`, una fila por día
+>   (`unique(valid_date)`).
+> - **`aemet:station-observations`** guarda el dato real (no predicción) de
+>   tres estaciones cercanas a Chipiona, `config('aemet.stations')`:
+>   `chipiona_eca` (`5906X`), `rota_base_naval` (`5910X`), `almonte` (`5858X`).
+>   Tabla `meteorology_aemet_station_observations`
+>   (`unique(station_id, observed_at)`).
+>
+>   ⚠️ **El `idema` de la observación convencional no siempre coincide con el
+>   del inventario de valores climatológicos para la misma estación física.**
+>   Rota es `5910X` aquí y `5910` allí — con el código sin `X`, este endpoint
+>   responde 200 con `estado: 404` dentro (comprobado que no era cuota:
+>   `Remaining-request-endpoint` de sobra, HTTP real 200 no 429). Antes de dar
+>   un `idema` por bueno para un producto, verificarlo contra ESE endpoint, no
+>   fiarse de otro inventario.
+>
+>   Rota no reporta viento en ninguno de sus registros (`wind_*` quedan
+>   `null`, no `0`); `dew_point`/`pressure`/`visibility`/`snow_depth` no llegan
+>   hoy en ninguna de las tres estaciones, pero se guardan igual a la espera —
+>   decisión del usuario, revisar en unas semanas/meses si conviene quitarlas.
+>   Detalle completo de la investigación en
+>   [`docs/future/archived/revisar-aemet.md`](../../future/revisar-aemet.md).
+>
+> - **`aemet:daily-prediction`** guarda el resumen diario del municipio (hasta
+>   7 días por sondeo). Tabla `meteorology_aemet_daily_predictions`, una fila
+>   por día (`unique(date)`).
+>
+>   ⚠️ **Es una forma distinta a la de la predicción horaria, no la misma
+>   estructura con otros tramos.** Al intentar verificarla la primera vez,
+>   AEMET devolvió 429 desde la máquina de desarrollo — la familia
+>   `/prediccion/especifica/municipio/*` tiene un cubo de cuota pequeño y la
+>   cuota va ligada a la IP, no a la clave (una clave nueva no lo arregla,
+>   comprobado). Resuelto lanzando la petición real desde un VPS con otra IP.
+>   La respuesta real: `viento` y `rachaMax` van **separados** (no hay
+>   `vientoAndRachaMax` combinado como en la horaria), no hay `precipitacion`
+>   en mm ni `orto`/`ocaso`, y sí hay `uvMax` — pero **no en todos los días**:
+>   ausente en los dos más lejanos del rango de siete. Cada campo de día trae
+>   hasta 7 tramos para los días próximos, menos para los medios, y un único
+>   elemento sin `periodo` para los más lejanos; `AEMETHelper::getDailyPrediction()`
+>   siempre coge el tramo `00-24` (día completo) o el único elemento si no hay
+>   más.
+>
+>   Detalle completo de la investigación (con el JSON real capturado del
+>   VPS) en
+>   [`docs/future/archived/revisar-aemet.md`](../../future/revisar-aemet.md).
 
 ---
 

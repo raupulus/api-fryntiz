@@ -14,7 +14,7 @@ use Illuminate\Console\Command;
  * No confundir con `aemet:ozone-profile`: ese pide el perfil vertical de una
  * ozonosonda, un producto distinto que sólo se publica cada 7 días. Este es
  * el que el nombre "ozono" venía prometiendo desde siempre y nunca se había
- * implementado — ver docs/future/revisar-aemet.md.
+ * implementado — ver docs/future/archived/revisar-aemet.md.
  */
 class AEMETOzoneTotalCommand extends Command
 {

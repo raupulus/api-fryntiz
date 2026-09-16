@@ -121,12 +121,15 @@ de un número inventado.
 | `aemet:adverse-events` | Cada 30 min | Avisos de fenómenos adversos (CAP) |
 | `aemet:contamination` | Cada hora | Contaminación atmosférica |
 | `aemet:hourly-prediction` | Cada 3 h | Predicción horaria del municipio |
+| `aemet:daily-prediction` | Cada 6 h | Predicción diaria del municipio (resumen, hasta 7 días) |
 | `aemet:beaches` | Diario | Predicción de playas |
 | `aemet:coast` | Diario | Predicción de costa |
 | `aemet:high-sea` | 08:15 | Alta mar |
 | `aemet:sun-radiation` | 08:25 | Radiación solar |
 | `aemet:ozone-profile` | Lunes 12:30 | Perfil vertical de ozono (sondeo) |
 | `aemet:ozone-total` | 08:30 | Ozono total en superficie |
+| `aemet:uvi` | 08:35 | Índice UV máximo previsto |
+| `aemet:station-observations` | Cada 30 min | Observación real de Chipiona/Rota/Almonte |
 | `aemet:check-api-key` | 08:00 | **Vigila la caducidad de la clave** |
 
 Todos usan el trait `ValidatesAemetPayload` para validar el payload antes de persistir.
@@ -142,7 +145,7 @@ Todos usan el trait `ValidatesAemetPayload` para validar el payload antes de per
 > Se renombró a `aemet:ozone-profile` y se movió a semanal, y se dio de alta
 > `aemet:ozone-total` como comando nuevo para el producto que de verdad faltaba
 > (modelo `AEMETOzoneTotal`, tabla `meteorology_aemet_ozone_total`). Detalle en
-> [`docs/future/revisar-aemet.md`](../future/revisar-aemet.md).
+> [`docs/future/archived/revisar-aemet.md`](../future/revisar-aemet.md).
 
 ⚠️ `aemet:check-api-key` no trae datos: comprueba la clave. Existe porque la
 `AEMET_API_KEY` es un JWT que caduca a los ~100 días y **su caducidad no da

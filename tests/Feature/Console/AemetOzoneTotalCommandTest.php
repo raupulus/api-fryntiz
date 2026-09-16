@@ -15,7 +15,7 @@ use Tests\TestCase;
  *
  * Existe porque `aemet:ozone` (ahora `aemet:ozone-profile`) llevaba desde
  * siempre pidiendo el perfil vertical de una ozonosonda, no el ozono total de
- * superficie que su nombre prometía — ver docs/future/revisar-aemet.md. Este
+ * superficie que su nombre prometía — ver docs/future/archived/revisar-aemet.md. Este
  * comando es el producto que faltaba de verdad, verificado contra la
  * respuesta real de AEMET del 2026-09-14 (CSV en UTF-8 con dos líneas de
  * cabecera antes de la tabla).

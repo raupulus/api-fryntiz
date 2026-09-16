@@ -18,7 +18,7 @@ use Tests\TestCase;
  * `contaminacionfondo` sin estación, `radiacionsolar` en vez de `radiacion`),
  * y las tres asumían un cuerpo JSON cuando los tres productos son texto/CSV.
  * Cualquiera que retome la migración a este servicio heredaba ambos fallos
- * sin verificarlo de nuevo. Ver docs/future/revisar-aemet.md.
+ * sin verificarlo de nuevo. Ver docs/future/archived/revisar-aemet.md.
  */
 class AEMETServiceTest extends TestCase
 {

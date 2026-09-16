@@ -80,6 +80,14 @@ Schedule::command('aemet:hourly-prediction')
     ->runInBackground()
     ->onFailure($warnOnFailure('aemet:hourly-prediction'));
 
+// Predicción diaria: AEMET declara "cuatro veces al día" — cada 6 h reparte
+// las cuatro sin pedirlo de más.
+Schedule::command('aemet:daily-prediction')
+    ->everySixHours()
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->onFailure($warnOnFailure('aemet:daily-prediction'));
+
 // Costa: dos emisiones al día, mediodía y tarde.
 Schedule::command('aemet:coast')
     ->twiceDailyAt(12, 20, 10)
@@ -118,6 +126,23 @@ Schedule::command('aemet:ozone-total')
     ->withoutOverlapping()
     ->runInBackground()
     ->onFailure($warnOnFailure('aemet:ozone-total'));
+
+// UVI: "una vez al día", igual que ozono total — 5 min detrás en la misma tanda.
+Schedule::command('aemet:uvi')
+    ->dailyAt('08:35')
+    ->timezone('Europe/Madrid')
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->onFailure($warnOnFailure('aemet:uvi'));
+
+// Observación convencional: "continuamente", TTL sugerido 30-60 min. Tres
+// estaciones por ejecución, cada una con su propio guardedSave() — ver el
+// comando. 30 min deja margen de sobra sobre el cubo de cuota.
+Schedule::command('aemet:station-observations')
+    ->everyThirtyMinutes()
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->onFailure($warnOnFailure('aemet:station-observations'));
 
 // Es el perfil de la ozonosonda, no ozono de superficie: AEMET lo publica cada
 // 7 días y se ha observado hasta con 28 días de retraso (verificado 2026-09-14

@@ -7,12 +7,15 @@ namespace App\Filament\Admin\Pages;
 use App\Models\WeatherStation\AEMET\AEMETAdverseEvents;
 use App\Models\WeatherStation\AEMET\AEMETCoast;
 use App\Models\WeatherStation\AEMET\AEMETContamination;
+use App\Models\WeatherStation\AEMET\AEMETDailyPrediction;
 use App\Models\WeatherStation\AEMET\AEMETHighSea;
 use App\Models\WeatherStation\AEMET\AEMETOzone;
 use App\Models\WeatherStation\AEMET\AEMETOzoneTotal;
 use App\Models\WeatherStation\AEMET\AEMETPrediction;
 use App\Models\WeatherStation\AEMET\AEMETPredictionBeach;
+use App\Models\WeatherStation\AEMET\AEMETStationObservation;
 use App\Models\WeatherStation\AEMET\AEMETSunRadiation;
+use App\Models\WeatherStation\AEMET\AEMETUvi;
 use App\Support\WeatherStation\AemetApiKey;
 use BackedEnum;
 use Filament\Notifications\Notification;
@@ -79,6 +82,12 @@ class AemetDashboard extends Page
                 'model' => AEMETPrediction::class,
                 'command' => 'aemet:hourly-prediction',
             ],
+            'daily_predictions' => [
+                'label' => 'Predicción diaria',
+                'description' => 'Resumen "hoy/mañana" del municipio, hasta 7 días. Cuatro veces al día.',
+                'model' => AEMETDailyPrediction::class,
+                'command' => 'aemet:daily-prediction',
+            ],
             'prediction_beachs' => [
                 'label' => 'Predicción playas',
                 'description' => 'La Regla y La Cruz del Mar. Publicación diaria.',
@@ -114,6 +123,18 @@ class AemetDashboard extends Page
                 'description' => 'Radiación solar acumulada diaria.',
                 'model' => AEMETSunRadiation::class,
                 'command' => 'aemet:sun-radiation',
+            ],
+            'uvi' => [
+                'label' => 'Índice UV',
+                'description' => 'Índice de radiación ultravioleta máximo previsto. Publicación diaria.',
+                'model' => AEMETUvi::class,
+                'command' => 'aemet:uvi',
+            ],
+            'station_observations' => [
+                'label' => 'Observación de estaciones',
+                'description' => 'Dato real (no predicción) de Chipiona, Rota y Almonte/Doñana. Continuo, cada 30 min.',
+                'model' => AEMETStationObservation::class,
+                'command' => 'aemet:station-observations',
             ],
         ];
     }

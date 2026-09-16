@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Schema;
 /**
  * Ozono total en superficie, una fila por estación y día
  * (`red/especial/ozono`; no confundir con `meteorology_aemet_ozone`, que es el
- * perfil vertical de una ozonosonda — ver docs/future/revisar-aemet.md).
+ * perfil vertical de una ozonosonda — ver docs/future/archived/revisar-aemet.md).
  */
 return new class extends Migration
 {

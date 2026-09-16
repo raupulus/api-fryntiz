@@ -56,18 +56,24 @@ cambiarla vía `data-station` (prop `station`), mostrando ubicación dinámica.
 | `app/Models/WeatherStation/Lightning.php` | `meteorology_lightning` | Detección de rayos |
 
 ### Modelos AEMET
+
+Todos bajo `app/Models/WeatherStation/AEMET/` — no hay un modelo base `AEMET`
+suelto, cada producto tiene el suyo.
+
 | Archivo | Tabla | Descripción |
 |---------|-------|-------------|
-| `app/Models/WeatherStation/AEMET.php` | Variable | Modelo base para datos AEMET |
-| `app/Models/WeatherStation/AEMETPrediction.php` | — | Predicciones meteorológicas |
-| `app/Models/WeatherStation/AEMETAdverseEvents.php` | — | Eventos meteorológicos adversos |
-| `app/Models/WeatherStation/AEMETCoast.php` | — | Predicción costera |
-| `app/Models/WeatherStation/AEMETHighSea.php` | — | Predicción de alta mar |
-| `app/Models/WeatherStation/AEMETContamination.php` | — | Datos de contaminación |
-| `app/Models/WeatherStation/AEMETOzone.php` | — | Perfil vertical de ozono (sondeo), no ozono de superficie — ver [aemet.md](apis/aemet.md#cadencia-de-cada-producto) |
-| `app/Models/WeatherStation/AEMET/AEMETOzoneTotal.php` | — | Ozono total diario en superficie, por estación |
-| `app/Models/WeatherStation/AEMETSunRadiation.php` | — | Radiación solar |
-| `app/Models/WeatherStation/AEMETPredictionBeach.php` | — | Predicción de playas |
+| `AEMETPrediction.php` | `meteorology_aemet_predictions` | Predicción horaria del municipio |
+| `AEMETDailyPrediction.php` | `meteorology_aemet_daily_predictions` | Predicción diaria del municipio (resumen, hasta 7 días) |
+| `AEMETAdverseEvents.php` | `meteorology_aemet_adverse_events` | Avisos de fenómenos adversos (CAP) |
+| `AEMETCoast.php` | `meteorology_aemet_prediction_coasts` | Predicción costera |
+| `AEMETHighSea.php` | `meteorology_aemet_high_seas` | Predicción de alta mar |
+| `AEMETContamination.php` | `meteorology_aemet_contamination` | Contaminación de fondo (EMEP) |
+| `AEMETOzone.php` | `meteorology_aemet_ozone` | Perfil vertical de ozono (sondeo), no ozono de superficie — ver [aemet.md](apis/aemet.md#cadencia-de-cada-producto) |
+| `AEMETOzoneTotal.php` | `meteorology_aemet_ozone_total` | Ozono total diario en superficie, por estación |
+| `AEMETSunRadiation.php` | `meteorology_aemet_sun_radiation` | Radiación solar |
+| `AEMETPredictionBeach.php` | `meteorology_aemet_prediction_beachs` | Predicción de playas |
+| `AEMETUvi.php` | `meteorology_aemet_uvi` | Índice UV máximo previsto (ciudad configurada) |
+| `AEMETStationObservation.php` | `meteorology_aemet_station_observations` | Observación real (no predicción) de Chipiona/Rota/Almonte |
 
 ### Controladores
 | Archivo | Versión | Descripción |
@@ -102,15 +108,27 @@ cambiarla vía `data-station` (prop `station`), mostrando ubicación dinámica.
 | `app/Http/Requests/Api/WeatherStation/V2/StoreGenericRequest.php` | Validación store genérico multi-sensor |
 
 ### Comandos Artisan (AEMET)
-| Archivo | Comando | Frecuencia |
-|---------|---------|------------|
-| `app/Console/Commands/AEMET/AEMETDailyCommand.php` | `aemet:daily` | Diario |
-| `app/Console/Commands/AEMET/AEMETDaily8Command.php` | `aemet:daily8` | Diario 8:00 |
-| `app/Console/Commands/AEMET/AEMETDaily12Command.php` | `aemet:daily12` | Diario 12:00 |
-| `app/Console/Commands/AEMET/AEMETDaily20Command.php` | `aemet:daily20` | Diario 20:00 |
-| `app/Console/Commands/AEMET/AEMETEvery10mCommand.php` | `aemet:every10m` | Cada 10 min |
-| `app/Console/Commands/AEMET/AEMETEvery30mCommand.php` | `aemet:every30m` | Cada 30 min |
-| `app/Console/Commands/AEMET/AEMETEvery4hCommand.php` | `aemet:every4h` | Cada 4 horas |
+
+Un comando por producto (todos bajo `app/Console/Commands/AEMET/`) — ver
+[commands.md](commands.md) y
+[apis/aemet.md](apis/aemet.md#cadencia-de-cada-producto) para la cadencia
+completa de los 12.
+
+| Comando | Producto |
+|---------|----------|
+| `aemet:adverse-events` | Avisos de fenómenos adversos (CAP) |
+| `aemet:contamination` | Contaminación atmosférica |
+| `aemet:hourly-prediction` | Predicción horaria del municipio |
+| `aemet:daily-prediction` | Predicción diaria del municipio (resumen, hasta 7 días) |
+| `aemet:beaches` | Predicción de playas |
+| `aemet:coast` | Predicción de costa |
+| `aemet:high-sea` | Alta mar |
+| `aemet:sun-radiation` | Radiación solar |
+| `aemet:ozone-profile` | Perfil vertical de ozono (sondeo) |
+| `aemet:ozone-total` | Ozono total en superficie |
+| `aemet:uvi` | Índice UV máximo previsto |
+| `aemet:station-observations` | Observación real de Chipiona/Rota/Almonte |
+| `aemet:check-api-key` | Vigila la caducidad de la clave |
 
 ### Otros
 | Archivo | Descripción |
@@ -381,10 +399,10 @@ como `HasOneThrough` a través del dispositivo.
 
 | Capa | Estado |
 |------|--------|
-| Modelos (18 sensores + 9 AEMET) | ✅ |
+| Modelos (18 sensores + 12 AEMET) | ✅ |
 | API V2 (27 rutas) | ✅ |
 | Tests (22 métodos) | ✅ |
-| Comandos AEMET (7) | ✅ existen |
+| Comandos AEMET (12) | ✅ existen |
 | **Scheduler de AEMET** | ✅ Arreglado: un comando por producto, con la cadencia que declara AEMET. `SchedulerTest` impide que vuelva a programar comandos que no existen |
 | Frontend público | ✅ |
 | **Panel Filament** | 🟠 Sin Resource de sensores. Sí hay panel de AEMET (`/admin/aemet`) con una tarjeta por producto y su botón de resincronizar |
