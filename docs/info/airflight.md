@@ -134,6 +134,41 @@ arregladas:
   ya existente (o por si hiciera falta corregir algo a mano), pero ya no hace
   falta programarlo: nada nuevo va a depender de él.
 
+### `airflight:fix` dejaba aviones resolubles sin corregir (2026-09-16)
+
+Auditoría del dump de producción del 2026-09-16 (ya con los tres fixes de
+arriba desplegados) encontró aviones con `country`/`flag` a `null` cuyo ICAO
+sí caía dentro de un rango de `AirFlightAirPlane::FLAGS` (por ejemplo
+`40653d`, matrícula `G-EZGN`, Reino Unido). No podía ser el cálculo en vivo
+—esos aviones llevaban días sin verse, ninguna subida nueva iba a disparar
+`addAircraft()`—, así que el sospechoso era el propio comando de backfill.
+
+Confirmado ejecutándolo contra una copia local: de 204 aviones sin país,
+solo corrigió 21 y dejó 183, de los cuales 23 sí eran resolubles con
+`searchHex()`. Dos bugs en
+[`AirflightFixCommand::fixAirplaneFlagsAndCountries()`](../../app/Console/Commands/AirflightFixCommand.php):
+
+- El bucle paginaba con `$position < $airflightsCount`, un total calculado
+  **una sola vez** al principio, y volvía a lanzar la misma query
+  `whereNull('country')->orWhereNull('flag')->limit(100)` sin `ORDER BY` ni
+  exclusión de lo ya intentado. Los ICAO que `searchHex()` nunca va a
+  resolver (rangos reservados/basura, ej. `000403`) no salen del `WHERE
+  NULL` al fallar, así que se quedan ocupando la misma página en cada vuelta
+  y le roban recorrido a filas que sí eran corregibles, sin avisar de que se
+  quedaron fuera. Arreglado excluyendo por `id` lo ya intentado y saliendo
+  del bucle cuando una página vuelve vacía, en vez de fiarse de un contador
+  fijo.
+- `searchHex()` convertía el ICAO con `base_convert('0x'.$icao, 16, 10)`,
+  deprecated en PHP 8.4 (el prefijo `'0x'` no es un dígito hexadecimal
+  válido para `base_convert`). Cambiado a `hexdec($icao)`, mismo resultado
+  sin el aviso.
+
+Test de regresión:
+[`AirflightFixCommandTest`](../../tests/Feature/Console/AirflightFixCommandTest.php)
+(más de una página de ICAO irresolubles por delante de uno resoluble).
+Pendiente: volver a ejecutar `php artisan airflight:fix` en producción tras
+desplegar esto, para los ~23 aviones que se quedaron atrás la vez anterior.
+
 ### Corrección sobre una confusión propia (2026-09-08 → 09)
 
 Un commit de esta misma fecha llegó a la conclusión contraria —que
@@ -628,4 +663,4 @@ cuyo caso sí son un duplicado exacto, tengan o no posición.
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-15
+> Creado: 2026-05-25 · Última revisión: 2026-09-16

@@ -406,7 +406,7 @@ class AirFlightAirPlane extends BaseModel
     public static function searchHex($icao)
     {
         try {
-            $hexColor = base_convert('0x'.$icao, 16, 10);
+            $hexColor = hexdec($icao);
 
             foreach (self::FLAGS as $f) {
                 if ($hexColor >= $f['start'] && $hexColor <= $f['end']) {

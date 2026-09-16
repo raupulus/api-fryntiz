@@ -42,17 +42,24 @@ class AirflightFixCommand extends Command
      */
     private function fixAirplaneFlagsAndCountries()
     {
-        $query = AirFlightAirPlane::whereNull('country')->orWhereNull('flag');
+        $airflightsCount = AirFlightAirPlane::whereNull('country')->orWhereNull('flag')->count();
 
-        $airflightsCount = $query->count();
+        echo "\nSe van a revisar: ".$airflightsCount." aviones.\n";
 
-        echo "\nSe van a actualizar: ".$airflightsCount." aviones.\n";
-
-        $position = 0;
         $updated = 0;
+        $excludedIds = [];
 
-        while ($airflightsCount > $position) {
-            $airflights = $query->limit(100)->get();
+        while (true) {
+            $airflights = AirFlightAirPlane::where(function ($query) {
+                $query->whereNull('country')->orWhereNull('flag');
+            })
+                ->whereNotIn('id', $excludedIds)
+                ->limit(100)
+                ->get();
+
+            if ($airflights->isEmpty()) {
+                break;
+            }
 
             echo "\nConsultando nuevos aviones: ".$airflights->count()." \n";
 
@@ -69,10 +76,15 @@ class AirflightFixCommand extends Command
                     if ($airflight->save()) {
                         $updated++;
                     }
+                } else {
+                    // Sin bandera correspondiente en FLAGS (ICAO reservado o
+                    // fuera de rango): se excluye para no volver a
+                    // consultarlo en la siguiente página, si no el bucle no
+                    // avanza nunca sobre estos y deja sin revisar aviones
+                    // que sí eran corregibles.
+                    $excludedIds[] = $airflight->id;
                 }
             }
-
-            $position += 100;
         }
 
         echo "\nSe han actualizado: ".$updated.' aviones de '.$airflightsCount.".\n";
