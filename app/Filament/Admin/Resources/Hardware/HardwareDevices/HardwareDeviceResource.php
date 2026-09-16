@@ -20,14 +20,17 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Flex;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
 class HardwareDeviceResource extends Resource
@@ -220,6 +223,10 @@ class HardwareDeviceResource extends Resource
                             ->dehydrated(false)
                             ->helperText('Se actualiza automáticamente en las peticiones a la API.'),
                         DateTimePicker::make('buy_at')->label('Comprado el'),
+                        Toggle::make('notify_on_silence')
+                            ->label('Avisar si deja de reportar')
+                            ->helperText('Desactívalo en hardware que enciendes de forma esporádica a propósito, para que "iot:check-silent-devices" no lo marque como mudo cada día.')
+                            ->default(true),
                         Textarea::make('description')
                             ->label('Descripción')
                             ->columnSpanFull(),
@@ -329,6 +336,10 @@ class HardwareDeviceResource extends Resource
                     ->label('Última vez visto')
                     ->dateTime()
                     ->sortable(),
+                IconColumn::make('notify_on_silence')
+                    ->label('Avisa si se calla')
+                    ->boolean()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('ip_local')
                     ->label('IP Local')
                     ->searchable(),
@@ -357,6 +368,8 @@ class HardwareDeviceResource extends Resource
                 SelectFilter::make('location_type')
                     ->label('Ubicación')
                     ->options(HardwareLocationTypeEnum::options()),
+                TernaryFilter::make('notify_on_silence')
+                    ->label('Avisa si se calla'),
             ])
             ->recordActions([
                 EditAction::make(),

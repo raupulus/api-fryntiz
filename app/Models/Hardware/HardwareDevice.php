@@ -51,6 +51,7 @@ use function array_filter;
  * @property string|null $description Descripción del dispositivo.
  * @property string|null $buy_at Fecha de compra del dispositivo
  * @property Carbon|null $last_seen_at Última vez que se vio el dispositivo
+ * @property bool $notify_on_silence Si "iot:check-silent-devices" debe avisar cuando este dispositivo deje de reportar
  * @property string|null $ip_local Ip local del dispositivo
  * @property string|null $ip_public Ip pública del dispositivo
  * @property float|null $temp Última temperatura conocida del dispositivo en grados Celsius
@@ -133,7 +134,7 @@ class HardwareDevice extends BaseModel
         'name', 'name_friendly', 'location_type', 'zone', 'ref', 'model', 'brand',
         'software_version', 'hardware_version', 'serial_number', 'battery_type',
         'battery_nominal_capacity', 'battery_nominal_voltage', 'url_company', 'description', 'buy_at',
-        'last_seen_at', 'ip_local', 'ip_public', 'temp', 'voltage',
+        'last_seen_at', 'notify_on_silence', 'ip_local', 'ip_public', 'temp', 'voltage',
         'battery_level', 'cpu', 'disk', 'ram', 'uptime', 'extra',
         // Batería del propio dispositivo (D108). La puede mandar cualquier
         // endpoint IoT y siempre es opcional; no es una lectura de energía.
@@ -142,6 +143,7 @@ class HardwareDevice extends BaseModel
     protected $casts = [
         'buy_at' => 'datetime',
         'last_seen_at' => 'datetime',
+        'notify_on_silence' => 'boolean',
         'location_type' => HardwareLocationTypeEnum::class,
         'temp' => 'float',
         'voltage' => 'float',

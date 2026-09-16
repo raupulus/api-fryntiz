@@ -63,17 +63,31 @@ class CheckSilentDevicesCommandTest extends TestCase
         Log::shouldReceive('warning')->never();
 
         $this->artisan('iot:check-silent-devices')
-            ->expectsOutputToContain('No hay dispositivos registrados.')
+            ->expectsOutputToContain('No hay dispositivos que vigilar.')
             ->assertExitCode(0);
     }
 
-    private function device(string $name, mixed $lastSeenAt): HardwareDevice
+    public function test_it_ignores_devices_with_notify_on_silence_disabled(): void
+    {
+        // Cacharro que se enciende a propósito un par de veces al mes: llevar
+        // 3 días sin reportar es lo esperado, no un hallazgo.
+        $this->device('Rover (uso esporádico)', now()->subDays(3), notifyOnSilence: false);
+
+        Log::shouldReceive('warning')->never();
+
+        $this->artisan('iot:check-silent-devices', ['--hours' => 24])
+            ->expectsOutputToContain('No hay dispositivos que vigilar.')
+            ->assertExitCode(0);
+    }
+
+    private function device(string $name, mixed $lastSeenAt, bool $notifyOnSilence = true): HardwareDevice
     {
         // Sin dueño a propósito: el comando mira todo el parque, no filtra por
         // usuario. Montar uno sólo para satisfacer una FK nullable es ruido.
         return HardwareDevice::create([
             'name' => $name,
             'last_seen_at' => $lastSeenAt,
+            'notify_on_silence' => $notifyOnSilence,
         ]);
     }
 }

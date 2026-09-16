@@ -20,6 +20,10 @@ use Illuminate\Support\Facades\Log;
  * No manda correos ni notificaciones: deja constancia en el log, que es donde
  * se mira cuando algo va mal.
  *
+ * Ignora los dispositivos con `notify_on_silence` a `false`: hay cacharros
+ * que se encienden a propósito solo un par de veces al mes, y avisar todos
+ * los días de que "llevan sin reportar" es ruido, no un hallazgo.
+ *
  * **Sale siempre con código 0 aunque encuentre dispositivos mudos.** Antes
  * devolvía 1 «para que el planificador lo marcara como fallo», y el efecto real
  * era el contrario del buscado: `ScheduleRunCommand` convierte cualquier código
@@ -42,11 +46,12 @@ class CheckSilentDevicesCommand extends Command
         $limit = now()->subHours($hours);
 
         $devices = HardwareDevice::query()
+            ->where('notify_on_silence', true)
             ->orderBy('name')
             ->get(['id', 'name', 'last_seen_at']);
 
         if ($devices->isEmpty()) {
-            $this->info('No hay dispositivos registrados.');
+            $this->info('No hay dispositivos que vigilar.');
 
             return self::SUCCESS;
         }

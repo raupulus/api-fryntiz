@@ -345,6 +345,11 @@ un fallo suyo. Devolvía 1 y el planificador lo tomaba por una excepción, así 
 caía cada mañana una traza de veinte líneas de `ScheduleRunCommand` que no decía nada. Un código
 distinto de cero significa ahora que ha fallado el comando de verdad.
 
+Solo mira los dispositivos con `notify_on_silence` a `true` (columna de `hardware_devices`,
+editable desde su ficha en el panel). Hay hardware que se enciende a propósito un par de veces al
+mes; para ese caso "llevar días sin reportar" no es un hallazgo, y desactivar la columna evita el
+WARNING diario de ruido.
+
 ---
 
 ## 6-ter. Energía — Consolidación y migración

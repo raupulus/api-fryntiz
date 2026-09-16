@@ -77,6 +77,7 @@ consumos, con sus resúmenes diarios e históricos— está en
 | `description` | text | Descripción |
 | `buy_at` | date | Fecha de compra |
 | `last_seen_at` | timestamp | Última conexión (se actualiza en cada subida de estado) |
+| `notify_on_silence` | boolean | Si `iot:check-silent-devices` debe avisar cuando este dispositivo deje de reportar. Por defecto `true`; se desactiva desde el panel en hardware que se enciende de forma esporádica a propósito |
 | `ip_local` | string | IP local |
 | `ip_public` | string | IP pública. **La pone el servidor** desde la petición; lo que mande el dispositivo se ignora |
 | `ram` | decimal(5,2) | Último uso de memoria conocido en porcentaje (0-100) |
