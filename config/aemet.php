@@ -42,14 +42,29 @@ return [
     | Códigos por defecto
     |--------------------------------------------------------------------------
     |
-    | ⚠️ Sin verificar con petición real. Un endpoint que funciona con un valor
-    | no dice nada de los demás valores: hay que probar cada uno.
+    | ⚠️ `default_beach` y `default_area` siguen sin verificar con petición
+    | real. Un endpoint que funciona con un valor no dice nada de los demás.
+    |
+    | `default_coast` SÍ está verificado (2026-09-16, petición real): `11` no
+    | es un código de costa válido (son 8 códigos del 40 al 47, ver
+    | `docs/apis/aemet/07-maritima.md`) — era la provincia de Cádiz colada por
+    | el mismo nombre de parámetro que otros dominios. `42` es «Costa de
+    | Andalucía Occidental y Ceuta», la que cubre Chipiona; la respuesta trae
+    | la subzona «Del Guadalquivir al Cabo Roche» (id `8011111`), que es la
+    | que se usa para el estado del mar en la web.
     |
     */
     'default_municipality' => env('AEMET_DEFAULT_MUNICIPIO', '11015'),  // Chipiona
     'default_beach' => env('AEMET_DEFAULT_PLAYA', '1101501'),
-    'default_coast' => env('AEMET_DEFAULT_COSTA', '11'),
+    'default_coast' => env('AEMET_DEFAULT_COSTA', '42'),
     'default_area' => env('AEMET_DEFAULT_AREA', '61'),
+
+    /*
+     * Subzona de `default_coast` que cubre Chipiona, para extraer el estado
+     * de la mar (ver App\Support\WeatherStation\SeaStateExtractor). Id
+     * verificado en directo el 2026-09-16 contra `/prediccion/maritima/costera/costa/42`.
+     */
+    'chipiona_coast_subzone_id' => env('AEMET_CHIPIONA_COAST_SUBZONE_ID', 8011111),
 
     // Campisábalos (09) está en el ejemplo de la documentación de AEMET, pero
     // en producción se usa 17 desde siempre (ver AEMETHelper::$PATHS). Se deja

@@ -7,12 +7,18 @@ namespace App\Http\Controllers\WeatherStation;
 use App\Enums\HardwareLocationTypeEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V2\WeatherStation\WeatherStationResource;
+use App\Models\Gdacs\GdacsEvent;
 use App\Models\Hardware\HardwareDevice;
+use App\Models\WeatherStation\AEMET\AEMETAdverseEvents;
+use App\Models\WeatherStation\AEMET\AEMETCoast;
+use App\Models\WeatherStation\AEMET\AEMETOzoneTotal;
+use App\Models\WeatherStation\AEMET\AEMETPrediction;
 use App\Models\WeatherStation\AirQuality;
 use App\Models\WeatherStation\Eco2;
 use App\Models\WeatherStation\Humidity;
 use App\Models\WeatherStation\Light;
 use App\Models\WeatherStation\Lightning;
+use App\Models\WeatherStation\OpenMeteo\OpenMeteoMarineTide;
 use App\Models\WeatherStation\Pressure;
 use App\Models\WeatherStation\Rain;
 use App\Models\WeatherStation\Temperature;
@@ -20,8 +26,11 @@ use App\Models\WeatherStation\Tvoc;
 use App\Models\WeatherStation\Wind;
 use App\Models\WeatherStation\WindDirection;
 use App\Services\WeatherStation\WeatherStationService;
+use App\Support\WeatherStation\MoonPhase;
+use App\Support\WeatherStation\SeaStateExtractor;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\View\View;
 
@@ -32,6 +41,13 @@ use Illuminate\View\View;
  */
 class WeatherStationController extends Controller
 {
+    /**
+     * Geocode CAP de AEMET para «toda la provincia de Cádiz»: CCAA de
+     * Andalucía (61) + provincia INE de Cádiz (11). Ver
+     * {@see AEMETAdverseEvents::scopeInZone()}.
+     */
+    private const CADIZ_GEOCODE = '6111';
+
     /**
      * Mapa de sensores con su modelo, título e icono.
      *
@@ -233,7 +249,74 @@ class WeatherStationController extends Controller
         // Reserva: sin estaciones clasificadas mostramos el resumen global.
         $ungrouped = empty($groups) ? $this->buildSensorCards(null) : [];
 
-        return view('weather_station.index', compact('groups', 'ungrouped', 'mainStationId', 'mainZone'));
+        $moon = MoonPhase::forDate(Carbon::now());
+        $sun = $this->todaySunTimes();
+        $ozone = AEMETOzoneTotal::query()->latest('measured_on')->latest('created_at')->first();
+        $aemetAlert = $this->highestCurrentAemetAlert();
+        $gdacsLatestActive = GdacsEvent::query()->active()->orderByDesc('last_modified_at')->first();
+        $nextTide = OpenMeteoMarineTide::query()->upcoming()->orderBy('happens_at')->first();
+        $coast = $this->latestChipionaCoast();
+        $seaState = $coast ? SeaStateExtractor::extract($coast->subzone_text) : null;
+        $seaStateUpdatedAt = $coast?->created_at;
+
+        return view('weather_station.index', compact(
+            'groups', 'ungrouped', 'mainStationId', 'mainZone',
+            'moon', 'sun', 'ozone', 'aemetAlert', 'gdacsLatestActive', 'nextTide', 'seaState', 'seaStateUpdatedAt',
+        ));
+    }
+
+    /**
+     * Orto y ocaso de hoy en Chipiona (predicción horaria de AEMET,
+     * `orto`/`ocaso`, repetidos en cada hora del mismo día). Si todavía no
+     * hay fila de hoy —el sondeo corre cada 4 h y puede no haber llegado
+     * aún—, cae a la fila más reciente disponible.
+     *
+     * @return array{sunrise: ?Carbon, sunset: ?Carbon}
+     */
+    private function todaySunTimes(): array
+    {
+        $today = Carbon::today();
+
+        $row = AEMETPrediction::query()->where('day_start_at', $today)->first()
+            ?? AEMETPrediction::query()->latest('day_start_at')->first();
+
+        return [
+            'sunrise' => $row?->sunrise ? Carbon::parse($row->sunrise) : null,
+            'sunset' => $row?->sunset ? Carbon::parse($row->sunset) : null,
+        ];
+    }
+
+    /**
+     * Última predicción de costa guardada para la subzona de Chipiona, o
+     * `null` si todavía no hay ninguna.
+     */
+    private function latestChipionaCoast(): ?AEMETCoast
+    {
+        return AEMETCoast::query()
+            ->where('subzone_id', config('aemet.chipiona_coast_subzone_id'))
+            ->latest('id')
+            ->first();
+    }
+
+    /**
+     * El aviso AEMET vigente de mayor gravedad para la provincia de Cádiz, o
+     * `null` si no hay ninguno. Empatando en gravedad, gana el más reciente.
+     */
+    private function highestCurrentAemetAlert(): ?AEMETAdverseEvents
+    {
+        return AEMETAdverseEvents::query()
+            ->current()
+            ->inZone(self::CADIZ_GEOCODE)
+            ->get()
+            ->sort(function (AEMETAdverseEvents $a, AEMETAdverseEvents $b) {
+                $severityDiff = (AEMETAdverseEvents::SEVERITY[$b->severity] ?? -1)
+                    <=> (AEMETAdverseEvents::SEVERITY[$a->severity] ?? -1);
+
+                return $severityDiff !== 0
+                    ? $severityDiff
+                    : ($b->effective_at?->timestamp ?? 0) <=> ($a->effective_at?->timestamp ?? 0);
+            })
+            ->first();
     }
 
     /**

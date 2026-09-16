@@ -265,11 +265,46 @@ Estructura de cada estación: `id`, `name`, `zone`, `location_type`,
 
 | Ruta | Descripción |
 |------|-------------|
-| `/weatherstation` | Dashboard público con widget Vue 3 del clima y tarjetas de sensores con iconos |
+| `/weatherstation` | Dashboard público con widget Vue 3 del clima, fila de datos ambientales (luna/marea/ozono/aviso AEMET), banner de última alerta GDACS y tarjetas de sensores con iconos |
 | `/weatherstation/sensor/{type}` | Página individual de un sensor con tabla paginada Blade y botón volver |
+| `/weatherstation/gdacs` | Listado paginado (50/página) de todas las alertas GDACS guardadas, ordenadas por `from_date` desc. Ver [gdacs.md](apis/gdacs.md) |
 | `/weatherstation/widget` | **JSON** del widget: la estación principal, ya resuelta y cacheada 60 s |
 | `/weatherstation/widget/zone/{zone}/{locationType?}` | Lo mismo, agregado por zona. Es lo que consume el widget |
 | `/weatherstation/widget/{station}` | Lo mismo, fijado a una estación por id |
+
+### Fila de datos ambientales (2026-09-16)
+
+Debajo del widget del tiempo, `WeatherStationController::index()` calcula y
+pasa a la vista (server-rendered, sin Vue):
+
+| Tarjeta | Fuente | Cómo se obtiene |
+|---|---|---|
+| Luna | Cálculo propio | `App\Support\WeatherStation\MoonPhase::forDate()`, fórmula del mes sinódico (29.53058868 días), sin API externa |
+| Sol (orto/ocaso) | AEMET | `WeatherStationController::todaySunTimes()`, sobre `AEMETPrediction::sunrise/sunset` (predicción horaria, `orto`/`ocaso` de AEMET, repetidos en cada hora del día) de hoy; si aún no ha llegado, cae a la fila más reciente. Se muestra dentro de la tarjeta "Sol y Luna", junto a la fase lunar |
+| Marea | Open-Meteo Marine | Próximo extremo de `open_meteo_marine_tides` (ver más abajo y [open-meteo-marine.md](apis/open-meteo-marine.md)) |
+| Estado de la mar | AEMET | `App\Support\WeatherStation\SeaStateExtractor` sobre el texto libre de `AEMETCoast` (subzona de Chipiona), mostrado dentro de la tarjeta de Marea |
+| Ozono | AEMET | Último registro de `AEMETOzoneTotal` (`meteorology_aemet_ozone_total`) |
+| Aviso AEMET | AEMET | El aviso vigente de mayor gravedad en la provincia de Cádiz (`AEMETAdverseEvents::current()->inZone('6111')`), o "sin avisos" |
+
+Justo encima de "Datos de los sensores" hay un banner con la última alerta
+GDACS vigente (`GdacsEvent::active()->orderByDesc('last_modified_at')`), o un
+enlace a "ver anteriores" si no hay ninguna activa. Enlaza a `/weatherstation/gdacs`.
+
+**Atribución obligatoria** (ver [aemet.md](apis/aemet.md) y
+[open-meteo-marine.md](apis/open-meteo-marine.md)): la fila lleva un pie con
+`config('aemet.attribution.short')` y el enlace a Open-Meteo.com (CC BY 4.0).
+El banner y la página de GDACS llevan `config('gdacs.attribution')`.
+
+### Marea: por qué Open-Meteo Marine y no AEMET
+
+AEMET no publica altura de marea: sus dos productos marítimos
+(`/prediccion/maritima/costera/*` y `/altamar/*`) son boletines de texto
+(viento, estado de la mar, visibilidad), no series numéricas — verificado
+contra la API real el 2026-09-16 (ver `docs/apis/aemet/07-maritima.md`). La
+fuente oficial española sería Puertos del Estado, sin API pública sencilla de
+integrar; se usa Open-Meteo Marine (`sea_level_height_msl` horario, gratis,
+sin registro, CC BY 4.0). Detalle completo en
+[open-meteo-marine.md](apis/open-meteo-marine.md).
 
 Los tres devuelven `{success, data}` y **no piden token**: son datos de una
 página propia, no una integración. Por eso viven aquí y no en la API — se sirve

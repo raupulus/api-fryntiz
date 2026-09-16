@@ -315,18 +315,31 @@ AEMET_API_KEY_EXPIRES_AT="2026-11-30"   # se apunta al renovar la clave
 AEMET_BASE_URL="https://opendata.aemet.es/opendata/api"
 AEMET_DEFAULT_MUNICIPIO="11015"          # Chipiona
 AEMET_DEFAULT_PLAYA="1101501"
-AEMET_DEFAULT_COSTA="11"
+AEMET_DEFAULT_COSTA="42"                 # Andalucía Occidental y Ceuta
 AEMET_DEFAULT_AREA="61"                  # Andalucía
 AEMET_AVISOS_AREA="61"
+AEMET_CHIPIONA_COAST_SUBZONE_ID="8011111" # "Del Guadalquivir al Cabo Roche"
 ```
 
 `config/aemet.php` lleva el porqué de cada número al lado del número. Los
 valores de cuota, TTL y frescura **no son estimaciones**: salen de las medidas de
 `docs/apis/aemet/LIMITACIONES.md`. Antes de cambiar uno, léelo.
 
-⚠️ `default_playa`, `default_costa` y `default_area` siguen **sin verificar con
-una petición real**. Que un endpoint funcione con un valor no dice nada de los
-demás.
+⚠️ `default_playa` y `default_area` siguen **sin verificar con una petición
+real**. Que un endpoint funcione con un valor no dice nada de los demás.
+
+✅ `default_coast` **sí está verificado** (2026-09-16, petición real a
+`/prediccion/maritima/costera/costa/42`): el valor anterior, `11`, no es un
+código de costa válido — son 8 códigos del `40` al `47` (ver
+`docs/apis/aemet/07-maritima.md`), y `11` es el código de provincia de Cádiz
+colado por reusar el mismo nombre de parámetro. Con `11` la tabla
+`meteorology_aemet_prediction_coasts` llevaba desde siempre vacía o con
+basura, sin que nada lo señalara: un 200 con datos de otra zona (o ninguno) no
+se distingue de "hoy no hay predicción" en el log. `42` es la costa de
+Andalucía Occidental y Ceuta; su subzona `8011111` ("Del Guadalquivir al Cabo
+Roche") es la que cubre Chipiona, y es de donde
+`App\Support\WeatherStation\SeaStateExtractor` saca el estado de la mar que se
+muestra en `/weatherstation` — ver [`weather-station.md`](../weather-station.md).
 
 ---
 
@@ -354,7 +367,7 @@ tail -f storage/logs/laravel-$(date +%Y-%m-%d).log | grep -i aemet
 - Los comandos siguen llamando a `\AEMETHelper::*` para **parsear**. Las
   peticiones ya salen todas por `AEMETService`; falta mover el parseo de cada
   producto a su sitio, como se ha hecho con los avisos CAP.
-- `default_playa`, `default_costa` y `default_area`: verificar con petición real.
+- `default_playa` y `default_area`: verificar con petición real (`default_costa` ya está verificado, ver punto 6).
 - Los avisos no se exponen todavía por la API v2 ni en el frontal. **Cuando se
   expongan, la atribución del punto 2 es obligatoria.**
 

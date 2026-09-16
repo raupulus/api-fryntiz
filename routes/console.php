@@ -178,6 +178,20 @@ Schedule::command('gdacs:sync')
     ->runInBackground()
     ->onFailure($warnOnFailure('gdacs:sync'));
 
+// ── Marea (Open-Meteo Marine) ────────────────────────────────────────────────
+//
+// La marea es astronómicamente predecible: dos veces al día es de sobra para
+// que "próxima pleamar/bajamar" nunca esté desactualizada, y no tiene sentido
+// pedir más — Open-Meteo no rehace su modelo con más frecuencia que eso.
+// Compartiendo franja con `aemet:coast` (mediodía y tarde) pero 15 min detrás,
+// para no juntar las dos peticiones salientes en el mismo minuto.
+Schedule::command('marine:sync')
+    ->twiceDailyAt(12, 20, 25)
+    ->timezone('Europe/Madrid')
+    ->withoutOverlapping()
+    ->runInBackground()
+    ->onFailure($warnOnFailure('marine:sync'));
+
 // ── KeyCounter ───────────────────────────────────────────────────────────────
 //
 // `keycounter:maintenance` no existe. Los comandos reales son estos dos.

@@ -153,6 +153,15 @@ class SitemapGeneratorCommand extends Command
                 ->setLastModificationDate(Carbon::now())
         );
 
+        // Menor prioridad que el índice: es un histórico de alertas, no la
+        // página principal del módulo.
+        $sitemap->add(
+            Url::create(route('weather_station.gdacs.index'))
+                ->setPriority(0.3)
+                ->setChangeFrequency('daily')
+                ->setLastModificationDate(Carbon::now())
+        );
+
         $stationIds = HardwareDevice::weatherStations()->pluck('id');
 
         // Reserva: si aún no hay ninguna estación clasificada, generamos las

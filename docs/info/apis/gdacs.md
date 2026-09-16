@@ -115,6 +115,29 @@ de lo que GDACS dice de verdad, que es lo único que le da valor a la tabla.
 
 ---
 
+## 5bis. Sitio público (2026-09-16)
+
+Hasta esta fecha GDACS sólo se veía en el panel admin. Ahora también en el
+frontal público:
+
+- **Banner en `/weatherstation`**, justo encima de "Datos de los sensores":
+  la última alerta vigente (`GdacsEvent::active()->orderByDesc('last_modified_at')->first()`),
+  coloreada por `alert_level`, o un enlace "no hay alertas GDACS vigentes
+  actualmente, ver anteriores" si no hay ninguna activa. Ambos casos enlazan a
+  la página de listado.
+- **`/weatherstation/gdacs`** (`App\Http\Controllers\Gdacs\GdacsController`):
+  listado paginado (50/página) de **todas** las alertas guardadas —activas o
+  no—, ordenadas por `from_date` desc, en tarjetas horizontales a ancho
+  completo coloreadas por nivel. Fechas en español y hora de Madrid
+  (`config('app.display_timezone')`). En el sitemap con prioridad `0.3`
+  (menor que el índice del módulo, `0.6`): es un histórico, no la página
+  principal.
+
+Lleva la atribución obligatoria (`config('gdacs.attribution')`) tanto en el
+banner como en el listado — ver el punto 2.
+
+---
+
 ## 6. Comandos
 
 | Comando | Qué hace | Cadencia |

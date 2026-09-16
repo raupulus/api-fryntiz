@@ -38,6 +38,39 @@
         </div>
     </section>
 
+    {{--
+        Datos de fuentes externas (AEMET / Open-Meteo): luna, marea, ozono y
+        aviso AEMET vigente en Cádiz. Agrupados sobre un bloque de color propio
+        (tertiary-fixed) a propósito, para que se note a simple vista que esto
+        NO son datos de las estaciones propias — esas van más abajo, en
+        "Datos de los sensores", sobre el fondo neutro habitual.
+    --}}
+    <section class="pb-12 bg-surface-container-low">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="rounded-2xl bg-tertiary-fixed p-6">
+                <div class="flex items-center justify-between flex-wrap gap-2 mb-5">
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-on-tertiary-fixed">
+                        Datos externos — no son de mis estaciones
+                    </h3>
+                    <p class="text-xs text-on-tertiary-fixed/80">
+                        {{ config('aemet.attribution.short') }} ·
+                        <a href="https://open-meteo.com/" target="_blank" rel="noopener" class="underline underline-offset-2">Weather data by Open-Meteo.com</a>
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    @include('weather_station.partials.moon-card', ['moon' => $moon, 'sun' => $sun])
+                    @include('weather_station.partials.tide-card', ['nextTide' => $nextTide, 'seaState' => $seaState, 'seaStateUpdatedAt' => $seaStateUpdatedAt])
+                    @include('weather_station.partials.ozone-card', ['ozone' => $ozone])
+                </div>
+
+                <div class="mt-6">
+                    @include('weather_station.partials.aemet-alert-card', ['aemetAlert' => $aemetAlert])
+                </div>
+            </div>
+        </div>
+    </section>
+
     {{-- Descripción --}}
     <section class="py-12 bg-surface">
         <div class="max-w-5xl mx-auto px-6">
@@ -50,6 +83,8 @@
             </p>
         </div>
     </section>
+
+    @include('weather_station.partials.gdacs-banner', ['gdacsLatestActive' => $gdacsLatestActive])
 
     {{-- Secciones de datos, agrupadas por ubicación (interior/exterior) y zona --}}
     <section class="py-12 bg-surface-container-low">
