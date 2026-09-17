@@ -22,6 +22,5 @@ Route::group(['prefix' => '/energy'], function () {
 });
 
 // # Muestra la ficha técnica detallada de un dispositivo hardware público
-Route::get('/{device}', [HardwareDeviceController::class, 'show'])
-    ->whereNumber('device')
+Route::get('/{device:slug}', [HardwareDeviceController::class, 'show'])
     ->name('hardware.show');

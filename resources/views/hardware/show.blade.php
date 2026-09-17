@@ -10,7 +10,7 @@
 @if($device->imageUrl)
     @section('rs-image', $device->imageUrl)
 @endif
-@section('rs-url', route('hardware.show', $device->id))
+@section('rs-url', route('hardware.show', $device->slug))
 
 @section('content')
     {{-- Hero --}}

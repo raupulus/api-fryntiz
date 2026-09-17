@@ -20,7 +20,7 @@
 - `GET  /smartplant`: Listado de plantas inteligentes monitorizadas.
 - `GET  /smartplant/{smartplant}`: Detalle de sensores de suelo, luz y riego de una planta.
 - `GET  /hardware`: Catálogo público de dispositivos hardware y telemetría de salud (`hardware.index`).
-- `GET  /hardware/{device}`: Ficha técnica y telemetría en tiempo real de un dispositivo público (`hardware.show`).
+- `GET  /hardware/{device:slug}`: Ficha técnica y telemetría en tiempo real de un dispositivo público por slug (`hardware.show`).
 - `GET  /hardware/energy`: Monitorización en tiempo real de balance fotovoltaico y consumos (`hardware.energy.index`).
 - `GET  /keycounter`: Estadísticas agregadas de pulsaciones y actividad de periféricos.
 - `GET  /airflight`: Mapa y radar visual de tráfico aéreo ADS-B.

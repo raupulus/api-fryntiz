@@ -23,6 +23,7 @@ class HardwareDeviceFactory extends Factory
     {
         return [
             'name' => fake()->word(),
+            'slug' => fake()->unique()->slug(),
             'is_public' => false,
         ];
     }

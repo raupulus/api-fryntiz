@@ -6,11 +6,14 @@ namespace Tests\Feature\Hardware;
 
 use App\Enums\UserRoleEnum;
 use App\Filament\Admin\Resources\Hardware\HardwareDevices\HardwareDeviceResource;
+use App\Filament\Admin\Resources\Hardware\HardwareDevices\Pages\CreateHardwareDevice;
+use App\Filament\Admin\Resources\Hardware\HardwareDevices\Pages\EditHardwareDevice;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\User;
 use Database\Seeders\RolesTableSeeder;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -99,5 +102,81 @@ class HardwareDevicePublicTest extends TestCase
 
         $this->get(HardwareDeviceResource::getUrl('edit', ['record' => $device], panel: 'admin'))
             ->assertSuccessful();
+    }
+
+    #[Test]
+    public function filament_form_requires_slug(): void
+    {
+        $admin = User::factory()->create([
+            'role_id' => UserRoleEnum::Admin->value,
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($admin);
+        Filament::setServingStatus(true);
+        Filament::setCurrentPanel(Filament::getPanel('admin'));
+
+        Livewire::test(CreateHardwareDevice::class)
+            ->fillForm([
+                'name' => 'Device Without Slug',
+                'slug' => '',
+            ])
+            ->call('create')
+            ->assertHasFormErrors(['slug' => 'required']);
+    }
+
+    #[Test]
+    public function filament_form_rejects_duplicate_slug_on_create(): void
+    {
+        $admin = User::factory()->create([
+            'role_id' => UserRoleEnum::Admin->value,
+            'is_active' => true,
+        ]);
+
+        HardwareDevice::create([
+            'name' => 'Existing Device',
+            'slug' => 'existing-slug',
+        ]);
+
+        $this->actingAs($admin);
+        Filament::setServingStatus(true);
+        Filament::setCurrentPanel(Filament::getPanel('admin'));
+
+        Livewire::test(CreateHardwareDevice::class)
+            ->fillForm([
+                'name' => 'New Duplicate Device',
+                'slug' => 'existing-slug',
+            ])
+            ->call('create')
+            ->assertHasFormErrors(['slug' => 'unique']);
+    }
+
+    #[Test]
+    public function filament_form_allows_own_slug_on_edit(): void
+    {
+        $admin = User::factory()->create([
+            'role_id' => UserRoleEnum::Admin->value,
+            'is_active' => true,
+        ]);
+
+        $device = HardwareDevice::create([
+            'name' => 'My Device',
+            'slug' => 'my-device-slug',
+            'user_id' => $admin->id,
+        ]);
+
+        $this->actingAs($admin);
+        Filament::setServingStatus(true);
+        Filament::setCurrentPanel(Filament::getPanel('admin'));
+
+        Livewire::test(EditHardwareDevice::class, ['record' => $device->getRouteKey()])
+            ->fillForm([
+                'name' => 'My Device Updated',
+                'slug' => 'my-device-slug',
+            ])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertSame('My Device Updated', $device->fresh()->name);
     }
 }

@@ -25,6 +25,7 @@ readonly class PublicHardwareDeviceData
     public function __construct(
         public int $id,
         public string $name,
+        public string $slug,
         public ?string $nameFriendly,
         public string $displayName,
         public ?string $brand,
@@ -87,6 +88,7 @@ readonly class PublicHardwareDeviceData
         return new self(
             id: (int) $device->id,
             name: (string) $device->name,
+            slug: (string) $device->slug,
             nameFriendly: $device->name_friendly,
             displayName: $device->display_name,
             brand: $device->brand,

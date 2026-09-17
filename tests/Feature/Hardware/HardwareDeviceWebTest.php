@@ -192,4 +192,44 @@ class HardwareDeviceWebTest extends TestCase
         $this->assertStringContainsString(route('hardware.show', $publicDevice), $content);
         $this->assertStringNotContainsString(route('hardware.show', $privateDevice), $content);
     }
+
+    #[Test]
+    public function show_resolves_device_by_slug(): void
+    {
+        $device = HardwareDevice::create([
+            'name' => 'Custom Slug Device',
+            'slug' => 'custom-slug-device',
+            'is_public' => true,
+        ]);
+
+        $response = $this->get('/hardware/custom-slug-device');
+
+        $response->assertSuccessful();
+        $response->assertSee('Custom Slug Device');
+    }
+
+    #[Test]
+    public function show_returns_404_for_invalid_slug(): void
+    {
+        $response = $this->get('/hardware/non-existent-device-slug');
+
+        $response->assertNotFound();
+    }
+
+    #[Test]
+    public function creating_device_without_slug_auto_generates_unique_slug(): void
+    {
+        $device1 = HardwareDevice::create([
+            'name' => 'Raspberry Pi 5',
+            'is_public' => true,
+        ]);
+
+        $device2 = HardwareDevice::create([
+            'name' => 'Raspberry Pi 5',
+            'is_public' => true,
+        ]);
+
+        $this->assertSame('raspberry-pi-5', $device1->slug);
+        $this->assertSame('raspberry-pi-5-2', $device2->slug);
+    }
 }

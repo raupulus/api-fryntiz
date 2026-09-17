@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 use function array_filter;
 
@@ -34,6 +35,7 @@ use function array_filter;
  * @property int|null $hardware_type_id Relación con el tipo de hardware asociado
  * @property int|null $referred_thing_id Relación con el dispositivo afiliado
  * @property string|null $name Nombre real del dispositivo, EJ: Raspberry Pi 4b+
+ * @property string $slug Slug único del dispositivo para URLs públicas
  * @property string|null $name_friendly Nombre amistoso para reconocerlo EJ: Raspberry en azotea
  * @property HardwareLocationTypeEnum|null $location_type Ubicación física del hardware: interior/exterior (por defecto interior)
  * @property string|null $zone Zona concreta del hardware, EJ: Azotea, Salón, Jardín
@@ -133,7 +135,7 @@ class HardwareDevice extends BaseModel
      * descartaba en silencio y la imagen nunca se guardaba.
      */
     protected $fillable = ['user_id', 'hardware_type_id', 'referred_thing_id', 'image_id',
-        'name', 'name_friendly', 'location_type', 'zone', 'ref', 'model', 'brand',
+        'name', 'slug', 'name_friendly', 'location_type', 'zone', 'ref', 'model', 'brand',
         'software_version', 'hardware_version', 'serial_number', 'battery_type',
         'battery_nominal_capacity', 'battery_nominal_voltage', 'url_company', 'description', 'buy_at',
         'last_seen_at', 'notify_on_silence', 'is_public', 'ip_local', 'ip_public', 'temp', 'voltage',
@@ -163,6 +165,28 @@ class HardwareDevice extends BaseModel
     protected $attributes = [
         'is_public' => false,
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (HardwareDevice $device): void {
+            if (blank($device->slug)) {
+                $base = $device->name ?: 'device';
+                $slug = Str::slug($base);
+                if ($slug === '') {
+                    $slug = 'device';
+                }
+
+                $originalSlug = $slug;
+                $counter = 2;
+                while (static::where('slug', $slug)->exists()) {
+                    $slug = "{$originalSlug}-{$counter}";
+                    $counter++;
+                }
+
+                $device->slug = $slug;
+            }
+        });
+    }
 
     /**
      * Create a new factory instance for the model.

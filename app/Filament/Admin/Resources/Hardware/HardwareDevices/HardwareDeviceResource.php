@@ -25,6 +25,8 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Flex;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
@@ -32,6 +34,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 
 class HardwareDeviceResource extends Resource
 {
@@ -199,7 +202,23 @@ class HardwareDeviceResource extends Resource
                         Select::make('hardware_type_id')
                             ->relationship('type', 'name')
                             ->label('Tipo de hardware'),
-                        TextInput::make('name')->label('Nombre'),
+                        TextInput::make('name')
+                            ->label('Nombre')
+                            ->required()
+                            ->maxLength(255)
+                            ->live(onBlur: true)
+                            ->afterStateUpdated(function (?string $state, Set $set, Get $get) {
+                                if (empty($get('slug')) && filled($state)) {
+                                    $set('slug', Str::slug($state));
+                                }
+                            }),
+                        TextInput::make('slug')
+                            ->label('Slug')
+                            ->required()
+                            ->maxLength(255)
+                            ->unique(ignoreRecord: true)
+                            ->rule('alpha_dash')
+                            ->helperText('Identificador único amigable para URLs públicas (ej. raspberry-pi-5).'),
                         TextInput::make('name_friendly')->label('Nombre amigable'),
                         TextInput::make('ref')->label('Referencia'),
                         TextInput::make('brand')->label('Marca'),
@@ -275,6 +294,11 @@ class HardwareDeviceResource extends Resource
                 TextColumn::make('name')
                     ->label('Nombre')
                     ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('slug')
+                    ->label('Slug')
+                    ->searchable()
+                    ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('name_friendly')
                     ->label('Nombre amigable')

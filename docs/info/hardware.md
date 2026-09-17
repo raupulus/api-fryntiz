@@ -63,6 +63,7 @@ consumos, con sus resúmenes diarios e históricos— está en
 | `hardware_type_id` | int | FK → `hardware_types.id` — tipo de dispositivo |
 | `referred_thing_id` | int | FK opcional — dispositivo referenciado |
 | `name` | string | Nombre técnico |
+| `slug` | string | Identificador amigable único para URLs públicas (ej. `raspberry-pi-5`) |
 | `name_friendly` | string | Nombre amigable |
 | `ref` | string | Referencia |
 | `model` | string | Modelo del hardware |
@@ -360,16 +361,25 @@ de hardware y su estado en tiempo real, bajo una estricta política de **Privacy
 | Ruta | Nombre | Controlador | Descripción |
 |---|---|---|---|
 | `GET /hardware` | `hardware.index` | `HardwareDeviceController@index` | Catálogo público con tarjetas de equipos, telemetría y filtros por categoría/estado |
-| `GET /hardware/{device}` | `hardware.show` | `HardwareDeviceController@show` | Ficha técnica y telemetría en tiempo real de un dispositivo público (404 si `is_public = false`) |
+| `GET /hardware/{device:slug}` | `hardware.show` | `HardwareDeviceController@show` | Ficha técnica y telemetría en tiempo real de un dispositivo público por slug amigable (404 si `is_public = false`) |
 
-### Privacidad por diseño (Privacy by Design)
+### Privacidad por diseño (Privacy by Design) y URLs limpias
+- **URLs amigables por `slug` sin exponer IDs**: la ruta de detalle público utiliza `{device:slug}`.
+  En ningún caso se expone la clave primaria o identificador numérico de base de datos públicamente.
+- **Gestión de `slug` en Filament (`HardwareDeviceResource`)**:
+  - El campo `name` cuenta con `live(onBlur: true)` y autocompleta el `slug` con `Str::slug($state)`
+    la primera vez que se introduce o modifica el nombre si el slug está vacío.
+  - El campo `slug` es obligatorio (`required`), cuenta con regla `unique(ignoreRecord: true)`
+    y validación `alpha_dash`.
+  - El panel impide expresamente guardar dispositivos sin slug o con slugs repetidos (permitiendo
+    la actualización del propio dispositivo sin conflictos de unicidad).
 - **Cero exposición de datos de red e identificación privada**: las vistas reciben los datos
   mediante el DTO inmutable `PublicHardwareDeviceData` (`app/DTO/Hardware/PublicHardwareDeviceData.php`).
   Jamás se envían a la vista ni al frontend las columnas `ip_local`, `ip_public`, `serial_number`,
   `ref`, `buy_at`, `user_id`, `deleted_at` ni el payload del sistema `extra`.
 - **Inclusión selectiva**: solo los dispositivos con `is_public = true` se muestran en el índice
   (`HardwareDevice::public()`) o se pueden abrir en detalle (404 estricto para los privados).
-- **Sitemap**: se indexa `/hardware` con prioridad 0.6 y cada ficha pública `/hardware/{device}`
+- **Sitemap**: se indexa `/hardware` con prioridad 0.6 y cada ficha pública `/hardware/{device:slug}`
   con prioridad 0.5 mediante `SitemapGeneratorCommand`.
 
 ## Impresoras

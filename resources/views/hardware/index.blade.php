@@ -140,7 +140,7 @@
                                     <div>
                                         <div class="flex items-start justify-between gap-2 mb-1">
                                             <h3 class="text-xl font-bold text-on-surface hover:text-primary transition-colors">
-                                                <a href="{{ route('hardware.show', $device->id) }}">
+                                                <a href="{{ route('hardware.show', $device->slug) }}">
                                                     {{ $device->displayName }}
                                                 </a>
                                             </h3>
@@ -247,7 +247,7 @@
                                             @endif
                                         </div>
 
-                                        <a href="{{ route('hardware.show', $device->id) }}"
+                                        <a href="{{ route('hardware.show', $device->slug) }}"
                                            class="inline-flex items-center gap-1 text-xs font-bold text-primary-container hover:underline underline-offset-2">
                                             Ficha técnica
                                             <span class="material-symbols-outlined text-sm">arrow_forward</span>

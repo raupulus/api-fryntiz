@@ -112,7 +112,7 @@ class SitemapGeneratorCommand extends Command
     {
         HardwareDevice::public()->get()->each(function (HardwareDevice $device) use ($sitemap) {
             $sitemap->add(
-                Url::create(route('hardware.show', $device))
+                Url::create(route('hardware.show', $device->slug))
                     ->setPriority(0.5)
                     ->setChangeFrequency('weekly')
                     ->setLastModificationDate($device->updated_at ?? Carbon::now())
