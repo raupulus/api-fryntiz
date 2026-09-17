@@ -241,6 +241,14 @@ vista nueva que pinte una posición, sigue el mismo patrón que ya usan
    ya acota por tiempo, alcance plausible del receptor y `lat`/`lon` no
    nulos — ver más abajo.
 
+### Consolidación de telemetría en el mapa en vivo (`getActiveAircrafts`)
+
+Mode S transmite identificación (`flight`), velocidad (`speed`, `track`), altitud y squawk en ráfagas de radio separadas. Cuando un avión recibe una actualización de solo posición GPS, esa última fila en `airflight_routes` tiene `flight`, `squawk`, `speed` o `track` a `null`.
+
+Para evitar que la tabla y ficha del mapa queden vacías o parpadeen:
+1. **Backend**: `AirFlightService::getActiveAircrafts()` agrupa por `airplane_id` en la ventana de actividad (por defecto 10 minutos) e inyecta mediante agregación PostgreSQL (`array_agg(...) FILTER (WHERE ... IS NOT NULL)[1]`) los últimos valores conocidos no nulos en `$aircraft->latestRoute` con operador `??=`.
+2. **Frontend**: En `public/resources/airflight/planeObject.js`, el método `updateData()` protege las asignaciones con `data.campo !== null`, evitando que un valor nulo sobrescriba en memoria los datos de la aeronave previamente conocidos.
+
 ### Decisión pendiente: limpieza de filas sin posición
 
 Si `airflight_routes` crece demasiado por las filas sin `lat`/`lon`, se

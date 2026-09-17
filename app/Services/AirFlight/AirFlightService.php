@@ -234,14 +234,64 @@ class AirFlightService
      */
     public function getActiveAircrafts(int $minutes = 10): Collection
     {
-        return AirFlightAirPlane::with(['latestRoute', 'latestPosition', 'trail'])
-            ->whereHas('routes', function ($query) use ($minutes) {
-                $query->where('seen_at', '>=', now()->subMinutes($minutes))
+        $since = now()->subMinutes($minutes);
+
+        $aircrafts = AirFlightAirPlane::with(['latestRoute', 'latestPosition', 'trail'])
+            ->whereHas('routes', function ($query) use ($since) {
+                $query->where('seen_at', '>=', $since)
                     ->whereNotNull('lat')
                     ->whereNotNull('lon');
             })
             ->orderByDesc('seen_last_at')
             ->get();
+
+        if ($aircrafts->isEmpty()) {
+            return $aircrafts;
+        }
+
+        /** @var \Illuminate\Support\Collection<int, object{airplane_id: int|string, flight: ?string, squawk: ?string, altitude: float|int|string|null, speed: float|int|string|null, track: int|string|null, vert_rate: float|int|string|null, emergency: ?string}> $recentValues */
+        $recentValues = DB::table('airflight_routes as r')
+            ->whereIn('r.airplane_id', $aircrafts->pluck('id'))
+            ->where('r.seen_at', '>=', $since)
+            ->groupBy('r.airplane_id')
+            ->select([
+                'r.airplane_id',
+                DB::raw('(array_agg(r.flight ORDER BY r.seen_at DESC) FILTER (WHERE r.flight IS NOT NULL))[1] as flight'),
+                DB::raw('(array_agg(r.squawk ORDER BY r.seen_at DESC) FILTER (WHERE r.squawk IS NOT NULL))[1] as squawk'),
+                DB::raw('(array_agg(r.altitude ORDER BY r.seen_at DESC) FILTER (WHERE r.altitude IS NOT NULL))[1] as altitude'),
+                DB::raw('(array_agg(r.speed ORDER BY r.seen_at DESC) FILTER (WHERE r.speed IS NOT NULL))[1] as speed'),
+                DB::raw('(array_agg(r.track ORDER BY r.seen_at DESC) FILTER (WHERE r.track IS NOT NULL))[1] as track'),
+                DB::raw('(array_agg(r.vert_rate ORDER BY r.seen_at DESC) FILTER (WHERE r.vert_rate IS NOT NULL))[1] as vert_rate'),
+                DB::raw('(array_agg(r.emergency ORDER BY r.seen_at DESC) FILTER (WHERE r.emergency IS NOT NULL))[1] as emergency'),
+            ])
+            ->get()
+            ->keyBy(fn ($item) => (int) $item->airplane_id);
+
+        foreach ($aircrafts as $aircraft) {
+            $recent = $recentValues->get($aircraft->id);
+            if ($recent === null) {
+                continue;
+            }
+
+            $route = $aircraft->latestRoute;
+            if ($route === null) {
+                $route = new AirFlightRoute([
+                    'airplane_id' => $aircraft->id,
+                    'seen_at' => $aircraft->seen_last_at,
+                ]);
+                $aircraft->setRelation('latestRoute', $route);
+            }
+
+            $route->flight ??= $recent->flight;
+            $route->squawk ??= $recent->squawk;
+            $route->altitude ??= $recent->altitude !== null ? (float) $recent->altitude : null;
+            $route->speed ??= $recent->speed !== null ? (float) $recent->speed : null;
+            $route->track ??= $recent->track !== null ? (int) $recent->track : null;
+            $route->vert_rate ??= $recent->vert_rate !== null ? (float) $recent->vert_rate : null;
+            $route->emergency ??= $recent->emergency;
+        }
+
+        return $aircrafts;
     }
 
     /**

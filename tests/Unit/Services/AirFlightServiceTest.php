@@ -131,6 +131,57 @@ class AirFlightServiceTest extends TestCase
     }
 
     /**
+     * Un mensaje posterior que solo contiene coordenadas GPS no debe borrar
+     * los datos de vuelo y telemetría conocidos en mensajes anteriores
+     * recientes (flight, squawk, speed, altitude, track).
+     */
+    #[Test]
+    public function a_later_message_with_only_position_retains_recent_flight_telemetry(): void
+    {
+        $airplane = AirFlightAirPlane::create(['icao' => 'FULLDATA', 'seen_last_at' => Carbon::now()]);
+
+        // Mensaje 1 (hace 2 minutos): trae vuelo, squawk, altitud, velocidad y rumbo
+        AirFlightRoute::create([
+            'airplane_id' => $airplane->id,
+            'flight' => 'IBE123',
+            'squawk' => '7000',
+            'altitude' => 3500.0,
+            'speed' => 220.0,
+            'track' => 180,
+            'vert_rate' => -2.5,
+            'emergency' => null,
+            'lat' => 36.70,
+            'lon' => -6.40,
+            'seen_at' => Carbon::now()->subMinutes(2),
+        ]);
+
+        // Mensaje 2 (hace 10 segundos): actualización puramente GPS (sin vuelo, squawk, speed, track)
+        AirFlightRoute::create([
+            'airplane_id' => $airplane->id,
+            'lat' => 36.72,
+            'lon' => -6.42,
+            'seen_at' => Carbon::now()->subSeconds(10),
+        ]);
+
+        $activeAircrafts = $this->service->getActiveAircrafts(10);
+        $this->assertCount(1, $activeAircrafts);
+
+        $json = AirFlightResource::collection($activeAircrafts)->resolve();
+
+        // Las coordenadas son las más recientes del mensaje 2
+        $this->assertSame(36.72, $json[0]['lat']);
+        $this->assertSame(-6.42, $json[0]['lon']);
+
+        // Los datos de telemetría y vuelo se retienen del mensaje 1
+        $this->assertSame('IBE123', $json[0]['flight']);
+        $this->assertSame('7000', $json[0]['squawk']);
+        $this->assertSame(3500.0, (float) $json[0]['altitude']);
+        $this->assertSame(220.0, (float) $json[0]['speed']);
+        $this->assertSame(180, $json[0]['track']);
+        $this->assertSame(-2.5, (float) $json[0]['vert_rate']);
+    }
+
+    /**
      * El SDR sube `messages` cada vez que decodifica un mensaje Mode S
      * nuevo. Si dos sondeos del mismo avión traen el mismo contador dentro
      * de la última hora, es la misma detección re-decodificada, no una

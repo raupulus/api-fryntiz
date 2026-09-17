@@ -375,13 +375,13 @@ PlaneObject.prototype.updateData = function(receiver_timestamp, data) {
         this.rssi       = data.rssi;
 	this.last_message_time = receiver_timestamp - data.seen;
         
-        if (typeof data.altitude !== "undefined")
+        if (data.altitude !== null && typeof data.altitude !== "undefined")
 		this.altitude	= data.altitude;
-        if (typeof data.vert_rate !== "undefined")
+        if (data.vert_rate !== null && typeof data.vert_rate !== "undefined")
 		this.vert_rate	= data.vert_rate;
-        if (typeof data.speed !== "undefined")
+        if (data.speed !== null && typeof data.speed !== "undefined")
 		this.speed	= data.speed;
-        if (typeof data.track !== "undefined")
+        if (data.track !== null && typeof data.track !== "undefined")
                 this.track	= data.track;
         // El JSON de esta API manda siempre las claves lat/lon, con `null`
         // cuando el avión no tiene posición conocida (el dump1090 original
@@ -408,11 +408,11 @@ PlaneObject.prototype.updateData = function(receiver_timestamp, data) {
                         }
                 }
         }
-        if (typeof data.flight !== "undefined")
+        if (data.flight !== null && typeof data.flight !== "undefined")
 		this.flight	= data.flight;
-        if (typeof data.squawk !== "undefined")
+        if (data.squawk !== null && typeof data.squawk !== "undefined")
 		this.squawk	= data.squawk;
-        if (typeof data.category !== "undefined")
+        if (data.category !== null && typeof data.category !== "undefined")
                 this.category	= data.category;
 };
 

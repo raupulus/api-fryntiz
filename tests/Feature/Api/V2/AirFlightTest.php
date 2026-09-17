@@ -231,6 +231,54 @@ class AirFlightTest extends ApiTestCase
     }
 
     /**
+     * El endpoint de aviones activos del mapa (/airflight/aircrafts) no debe
+     * vaciar flight, squawk, velocidad ni rumbo cuando el mensaje más reciente
+     * sea una actualización puramente GPS.
+     */
+    #[Test]
+    public function the_aircrafts_endpoint_merges_fields_spread_across_several_routes(): void
+    {
+        $airplane = AirFlightAirPlane::create([
+            'icao' => 'MERGEDMAP',
+            'seen_last_at' => Carbon::now(),
+        ]);
+
+        AirFlightRoute::create([
+            'airplane_id' => $airplane->id,
+            'flight' => 'IBE456',
+            'squawk' => '3000',
+            'altitude' => 8500,
+            'speed' => 210,
+            'track' => 270,
+            'lat' => 36.70,
+            'lon' => -6.40,
+            'seen_at' => Carbon::now()->subMinutes(3),
+        ]);
+
+        AirFlightRoute::create([
+            'airplane_id' => $airplane->id,
+            'lat' => 36.73,
+            'lon' => -6.43,
+            'seen_at' => Carbon::now()->subSeconds(15),
+        ]);
+
+        $response = $this->getJson(route('airflight.aircrafts'), $this->sameOriginHeaders())
+            ->assertOk()
+            ->assertJsonPath('success', true);
+
+        $row = collect($response->json('data'))->firstWhere('icao', 'MERGEDMAP');
+
+        $this->assertNotNull($row);
+        $this->assertSame(36.73, (float) $row['lat']);
+        $this->assertSame(-6.43, (float) $row['lon']);
+        $this->assertSame('IBE456', $row['flight']);
+        $this->assertSame('3000', $row['squawk']);
+        $this->assertSame(8500.0, (float) $row['altitude']);
+        $this->assertSame(210.0, (float) $row['speed']);
+        $this->assertSame(270, (int) $row['track']);
+    }
+
+    /**
      * `seen_last_at` tiene que llegar al frontend sin ambigüedad de zona
      * horaria: `getDetectedQuery()` no es Eloquent, así que el valor sale de
      * Postgres tal cual ("2026-09-08 09:29:34", sin zona). El navegador lo
