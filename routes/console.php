@@ -168,12 +168,11 @@ Schedule::command('aemet:check-api-key')
 // ── GDACS ────────────────────────────────────────────────────────────────────
 //
 // Alertas globales de desastres, acotadas al radio de interés configurado
-// (config('gdacs.reference')). 10 minutos es generoso: GDACS no documenta
-// ningún límite de tasa, y con el filtro por país la respuesta son unas
-// decenas de sucesos, nunca los cientos que sí obligan a paginar sin filtro
-// geográfico — ver docs/future/archived/gdacs-api.md.
+// (config('gdacs.reference')). Cada 10 minutos desfasado a los minutos :07, :17, :27...
+// para esquivar el minuto :00 donde arrancan las tareas horarias y la rotación
+// de mantenimiento del servidor externo — ver docs/future/archived/gdacs-api.md.
 Schedule::command('gdacs:sync')
-    ->everyTenMinutes()
+    ->cron('7,17,27,37,47,57 * * * *')
     ->withoutOverlapping()
     ->runInBackground()
     ->onFailure($warnOnFailure('gdacs:sync'));

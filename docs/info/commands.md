@@ -163,7 +163,7 @@ Ver [apis/aemet.md](apis/aemet.md).
 
 | Comando | Cuándo | Descripción |
 |---------|--------|-------------|
-| `gdacs:sync` | Cada 10 min | Sondea GDACS y guarda los sucesos dentro del radio configurado (`config('gdacs.reference')`, 150 km de Chipiona por defecto). |
+| `gdacs:sync` | Cada 10 min (:07, :17...) | Sondea GDACS y guarda los sucesos dentro del radio configurado (`config('gdacs.reference')`, 150 km de Chipiona por defecto). |
 
 Sin API key, sin límite de tasa documentado. El filtro geográfico es del lado
 de GDACS (`country=Spain`) más un cálculo de distancia en cliente, no hay

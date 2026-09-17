@@ -16,7 +16,7 @@ vigilar.
 ## 1. Las piezas
 
 ```
-Schedule::command('gdacs:sync')->everyTenMinutes()
+Schedule::command('gdacs:sync')->cron('7,17,27,37,47,57 * * * *')
         │
         ▼
   GdacsSyncCommand
@@ -85,7 +85,9 @@ el campo existe para cuando se añada.
 
 ## 4. Planificador
 
-`gdacs:sync` corre cada 10 minutos (`routes/console.php`), con
+`gdacs:sync` corre cada 10 minutos (`routes/console.php`), desfasado a los
+minutos `7, 17, 27, 37, 47, 57` para evitar el minuto `:00` de solapamiento
+con tareas horarias y el mantenimiento del servidor externo. Se ejecuta con
 `withoutOverlapping()` y `runInBackground()`. GDACS no documenta ningún límite
 de tasa; con el filtro por país la respuesta son unas decenas de sucesos como
 mucho, nunca los cientos que obligarían a paginar.
@@ -139,7 +141,11 @@ banner como en el listado — ver el punto 2.
 ---
 
 ## 6. Comandos
-
+ 
 | Comando | Qué hace | Cadencia |
 |---|---|---|
-| `gdacs:sync` | Sondea GDACS y guarda los sucesos dentro del radio | Cada 10 min |
+| `gdacs:sync` | Sondea GDACS y guarda los sucesos dentro del radio | Cada 10 min (desfasado :07, :17...) |
+
+---
+
+> Creado: 2026-09-15 · Última revisión: 2026-09-17
