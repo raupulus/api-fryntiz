@@ -294,4 +294,21 @@ class AirFlightServiceTest extends TestCase
         $this->assertSame(3, $top->first()->distinct_days);
         $this->assertSame(1, $top->last()->distinct_days);
     }
+
+    #[Test]
+    public function batch_inserts_records_ordered_by_messages_ascending_for_same_airplane(): void
+    {
+        $this->service->addAircraftBatch([
+            ['icao' => 'BATCH01', 'lat' => 36.75, 'lon' => -6.40, 'messages' => 300],
+            ['icao' => 'BATCH01', 'lat' => 36.71, 'lon' => -6.44, 'messages' => 100],
+            ['icao' => 'BATCH01', 'lat' => 36.73, 'lon' => -6.42, 'messages' => 200],
+        ]);
+
+        $airplane = AirFlightAirPlane::where('icao', 'BATCH01')->firstOrFail();
+        $routes = $airplane->routes()->orderBy('id', 'asc')->get();
+
+        $this->assertCount(3, $routes);
+        $this->assertSame([100, 200, 300], $routes->pluck('messages')->all());
+        $this->assertSame(36.75, (float) $airplane->latestPosition->lat);
+    }
 }

@@ -170,6 +170,24 @@ class AirFlightService
      */
     public function addAircraftBatch(array $records, ?int $userId = null, ?int $hardwareDeviceId = null): array
     {
+        // Ordenamos los registros para que dentro del mismo lote se procesen
+        // en orden cronológico ascendente (menor `messages` primero). dump1090
+        // suele volcar la tabla de más reciente a más antiguo, lo que causaba
+        // que las posiciones más antiguas se insertaran después (mayor `id`).
+        usort($records, function (array $a, array $b): int {
+            $icaoA = (string) ($a['icao'] ?? '');
+            $icaoB = (string) ($b['icao'] ?? '');
+
+            if ($icaoA !== $icaoB) {
+                return strcmp($icaoA, $icaoB);
+            }
+
+            $msgA = (int) ($a['messages'] ?? 0);
+            $msgB = (int) ($b['messages'] ?? 0);
+
+            return $msgA <=> $msgB;
+        });
+
         $stored = [];
 
         foreach ($records as $record) {

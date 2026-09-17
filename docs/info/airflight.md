@@ -427,6 +427,18 @@ posición realmente recibida en esa pasada (se veían líneas saliendo de Áfric
 central hacia Chipiona). El frontend (`planeObject.js::seedTrail`) sólo
 dibuja lo que le llega en `trail`; el filtrado vive en el backend.
 
+**Ordenación cronológica y resolución de empates (prevención de zig-zag):**
+La traza se ordena por `->orderBy('seen_at', 'asc')->orderBy('messages', 'asc')->orderBy('id', 'asc')`.
+El receptor vuelca lotes (`POST /airflight/aircrafts/batch`) donde múltiples
+posiciones comparten exactamente el mismo segundo en `seen_at`. Al ordenar
+únicamente por `seen_at`, PostgreSQL resolvía los empates por orden físico/PK
+(`id ASC`). Como el capturador enviaba el lote de más reciente a más
+antiguo, los mensajes más antiguos se insertaban después (mayor ID),
+provocando que la línea del mapa saltara adelante y atrás en diente de sierra
+(zig-zag). Al desempatear por `messages ASC` e `id ASC` en `trail()` y ordenar el lote
+en orden ascendente por `messages` en `AirFlightService::addAircraftBatch()`, la
+secuencia de puntos en el mapa es estrictamente cronológica y monótona.
+
 ## Campos del modelo AirFlightRoute
 
 > Unidades: ver la tabla definitiva en

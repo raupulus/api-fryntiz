@@ -138,7 +138,9 @@ class AirFlightAirPlane extends BaseModel
             ->where('seen_at', '>=', now()->subHour())
             ->whereBetween('lat', [self::RECEIVER_LAT - self::RECEIVER_RANGE_DEGREES, self::RECEIVER_LAT + self::RECEIVER_RANGE_DEGREES])
             ->whereBetween('lon', [self::RECEIVER_LON - self::RECEIVER_RANGE_DEGREES, self::RECEIVER_LON + self::RECEIVER_RANGE_DEGREES])
-            ->orderBy('seen_at');
+            ->orderBy('seen_at', 'asc')
+            ->orderBy('messages', 'asc')
+            ->orderBy('id', 'asc');
     }
 
     /**

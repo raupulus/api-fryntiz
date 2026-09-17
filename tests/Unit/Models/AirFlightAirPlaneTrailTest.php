@@ -23,7 +23,7 @@ class AirFlightAirPlaneTrailTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function createRoute(AirFlightAirPlane $airplane, float $lat, float $lon, Carbon $seenAt): AirFlightRoute
+    private function createRoute(AirFlightAirPlane $airplane, float $lat, float $lon, Carbon $seenAt, ?int $messages = null): AirFlightRoute
     {
         return AirFlightRoute::create([
             'airplane_id' => $airplane->id,
@@ -31,6 +31,7 @@ class AirFlightAirPlaneTrailTest extends TestCase
             'lat' => $lat,
             'lon' => $lon,
             'seen_at' => $seenAt,
+            'messages' => $messages,
         ]);
     }
 
@@ -75,6 +76,23 @@ class AirFlightAirPlaneTrailTest extends TestCase
 
         $trail = $airplane->trail()->get();
 
+        $this->assertSame([$p1->id, $p2->id, $p3->id], $trail->pluck('id')->all());
+    }
+
+    #[Test]
+    public function orders_trail_points_chronologically_by_messages_when_seen_at_is_identical(): void
+    {
+        $airplane = AirFlightAirPlane::create(['icao' => 'TIE123']);
+        $now = Carbon::now()->subMinutes(2);
+
+        // Se crean en orden inverso (mayor `messages` primero, por tanto menor ID)
+        $p3 = $this->createRoute($airplane, 36.74, -6.40, $now, 300);
+        $p1 = $this->createRoute($airplane, 36.70, -6.45, $now, 100);
+        $p2 = $this->createRoute($airplane, 36.72, -6.42, $now, 200);
+
+        $trail = $airplane->trail()->get();
+
+        // Debe respetar la secuencia física de los mensajes recibidos: p1 -> p2 -> p3
         $this->assertSame([$p1->id, $p2->id, $p3->id], $trail->pluck('id')->all());
     }
 }
