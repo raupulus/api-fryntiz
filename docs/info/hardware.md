@@ -384,6 +384,7 @@ de hardware y su estado en tiempo real, bajo una estricta política de **Privacy
   - **Última señal**: formateada únicamente en tiempo relativo (`hace X horas`, `hace X días`), mostrando estrictamente `recientemente` cuando la última señal fue recibida hace menos de 1 hora.
   - **Enlace oficial**: los enlaces a la web oficial / documentación del fabricante marcan visiblemente `(sitio externo)` y cuentan con `rel="noopener noreferrer"`.
   - **Navegación**: en el Navbar (desktop y móvil) y en el Footer ("Módulos"), el módulo **Hardware** se sitúa inmediatamente detrás de **Energy**. También se incluye en `/about`.
+  - **Ordenación del catálogo**: los equipos conectados (`isOnline = true`) aparecen primero y los desconectados después, manteniendo el orden alfabético secundario por nombre.
   - **Gráfica energética de 7 días**: en `hardware.show`, los dispositivos con monitorización energética activa (`HardwareEnergy`) muestran una gráfica de barras nativa con los últimos 7 días. Si el dispositivo no tiene generador configurado (ej. Raspberry Pi), oculta la generación y muestra únicamente el consumo eléctrico. Soporta dispositivos con múltiples canales de consumo (ej. Raspberry Pi 5 con canales 0 y 1), desglosando métricas y colores por canal.
 - **Sitemap**: se indexa `/hardware` con prioridad 0.6 y cada ficha pública `/hardware/{device:slug}`
   con prioridad 0.5 mediante `SitemapGeneratorCommand`.

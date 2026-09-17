@@ -60,6 +60,32 @@ class HardwareDeviceWebTest extends TestCase
     }
 
     #[Test]
+    public function index_orders_connected_devices_first_and_disconnected_after(): void
+    {
+        // Dispositivo desconectado cuyo nombre empieza por 'A'
+        HardwareDevice::create([
+            'name' => 'A Disconnected Device',
+            'is_public' => true,
+            'last_seen_at' => Carbon::now()->subDays(5),
+        ]);
+
+        // Dispositivo conectado (visto hace 10 min) cuyo nombre empieza por 'Z'
+        HardwareDevice::create([
+            'name' => 'Z Connected Device',
+            'is_public' => true,
+            'last_seen_at' => Carbon::now()->subMinutes(10),
+        ]);
+
+        $response = $this->get(route('hardware.index'));
+
+        $response->assertSuccessful();
+        $response->assertSeeTextInOrder([
+            'Z Connected Device',
+            'A Disconnected Device',
+        ]);
+    }
+
+    #[Test]
     public function index_strictly_enforces_privacy_by_design(): void
     {
         $user = User::factory()->create();

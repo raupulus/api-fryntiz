@@ -43,12 +43,20 @@ class HardwareDeviceController extends Controller
                 'components.availableComponent',
                 'image.fileType',
             ])
-            ->orderBy('name')
             ->get();
 
-        $deviceDtos = $devices->map(
-            static fn (HardwareDevice $device): PublicHardwareDeviceData => PublicHardwareDeviceData::fromModel($device)
-        );
+        $deviceDtos = $devices
+            ->map(static fn (HardwareDevice $device): PublicHardwareDeviceData => PublicHardwareDeviceData::fromModel($device))
+            ->sort(static function (PublicHardwareDeviceData $a, PublicHardwareDeviceData $b): int {
+                // Conectados primero (true > false)
+                if ($a->isOnline !== $b->isOnline) {
+                    return $b->isOnline <=> $a->isOnline;
+                }
+
+                // Desempate alfabético por nombre
+                return strcasecmp($a->displayName, $b->displayName);
+            })
+            ->values();
 
         $types = $deviceDtos
             ->pluck('typeName')
