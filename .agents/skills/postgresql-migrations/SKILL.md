@@ -28,6 +28,10 @@ columnas, en **español**.
 3. **Índices** en columnas de búsqueda/filtro frecuente (slugs, FKs que se
    consultan, fechas de rango, estados).
 4. **Naming**: tablas y columnas en `snake_case`; tablas en plural.
+5. **Clave primaria `id` obligatoria**: **TODA tabla DEBE tener siempre una clave primaria
+   autoincremental `id`** (`$table->id()` o `$table->bigIncrements('id')`). NUNCA crear tablas
+   sin clave primaria `id` ni sustituirla por claves naturales (como fechas, códigos o slugs).
+   Es una regla estricta para la consistencia de Eloquent, Filament y PostgreSQL en todo el proyecto.
 
 ```php
 Schema::create('hardware_devices', function (Blueprint $table) {

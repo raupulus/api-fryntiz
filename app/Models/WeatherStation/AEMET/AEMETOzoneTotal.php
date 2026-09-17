@@ -5,16 +5,15 @@ declare(strict_types=1);
 namespace App\Models\WeatherStation\AEMET;
 
 use App\Models\BaseModels\BaseModel;
+use Database\Factories\AEMETOzoneTotalFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 
 /**
  * @property int $id
- * @property string $station_name Nombre de la estación
- * @property string $station_code Indicativo climatológico de la estación
  * @property int $ozone_value Dato medio diario del contenido total de ozono, en Unidades Dobson
- * @property string $measured_on Fecha del dato (Y-m-d)
+ * @property Carbon $measured_on Fecha del dato (Y-m-d)
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  *
@@ -31,8 +30,6 @@ class AEMETOzoneTotal extends BaseModel
     protected $table = 'meteorology_aemet_ozone_total';
 
     protected $fillable = [
-        'station_name',
-        'station_code',
         'ozone_value',
         'measured_on',
     ];
@@ -41,11 +38,17 @@ class AEMETOzoneTotal extends BaseModel
         'measured_on' => 'date',
     ];
 
+    /**
+     * Create a new factory instance for the model.
+     */
+    protected static function newFactory(): AEMETOzoneTotalFactory
+    {
+        return AEMETOzoneTotalFactory::new();
+    }
+
     public static function validation(array $data): \Illuminate\Validation\Validator
     {
         return Validator::make($data, [
-            'station_name' => 'required|string|max:255',
-            'station_code' => 'required|string|max:32',
             'ozone_value' => 'required|integer',
             'measured_on' => 'required|date',
         ]);
@@ -57,9 +60,9 @@ class AEMETOzoneTotal extends BaseModel
     }
 
     /**
-     * Recibe las filas ya parseadas del CSV (una por estación) y las guarda.
+     * Recibe las filas ya parseadas del CSV y las guarda.
      *
-     * Una fila por estación y día: una nueva petición el mismo día actualiza,
+     * Una fila por día: una nueva petición el mismo día actualiza,
      * no duplica.
      *
      * @param  array<int,array<string,mixed>>  $apiResponseArray
@@ -76,7 +79,6 @@ class AEMETOzoneTotal extends BaseModel
 
             $result[] = self::updateOrCreate(
                 [
-                    'station_code' => $row['station_code'],
                     'measured_on' => $row['measured_on'],
                 ],
                 self::validation($row)->validated(),

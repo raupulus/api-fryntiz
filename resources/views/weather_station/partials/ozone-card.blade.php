@@ -26,7 +26,7 @@
     <h3 class="text-lg font-bold text-on-surface mb-2">Ozono</h3>
     @if($ozone)
         <span class="text-on-surface-variant text-xs uppercase tracking-widest">
-            {{ $ozone->station_name }} · {{ $ozone->measured_on->translatedFormat('d/m/Y') }}
+            El Arenosillo · {{ $ozone->measured_on->translatedFormat('d/m/Y') }}
         </span>
     @else
         <span class="text-on-surface-variant text-xs uppercase tracking-widest">Sin dato disponible</span>

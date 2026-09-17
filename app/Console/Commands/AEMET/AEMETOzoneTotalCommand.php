@@ -19,11 +19,6 @@ use Illuminate\Console\Command;
  * ozonosonda, un producto distinto que sólo se publica cada 7 días. Este es
  * el que el nombre "ozono" venía prometiendo desde siempre y nunca se había
  * implementado — ver docs/future/archived/revisar-aemet.md.
- *
- * ⚠️ NOTA FUTURO: En el futuro se prevé simplificar la tabla `meteorology_aemet_ozone_total`
- * eliminando las columnas de estación (`station_name`, `station_code`) e id autoincremental,
- * ya que la estación es fija para esta ubicación. Por el momento se mantienen en el modelo y
- * migración para compatibilidad. Ver docs/future/aemet-simplificar-ozono-total.md.
  */
 class AEMETOzoneTotalCommand extends Command
 {

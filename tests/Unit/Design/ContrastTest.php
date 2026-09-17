@@ -67,6 +67,9 @@ class ContrastTest extends TestCase
 
             // Botones primarios.
             'botón primario' => ['primary-container', 'on-primary'],
+
+            // Enlace de acento en páginas principales.
+            'enlace acento sobre surface' => ['surface', 'on-tertiary-container'],
         ];
     }
 
@@ -113,43 +116,6 @@ class ContrastTest extends TestCase
     }
 
     /**
-     * Deuda conocida, con su número.
-     *
-     * `on-tertiary-container` sobre `surface` da 3,59:1 en el tema claro:
-     * cumple AA para texto grande (3:1) pero no para el `text-xs font-bold` con
-     * el que se usa en `home`, `weather_station` y `airflight`. En oscuro está
-     * perfecto.
-     *
-     * No se arregla aquí porque es **el color de acento de toda la plataforma**
-     * y bajarle la luminosidad cambia cómo se ve el sitio entero: es una
-     * decisión de identidad visual. Ver `docs/info/DESIGN.md`.
-     *
-     * Este test **falla el día que se arregle**, para que se mueva a la lista de
-     * arriba y deje de estar en deuda.
-     */
-    #[Test]
-    public function the_light_theme_accent_is_still_below_aa(): void
-    {
-        $light = $this->tokens('claro');
-        $ratio = round($this->ratio($light['surface'], $light['on-tertiary-container']), 2);
-
-        $this->assertSame(
-            3.59,
-            $ratio,
-            'El contraste de `on-tertiary-container` sobre `surface` ha cambiado. '
-            .'Si ya llega a 4,5:1, mueve la pareja a `parejas()` y borra este test.',
-        );
-
-        // En oscuro nunca ha sido un problema, y conviene que siga así.
-        $dark = $this->tokens('oscuro');
-
-        $this->assertGreaterThanOrEqual(
-            self::AA_TEXT,
-            $this->ratio($dark['surface'], $dark['on-tertiary-container']),
-        );
-    }
-
-    /**
      * Un color fijo de Tailwind sin variante `dark:` no cambia con el tema.
      *
      * `bg-green-100` se queda claro en el tema oscuro, y si encima la etiqueta
@@ -187,6 +153,8 @@ class ContrastTest extends TestCase
             'resources/views/hardware/energy/index.blade.php',
             // Iconos y textos sobre cabeceras de color sólido.
             'resources/views/keycounter/index.blade.php',
+            // Banner de alerta GDACS con colores de alerta sólidos propios (verde/naranja/rojo) y texto blanco.
+            'resources/views/weather_station/partials/gdacs-banner.blade.php',
         ];
 
         foreach ($allowed as $exception) {

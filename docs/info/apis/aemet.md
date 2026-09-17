@@ -167,9 +167,9 @@ publicación, así que va en la tanda de la mañana, 5 min detrás del último.
 >
 > El ozono total de superficie que el nombre viejo prometía **ya está
 > implementado**: `aemet:ozone-total`, modelo `AEMETOzoneTotal`
-> (`meteorology_aemet_ozone_total`, una fila diaria para la estación configurada en
-> `config('aemet.ozone_station_code')`: Moguer - El Arenosillo, `5860E`, a ~50 km de Chipiona
-> y única en Andalucía), parseado en `AEMETHelper::getOzoneTotal()`. De paso se repararon
+> (`meteorology_aemet_ozone_total`, una fila diaria simplificada con `id`, `ozone_value`
+> y `measured_on` único para la estación Moguer - El Arenosillo, `5860E`, a ~50 km de Chipiona
+> y única en Andalucía, configurada en `config('aemet.ozone_station_code')`), parseado en `AEMETHelper::getOzoneTotal()`. De paso se repararon
 > `AEMETService::getContamination()`, `getOzone()` y `getSunRadiation()`:
 > las dos primeras pedían rutas que `09-redes-especiales.md` documenta como
 > **incorrectas (404)** —`red/especial/contaminacionfondo` sin estación y
@@ -385,4 +385,4 @@ tail -f storage/logs/laravel-$(date +%Y-%m-%d).log | grep -i aemet
 
 ---
 
-> Creado: 2026-05-26 · Última revisión: 2026-09-16
+> Creado: 2026-05-26 · Última revisión: 2026-09-17

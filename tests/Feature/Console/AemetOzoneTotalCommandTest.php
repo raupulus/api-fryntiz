@@ -43,22 +43,21 @@ class AemetOzoneTotalCommandTest extends TestCase
 
         $this->assertSame(1, AEMETOzoneTotal::count());
 
-        $moguer = AEMETOzoneTotal::where('station_code', '5860E')->first();
-        $this->assertNotNull($moguer);
-        $this->assertSame('Moguer (El Arenosillo)', $moguer->station_name);
-        $this->assertSame(310, $moguer->ozone_value);
-        $this->assertSame('2026-09-13', $moguer->measured_on->toDateString());
+        $record = AEMETOzoneTotal::first();
+        $this->assertNotNull($record);
+        $this->assertSame(310, $record->ozone_value);
+        $this->assertSame('2026-09-13', $record->measured_on->toDateString());
     }
 
     #[Test]
-    public function it_can_persist_all_stations_if_wildcard_configured(): void
+    public function factory_creates_valid_model(): void
     {
-        config(['aemet.ozone_station_code' => '*']);
-        $this->fakeAemetOzoneTotal(self::CSV_BODY);
+        $record = AEMETOzoneTotal::factory()->create();
 
-        $this->artisan('aemet:ozone-total')->assertExitCode(0);
-
-        $this->assertSame(4, AEMETOzoneTotal::count());
+        $this->assertDatabaseHas('meteorology_aemet_ozone_total', [
+            'id' => $record->id,
+            'ozone_value' => $record->ozone_value,
+        ]);
     }
 
     #[Test]
