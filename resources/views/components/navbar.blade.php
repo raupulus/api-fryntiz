@@ -13,8 +13,6 @@
         {{-- Navegación desktop — visible desde md en adelante --}}
         <nav class="hidden md:flex items-center space-x-6">
             <a class="text-on-surface-variant hover:text-on-surface transition-colors font-body text-sm font-bold tracking-tight"
-               href="{{ route('hardware.index') }}">Hardware</a>
-            <a class="text-on-surface-variant hover:text-on-surface transition-colors font-body text-sm font-bold tracking-tight"
                href="{{ route('weather_station.index') }}">Weather Station</a>
             <a class="text-on-surface-variant hover:text-on-surface transition-colors font-body text-sm font-bold tracking-tight"
                href="{{ route('keycounter.index') }}">Keycounter</a>
@@ -25,7 +23,9 @@
             <a class="text-on-surface-variant hover:text-on-surface transition-colors font-body text-sm font-bold tracking-tight"
                href="{{ route('hardware.energy.index') }}">Energy</a>
             <a class="text-on-surface-variant hover:text-on-surface transition-colors font-body text-sm font-bold tracking-tight"
-               href="https://raupulus.dev/contact" target="_blank">Contacto</a>
+               href="{{ route('hardware.index') }}">Hardware</a>
+            <a class="text-on-surface-variant hover:text-on-surface transition-colors font-body text-sm font-bold tracking-tight"
+               href="https://raupulus.dev/contact" target="_blank" rel="noopener noreferrer">Contacto</a>
         </nav>
 
         {{-- Controles: selector tema + hamburguesa (solo mobile) --}}
@@ -51,12 +51,12 @@
     <div x-show="mobileMenuOpen"
          x-transition
          class="md:hidden bg-surface border-t border-outline-variant/15 px-6 py-4 space-y-3">
-        <a href="{{ route('hardware.index') }}" class="block text-on-surface-variant hover:text-on-surface font-bold py-1">Hardware</a>
         <a href="{{ route('weather_station.index') }}" class="block text-on-surface-variant hover:text-on-surface font-bold py-1">Weather Station</a>
         <a href="{{ route('keycounter.index') }}" class="block text-on-surface-variant hover:text-on-surface font-bold py-1">Keycounter</a>
         <a href="{{ route('airflight.index') }}" class="block text-on-surface-variant hover:text-on-surface font-bold py-1">Airflight</a>
         <a href="{{ route('smartplant.index') }}" class="block text-on-surface-variant hover:text-on-surface font-bold py-1">Smart Plant</a>
         <a href="{{ route('hardware.energy.index') }}" class="block text-on-surface-variant hover:text-on-surface font-bold py-1">Energy</a>
-        <a href="https://raupulus.dev/contact" target="_blank" class="block text-on-surface-variant hover:text-on-surface font-bold py-1">Contacto</a>
+        <a href="{{ route('hardware.index') }}" class="block text-on-surface-variant hover:text-on-surface font-bold py-1">Hardware</a>
+        <a href="https://raupulus.dev/contact" target="_blank" rel="noopener noreferrer" class="block text-on-surface-variant hover:text-on-surface font-bold py-1">Contacto</a>
     </div>
 </header>

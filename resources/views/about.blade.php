@@ -83,6 +83,12 @@
                         'description' => 'Balance fotovoltaico y consumos en tiempo real: generación solar, batería y consumo por dispositivo monitorizado.',
                     ],
                     [
+                        'icon' => 'memory',
+                        'title' => 'Hardware',
+                        'url' => route('hardware.index'),
+                        'description' => 'Inventario público de servidores, microcontroladores y dispositivos físicos con su telemetría y salud en tiempo real.',
+                    ],
+                    [
                         'icon' => 'badge',
                         'title' => 'Currículum',
                         'url' => route('cv.index'),

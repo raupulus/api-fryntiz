@@ -379,6 +379,12 @@ de hardware y su estado en tiempo real, bajo una estricta política de **Privacy
   `ref`, `buy_at`, `user_id`, `deleted_at` ni el payload del sistema `extra`.
 - **Inclusión selectiva**: solo los dispositivos con `is_public = true` se muestran en el índice
   (`HardwareDevice::public()`) o se pueden abrir en detalle (404 estricto para los privados).
+- **Mejoras frontend y navegación**:
+  - **Capacidad de batería**: se formatea con unidad explícita `mAh` (ej. `5,000 mAh`).
+  - **Última señal**: formateada únicamente en tiempo relativo (`hace X horas`, `hace X días`), mostrando estrictamente `recientemente` cuando la última señal fue recibida hace menos de 1 hora.
+  - **Enlace oficial**: los enlaces a la web oficial / documentación del fabricante marcan visiblemente `(sitio externo)` y cuentan con `rel="noopener noreferrer"`.
+  - **Navegación**: en el Navbar (desktop y móvil) y en el Footer ("Módulos"), el módulo **Hardware** se sitúa inmediatamente detrás de **Energy**. También se incluye en `/about`.
+  - **Gráfica energética de 7 días**: en `hardware.show`, los dispositivos con monitorización energética activa (`HardwareEnergy`) muestran una gráfica de barras nativa con los últimos 7 días. Si el dispositivo no tiene generador configurado (ej. Raspberry Pi), oculta la generación y muestra únicamente el consumo eléctrico. Soporta dispositivos con múltiples canales de consumo (ej. Raspberry Pi 5 con canales 0 y 1), desglosando métricas y colores por canal.
 - **Sitemap**: se indexa `/hardware` con prioridad 0.6 y cada ficha pública `/hardware/{device:slug}`
   con prioridad 0.5 mediante `SitemapGeneratorCommand`.
 

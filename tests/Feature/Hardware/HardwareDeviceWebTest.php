@@ -7,6 +7,8 @@ namespace Tests\Feature\Hardware;
 use App\Models\Hardware\HardwareAvailableComponent;
 use App\Models\Hardware\HardwareComponent;
 use App\Models\Hardware\HardwareDevice;
+use App\Models\Hardware\HardwareEnergy;
+use App\Models\Hardware\HardwareEnergyToday;
 use App\Models\Hardware\HardwareType;
 use App\Models\User;
 use Carbon\Carbon;
@@ -231,5 +233,213 @@ class HardwareDeviceWebTest extends TestCase
 
         $this->assertSame('raspberry-pi-5', $device1->slug);
         $this->assertSame('raspberry-pi-5-2', $device2->slug);
+    }
+
+    #[Test]
+    public function show_displays_battery_nominal_capacity_with_unit(): void
+    {
+        $device = HardwareDevice::create([
+            'name' => 'Battery Device',
+            'is_public' => true,
+            'battery_nominal_capacity' => 5000,
+        ]);
+
+        $response = $this->get(route('hardware.show', $device));
+
+        $response->assertSuccessful();
+        $response->assertSee('5,000 mAh');
+    }
+
+    #[Test]
+    public function show_displays_relative_last_seen_and_recientemente_if_recent(): void
+    {
+        $recentDevice = HardwareDevice::create([
+            'name' => 'Recent Device',
+            'is_public' => true,
+            'last_seen_at' => Carbon::now()->subMinutes(15),
+        ]);
+
+        $olderDevice = HardwareDevice::create([
+            'name' => 'Older Device',
+            'is_public' => true,
+            'last_seen_at' => Carbon::now()->subHours(3),
+        ]);
+
+        $responseRecent = $this->get(route('hardware.show', $recentDevice));
+        $responseRecent->assertSuccessful();
+        $responseRecent->assertSee('Última señal:');
+        $responseRecent->assertSee('recientemente');
+
+        $responseOlder = $this->get(route('hardware.show', $olderDevice));
+        $responseOlder->assertSuccessful();
+        $responseOlder->assertSee('Última señal:');
+        $responseOlder->assertDontSee('recientemente');
+        $responseOlder->assertSee('hace 3 horas');
+    }
+
+    #[Test]
+    public function show_indicates_external_link_for_official_manufacturer_url(): void
+    {
+        $device = HardwareDevice::create([
+            'name' => 'Vendor Device',
+            'is_public' => true,
+            'url_company' => 'https://example.com/product',
+        ]);
+
+        $response = $this->get(route('hardware.show', $device));
+
+        $response->assertSuccessful();
+        $response->assertSee('Web oficial del fabricante');
+        $response->assertSee('(sitio externo)');
+        $response->assertSee('rel="noopener noreferrer"', escape: false);
+    }
+
+    #[Test]
+    public function hardware_is_placed_behind_energy_in_navbar_and_footer(): void
+    {
+        $response = $this->get(route('hardware.index'));
+
+        $response->assertSuccessful();
+        $content = $response->getContent();
+        $this->assertIsString($content);
+
+        $nav = strstr($content, '<nav', false);
+        $this->assertIsString($nav);
+
+        $navbarEnergy = strpos($nav, 'href="'.route('hardware.energy.index').'"');
+        $navbarHardware = strpos($nav, 'href="'.route('hardware.index').'"');
+        $this->assertNotFalse($navbarEnergy);
+        $this->assertNotFalse($navbarHardware);
+        $this->assertLessThan($navbarHardware, $navbarEnergy);
+
+        $footer = strstr($content, '<footer', false);
+        $this->assertIsString($footer);
+
+        $footerEnergy = strpos($footer, 'href="'.route('hardware.energy.index').'"');
+        $footerHardware = strpos($footer, 'href="'.route('hardware.index').'"');
+        $this->assertNotFalse($footerEnergy);
+        $this->assertNotFalse($footerHardware);
+        $this->assertLessThan($footerHardware, $footerEnergy);
+    }
+
+    #[Test]
+    public function show_displays_7_day_energy_chart_when_device_has_load_and_generator(): void
+    {
+        $device = HardwareDevice::create([
+            'name' => 'Solar Inverter Node',
+            'is_public' => true,
+        ]);
+
+        $gen = HardwareEnergy::create([
+            'hardware_device_id' => $device->id,
+            'hardware_device_monitorized_id' => $device->id,
+            'role' => HardwareEnergy::ROLE_GENERATOR,
+            'sensor_position' => 0,
+            'is_active' => true,
+        ]);
+
+        $load = HardwareEnergy::create([
+            'hardware_device_id' => $device->id,
+            'hardware_device_monitorized_id' => $device->id,
+            'role' => HardwareEnergy::ROLE_LOAD,
+            'sensor_position' => 0,
+            'is_active' => true,
+        ]);
+
+        HardwareEnergyToday::create([
+            'hardware_device_id' => $device->id,
+            'hardware_energy_id' => $gen->id,
+            'date' => Carbon::today()->toDateString(),
+            'energy_wh' => 450.0,
+            'energy_ah' => 37.5,
+            'readings_count' => 10,
+        ]);
+
+        HardwareEnergyToday::create([
+            'hardware_device_id' => $device->id,
+            'hardware_energy_id' => $load->id,
+            'date' => Carbon::today()->toDateString(),
+            'energy_wh' => 200.0,
+            'energy_ah' => 16.6,
+            'readings_count' => 10,
+        ]);
+
+        $response = $this->get(route('hardware.show', $device));
+
+        $response->assertSuccessful();
+        $response->assertSee('Monitorización de energía (Últimos 7 días)');
+        $response->assertSee('Generación Total');
+        $response->assertSee('Consumo Total');
+        $response->assertSee('Balance Neto');
+        $response->assertSee('450');
+        $response->assertSee('200');
+    }
+
+    #[Test]
+    public function show_displays_only_consumption_and_channels_when_device_has_no_generator(): void
+    {
+        $device = HardwareDevice::create([
+            'name' => 'Dual Channel Pi',
+            'is_public' => true,
+        ]);
+
+        $load0 = HardwareEnergy::create([
+            'hardware_device_id' => $device->id,
+            'hardware_device_monitorized_id' => $device->id,
+            'role' => HardwareEnergy::ROLE_LOAD,
+            'sensor_position' => 0,
+            'is_active' => true,
+        ]);
+
+        $load1 = HardwareEnergy::create([
+            'hardware_device_id' => $device->id,
+            'hardware_device_monitorized_id' => $device->id,
+            'role' => HardwareEnergy::ROLE_LOAD,
+            'sensor_position' => 1,
+            'is_active' => true,
+        ]);
+
+        HardwareEnergyToday::create([
+            'hardware_device_id' => $device->id,
+            'hardware_energy_id' => $load0->id,
+            'date' => Carbon::today()->toDateString(),
+            'energy_wh' => 80.0,
+            'energy_ah' => 16.0,
+            'readings_count' => 5,
+        ]);
+
+        HardwareEnergyToday::create([
+            'hardware_device_id' => $device->id,
+            'hardware_energy_id' => $load1->id,
+            'date' => Carbon::today()->toDateString(),
+            'energy_wh' => 20.0,
+            'energy_ah' => 6.0,
+            'readings_count' => 5,
+        ]);
+
+        $response = $this->get(route('hardware.show', $device));
+
+        $response->assertSuccessful();
+        $response->assertSee('Monitorización de energía (Últimos 7 días)');
+        $response->assertSee('Consumo Total');
+        $response->assertSee('Media Diaria');
+        $response->assertDontSee('Generación Total');
+        $response->assertDontSee('Balance Neto');
+        $response->assertSee('Canal 0');
+        $response->assertSee('Canal 1');
+    }
+
+    #[Test]
+    public function show_does_not_display_energy_chart_for_device_without_energy_elements(): void
+    {
+        $device = HardwareDevice::create([
+            'name' => 'Simple Laptop',
+            'is_public' => true,
+        ]);
+
+        $response = $this->get(route('hardware.show', $device));
+
+        $response->assertSuccessful();
+        $response->assertDontSee('Monitorización de energía (Últimos 7 días)');
     }
 }

@@ -72,6 +72,12 @@ readonly class PublicHardwareDeviceData
 
         $uptimeFormatted = $device->uptime !== null ? self::formatUptime((int) $device->uptime) : null;
 
+        $lastSeenDiff = null;
+        if ($lastSeen instanceof SupportCarbon) {
+            $minutesAgo = abs((int) $lastSeen->diffInMinutes(Carbon::now()));
+            $lastSeenDiff = $minutesAgo < 60 ? 'recientemente' : $lastSeen->diffForHumans();
+        }
+
         $components = $device->components->map(static function ($component) {
             return [
                 'name' => (string) ($component->name ?: ($component->availableComponent->name ?? 'Componente')),
@@ -103,7 +109,7 @@ readonly class PublicHardwareDeviceData
             imageThumbnailUrl: $device->url_image_medium ?: ($device->url_image ?: null),
             locationTypeLabel: $device->location_label,
             isOnline: $isOnline,
-            lastSeenDiff: $lastSeen?->diffForHumans(),
+            lastSeenDiff: $lastSeenDiff,
             lastSeenFormatted: $lastSeen?->format('d/m/Y H:i'),
             uptimeSeconds: $device->uptime !== null ? (int) $device->uptime : null,
             uptimeFormatted: $uptimeFormatted,

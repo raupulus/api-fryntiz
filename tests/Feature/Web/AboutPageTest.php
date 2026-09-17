@@ -33,6 +33,7 @@ class AboutPageTest extends TestCase
             ->assertSee('Key Counter')
             ->assertSee('Radar de vuelo')
             ->assertSee('Energía')
+            ->assertSee('Hardware')
             ->assertSee('Currículum');
     }
 

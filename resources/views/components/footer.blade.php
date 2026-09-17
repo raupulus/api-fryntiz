@@ -19,13 +19,14 @@
                     <li><a href="{{ route('airflight.index') }}" class="hover:opacity-100 transition-opacity">Airflight</a></li>
                     <li><a href="{{ route('smartplant.index') }}" class="hover:opacity-100 transition-opacity">Smart Plant</a></li>
                     <li><a href="{{ route('hardware.energy.index') }}" class="hover:opacity-100 transition-opacity">Energy</a></li>
+                    <li><a href="{{ route('hardware.index') }}" class="hover:opacity-100 transition-opacity">Hardware</a></li>
                 </ul>
             </div>
 
             {{-- Columna 3: Contacto --}}
             <div>
                 <h3 class="text-lg font-bold mb-4">Contacto</h3>
-                <a href="https://raupulus.dev/contact" target="_blank"
+                <a href="https://raupulus.dev/contact" target="_blank" rel="noopener noreferrer"
                    class="text-sm opacity-70 hover:opacity-100 transition-opacity">
                     raupulus.dev/contact
                 </a>

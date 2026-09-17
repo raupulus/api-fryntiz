@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@use('App\Support\Format\Figures')
+
 @section('title', $device->displayName.' | Hardware | Api Raupulus')
 @section('description', 'Ficha técnica y estado en tiempo real del dispositivo '.$device->displayName.' ('.$device->typeName.')')
 @section('keywords', 'hardware, '.$device->displayName.', '.$device->typeName.', '.$device->brand.', telemetría, raupulus')
@@ -64,8 +66,8 @@
 
                 {{-- Última conexión / Uptime --}}
                 <div class="text-right text-white/80 text-xs hidden md:block">
-                    @if($device->lastSeenFormatted)
-                        <p class="mb-1">Última señal: <strong class="text-white">{{ $device->lastSeenFormatted }}</strong> ({{ $device->lastSeenDiff }})</p>
+                    @if($device->lastSeenDiff)
+                        <p class="mb-1">Última señal: <strong class="text-white">{{ $device->lastSeenDiff }}</strong></p>
                     @endif
                     @if($device->uptimeFormatted)
                         <p>Tiempo en marcha: <strong class="text-white">{{ $device->uptimeFormatted }}</strong></p>
@@ -151,7 +153,7 @@
                                 @if($device->batteryNominalCapacity)
                                     <div>
                                         <span class="block text-xs uppercase tracking-wider text-on-surface-variant font-medium">Capacidad Batería</span>
-                                        <span class="text-sm font-semibold text-on-surface">{{ $device->batteryNominalCapacity }}</span>
+                                        <span class="text-sm font-semibold text-on-surface">{{ number_format($device->batteryNominalCapacity) }} mAh</span>
                                     </div>
                                 @endif
                             </div>
@@ -163,9 +165,10 @@
                                 <a href="{{ $device->urlCompany }}"
                                    target="_blank"
                                    rel="noopener noreferrer"
-                                   class="inline-flex items-center gap-1.5 text-xs font-semibold text-primary-container hover:underline">
+                                   class="inline-flex items-center gap-1.5 text-xs font-semibold text-primary-container hover:underline"
+                                   title="Sitio web oficial externo del fabricante">
                                     <span class="material-symbols-outlined text-sm">open_in_new</span>
-                                    Documentación / Web oficial del fabricante
+                                    Web oficial del fabricante <span class="text-xs text-on-surface-variant font-normal">(sitio externo)</span>
                                 </a>
                             </div>
                         @endif
@@ -290,7 +293,164 @@
                 </section>
             @endif
 
-            {{-- 3. Componentes y Sensores acoplados --}}
+            {{-- 3. Gráfica Energética (Últimos 7 días) --}}
+            @if($energyData !== null)
+                <section class="space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div>
+                            <h2 class="text-2xl font-bold text-on-surface">Monitorización de energía (Últimos 7 días)</h2>
+                            <p class="text-xs text-on-surface-variant">
+                                {{ $energyData['has_generator'] ? 'Balance diario de generación solar y consumo eléctrico registrado en la última semana.' : 'Consumo eléctrico diario registrado en la última semana.' }}
+                            </p>
+                        </div>
+
+                        {{-- Leyenda de colores --}}
+                        <div class="flex flex-wrap items-center gap-3 text-xs text-on-surface-variant font-medium">
+                            @if($energyData['has_generator'])
+                                <div class="flex items-center gap-1.5">
+                                    <span class="w-3 h-3 rounded-full bg-amber-500 dark:bg-amber-400"></span>
+                                    <span>Generación</span>
+                                </div>
+                            @endif
+
+                            @foreach($energyData['load_channels'] as $ch)
+                                <div class="flex items-center gap-1.5">
+                                    <span class="w-3 h-3 rounded-full {{ $ch['color_bar'] }}"></span>
+                                    <span>{{ $ch['name'] }}</span>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    {{-- Tarjeta principal con KPIs y Gráfico --}}
+                    <div class="bg-surface-container-lowest p-6 rounded-xl shadow border border-outline-variant/15 space-y-6">
+
+                        {{-- KPIs de resumen del periodo --}}
+                        <div class="grid grid-cols-2 {{ $energyData['has_generator'] ? 'sm:grid-cols-3' : (count($energyData['load_channels']) > 1 ? 'sm:grid-cols-3' : 'sm:grid-cols-2') }} gap-4">
+                            {{-- Total Consumido --}}
+                            <div class="bg-surface-container/60 p-4 rounded-lg border border-outline-variant/10">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="material-symbols-outlined text-base text-sky-600 dark:text-sky-400">bolt</span>
+                                    <span class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Consumo Total</span>
+                                </div>
+                                <div class="text-2xl font-extrabold text-on-surface font-mono">
+                                    {{ Figures::rounded($energyData['total_consumed_wh']) }} <span class="text-xs font-sans text-on-surface-variant font-normal">Wh</span>
+                                </div>
+                            </div>
+
+                            @if($energyData['has_generator'])
+                                {{-- Total Generado --}}
+                                <div class="bg-surface-container/60 p-4 rounded-lg border border-outline-variant/10">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="material-symbols-outlined text-base text-amber-600 dark:text-amber-400">solar_power</span>
+                                        <span class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Generación Total</span>
+                                    </div>
+                                    <div class="text-2xl font-extrabold text-amber-600 dark:text-amber-400 font-mono">
+                                        {{ Figures::rounded($energyData['total_generated_wh']) }} <span class="text-xs font-sans text-on-surface-variant font-normal">Wh</span>
+                                    </div>
+                                </div>
+
+                                {{-- Balance Neto --}}
+                                @php
+                                    $netBalance = $energyData['total_generated_wh'] - $energyData['total_consumed_wh'];
+                                @endphp
+                                <div class="bg-surface-container/60 p-4 rounded-lg border border-outline-variant/10">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="material-symbols-outlined text-base text-teal-600 dark:text-teal-400">balance</span>
+                                        <span class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Balance Neto</span>
+                                    </div>
+                                    <div class="text-2xl font-extrabold font-mono {{ $netBalance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400' }}">
+                                        {{ ($netBalance > 0 ? '+' : '').Figures::rounded($netBalance) }} <span class="text-xs font-sans text-on-surface-variant font-normal">Wh</span>
+                                    </div>
+                                </div>
+                            @else
+                                {{-- Media diaria --}}
+                                <div class="bg-surface-container/60 p-4 rounded-lg border border-outline-variant/10">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="material-symbols-outlined text-base text-teal-600 dark:text-teal-400">trending_up</span>
+                                        <span class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Media Diaria</span>
+                                    </div>
+                                    <div class="text-2xl font-extrabold text-on-surface font-mono">
+                                        {{ Figures::rounded($energyData['avg_consumed_wh']) }} <span class="text-xs font-sans text-on-surface-variant font-normal">Wh/día</span>
+                                    </div>
+                                </div>
+
+                                {{-- Desglose si hay múltiples canales --}}
+                                @if(count($energyData['load_channels']) > 1)
+                                    <div class="bg-surface-container/60 p-4 rounded-lg border border-outline-variant/10">
+                                        <div class="flex items-center gap-2 mb-1">
+                                            <span class="material-symbols-outlined text-base text-violet-600 dark:text-violet-400">tune</span>
+                                            <span class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Canales activos</span>
+                                        </div>
+                                        <div class="text-sm font-semibold text-on-surface">
+                                            {{ count($energyData['load_channels']) }} canales monitorizados
+                                        </div>
+                                    </div>
+                                @endif
+                            @endif
+                        </div>
+
+                        {{-- Área gráfica de barras --}}
+                        <div class="pt-6">
+                            <div class="h-64 sm:h-72 w-full grid grid-cols-7 gap-1.5 sm:gap-4 items-end pb-8 border-b border-outline-variant/20">
+                                @foreach($energyData['days'] as $day)
+                                    <div class="group relative flex flex-col items-center justify-end h-full">
+
+                                        {{-- Tooltip flotante interactivo --}}
+                                        <div class="absolute -top-14 z-20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none bg-surface-container-highest text-on-surface text-[10px] sm:text-xs font-semibold py-1.5 px-2.5 rounded-lg shadow-xl border border-outline-variant/30 whitespace-nowrap text-center">
+                                            <span class="block text-on-surface-variant font-normal">{{ $day['date'] }}</span>
+                                            @if($energyData['has_generator'])
+                                                <span class="block text-amber-600 dark:text-amber-400">Gen: {{ Figures::rounded($day['generated_wh']) }} Wh</span>
+                                            @endif
+                                            @if(count($day['channels']) > 1)
+                                                @foreach($day['channels'] as $ch)
+                                                    <span class="block {{ $ch['color_text'] }}">{{ $ch['name'] }}: {{ Figures::rounded($ch['wh']) }} Wh</span>
+                                                @endforeach
+                                            @endif
+                                            <span class="block text-on-surface font-bold">Consumo: {{ Figures::rounded($day['consumed_wh']) }} Wh</span>
+                                        </div>
+
+                                        {{-- Columnas de barras --}}
+                                        <div class="flex items-end justify-center gap-1 sm:gap-1.5 h-full w-full">
+                                            {{-- Barra Generación si aplica --}}
+                                            @if($energyData['has_generator'])
+                                                <div style="height: {{ $day['generated_pct'] }}%"
+                                                     class="w-full max-w-[18px] sm:max-w-[24px] bg-amber-500 dark:bg-amber-400 rounded-t-sm transition-all duration-300 hover:brightness-110"
+                                                     title="Generado: {{ Figures::rounded($day['generated_wh']) }} Wh">
+                                                </div>
+                                            @endif
+
+                                            {{-- Barras de consumo --}}
+                                            @if(count($day['channels']) > 1)
+                                                @foreach($day['channels'] as $ch)
+                                                    <div style="height: {{ $ch['pct'] }}%"
+                                                         class="w-full max-w-[14px] sm:max-w-[18px] {{ $ch['color_bar'] }} rounded-t-sm transition-all duration-300 hover:brightness-110"
+                                                         title="{{ $ch['name'] }}: {{ Figures::rounded($ch['wh']) }} Wh">
+                                                    </div>
+                                                @endforeach
+                                            @else
+                                                <div style="height: {{ $day['consumed_pct'] }}%"
+                                                     class="w-full max-w-[24px] sm:max-w-[32px] bg-sky-500 dark:bg-sky-400 rounded-t-sm transition-all duration-300 hover:brightness-110"
+                                                     title="Consumo: {{ Figures::rounded($day['consumed_wh']) }} Wh">
+                                                </div>
+                                            @endif
+                                        </div>
+
+                                        {{-- Etiquetas del eje inferior --}}
+                                        <div class="absolute -bottom-8 text-center w-full">
+                                            <span class="block text-[11px] sm:text-xs font-semibold text-on-surface leading-tight">{{ $day['label'] }}</span>
+                                            <span class="block text-[9px] sm:text-[10px] text-on-surface-variant font-mono leading-tight">{{ Figures::rounded($day['consumed_wh']) }} Wh</span>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+            @endif
+
+            {{-- 4. Componentes y Sensores acoplados --}}
             <section class="space-y-4">
                 <h2 class="text-2xl font-bold text-on-surface">Componentes y sensores conectados</h2>
 
