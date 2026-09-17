@@ -1,6 +1,6 @@
 # Vista pública de dispositivos hardware
 
-> **Estado:** especificación definida, pendiente de implementar. No bloquea el despliegue.
+> **Resuelto e implementado (2026-09-17):** catálogo público web en `/hardware`, ficha técnica en `/hardware/{device:slug}`, privacidad estricta por diseño (DTO sin IPs ni seriales), sitemap automático, orden en navegación y gráfica de histórico de 7 días. Documentación técnica viva en [`docs/info/hardware.md`](../../info/hardware.md).
 > **Creado el:** 2026-09-15 · **Última revisión:** 2026-09-17
 
 Diseño de la interfaz pública para el catálogo y monitorización de dispositivos hardware del laboratorio/proyectos (@raupulus). Busca exponer un escaparate tecnológico transparente con telemetría de salud en tiempo real, bajo una estricta política de **privacidad por diseño** (cero exposición de redes, IPs, números de serie o datos privados).
