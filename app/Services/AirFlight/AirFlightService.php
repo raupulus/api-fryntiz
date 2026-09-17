@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -280,5 +281,88 @@ class AirFlightService
                 DB::raw('(array_agg(r.speed ORDER BY r.seen_at DESC) FILTER (WHERE r.speed IS NOT NULL))[1] as speed'),
                 DB::raw('(array_agg(r.track ORDER BY r.seen_at DESC) FILTER (WHERE r.track IS NOT NULL))[1] as track'),
             ]);
+    }
+
+    /**
+     * Obtiene el conteo de aeronaves detectadas en ventanas temporales:
+     * última hora, últimas 24 horas, últimos 7 días y total histórico.
+     *
+     * @return array<string,int>
+     */
+    public function getAirFlightStats(): array
+    {
+        return [
+            'last_hour' => (int) Cache::remember('airflight:web:stats:1h', 60, fn () => AirFlightAirPlane::where('seen_last_at', '>=', now()->subHour())->count()),
+            'last_24h' => (int) Cache::remember('airflight:web:stats:24h', 300, fn () => AirFlightAirPlane::where('seen_last_at', '>=', now()->subDay())->count()),
+            'last_7d' => (int) Cache::remember('airflight:web:stats:7d', 900, fn () => AirFlightAirPlane::where('seen_last_at', '>=', now()->subDays(7))->count()),
+            'total' => (int) Cache::remember('airflight:web:stats:total', 3600, fn () => AirFlightAirPlane::count()),
+        ];
+    }
+
+    /**
+     * Obtiene los aviones más frecuentes (con mayor número de días distintos detectados en el receptor).
+     *
+     * @return Collection<int, AirFlightAirPlane>
+     */
+    public function getTopAircraft(int $limit = 4): Collection
+    {
+        return Cache::remember('airflight:web:top_aircraft:'.$limit, 86400, function () use ($limit) {
+            $totalRoutes = DB::table('airflight_routes')->count();
+
+            if ($totalRoutes > 10000) {
+                /** @var array<int, object{airplane_id: int|string, distinct_days: int|string, total_routes: int|string}> $records */
+                $records = DB::select('
+                    WITH candidate_planes AS (
+                        SELECT airplane_id
+                        FROM airflight_routes
+                        GROUP BY airplane_id
+                        HAVING count(*) >= 100
+                    )
+                    SELECT r.airplane_id, COUNT(DISTINCT DATE(r.seen_at)) as distinct_days, COUNT(*) as total_routes
+                    FROM airflight_routes r
+                    INNER JOIN candidate_planes c ON r.airplane_id = c.airplane_id
+                    WHERE r.seen_at IS NOT NULL
+                    GROUP BY r.airplane_id
+                    ORDER BY distinct_days DESC
+                    LIMIT :limit
+                ', ['limit' => $limit]);
+            } else {
+                /** @var array<int, object{airplane_id: int|string, distinct_days: int|string, total_routes: int|string}> $records */
+                $records = DB::select('
+                    SELECT airplane_id, COUNT(DISTINCT DATE(seen_at)) as distinct_days, COUNT(*) as total_routes
+                    FROM airflight_routes
+                    WHERE seen_at IS NOT NULL
+                    GROUP BY airplane_id
+                    ORDER BY distinct_days DESC
+                    LIMIT :limit
+                ', ['limit' => $limit]);
+            }
+
+            if (empty($records)) {
+                return new Collection;
+            }
+
+            $airplaneIds = array_map(fn ($r) => (int) $r->airplane_id, $records);
+            $daysMap = [];
+            $routesMap = [];
+            foreach ($records as $r) {
+                $daysMap[(int) $r->airplane_id] = (int) $r->distinct_days;
+                $routesMap[(int) $r->airplane_id] = (int) $r->total_routes;
+            }
+
+            $planes = AirFlightAirPlane::whereIn('id', $airplaneIds)->get()->keyBy('id');
+
+            $result = new Collection;
+            foreach ($airplaneIds as $id) {
+                if (isset($planes[$id])) {
+                    $plane = $planes[$id];
+                    $plane->setAttribute('distinct_days', $daysMap[$id]);
+                    $plane->setAttribute('total_routes', $routesMap[$id]);
+                    $result->push($plane);
+                }
+            }
+
+            return $result;
+        });
     }
 }

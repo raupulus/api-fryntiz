@@ -212,6 +212,163 @@
              data-url="{{ route('airflight.detected') }}"
              data-page="{{ $planes->currentPage() }}">
         <div class="max-w-7xl mx-auto px-6">
+            {{-- Bloque 1: Métricas de actividad temporal (1h, 24h, 7d, Total) --}}
+            <div class="mb-10">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-4 flex items-center gap-2">
+                    <span class="material-symbols-outlined text-primary text-base">radar</span>
+                    <span>Actividad de detección</span>
+                </h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {{-- Última hora --}}
+                    <div class="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/15 shadow-xs flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Última hora</span>
+                            <span class="p-2 rounded-lg bg-primary/10 text-primary">
+                                <span class="material-symbols-outlined text-xl">schedule</span>
+                            </span>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-extrabold text-on-surface tracking-tight" id="stat-last-hour">
+                                {{ number_format($stats['last_hour'] ?? 0, 0, ',', '.') }}
+                            </div>
+                            <p class="text-xs text-on-surface-variant mt-1 flex items-center gap-1.5">
+                                <span class="relative flex h-2 w-2">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 dark:bg-emerald-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 dark:bg-emerald-400"></span>
+                                </span>
+                                <span>Aeronaves en tiempo real</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    {{-- Últimas 24 horas --}}
+                    <div class="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/15 shadow-xs flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Últimas 24 horas</span>
+                            <span class="p-2 rounded-lg bg-primary/10 text-primary">
+                                <span class="material-symbols-outlined text-xl">today</span>
+                            </span>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-extrabold text-on-surface tracking-tight">
+                                {{ number_format($stats['last_24h'] ?? 0, 0, ',', '.') }}
+                            </div>
+                            <p class="text-xs text-on-surface-variant mt-1">Aeronaves en el día</p>
+                        </div>
+                    </div>
+
+                    {{-- Últimos 7 días --}}
+                    <div class="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/15 shadow-xs flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Últimos 7 días</span>
+                            <span class="p-2 rounded-lg bg-primary/10 text-primary">
+                                <span class="material-symbols-outlined text-xl">date_range</span>
+                            </span>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-extrabold text-on-surface tracking-tight">
+                                {{ number_format($stats['last_7d'] ?? 0, 0, ',', '.') }}
+                            </div>
+                            <p class="text-xs text-on-surface-variant mt-1">Aeronaves en la semana</p>
+                        </div>
+                    </div>
+
+                    {{-- Total histórico --}}
+                    <div class="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/15 shadow-xs flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Total histórico</span>
+                            <span class="p-2 rounded-lg bg-primary/10 text-primary">
+                                <span class="material-symbols-outlined text-xl">flight</span>
+                            </span>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-extrabold text-on-surface tracking-tight">
+                                {{ number_format($stats['total'] ?? 0, 0, ',', '.') }}
+                            </div>
+                            <p class="text-xs text-on-surface-variant mt-1">Aeronaves catalogadas</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Bloque 2: Aviones más vistos (Top 4 por días distintos detectado) --}}
+            <div class="mb-12">
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
+                            <span class="material-symbols-outlined text-primary text-base">military_tech</span>
+                            <span>Aviones más frecuentes</span>
+                        </h3>
+                        <p class="text-xs text-on-surface-variant mt-0.5">Aeronaves detectadas durante más jornadas diferentes en el receptor</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    @forelse($topPlanes as $index => $topPlane)
+                        <div class="bg-surface-container-lowest rounded-xl p-5 border border-outline-variant/15 shadow-xs flex flex-col justify-between relative overflow-hidden group hover:border-primary/40 transition-colors">
+                            {{-- Cabecera con bandera, matrícula y ranking --}}
+                            <div class="flex items-start justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    @if($topPlane->url_flag)
+                                        <img src="{{ $topPlane->url_flag }}" alt="{{ $topPlane->country ?? 'Bandera' }}" class="h-4 w-6 object-cover rounded shadow-xs">
+                                    @endif
+                                    <span class="text-base font-bold text-on-surface font-mono tracking-tight">
+                                        {{ $topPlane->registration ?: $topPlane->icao }}
+                                    </span>
+                                </div>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold bg-primary/10 text-primary">
+                                    #{{ $index + 1 }}
+                                </span>
+                            </div>
+
+                            <div class="space-y-2 my-2">
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-on-surface-variant">Modelo</span>
+                                    <span class="font-medium text-on-surface">
+                                        {{ $topPlane->aircraft_type ?: ($topPlane->aircraft_desc ?: 'Aeronave') }}
+                                    </span>
+                                </div>
+                                @if($topPlane->country)
+                                    <div class="flex items-center justify-between text-xs">
+                                        <span class="text-on-surface-variant">País</span>
+                                        <span class="font-medium text-on-surface truncate max-w-[140px] text-right">{{ $topPlane->country }}</span>
+                                    </div>
+                                @endif
+                                <div class="flex items-center justify-between text-xs">
+                                    <span class="text-on-surface-variant">Presencia</span>
+                                    <span class="font-bold text-primary">{{ $topPlane->distinct_days }} días</span>
+                                </div>
+                                @if(isset($topPlane->total_routes) && $topPlane->total_routes > 0)
+                                    <div class="flex items-center justify-between text-xs">
+                                        <span class="text-on-surface-variant">Registros</span>
+                                        <span class="text-on-surface-variant font-mono">{{ number_format($topPlane->total_routes, 0, ',', '.') }}</span>
+                                    </div>
+                                @endif
+                            </div>
+
+                            <div class="pt-3 border-t border-outline-variant/10 mt-2 flex items-center justify-between text-xs">
+                                <span class="text-[11px] text-on-surface-variant">
+                                    @if($topPlane->seen_last_at)
+                                        Visto {{ \Carbon\Carbon::parse($topPlane->seen_last_at)->diffForHumans() }}
+                                    @endif
+                                </span>
+                                <a href="https://www.flightradar24.com/data/aircraft/{{ strtolower($topPlane->registration ?: $topPlane->icao) }}"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   title="Ver ficha en FlightRadar24 (sitio externo)"
+                                   class="text-primary hover:underline inline-flex items-center gap-0.5 font-medium">
+                                    <span>FR24</span>
+                                    <span class="material-symbols-outlined text-[13px]">open_in_new</span>
+                                </a>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="col-span-full bg-surface-container rounded-xl p-6 text-center text-sm text-on-surface-variant">
+                            No hay suficientes datos históricos de aeronaves para calcular el ranking.
+                        </div>
+                    @endforelse
+                </div>
+            </div>
+
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mb-6">
                 <h2 class="text-3xl font-bold text-on-surface">Aviones detectados (última hora)</h2>
                 <p id="detected-planes-status" class="text-xs text-on-surface-variant"></p>

@@ -156,8 +156,14 @@ class AirFlightController extends Controller
             return $plane;
         });
 
+        $airFlightService = app(AirFlightService::class);
+        $stats = $airFlightService->getAirFlightStats();
+        $topPlanes = $airFlightService->getTopAircraft(4);
+
         return view('airflight.index')->with([
             'planes' => $planes,
+            'stats' => $stats,
+            'topPlanes' => $topPlanes,
         ]);
     }
 

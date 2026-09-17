@@ -105,6 +105,42 @@ class AirFlightTest extends ApiTestCase
             ->assertSee('IBE9999');
     }
 
+    #[Test]
+    public function the_airflight_page_renders_stats_and_top_aircraft_widgets(): void
+    {
+        $topPlane = AirFlightAirPlane::create([
+            'icao' => 'TOP999',
+            'registration' => 'EC-TOP',
+            'aircraft_type' => 'A320',
+            'country' => 'Spain',
+            'seen_last_at' => Carbon::now()->subMinutes(5),
+            'seen_first_at' => Carbon::now()->subDays(10),
+        ]);
+
+        AirFlightRoute::create([
+            'airplane_id' => $topPlane->id,
+            'flight' => 'IBE001',
+            'seen_at' => Carbon::now()->subDays(1),
+        ]);
+
+        AirFlightRoute::create([
+            'airplane_id' => $topPlane->id,
+            'flight' => 'IBE001',
+            'seen_at' => Carbon::now()->subDays(2),
+        ]);
+
+        $this->get(route('airflight.index'))
+            ->assertOk()
+            ->assertSee('Actividad de detección')
+            ->assertSee('Última hora')
+            ->assertSee('Últimas 24 horas')
+            ->assertSee('Últimos 7 días')
+            ->assertSee('Total histórico')
+            ->assertSee('Aviones más frecuentes')
+            ->assertSee('EC-TOP')
+            ->assertSee('A320');
+    }
+
     /**
      * Tabla "Aviones detectados (última hora)" de `/airflight`: sondeo cada
      * minuto desde el propio frontend, sin token, y sólo con lo visto dentro

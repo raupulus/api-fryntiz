@@ -586,6 +586,22 @@ ya usa `track` (0-359°, 0 = norte). Mismo marcado en el HTML del servidor
 (`resources/views/airflight/index.blade.php`) y en `direccionCell()` del
 sondeo cada minuto, para que no diverjan visualmente.
 
+### Widgets de Actividad y Aviones Más Frecuentes (2026-09-17)
+
+Encima de la tabla de última hora en `/airflight` se ubican dos bloques de 4 widgets con diseño *Obsidian Flux* / *Raupulus Slate*:
+
+1. **Actividad de detección (4 tarjetas temporales):**
+   - **Última hora:** aeronaves activas en tiempo real (`seen_last_at >= 1h`, caché 60 s).
+   - **Últimas 24 horas:** aeronaves detectadas en el día (`seen_last_at >= 24h`, caché 5 min).
+   - **Últimos 7 días:** aeronaves detectadas en la semana (`seen_last_at >= 7d`, caché 15 min).
+   - **Total histórico:** total acumulado de aeronaves catalogadas (`AirFlightAirPlane::count()`, caché 1 hora).
+   - Servido mediante `AirFlightService::getAirFlightStats()`.
+
+2. **Aviones más frecuentes (4 tarjetas de aeronaves top):**
+   - Muestra las 4 aeronaves que han sobrevolado y sido detectadas en un mayor número de jornadas (`DATE(seen_at)`) distintas en el receptor.
+   - Cada tarjeta muestra bandera nacional, matrícula (o código ICAO), modelo (`aircraft_type`), país, número de días de presencia, total de posiciones registradas, tiempo relativo desde el último avistamiento y enlace directo a la ficha del aparato en FlightRadar24 (`https://www.flightradar24.com/data/aircraft/...`).
+   - Servido mediante `AirFlightService::getTopAircraft(4)`, optimizado con filtro CTE para tablas de gran volumen (>10.000 rutas) y cacheado 24 horas.
+
 ### Frontend (Fix 5)
 
 - **Mapa interactivo OpenLayers:** Recuperado de la rama `main`, integrado con layout v2 vía `@push('head')` y `@push('scripts')`.
@@ -663,4 +679,4 @@ cuyo caso sí son un duplicado exacto, tengan o no posición.
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-16
+> Creado: 2026-05-25 · Última revisión: 2026-09-17

@@ -205,4 +205,42 @@ class AirFlightServiceTest extends TestCase
         $this->assertSame(8000.0, (float) $row->altitude);
         $this->assertSame('7000', $row->squawk);
     }
+
+    #[Test]
+    public function get_airflight_stats_returns_expected_windows(): void
+    {
+        AirFlightAirPlane::create(['icao' => 'RECENT1', 'seen_last_at' => Carbon::now()->subMinutes(10)]);
+        AirFlightAirPlane::create(['icao' => 'DAY1', 'seen_last_at' => Carbon::now()->subHours(12)]);
+        AirFlightAirPlane::create(['icao' => 'WEEK1', 'seen_last_at' => Carbon::now()->subDays(3)]);
+        AirFlightAirPlane::create(['icao' => 'OLD1', 'seen_last_at' => Carbon::now()->subDays(30)]);
+
+        $stats = $this->service->getAirFlightStats();
+
+        $this->assertSame(1, $stats['last_hour']);
+        $this->assertSame(2, $stats['last_24h']);
+        $this->assertSame(3, $stats['last_7d']);
+        $this->assertSame(4, $stats['total']);
+    }
+
+    #[Test]
+    public function get_top_aircraft_returns_planes_ordered_by_distinct_days(): void
+    {
+        $plane1 = AirFlightAirPlane::create(['icao' => 'TOP111', 'registration' => 'EC-AAA']);
+        $plane2 = AirFlightAirPlane::create(['icao' => 'TOP222', 'registration' => 'EC-BBB']);
+
+        // Plane 1 visto en 3 días distintos
+        AirFlightRoute::create(['airplane_id' => $plane1->id, 'seen_at' => Carbon::now()->subDays(1)]);
+        AirFlightRoute::create(['airplane_id' => $plane1->id, 'seen_at' => Carbon::now()->subDays(2)]);
+        AirFlightRoute::create(['airplane_id' => $plane1->id, 'seen_at' => Carbon::now()->subDays(3)]);
+
+        // Plane 2 visto en 1 día distinto
+        AirFlightRoute::create(['airplane_id' => $plane2->id, 'seen_at' => Carbon::now()->subDays(1)]);
+
+        $top = $this->service->getTopAircraft(4);
+
+        $this->assertCount(2, $top);
+        $this->assertSame($plane1->id, $top->first()->id);
+        $this->assertSame(3, $top->first()->distinct_days);
+        $this->assertSame(1, $top->last()->distinct_days);
+    }
 }
