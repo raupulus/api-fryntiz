@@ -308,16 +308,48 @@
                     <span class="text-primary-container font-bold text-xs uppercase tracking-widest hover:underline">Estado Jardín</span>
                 </a>
 
-                {{-- Energy --}}
-                <a href="{{ route('hardware.energy.index') }}" class="md:col-span-4 bg-primary-container text-white rounded-xl p-8 flex flex-col shadow-lg hover:shadow-xl transition-shadow">
-                    <div class="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center mb-6">
-                        <span class="material-symbols-outlined text-white">bolt</span>
+                {{-- Curriculum Vitae --}}
+                <a href="{{ route('cv.index') }}" class="md:col-span-4 bg-surface-container-lowest rounded-xl p-8 flex flex-col shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="w-12 h-12 bg-surface-container-low rounded-lg flex items-center justify-center mb-6">
+                        <span class="material-symbols-outlined text-on-tertiary-container">badge</span>
                     </div>
-                    <h3 class="text-xl font-bold mb-3">Energy</h3>
-                    <p class="text-surface-dim/70 text-sm mb-8 flex-grow">
-                        Monitorización del consumo eléctrico doméstico. Identificación de picos de consumo y eficiencia energética por dispositivo.
+                    <h3 class="text-xl font-bold mb-3 text-on-surface">Curriculum Vitae</h3>
+                    <p class="text-secondary text-sm mb-8 flex-grow">
+                        Perfil profesional, experiencia laboral, proyectos técnicos y habilidades de ingeniería.
                     </p>
-                    <span class="text-white font-bold text-xs uppercase tracking-widest hover:opacity-70">Consumo Hoy</span>
+                    <span class="text-primary-container font-bold text-xs uppercase tracking-widest hover:underline">Ver Currículum</span>
+                </a>
+
+                {{-- Hardware --}}
+                <a href="{{ route('hardware.index') }}" class="md:col-span-6 bg-surface-container-lowest rounded-xl p-8 flex flex-col justify-between shadow-lg hover:shadow-xl transition-shadow">
+                    <div>
+                        <div class="w-12 h-12 bg-surface-container rounded-lg flex items-center justify-center mb-6">
+                            <span class="material-symbols-outlined text-primary">developer_board</span>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-3 text-on-surface">Hardware</h3>
+                        <p class="text-secondary text-sm mb-6 leading-relaxed">
+                            Catálogo de equipos, nodos IoT y microcontroladores con telemetría de salud (CPU, RAM, temperatura y almacenamiento) en tiempo real.
+                        </p>
+                    </div>
+                    <div>
+                        <span class="text-primary-container font-bold text-xs uppercase tracking-widest hover:underline">Explorar Hardware</span>
+                    </div>
+                </a>
+
+                {{-- Energy --}}
+                <a href="{{ route('hardware.energy.index') }}" class="md:col-span-6 bg-primary-container text-white rounded-xl p-8 flex flex-col justify-between shadow-lg hover:shadow-xl transition-shadow">
+                    <div>
+                        <div class="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center mb-6">
+                            <span class="material-symbols-outlined text-white">bolt</span>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-3">Energy</h3>
+                        <p class="text-surface-dim/70 text-sm mb-6 leading-relaxed">
+                            Monitorización del consumo eléctrico doméstico. Identificación de picos de consumo y eficiencia energética por dispositivo.
+                        </p>
+                    </div>
+                    <div>
+                        <span class="text-white font-bold text-xs uppercase tracking-widest hover:opacity-70">Consumo Hoy</span>
+                    </div>
                 </a>
             </div>
         </div>

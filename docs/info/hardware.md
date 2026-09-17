@@ -352,6 +352,26 @@ Lista cada dispositivo que reporta al menos un valor no nulo de `temp`,
 un *chip* con icono por cada métrica no nula entre `temp`, `voltage`, `cpu`,
 `disk`, `uptime` y `battery_level`. Se refresca cada 60 s.
 
+## Vista web pública (`/hardware`)
+
+El módulo dispone de un catálogo público web de libre acceso para consultar el parque
+de hardware y su estado en tiempo real, bajo una estricta política de **Privacy by Design**:
+
+| Ruta | Nombre | Controlador | Descripción |
+|---|---|---|---|
+| `GET /hardware` | `hardware.index` | `HardwareDeviceController@index` | Catálogo público con tarjetas de equipos, telemetría y filtros por categoría/estado |
+| `GET /hardware/{device}` | `hardware.show` | `HardwareDeviceController@show` | Ficha técnica y telemetría en tiempo real de un dispositivo público (404 si `is_public = false`) |
+
+### Privacidad por diseño (Privacy by Design)
+- **Cero exposición de datos de red e identificación privada**: las vistas reciben los datos
+  mediante el DTO inmutable `PublicHardwareDeviceData` (`app/DTO/Hardware/PublicHardwareDeviceData.php`).
+  Jamás se envían a la vista ni al frontend las columnas `ip_local`, `ip_public`, `serial_number`,
+  `ref`, `buy_at`, `user_id`, `deleted_at` ni el payload del sistema `extra`.
+- **Inclusión selectiva**: solo los dispositivos con `is_public = true` se muestran en el índice
+  (`HardwareDevice::public()`) o se pueden abrir en detalle (404 estricto para los privados).
+- **Sitemap**: se indexa `/hardware` con prioridad 0.6 y cada ficha pública `/hardware/{device}`
+  con prioridad 0.5 mediante `SitemapGeneratorCommand`.
+
 ## Impresoras
 
 El submódulo de impresoras (modelos `Printer`, `PrinterStack`,

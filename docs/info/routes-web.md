@@ -19,7 +19,9 @@
 - `GET  /weatherstation/sensor/{type}`: Consulta visual de historial y gráficas por sensor meteorológico.
 - `GET  /smartplant`: Listado de plantas inteligentes monitorizadas.
 - `GET  /smartplant/{smartplant}`: Detalle de sensores de suelo, luz y riego de una planta.
-- `GET  /hardware/energy`: Monitorización en tiempo real de balance fotovoltaico y consumos.
+- `GET  /hardware`: Catálogo público de dispositivos hardware y telemetría de salud (`hardware.index`).
+- `GET  /hardware/{device}`: Ficha técnica y telemetría en tiempo real de un dispositivo público (`hardware.show`).
+- `GET  /hardware/energy`: Monitorización en tiempo real de balance fotovoltaico y consumos (`hardware.energy.index`).
 - `GET  /keycounter`: Estadísticas agregadas de pulsaciones y actividad de periféricos.
 - `GET  /airflight`: Mapa y radar visual de tráfico aéreo ADS-B.
 - `GET  /cv`: Listado de currículums públicos, en tarjetas horizontales (`cv.index`).
@@ -62,3 +64,7 @@ desde el panel admin. `/dashboard` y `/dashboard/*` redirigen a `/panel` (301).
 > Fuente original: `AGENTS.md` §6-bis (movido aquí el 2026-09-15 para no cargarlo en
 > consultas que no tocan el frontend). Mantener actualizado en el mismo commit que
 > cualquier cambio en `routes/web.php`, Fortify o los paneles Filament.
+
+---
+
+> Creado: 2026-09-15 · Última revisión: 2026-09-17

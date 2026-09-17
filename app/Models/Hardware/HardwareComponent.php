@@ -62,8 +62,13 @@ class HardwareComponent extends BaseModel
     protected $fillable = [
         'hardware_device_id',
         'hardware_available_component_id',
-        'serial_number',
-        'notes',
+        'name',
+        'brand',
+        'model',
+        'quantity',
+        'power',
+        'description',
+        'buy_at',
     ];
 
     public function availableComponent(): BelongsTo

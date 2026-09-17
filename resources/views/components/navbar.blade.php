@@ -11,7 +11,9 @@
         </a>
 
         {{-- Navegación desktop — visible desde md en adelante --}}
-        <nav class="hidden md:flex items-center space-x-8">
+        <nav class="hidden md:flex items-center space-x-6">
+            <a class="text-on-surface-variant hover:text-on-surface transition-colors font-body text-sm font-bold tracking-tight"
+               href="{{ route('hardware.index') }}">Hardware</a>
             <a class="text-on-surface-variant hover:text-on-surface transition-colors font-body text-sm font-bold tracking-tight"
                href="{{ route('weather_station.index') }}">Weather Station</a>
             <a class="text-on-surface-variant hover:text-on-surface transition-colors font-body text-sm font-bold tracking-tight"
@@ -49,6 +51,7 @@
     <div x-show="mobileMenuOpen"
          x-transition
          class="md:hidden bg-surface border-t border-outline-variant/15 px-6 py-4 space-y-3">
+        <a href="{{ route('hardware.index') }}" class="block text-on-surface-variant hover:text-on-surface font-bold py-1">Hardware</a>
         <a href="{{ route('weather_station.index') }}" class="block text-on-surface-variant hover:text-on-surface font-bold py-1">Weather Station</a>
         <a href="{{ route('keycounter.index') }}" class="block text-on-surface-variant hover:text-on-surface font-bold py-1">Keycounter</a>
         <a href="{{ route('airflight.index') }}" class="block text-on-surface-variant hover:text-on-surface font-bold py-1">Airflight</a>

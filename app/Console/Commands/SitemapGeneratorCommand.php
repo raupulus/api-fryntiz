@@ -81,6 +81,7 @@ class SitemapGeneratorCommand extends Command
             ['url' => route('about'), 'priority' => 0.8, 'changefreq' => 'monthly'],
             ['url' => route('smartplant.index'), 'priority' => 0.7, 'changefreq' => 'weekly'],
             ['url' => route('hardware.energy.index'), 'priority' => 0.7, 'changefreq' => 'daily'],
+            ['url' => route('hardware.index'), 'priority' => 0.6, 'changefreq' => 'daily'],
             ['url' => route('keycounter.index'), 'priority' => 0.6, 'changefreq' => 'daily'],
             ['url' => route('airflight.index'), 'priority' => 0.6, 'changefreq' => 'daily'],
             ['url' => route('cv.index'), 'priority' => 0.6, 'changefreq' => 'monthly'],
@@ -98,8 +99,25 @@ class SitemapGeneratorCommand extends Command
         $this->addSmartPlantUrls($sitemap);
         $this->addWeatherStationUrls($sitemap);
         $this->addCurriculumUrls($sitemap);
+        $this->addHardwareUrls($sitemap);
 
         return $sitemap;
+    }
+
+    /**
+     * Añade las páginas individuales de cada dispositivo hardware marcado como público.
+     * Los dispositivos privados nunca entran al sitemap.
+     */
+    private function addHardwareUrls(Sitemap $sitemap): void
+    {
+        HardwareDevice::public()->get()->each(function (HardwareDevice $device) use ($sitemap) {
+            $sitemap->add(
+                Url::create(route('hardware.show', $device))
+                    ->setPriority(0.5)
+                    ->setChangeFrequency('weekly')
+                    ->setLastModificationDate($device->updated_at ?? Carbon::now())
+            );
+        });
     }
 
     /**

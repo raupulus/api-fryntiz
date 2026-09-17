@@ -81,15 +81,15 @@ Siguiendo la guía de identidad visual del proyecto (*Obsidian Flux* / *Raupulus
 
 - [x] **Migración/Modelo**: Añadir columna `is_public` (boolean, default false) a `hardware_devices` con su migración y scope en el modelo `HardwareDevice`.
 - [x] **Filament Admin**: Añadir el toggle `is_public` en `HardwareDeviceResource` para controlar desde la intranet qué dispositivos son visibles públicamente.
-- [ ] **Rutas**: Registrar `GET /hardware` (y opcionalmente `GET /hardware/{device:slug}` o `{device}`) en `routes/hardware/web.php`.
-- [ ] **Controlador `HardwareDeviceController`**:
+- [x] **Rutas**: Registrar `GET /hardware` (y opcionalmente `GET /hardware/{device:slug}` o `{device}`) en `routes/hardware/web.php`.
+- [x] **Controlador `HardwareDeviceController`**:
   - Método `index()`: consulta de dispositivos públicos con `with(['type', 'components.type', 'image'])`.
   - Mapeo estricto a DTO o array seguro (garantizando exclusión total de IPs y números de serie).
-- [ ] **Vistas Blade**:
+- [x] **Vistas Blade**:
   - Maquetar `resources/views/hardware/index.blade.php` con el Design System (tarjetas, tokens `@theme`, modo oscuro).
   - Componente de métricas de telemetría (barras de progreso de CPU/RAM/Disco/Temperatura).
-- [ ] **SEO**: Metadatos OpenGraph, Twitter Cards y registro de `/hardware` en el sitemap con prioridad `0.6`.
-- [ ] **Tests automatizados**:
+- [x] **SEO**: Metadatos OpenGraph, Twitter Cards y registro de `/hardware` en el sitemap con prioridad `0.6`.
+- [x] **Tests automatizados**:
   - Test de ruta pública (código 200).
   - Test de exclusión de privacidad: aserción estricta de que la respuesta HTML **nunca** contiene `ip_local`, `ip_public` ni `serial_number`.
   - Test de filtrado: los dispositivos con `is_public = false` no aparecen en el listado.
