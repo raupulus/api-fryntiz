@@ -211,4 +211,10 @@ class EnergyRoleTrendChartTest extends TestCase
             $this->assertNotNull($grafica->getDescription());
         }
     }
+
+    #[Test]
+    public function no_se_monta_automaticamente_en_el_dashboard(): void
+    {
+        $this->assertFalse(EnergyRoleTrendChart::isDiscovered());
+    }
 }

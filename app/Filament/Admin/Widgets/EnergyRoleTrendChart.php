@@ -23,6 +23,13 @@ use Illuminate\Support\Carbon;
 class EnergyRoleTrendChart extends ChartWidget
 {
     /**
+     * No se monta en el Dashboard general: es un widget de contexto que
+     * requiere `$deviceId` y se monta exclusivamente en la ficha de cada
+     * aparato (`ManageEnergyDevice`).
+     */
+    protected static bool $isDiscovered = false;
+
+    /**
      * El aparato del que se pintan las lecturas.
      */
     public ?int $deviceId = null;
