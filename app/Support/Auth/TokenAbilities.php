@@ -62,6 +62,10 @@ final class TokenAbilities
 
     public const AIRFLIGHT_WRITE = 'airflight:write';
 
+    public const PRINTERS_READ = 'printers:read';
+
+    public const PRINTERS_WRITE = 'printers:write';
+
     /**
      * Abilities de módulo que puede llevar un token de dispositivo, con su
      * etiqueta para el panel. No incluye `device:{id}`, que se añade sola.
@@ -111,6 +115,8 @@ final class TokenAbilities
         self::SMARTPLANT_WRITE => 'SmartPlant escritura',
         self::AIRFLIGHT_READ => 'AirFlight lectura',
         self::AIRFLIGHT_WRITE => 'AirFlight escritura',
+        self::PRINTERS_READ => 'Impresoras lectura',
+        self::PRINTERS_WRITE => 'Impresoras escritura',
     ];
 
     /**
@@ -136,6 +142,8 @@ final class TokenAbilities
         self::SMARTPLANT_WRITE => 'Subir lecturas de una planta.',
         self::AIRFLIGHT_READ => 'Consultar aviones detectados, incluido el historial por fechas.',
         self::AIRFLIGHT_WRITE => 'Registrar aviones detectados, de uno en uno o por lotes.',
+        self::PRINTERS_READ => 'Consultar impresoras y el histórico de trabajos de la cola.',
+        self::PRINTERS_WRITE => 'Consumir la cola de impresión, notificar estados y emitir heartbeats desde el microcontrolador.',
     ];
 
     /**

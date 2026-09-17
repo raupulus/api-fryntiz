@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Filament;
 
+use App\Enums\PrinterTypeEnum;
 use App\Enums\UserRoleEnum;
 use App\Filament\Admin\Clusters\AirFlight;
 use App\Filament\Admin\Clusters\Energy;
@@ -31,7 +32,6 @@ use App\Models\Hardware\HardwareType;
 use App\Models\KeyCounter\Keyboard;
 use App\Models\KeyCounter\Mouse;
 use App\Models\Printer;
-use App\Models\PrinterAvailableType;
 use App\Models\SmartPlant\SmartPlantPlant;
 use App\Models\User;
 use App\Support\Auth\TokenAbilities;
@@ -144,12 +144,11 @@ class PanelAuthorizationTest extends TestCase
 
     private function createPrinter(User $owner): Printer
     {
+        $device = $this->createDevice($owner);
+
         return Printer::create([
-            'user_id' => $owner->id,
-            'printer_type_id' => PrinterAvailableType::firstOrCreate(
-                ['name' => '3D'],
-                ['slug' => '3d']
-            )->id,
+            'hardware_device_id' => $device->id,
+            'printer_type' => PrinterTypeEnum::ThreeD,
             'name' => 'Impresora '.uniqid(),
         ]);
     }

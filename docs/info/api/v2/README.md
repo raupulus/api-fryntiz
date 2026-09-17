@@ -273,6 +273,7 @@ sin motivo.
 | Contador de pulsaciones | [`keycounter.md`](keycounter.md) | `GET /api/v2/keycounter/{keyboard,mouse}-sessions` y `GET /api/v2/keycounter/summary` (`keycounter:read`), `POST` de las sesiones (`keycounter:write`) |
 | Plantas inteligentes | [`smart-plant.md`](smart-plant.md) | `GET /api/v2/smartplant/plants` y `GET .../{plant}/readings` (`smartplant:read`), `POST .../{plant}/readings` (`smartplant:write`) |
 | Registro de vuelos | [`airflight.md`](airflight.md) | `GET /api/v2/airflight/aircrafts` y `GET /api/v2/airflight/receiver` (`airflight:read`), `POST /api/v2/airflight/aircrafts` y `.../batch` (`airflight:write`) |
+| Impresoras | [`printers.md`](printers.md) | `GET /api/v2/printers`, `GET .../{id}`, `GET .../{id}/jobs`, `POST .../{id}/jobs/next`, `POST .../{id}/jobs`, `PATCH .../jobs/{id}/status`, `POST .../{id}/heartbeat` (`printers:read` / `printers:write`) |
 
 **No queda ninguna lectura pública en la API.** Las de la estación meteorológica
 y las del radar de vuelos lo eran, y por eso `weatherstation:read` y
@@ -291,4 +292,4 @@ No es un módulo de `api/v2` ni usa su envelope: vive en `/mcp/api-raupulus`
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-12
+> Creado: 2026-08-30 · Última revisión: 2026-09-17

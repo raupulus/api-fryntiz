@@ -10,7 +10,7 @@
     ],
     "info": {
         "name": "Api Raupulus API Documentation",
-        "_postman_id": "a54c673a-80d1-4f94-9338-978359c13506",
+        "_postman_id": "797d3a21-74ea-4f5c-b0df-ba58ceb75654",
         "description": "",
         "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json"
     },
@@ -140,7 +140,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"device_id\":16,\"abilities\":[\"energy:write\"],\"name\":\"n\",\"expires_at\":\"2052-10-06\"}"
+                            "raw": "{\"device_id\":16,\"abilities\":[\"keycounter:write\"],\"name\":\"n\",\"expires_at\":\"2052-10-11\"}"
                         },
                         "description": "Va por `DeviceTokenService`, que es la fuente \u00fanica: comprueba que las\nabilities est\u00e1n en el cat\u00e1logo, que el dispositivo es del usuario, y\na\u00f1ade `device:{id}`. No emite nunca el comod\u00edn ni la ability de sesi\u00f3n.",
                         "auth": {
@@ -1402,7 +1402,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"hardware_device_id\":16,\"icao\":\"ngzmiy\",\"flight\":\"vdljnikhwaykcmyu\",\"squawk\":\"wpwlvq\",\"lat\":-90,\"lon\":-179,\"altitude\":10,\"speed\":20,\"track\":1,\"vert_rate\":-100,\"seen\":4326.41688,\"seen_pos\":4326.41688,\"messages\":77,\"rssi\":-100,\"emergency\":\"yvdljnikhwaykcmy\"}"
+                            "raw": "{\"hardware_device_id\":16,\"icao\":\"ngzmiy\",\"registration\":\"vdljnikhwaykcmyu\",\"aircraft_type\":\"wpwlvq\",\"category\":\"wrsitc\",\"wtc\":\"p\",\"aircraft_desc\":\"s\",\"flight\":\"cqldzsnrwtujwvlx\",\"squawk\":\"jklqpp\",\"lat\":-90,\"lon\":-180,\"altitude\":4,\"speed\":25,\"track\":0,\"vert_rate\":-99,\"seen\":4326.41688,\"seen_pos\":4326.41688,\"messages\":77,\"rssi\":-100,\"nic\":0,\"rc\":60,\"emergency\":\"dljnikhwaykcmyuw\"}"
                         },
                         "description": "",
                         "auth": {
@@ -1433,7 +1433,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"hardware_device_id\":16,\"data\":[{\"icao\":\"bngzmi\",\"flight\":\"yvdljnikhwaykcmy\",\"squawk\":\"uwpwlv\",\"lat\":-90,\"lon\":-180,\"altitude\":5,\"speed\":10,\"track\":0,\"vert_rate\":-99,\"seen\":4326.41688,\"seen_pos\":4326.41688,\"messages\":77,\"rssi\":-100,\"emergency\":\"yvdljnikhwaykcmy\"}]}"
+                            "raw": "{\"hardware_device_id\":16,\"data\":[{\"icao\":\"bngzmi\",\"registration\":\"yvdljnikhwaykcmy\",\"aircraft_type\":\"uwpwlv\",\"category\":\"qwrsit\",\"wtc\":\"c\",\"aircraft_desc\":\"p\",\"flight\":\"scqldzsnrwtujwvl\",\"squawk\":\"xjklqp\",\"lat\":-89,\"lon\":-180,\"altitude\":7,\"speed\":4,\"track\":0,\"vert_rate\":-100,\"seen\":4326.41688,\"seen_pos\":4326.41688,\"messages\":77,\"rssi\":-100,\"nic\":0,\"rc\":60,\"emergency\":\"dljnikhwaykcmyuw\"}]}"
                         },
                         "description": "",
                         "auth": {
@@ -1532,7 +1532,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"hardware_device_id\":16,\"duration\":22,\"energy\":[]}"
+                            "raw": "{\"hardware_device_id\":16,\"duration\":22,\"read_at\":\"2022-10-12\",\"energy\":[]}"
                         },
                         "description": "Requiere ability `energy:write`. Procesa subsistemas de generador, bater\u00eda y consumos.",
                         "auth": {
@@ -1726,7 +1726,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"hardware_device_id\":16,\"temp\":4326.41688,\"voltage\":4326.41688,\"battery_level\":0,\"cpu\":0,\"disk\":0,\"ram\":1,\"uptime\":42,\"ip_local\":\"1.102.226.211\",\"ip_public\":\"1.102.226.211\"}"
+                            "raw": "{\"hardware_device_id\":16,\"temp\":4326.41688,\"voltage\":4326.41688,\"battery_level\":0,\"battery_voltage\":4326.41688,\"software_version\":\"m\",\"cpu\":0,\"disk\":0,\"ram\":1,\"uptime\":42,\"ip_local\":\"1.102.226.211\",\"ip_public\":\"1.102.226.211\"}"
                         },
                         "description": "PUT y no POST: no se est\u00e1 creando un recurso nuevo cada vez, se est\u00e1\nsobrescribiendo el mismo. Repetir la petici\u00f3n deja el sistema igual.",
                         "auth": {
@@ -1964,7 +1964,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"hardware_device_id\":16,\"user_id\":16,\"start_at\":\"2026-09-12 21:18:06\",\"end_at\":\"2026-09-12 21:18:06\",\"duration\":16,\"pulsations\":39,\"pulsations_special_keys\":84,\"pulsation_average\":12,\"score\":77,\"weekday\":5}"
+                            "raw": "{\"hardware_device_id\":16,\"user_id\":16,\"start_at\":\"2026-09-17 13:24:30\",\"end_at\":\"2026-09-17 13:24:30\",\"duration\":16,\"pulsations\":39,\"pulsations_special_keys\":84,\"pulsation_average\":12,\"score\":77,\"weekday\":5}"
                         },
                         "description": "",
                         "auth": {
@@ -1995,7 +1995,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"hardware_device_id\":16,\"user_id\":16,\"start_at\":\"2026-09-12 21:18:06\",\"end_at\":\"2026-09-12 21:18:06\",\"duration\":16,\"clicks_left\":39,\"clicks_right\":84,\"clicks_middle\":12,\"total_clicks\":77,\"clicks_average\":8,\"weekday\":1}"
+                            "raw": "{\"hardware_device_id\":16,\"user_id\":16,\"start_at\":\"2026-09-17 13:24:30\",\"end_at\":\"2026-09-17 13:24:30\",\"duration\":16,\"clicks_left\":39,\"clicks_right\":84,\"clicks_middle\":12,\"total_clicks\":77,\"clicks_average\":8,\"weekday\":1}"
                         },
                         "description": "",
                         "auth": {
@@ -2217,7 +2217,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"sensors\":[\"humidity\"],\"location_type\":\"outdoor\"}"
+                            "raw": "{\"sensors\":[\"light\"],\"location_type\":\"indoor\"}"
                         },
                         "description": "?zone=chipiona\n  ?location_type=indoor|outdoor",
                         "auth": {
@@ -2296,7 +2296,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"sensors\":[\"wind\"]}"
+                            "raw": "{\"sensors\":[\"air_quality\"]}"
                         },
                         "description": "",
                         "auth": {
@@ -3026,6 +3026,654 @@
                             "name": ""
                         }
                     ]
+                }
+            ]
+        },
+        {
+            "name": "Impresoras",
+            "description": "",
+            "item": [
+                {
+                    "name": "Listar impresoras accesibles.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v2\/printers",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v2\/printers"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Devuelve una colecci\u00f3n paginada de impresoras filtrables por estado y tipo.",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "content-language",
+                                    "value": "en"
+                                },
+                                {
+                                    "key": "vary",
+                                    "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                }
+                            ],
+                            "code": 401,
+                            "body": "{\"success\":false,\"message\":\"Unauthenticated\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Ficha de una impresora f\u00edsica.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v2\/printers\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v2\/printers\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": 16,
+                                    "description": "The ID of the printer."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "Devuelve la configuraci\u00f3n, formatos soportados y contador de trabajos pendientes.",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "content-language",
+                                    "value": "en"
+                                },
+                                {
+                                    "key": "vary",
+                                    "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                }
+                            ],
+                            "code": 401,
+                            "body": "{\"success\":false,\"message\":\"Unauthenticated\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Listar trabajos de una impresora.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v2\/printers\/:printer_id\/jobs",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v2\/printers\/:printer_id\/jobs",
+                            "variable": [
+                                {
+                                    "id": "printer_id",
+                                    "key": "printer_id",
+                                    "value": 16,
+                                    "description": "The ID of the printer."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "content-language",
+                                    "value": "en"
+                                },
+                                {
+                                    "key": "vary",
+                                    "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                }
+                            ],
+                            "code": 401,
+                            "body": "{\"success\":false,\"message\":\"Unauthenticated\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Listar plantillas favoritas de una impresora.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v2\/printers\/:printer_id\/favorites",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v2\/printers\/:printer_id\/favorites",
+                            "variable": [
+                                {
+                                    "id": "printer_id",
+                                    "key": "printer_id",
+                                    "value": 16,
+                                    "description": "The ID of the printer."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "content-language",
+                                    "value": "en"
+                                },
+                                {
+                                    "key": "vary",
+                                    "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                }
+                            ],
+                            "code": 401,
+                            "body": "{\"success\":false,\"message\":\"Unauthenticated\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Detalle de un trabajo concreto.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v2\/printers\/jobs\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v2\/printers\/jobs\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": 16,
+                                    "description": "The ID of the job."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "content-language",
+                                    "value": "en"
+                                },
+                                {
+                                    "key": "vary",
+                                    "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                }
+                            ],
+                            "code": 401,
+                            "body": "{\"success\":false,\"message\":\"Unauthenticated\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Encolar nuevo trabajo de impresi\u00f3n.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v2\/printers\/:printer_id\/jobs",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v2\/printers\/:printer_id\/jobs",
+                            "variable": [
+                                {
+                                    "id": "printer_id",
+                                    "key": "printer_id",
+                                    "value": 16,
+                                    "description": "The ID of the printer."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"content\":\"architecto\",\"format\":\"architecto\",\"note\":\"n\",\"priority\":-100,\"is_favorite\":false}"
+                        },
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Reimprimir un trabajo existente duplic\u00e1ndolo en la cola.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v2\/printers\/jobs\/:job_id\/reprint",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v2\/printers\/jobs\/:job_id\/reprint",
+                            "variable": [
+                                {
+                                    "id": "job_id",
+                                    "key": "job_id",
+                                    "value": 16,
+                                    "description": "The ID of the job."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"priority\":-99}"
+                        },
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Alternar o marcar trabajo como favorito \/ plantilla.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v2\/printers\/jobs\/:job_id\/favorite",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v2\/printers\/jobs\/:job_id\/favorite",
+                            "variable": [
+                                {
+                                    "id": "job_id",
+                                    "key": "job_id",
+                                    "value": 16,
+                                    "description": "The ID of the job."
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"is_favorite\":false}"
+                        },
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Cancelar o eliminar trabajo de impresi\u00f3n.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v2\/printers\/jobs\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v2\/printers\/jobs\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": 16,
+                                    "description": "The ID of the job."
+                                }
+                            ]
+                        },
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Reclamar siguiente trabajo disponible de forma at\u00f3mica.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v2\/printers\/:printer_id\/jobs\/next",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v2\/printers\/:printer_id\/jobs\/next",
+                            "variable": [
+                                {
+                                    "id": "printer_id",
+                                    "key": "printer_id",
+                                    "value": 16,
+                                    "description": "The ID of the printer."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "[]"
+                        },
+                        "description": "Consumido por el microcontrolador o agente f\u00edsico para extraer un trabajo pendiente de la cola.",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Notificar resultado de la impresi\u00f3n f\u00edsica.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v2\/printers\/jobs\/:job_id\/status",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v2\/printers\/jobs\/:job_id\/status",
+                            "variable": [
+                                {
+                                    "id": "job_id",
+                                    "key": "job_id",
+                                    "value": 16,
+                                    "description": "The ID of the job."
+                                }
+                            ]
+                        },
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"status\":\"out_of_paper\",\"error_message\":\"b\"}"
+                        },
+                        "description": "Consumido por el microcontrolador para reportar el \u00e9xito ('completed') o fallo ('failed')\nde la ejecuci\u00f3n del ticket.",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Reportar latido y telemetr\u00eda (Heartbeat).",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v2\/printers\/:printer_id\/heartbeat",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v2\/printers\/:printer_id\/heartbeat",
+                            "variable": [
+                                {
+                                    "id": "printer_id",
+                                    "key": "printer_id",
+                                    "value": 16,
+                                    "description": "The ID of the printer."
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"status\":\"architecto\"}"
+                        },
+                        "description": "Consumido por el microcontrolador o agente local para reportar su estado operativo y telemetr\u00eda hardware opcional.",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": []
                 }
             ]
         }

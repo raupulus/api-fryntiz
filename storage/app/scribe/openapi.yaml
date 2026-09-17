@@ -10,6 +10,9 @@ tags:
   -
     name: Endpoints
     description: ''
+  -
+    name: Impresoras
+    description: ''
 components:
   securitySchemes:
     default:
@@ -97,7 +100,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - 'energy:write'
+                    - 'keycounter:write'
                   items:
                     type: string
                     enum:
@@ -113,6 +116,8 @@ paths:
                       - 'smartplant:write'
                       - 'airflight:read'
                       - 'airflight:write'
+                      - 'printers:read'
+                      - 'printers:write'
                 name:
                   type: string
                   description: 'Must not be greater than 255 characters.'
@@ -121,7 +126,7 @@ paths:
                 expires_at:
                   type: string
                   description: 'Must be a valid date. Must be a date after <code>now</code>.'
-                  example: '2052-10-06'
+                  example: '2052-10-11'
                   nullable: true
               required:
                 - device_id
@@ -905,15 +910,40 @@ paths:
                   type: string
                   description: 'Must not be greater than 10 characters.'
                   example: ngzmiy
-                flight:
+                registration:
                   type: string
                   description: 'Must not be greater than 20 characters.'
                   example: vdljnikhwaykcmyu
                   nullable: true
-                squawk:
+                aircraft_type:
                   type: string
                   description: 'Must not be greater than 10 characters.'
                   example: wpwlvq
+                  nullable: true
+                category:
+                  type: string
+                  description: 'Must not be greater than 10 characters.'
+                  example: wrsitc
+                  nullable: true
+                wtc:
+                  type: string
+                  description: 'Must not be greater than 1 character.'
+                  example: p
+                  nullable: true
+                aircraft_desc:
+                  type: string
+                  description: 'Must not be greater than 5 characters.'
+                  example: s
+                  nullable: true
+                flight:
+                  type: string
+                  description: 'Must not be greater than 20 characters.'
+                  example: cqldzsnrwtujwvlx
+                  nullable: true
+                squawk:
+                  type: string
+                  description: 'Must not be greater than 10 characters.'
+                  example: jklqpp
                   nullable: true
                 lat:
                   type: number
@@ -923,27 +953,27 @@ paths:
                 lon:
                   type: number
                   description: 'Must be between -180 and 180.'
-                  example: -179
+                  example: -180
                   nullable: true
                 altitude:
                   type: number
                   description: 'Must be at least 0. Must not be greater than 60000.'
-                  example: 10
+                  example: 4
                   nullable: true
                 speed:
                   type: number
                   description: 'Must be at least 0. Must not be greater than 1000.'
-                  example: 20
+                  example: 25
                   nullable: true
                 track:
                   type: integer
                   description: 'Must be between 0 and 360.'
-                  example: 1
+                  example: 0
                   nullable: true
                 vert_rate:
                   type: number
                   description: 'Must be between -100 and 100.'
-                  example: -100
+                  example: -99
                   nullable: true
                 seen:
                   type: number
@@ -965,10 +995,20 @@ paths:
                   description: 'Must be between -100 and 0.'
                   example: -100
                   nullable: true
+                nic:
+                  type: integer
+                  description: 'Must be between 0 and 11.'
+                  example: 0
+                  nullable: true
+                rc:
+                  type: number
+                  description: 'Must be at least 0.'
+                  example: 60
+                  nullable: true
                 emergency:
                   type: string
                   description: 'Must not be greater than 20 characters.'
-                  example: yvdljnikhwaykcmy
+                  example: dljnikhwaykcmyuw
                   nullable: true
               required:
                 - icao
@@ -1037,20 +1077,45 @@ paths:
                         type: string
                         description: 'Must not be greater than 10 characters.'
                         example: bngzmi
-                      flight:
+                      registration:
                         type: string
                         description: 'Must not be greater than 20 characters.'
                         example: yvdljnikhwaykcmy
                         nullable: true
-                      squawk:
+                      aircraft_type:
                         type: string
                         description: 'Must not be greater than 10 characters.'
                         example: uwpwlv
                         nullable: true
+                      category:
+                        type: string
+                        description: 'Must not be greater than 10 characters.'
+                        example: qwrsit
+                        nullable: true
+                      wtc:
+                        type: string
+                        description: 'Must not be greater than 1 character.'
+                        example: c
+                        nullable: true
+                      aircraft_desc:
+                        type: string
+                        description: 'Must not be greater than 5 characters.'
+                        example: p
+                        nullable: true
+                      flight:
+                        type: string
+                        description: 'Must not be greater than 20 characters.'
+                        example: scqldzsnrwtujwvl
+                        nullable: true
+                      squawk:
+                        type: string
+                        description: 'Must not be greater than 10 characters.'
+                        example: xjklqp
+                        nullable: true
                       lat:
                         type: number
                         description: 'Must be between -90 and 90.'
-                        example: -90
+                        example: -89
                         nullable: true
                       lon:
                         type: number
@@ -1060,12 +1125,12 @@ paths:
                       altitude:
                         type: number
                         description: 'Must be at least 0. Must not be greater than 60000.'
-                        example: 5
+                        example: 7
                         nullable: true
                       speed:
                         type: number
                         description: 'Must be at least 0. Must not be greater than 1000.'
-                        example: 10
+                        example: 4
                         nullable: true
                       track:
                         type: integer
@@ -1075,7 +1140,7 @@ paths:
                       vert_rate:
                         type: number
                         description: 'Must be between -100 and 100.'
-                        example: -99
+                        example: -100
                         nullable: true
                       seen:
                         type: number
@@ -1097,10 +1162,20 @@ paths:
                         description: 'Must be between -100 and 0.'
                         example: -100
                         nullable: true
+                      nic:
+                        type: integer
+                        description: 'Must be between 0 and 11.'
+                        example: 0
+                        nullable: true
+                      rc:
+                        type: number
+                        description: 'Must be at least 0.'
+                        example: 60
+                        nullable: true
                       emergency:
                         type: string
                         description: 'Must not be greater than 20 characters.'
-                        example: yvdljnikhwaykcmy
+                        example: dljnikhwaykcmyuw
                         nullable: true
                     required:
                       - icao
@@ -1166,6 +1241,11 @@ paths:
                   type: integer
                   description: 'Must be at least 1.'
                   example: 22
+                  nullable: true
+                read_at:
+                  type: string
+                  description: 'Must be a valid date. Must be a date after or equal to <code>2000-01-01</code>. Must be a date before or equal to <code>2026-09-17 14:24:30</code>.'
+                  example: '2022-10-12'
                   nullable: true
                 energy:
                   type: object
@@ -1288,6 +1368,16 @@ paths:
                   description: 'Must be between 0 and 100.'
                   example: 0
                   nullable: true
+                battery_voltage:
+                  type: number
+                  description: ''
+                  example: 4326.41688
+                  nullable: true
+                software_version:
+                  type: string
+                  description: 'Must not be greater than 50 characters.'
+                  example: m
+                  nullable: true
                 cpu:
                   type: number
                   description: 'Must be between 0 and 100.'
@@ -1394,11 +1484,11 @@ paths:
                 start_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-12 21:18:06'
+                  example: '2026-09-17 13:24:30'
                 end_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-12 21:18:06'
+                  example: '2026-09-17 13:24:30'
                 duration:
                   type: integer
                   description: ''
@@ -1492,11 +1582,11 @@ paths:
                 start_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-12 21:18:06'
+                  example: '2026-09-17 13:24:30'
                 end_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-12 21:18:06'
+                  example: '2026-09-17 13:24:30'
                 duration:
                   type: integer
                   description: ''
@@ -1756,7 +1846,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - humidity
+                    - light
                   items:
                     type: string
                     enum:
@@ -1771,7 +1861,7 @@ paths:
                 location_type:
                   type: string
                   description: ''
-                  example: outdoor
+                  example: indoor
                   enum:
                     - indoor
                     - outdoor
@@ -1813,7 +1903,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - wind
+                    - air_quality
                   items:
                     type: string
                     enum:
@@ -2215,3 +2305,409 @@ paths:
         required: true
         schema:
           type: string
+  /api/v2/printers:
+    get:
+      summary: 'Listar impresoras accesibles.'
+      operationId: listarImpresorasAccesibles
+      description: 'Devuelve una colección paginada de impresoras filtrables por estado y tipo.'
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: Unauthenticated
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Unauthenticated
+      tags:
+        - Impresoras
+      security: []
+  '/api/v2/printers/{id}':
+    get:
+      summary: 'Ficha de una impresora física.'
+      operationId: fichaDeUnaImpresoraFsica
+      description: 'Devuelve la configuración, formatos soportados y contador de trabajos pendientes.'
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: Unauthenticated
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Unauthenticated
+      tags:
+        - Impresoras
+      security: []
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the printer.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  '/api/v2/printers/{printer_id}/jobs':
+    get:
+      summary: 'Listar trabajos de una impresora.'
+      operationId: listarTrabajosDeUnaImpresora
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: Unauthenticated
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Unauthenticated
+      tags:
+        - Impresoras
+      security: []
+    post:
+      summary: 'Encolar nuevo trabajo de impresión.'
+      operationId: encolarNuevoTrabajoDeImpresin
+      description: ''
+      parameters: []
+      responses: {}
+      tags:
+        - Impresoras
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  description: ''
+                  example: architecto
+                format:
+                  type: string
+                  description: ''
+                  example: architecto
+                  enum:
+                    - text
+                    - escpos
+                    - markdown
+                    - json
+                    - gcode
+                  nullable: true
+                note:
+                  type: string
+                  description: 'Must not be greater than 255 characters.'
+                  example: 'n'
+                  nullable: true
+                priority:
+                  type: integer
+                  description: 'Must be between -100 and 100.'
+                  example: -100
+                  nullable: true
+                is_favorite:
+                  type: boolean
+                  description: ''
+                  example: false
+                  nullable: true
+              required:
+                - content
+      security: []
+    parameters:
+      -
+        in: path
+        name: printer_id
+        description: 'The ID of the printer.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  '/api/v2/printers/{printer_id}/favorites':
+    get:
+      summary: 'Listar plantillas favoritas de una impresora.'
+      operationId: listarPlantillasFavoritasDeUnaImpresora
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: Unauthenticated
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Unauthenticated
+      tags:
+        - Impresoras
+      security: []
+    parameters:
+      -
+        in: path
+        name: printer_id
+        description: 'The ID of the printer.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  '/api/v2/printers/jobs/{id}':
+    get:
+      summary: 'Detalle de un trabajo concreto.'
+      operationId: detalleDeUnTrabajoConcreto
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: Unauthenticated
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Unauthenticated
+      tags:
+        - Impresoras
+      security: []
+    delete:
+      summary: 'Cancelar o eliminar trabajo de impresión.'
+      operationId: cancelarOEliminarTrabajoDeImpresin
+      description: ''
+      parameters: []
+      responses: {}
+      tags:
+        - Impresoras
+      security: []
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the job.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  '/api/v2/printers/jobs/{job_id}/reprint':
+    post:
+      summary: 'Reimprimir un trabajo existente duplicándolo en la cola.'
+      operationId: reimprimirUnTrabajoExistenteDuplicndoloEnLaCola
+      description: ''
+      parameters: []
+      responses: {}
+      tags:
+        - Impresoras
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                priority:
+                  type: integer
+                  description: 'Must be between -100 and 100.'
+                  example: -99
+                  nullable: true
+      security: []
+    parameters:
+      -
+        in: path
+        name: job_id
+        description: 'The ID of the job.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  '/api/v2/printers/jobs/{job_id}/favorite':
+    patch:
+      summary: 'Alternar o marcar trabajo como favorito / plantilla.'
+      operationId: alternarOMarcarTrabajoComoFavoritoPlantilla
+      description: ''
+      parameters: []
+      responses: {}
+      tags:
+        - Impresoras
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                is_favorite:
+                  type: boolean
+                  description: ''
+                  example: false
+                  nullable: true
+      security: []
+    parameters:
+      -
+        in: path
+        name: job_id
+        description: 'The ID of the job.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  '/api/v2/printers/{printer_id}/jobs/next':
+    post:
+      summary: 'Reclamar siguiente trabajo disponible de forma atómica.'
+      operationId: reclamarSiguienteTrabajoDisponibleDeFormaAtmica
+      description: 'Consumido por el microcontrolador o agente físico para extraer un trabajo pendiente de la cola.'
+      parameters: []
+      responses: {}
+      tags:
+        - Impresoras
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                hardware_device_info:
+                  type: string
+                  description: ''
+                  example: null
+                  nullable: true
+      security: []
+    parameters:
+      -
+        in: path
+        name: printer_id
+        description: 'The ID of the printer.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  '/api/v2/printers/jobs/{job_id}/status':
+    patch:
+      summary: 'Notificar resultado de la impresión física.'
+      operationId: notificarResultadoDeLaImpresinFsica
+      description: "Consumido por el microcontrolador para reportar el éxito ('completed') o fallo ('failed')\nde la ejecución del ticket."
+      parameters: []
+      responses: {}
+      tags:
+        - Impresoras
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  description: ''
+                  example: out_of_paper
+                  enum:
+                    - completed
+                    - failed
+                    - out_of_paper
+                error_message:
+                  type: string
+                  description: 'This field is required when <code>status</code> is <code>failed</code>. Must not be greater than 1000 characters.'
+                  example: b
+                  nullable: true
+                hardware_device_info:
+                  type: string
+                  description: ''
+                  example: null
+                  nullable: true
+              required:
+                - status
+      security: []
+    parameters:
+      -
+        in: path
+        name: job_id
+        description: 'The ID of the job.'
+        example: 16
+        required: true
+        schema:
+          type: integer
+  '/api/v2/printers/{printer_id}/heartbeat':
+    post:
+      summary: 'Reportar latido y telemetría (Heartbeat).'
+      operationId: reportarLatidoYTelemetraHeartbeat
+      description: 'Consumido por el microcontrolador o agente local para reportar su estado operativo y telemetría hardware opcional.'
+      parameters: []
+      responses: {}
+      tags:
+        - Impresoras
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  description: ''
+                  example: architecto
+                  enum:
+                    - ready
+                    - busy
+                    - out_of_paper
+                    - cover_open
+                    - offline
+                    - error
+                hardware_device_info:
+                  type: string
+                  description: ''
+                  example: null
+                  nullable: true
+              required:
+                - status
+      security: []
+    parameters:
+      -
+        in: path
+        name: printer_id
+        description: 'The ID of the printer.'
+        example: 16
+        required: true
+        schema:
+          type: integer

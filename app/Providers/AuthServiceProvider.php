@@ -25,7 +25,6 @@ use App\Models\KeyCounter\Mouse;
 use App\Models\Newsletter;
 use App\Models\Platform;
 use App\Models\Printer;
-use App\Models\PrinterAvailableType;
 use App\Models\PrinterStack;
 use App\Models\SmartPlant\SmartPlantPlant;
 use App\Models\SmartPlant\SmartPlantRegister;
@@ -131,7 +130,6 @@ class AuthServiceProvider extends ServiceProvider
         FileType::class,
         HardwareAvailableComponent::class,
         HardwareType::class,
-        PrinterAvailableType::class,
     ];
 
     /**

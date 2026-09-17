@@ -132,6 +132,7 @@ require __DIR__.'/../keycounter/v2.php';
 require __DIR__.'/../smart_plant/v2.php';
 require __DIR__.'/../weather_station/v2.php';
 require __DIR__.'/../cv/v2.php';
+require __DIR__.'/../printers/v2.php';
 
 /*
 |--------------------------------------------------------------------------

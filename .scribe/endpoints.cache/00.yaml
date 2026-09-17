@@ -148,7 +148,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - 'energy:write'
+          - 'keycounter:write'
         type: 'string[]'
         enumValues:
           - 'hardware:read'
@@ -163,6 +163,8 @@ endpoints:
           - 'smartplant:write'
           - 'airflight:read'
           - 'airflight:write'
+          - 'printers:read'
+          - 'printers:write'
         exampleWasSpecified: false
         nullable: false
         deprecated: false
@@ -182,7 +184,7 @@ endpoints:
         name: expires_at
         description: 'Must be a valid date. Must be a date after <code>now</code>.'
         required: false
-        example: '2052-10-06'
+        example: '2052-10-11'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -191,9 +193,9 @@ endpoints:
     cleanBodyParameters:
       device_id: 16
       abilities:
-        - 'energy:write'
+        - 'keycounter:write'
       name: 'n'
-      expires_at: '2052-10-06'
+      expires_at: '2052-10-11'
     fileParameters: []
     responses: []
     responseFields: []
@@ -1430,12 +1432,67 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
+      registration:
+        custom: []
+        name: registration
+        description: 'Must not be greater than 20 characters.'
+        required: false
+        example: vdljnikhwaykcmyu
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      aircraft_type:
+        custom: []
+        name: aircraft_type
+        description: 'Must not be greater than 10 characters.'
+        required: false
+        example: wpwlvq
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      category:
+        custom: []
+        name: category
+        description: 'Must not be greater than 10 characters.'
+        required: false
+        example: wrsitc
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      wtc:
+        custom: []
+        name: wtc
+        description: 'Must not be greater than 1 character.'
+        required: false
+        example: p
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      aircraft_desc:
+        custom: []
+        name: aircraft_desc
+        description: 'Must not be greater than 5 characters.'
+        required: false
+        example: s
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
       flight:
         custom: []
         name: flight
         description: 'Must not be greater than 20 characters.'
         required: false
-        example: vdljnikhwaykcmyu
+        example: cqldzsnrwtujwvlx
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1446,7 +1503,7 @@ endpoints:
         name: squawk
         description: 'Must not be greater than 10 characters.'
         required: false
-        example: wpwlvq
+        example: jklqpp
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1468,7 +1525,7 @@ endpoints:
         name: lon
         description: 'Must be between -180 and 180.'
         required: false
-        example: -179
+        example: -180
         type: number
         enumValues: []
         exampleWasSpecified: false
@@ -1479,7 +1536,7 @@ endpoints:
         name: altitude
         description: 'Must be at least 0. Must not be greater than 60000.'
         required: false
-        example: 10
+        example: 4
         type: number
         enumValues: []
         exampleWasSpecified: false
@@ -1490,7 +1547,7 @@ endpoints:
         name: speed
         description: 'Must be at least 0. Must not be greater than 1000.'
         required: false
-        example: 20
+        example: 25
         type: number
         enumValues: []
         exampleWasSpecified: false
@@ -1501,7 +1558,7 @@ endpoints:
         name: track
         description: 'Must be between 0 and 360.'
         required: false
-        example: 1
+        example: 0
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -1512,7 +1569,7 @@ endpoints:
         name: vert_rate
         description: 'Must be between -100 and 100.'
         required: false
-        example: -100
+        example: -99
         type: number
         enumValues: []
         exampleWasSpecified: false
@@ -1562,12 +1619,34 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         deprecated: false
+      nic:
+        custom: []
+        name: nic
+        description: 'Must be between 0 and 11.'
+        required: false
+        example: 0
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      rc:
+        custom: []
+        name: rc
+        description: 'Must be at least 0.'
+        required: false
+        example: 60
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
       emergency:
         custom: []
         name: emergency
         description: 'Must not be greater than 20 characters.'
         required: false
-        example: yvdljnikhwaykcmy
+        example: dljnikhwaykcmyuw
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1576,19 +1655,26 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       icao: ngzmiy
-      flight: vdljnikhwaykcmyu
-      squawk: wpwlvq
+      registration: vdljnikhwaykcmyu
+      aircraft_type: wpwlvq
+      category: wrsitc
+      wtc: p
+      aircraft_desc: s
+      flight: cqldzsnrwtujwvlx
+      squawk: jklqpp
       lat: -90
-      lon: -179
-      altitude: 10
-      speed: 20
-      track: 1
-      vert_rate: -100
+      lon: -180
+      altitude: 4
+      speed: 25
+      track: 0
+      vert_rate: -99
       seen: 4326.41688
       seen_pos: 4326.41688
       messages: 77
       rssi: -100
-      emergency: yvdljnikhwaykcmy
+      nic: 0
+      rc: 60
+      emergency: dljnikhwaykcmyuw
     fileParameters: []
     responses: []
     responseFields: []
@@ -1664,12 +1750,67 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
+      'data[].registration':
+        custom: []
+        name: 'data[].registration'
+        description: 'Must not be greater than 20 characters.'
+        required: false
+        example: yvdljnikhwaykcmy
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'data[].aircraft_type':
+        custom: []
+        name: 'data[].aircraft_type'
+        description: 'Must not be greater than 10 characters.'
+        required: false
+        example: uwpwlv
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'data[].category':
+        custom: []
+        name: 'data[].category'
+        description: 'Must not be greater than 10 characters.'
+        required: false
+        example: qwrsit
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'data[].wtc':
+        custom: []
+        name: 'data[].wtc'
+        description: 'Must not be greater than 1 character.'
+        required: false
+        example: c
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'data[].aircraft_desc':
+        custom: []
+        name: 'data[].aircraft_desc'
+        description: 'Must not be greater than 5 characters.'
+        required: false
+        example: p
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
       'data[].flight':
         custom: []
         name: 'data[].flight'
         description: 'Must not be greater than 20 characters.'
         required: false
-        example: yvdljnikhwaykcmy
+        example: scqldzsnrwtujwvl
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1680,7 +1821,7 @@ endpoints:
         name: 'data[].squawk'
         description: 'Must not be greater than 10 characters.'
         required: false
-        example: uwpwlv
+        example: xjklqp
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1691,7 +1832,7 @@ endpoints:
         name: 'data[].lat'
         description: 'Must be between -90 and 90.'
         required: false
-        example: -90
+        example: -89
         type: number
         enumValues: []
         exampleWasSpecified: false
@@ -1713,7 +1854,7 @@ endpoints:
         name: 'data[].altitude'
         description: 'Must be at least 0. Must not be greater than 60000.'
         required: false
-        example: 5
+        example: 7
         type: number
         enumValues: []
         exampleWasSpecified: false
@@ -1724,7 +1865,7 @@ endpoints:
         name: 'data[].speed'
         description: 'Must be at least 0. Must not be greater than 1000.'
         required: false
-        example: 10
+        example: 4
         type: number
         enumValues: []
         exampleWasSpecified: false
@@ -1746,7 +1887,7 @@ endpoints:
         name: 'data[].vert_rate'
         description: 'Must be between -100 and 100.'
         required: false
-        example: -99
+        example: -100
         type: number
         enumValues: []
         exampleWasSpecified: false
@@ -1796,12 +1937,34 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         deprecated: false
+      'data[].nic':
+        custom: []
+        name: 'data[].nic'
+        description: 'Must be between 0 and 11.'
+        required: false
+        example: 0
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      'data[].rc':
+        custom: []
+        name: 'data[].rc'
+        description: 'Must be at least 0.'
+        required: false
+        example: 60
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
       'data[].emergency':
         custom: []
         name: 'data[].emergency'
         description: 'Must not be greater than 20 characters.'
         required: false
-        example: yvdljnikhwaykcmy
+        example: dljnikhwaykcmyuw
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1812,19 +1975,26 @@ endpoints:
       data:
         -
           icao: bngzmi
-          flight: yvdljnikhwaykcmy
-          squawk: uwpwlv
-          lat: -90
+          registration: yvdljnikhwaykcmy
+          aircraft_type: uwpwlv
+          category: qwrsit
+          wtc: c
+          aircraft_desc: p
+          flight: scqldzsnrwtujwvl
+          squawk: xjklqp
+          lat: -89
           lon: -180
-          altitude: 5
-          speed: 10
+          altitude: 7
+          speed: 4
           track: 0
-          vert_rate: -99
+          vert_rate: -100
           seen: 4326.41688
           seen_pos: 4326.41688
           messages: 77
           rssi: -100
-          emergency: yvdljnikhwaykcmy
+          nic: 0
+          rc: 60
+          emergency: dljnikhwaykcmyuw
     fileParameters: []
     responses: []
     responseFields: []
@@ -1944,6 +2114,17 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         deprecated: false
+      read_at:
+        custom: []
+        name: read_at
+        description: 'Must be a valid date. Must be a date after or equal to <code>2000-01-01</code>. Must be a date before or equal to <code>2026-09-17 14:24:30</code>.'
+        required: false
+        example: '2022-10-12'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
       energy:
         custom: []
         name: energy
@@ -1958,6 +2139,7 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       duration: 22
+      read_at: '2022-10-12'
       energy: []
     fileParameters: []
     responses: []
@@ -2166,6 +2348,28 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         deprecated: false
+      battery_voltage:
+        custom: []
+        name: battery_voltage
+        description: ''
+        required: false
+        example: 4326.41688
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      software_version:
+        custom: []
+        name: software_version
+        description: 'Must not be greater than 50 characters.'
+        required: false
+        example: m
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
       cpu:
         custom: []
         name: cpu
@@ -2248,6 +2452,8 @@ endpoints:
       temp: 4326.41688
       voltage: 4326.41688
       battery_level: 0
+      battery_voltage: 4326.41688
+      software_version: m
       cpu: 0
       disk: 0
       ram: 1
@@ -2492,7 +2698,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-12 21:18:06'
+        example: '2026-09-17 13:24:30'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2503,7 +2709,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-12 21:18:06'
+        example: '2026-09-17 13:24:30'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2578,8 +2784,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-09-12 21:18:06'
-      end_at: '2026-09-12 21:18:06'
+      start_at: '2026-09-17 13:24:30'
+      end_at: '2026-09-17 13:24:30'
       duration: 16
       pulsations: 39
       pulsations_special_keys: 84
@@ -2654,7 +2860,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-12 21:18:06'
+        example: '2026-09-17 13:24:30'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2665,7 +2871,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-12 21:18:06'
+        example: '2026-09-17 13:24:30'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2751,8 +2957,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-09-12 21:18:06'
-      end_at: '2026-09-12 21:18:06'
+      start_at: '2026-09-17 13:24:30'
+      end_at: '2026-09-17 13:24:30'
       duration: 16
       clicks_left: 39
       clicks_right: 84
@@ -3088,7 +3294,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - humidity
+          - light
         type: 'string[]'
         enumValues:
           - temperature
@@ -3107,7 +3313,7 @@ endpoints:
         name: location_type
         description: ''
         required: false
-        example: outdoor
+        example: indoor
         type: string
         enumValues:
           - indoor
@@ -3117,8 +3323,8 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - humidity
-      location_type: outdoor
+        - light
+      location_type: indoor
     fileParameters: []
     responses:
       -
@@ -3181,7 +3387,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - wind
+          - air_quality
         type: 'string[]'
         enumValues:
           - temperature
@@ -3197,7 +3403,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - wind
+        - air_quality
     fileParameters: []
     responses:
       -

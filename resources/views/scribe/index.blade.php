@@ -220,6 +220,49 @@
                             </li>
                                                                         </ul>
                             </ul>
+                    <ul id="tocify-header-impresoras" class="tocify-header">
+                <li class="tocify-item level-1" data-unique="impresoras">
+                    <a href="#impresoras">Impresoras</a>
+                </li>
+                                    <ul id="tocify-subheader-impresoras" class="tocify-subheader">
+                                                    <li class="tocify-item level-2" data-unique="impresoras-GETapi-v2-printers">
+                                <a href="#impresoras-GETapi-v2-printers">Listar impresoras accesibles.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="impresoras-GETapi-v2-printers--id-">
+                                <a href="#impresoras-GETapi-v2-printers--id-">Ficha de una impresora física.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="impresoras-GETapi-v2-printers--printer_id--jobs">
+                                <a href="#impresoras-GETapi-v2-printers--printer_id--jobs">Listar trabajos de una impresora.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="impresoras-GETapi-v2-printers--printer_id--favorites">
+                                <a href="#impresoras-GETapi-v2-printers--printer_id--favorites">Listar plantillas favoritas de una impresora.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="impresoras-GETapi-v2-printers-jobs--id-">
+                                <a href="#impresoras-GETapi-v2-printers-jobs--id-">Detalle de un trabajo concreto.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="impresoras-POSTapi-v2-printers--printer_id--jobs">
+                                <a href="#impresoras-POSTapi-v2-printers--printer_id--jobs">Encolar nuevo trabajo de impresión.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="impresoras-POSTapi-v2-printers-jobs--job_id--reprint">
+                                <a href="#impresoras-POSTapi-v2-printers-jobs--job_id--reprint">Reimprimir un trabajo existente duplicándolo en la cola.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="impresoras-PATCHapi-v2-printers-jobs--job_id--favorite">
+                                <a href="#impresoras-PATCHapi-v2-printers-jobs--job_id--favorite">Alternar o marcar trabajo como favorito / plantilla.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="impresoras-DELETEapi-v2-printers-jobs--id-">
+                                <a href="#impresoras-DELETEapi-v2-printers-jobs--id-">Cancelar o eliminar trabajo de impresión.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="impresoras-POSTapi-v2-printers--printer_id--jobs-next">
+                                <a href="#impresoras-POSTapi-v2-printers--printer_id--jobs-next">Reclamar siguiente trabajo disponible de forma atómica.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="impresoras-PATCHapi-v2-printers-jobs--job_id--status">
+                                <a href="#impresoras-PATCHapi-v2-printers-jobs--job_id--status">Notificar resultado de la impresión física.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="impresoras-POSTapi-v2-printers--printer_id--heartbeat">
+                                <a href="#impresoras-POSTapi-v2-printers--printer_id--heartbeat">Reportar latido y telemetría (Heartbeat).</a>
+                            </li>
+                                                                        </ul>
+                            </ul>
             </div>
 
     <ul class="toc-footer" id="toc-footer">
@@ -229,7 +272,7 @@
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: September 12, 2026</li>
+        <li>Last updated: September 17, 2026</li>
     </ul>
 </div>
 
@@ -555,10 +598,10 @@ añade <code>device:{id}</code>. No emite nunca el comodín ni la ability de ses
     --data "{
     \"device_id\": 16,
     \"abilities\": [
-        \"energy:write\"
+        \"keycounter:write\"
     ],
     \"name\": \"n\",
-    \"expires_at\": \"2052-10-06\"
+    \"expires_at\": \"2052-10-11\"
 }"
 </code></pre></div>
 
@@ -576,10 +619,10 @@ const headers = {
 let body = {
     "device_id": 16,
     "abilities": [
-        "energy:write"
+        "keycounter:write"
     ],
     "name": "n",
-    "expires_at": "2052-10-06"
+    "expires_at": "2052-10-11"
 };
 
 fetch(url, {
@@ -690,7 +733,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     <br>
 
 Must be one of:
-<ul style="list-style-type: square;"><li><code>hardware:read</code></li> <li><code>hardware:write</code></li> <li><code>energy:read</code></li> <li><code>energy:write</code></li> <li><code>weatherstation:read</code></li> <li><code>weatherstation:write</code></li> <li><code>keycounter:read</code></li> <li><code>keycounter:write</code></li> <li><code>smartplant:read</code></li> <li><code>smartplant:write</code></li> <li><code>airflight:read</code></li> <li><code>airflight:write</code></li></ul>
+<ul style="list-style-type: square;"><li><code>hardware:read</code></li> <li><code>hardware:write</code></li> <li><code>energy:read</code></li> <li><code>energy:write</code></li> <li><code>weatherstation:read</code></li> <li><code>weatherstation:write</code></li> <li><code>keycounter:read</code></li> <li><code>keycounter:write</code></li> <li><code>smartplant:read</code></li> <li><code>smartplant:write</code></li> <li><code>airflight:read</code></li> <li><code>airflight:write</code></li> <li><code>printers:read</code></li> <li><code>printers:write</code></li></ul>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>name</code></b>&nbsp;&nbsp;
@@ -711,10 +754,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="expires_at"                data-endpoint="POSTapi-v2-auth-tokens-devices"
-               value="2052-10-06"
+               value="2052-10-11"
                data-component="body">
     <br>
-<p>Must be a valid date. Must be a date after <code>now</code>. Example: <code>2052-10-06</code></p>
+<p>Must be a valid date. Must be a date after <code>now</code>. Example: <code>2052-10-11</code></p>
         </div>
         </form>
 
@@ -3746,19 +3789,26 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"icao\": \"ngzmiy\",
-    \"flight\": \"vdljnikhwaykcmyu\",
-    \"squawk\": \"wpwlvq\",
+    \"registration\": \"vdljnikhwaykcmyu\",
+    \"aircraft_type\": \"wpwlvq\",
+    \"category\": \"wrsitc\",
+    \"wtc\": \"p\",
+    \"aircraft_desc\": \"s\",
+    \"flight\": \"cqldzsnrwtujwvlx\",
+    \"squawk\": \"jklqpp\",
     \"lat\": -90,
-    \"lon\": -179,
-    \"altitude\": 10,
-    \"speed\": 20,
-    \"track\": 1,
-    \"vert_rate\": -100,
+    \"lon\": -180,
+    \"altitude\": 4,
+    \"speed\": 25,
+    \"track\": 0,
+    \"vert_rate\": -99,
     \"seen\": 4326.41688,
     \"seen_pos\": 4326.41688,
     \"messages\": 77,
     \"rssi\": -100,
-    \"emergency\": \"yvdljnikhwaykcmy\"
+    \"nic\": 0,
+    \"rc\": 60,
+    \"emergency\": \"dljnikhwaykcmyuw\"
 }"
 </code></pre></div>
 
@@ -3776,19 +3826,26 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "icao": "ngzmiy",
-    "flight": "vdljnikhwaykcmyu",
-    "squawk": "wpwlvq",
+    "registration": "vdljnikhwaykcmyu",
+    "aircraft_type": "wpwlvq",
+    "category": "wrsitc",
+    "wtc": "p",
+    "aircraft_desc": "s",
+    "flight": "cqldzsnrwtujwvlx",
+    "squawk": "jklqpp",
     "lat": -90,
-    "lon": -179,
-    "altitude": 10,
-    "speed": 20,
-    "track": 1,
-    "vert_rate": -100,
+    "lon": -180,
+    "altitude": 4,
+    "speed": 25,
+    "track": 0,
+    "vert_rate": -99,
     "seen": 4326.41688,
     "seen_pos": 4326.41688,
     "messages": 77,
     "rssi": -100,
-    "emergency": "yvdljnikhwaykcmy"
+    "nic": 0,
+    "rc": 60,
+    "emergency": "dljnikhwaykcmyuw"
 };
 
 fetch(url, {
@@ -3910,16 +3967,76 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>Must not be greater than 10 characters. Example: <code>ngzmiy</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>registration</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="registration"                data-endpoint="POSTapi-v2-airflight-aircrafts"
+               value="vdljnikhwaykcmyu"
+               data-component="body">
+    <br>
+<p>Must not be greater than 20 characters. Example: <code>vdljnikhwaykcmyu</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>aircraft_type</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="aircraft_type"                data-endpoint="POSTapi-v2-airflight-aircrafts"
+               value="wpwlvq"
+               data-component="body">
+    <br>
+<p>Must not be greater than 10 characters. Example: <code>wpwlvq</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>category</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="category"                data-endpoint="POSTapi-v2-airflight-aircrafts"
+               value="wrsitc"
+               data-component="body">
+    <br>
+<p>Must not be greater than 10 characters. Example: <code>wrsitc</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>wtc</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="wtc"                data-endpoint="POSTapi-v2-airflight-aircrafts"
+               value="p"
+               data-component="body">
+    <br>
+<p>Must not be greater than 1 character. Example: <code>p</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>aircraft_desc</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="aircraft_desc"                data-endpoint="POSTapi-v2-airflight-aircrafts"
+               value="s"
+               data-component="body">
+    <br>
+<p>Must not be greater than 5 characters. Example: <code>s</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>flight</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
 <i>optional</i> &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
                               name="flight"                data-endpoint="POSTapi-v2-airflight-aircrafts"
-               value="vdljnikhwaykcmyu"
+               value="cqldzsnrwtujwvlx"
                data-component="body">
     <br>
-<p>Must not be greater than 20 characters. Example: <code>vdljnikhwaykcmyu</code></p>
+<p>Must not be greater than 20 characters. Example: <code>cqldzsnrwtujwvlx</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>squawk</code></b>&nbsp;&nbsp;
@@ -3928,10 +4045,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="squawk"                data-endpoint="POSTapi-v2-airflight-aircrafts"
-               value="wpwlvq"
+               value="jklqpp"
                data-component="body">
     <br>
-<p>Must not be greater than 10 characters. Example: <code>wpwlvq</code></p>
+<p>Must not be greater than 10 characters. Example: <code>jklqpp</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>lat</code></b>&nbsp;&nbsp;
@@ -3952,10 +4069,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="lon"                data-endpoint="POSTapi-v2-airflight-aircrafts"
-               value="-179"
+               value="-180"
                data-component="body">
     <br>
-<p>Must be between -180 and 180. Example: <code>-179</code></p>
+<p>Must be between -180 and 180. Example: <code>-180</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>altitude</code></b>&nbsp;&nbsp;
@@ -3964,10 +4081,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="altitude"                data-endpoint="POSTapi-v2-airflight-aircrafts"
-               value="10"
+               value="4"
                data-component="body">
     <br>
-<p>Must be at least 0. Must not be greater than 60000. Example: <code>10</code></p>
+<p>Must be at least 0. Must not be greater than 60000. Example: <code>4</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>speed</code></b>&nbsp;&nbsp;
@@ -3976,10 +4093,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="speed"                data-endpoint="POSTapi-v2-airflight-aircrafts"
-               value="20"
+               value="25"
                data-component="body">
     <br>
-<p>Must be at least 0. Must not be greater than 1000. Example: <code>20</code></p>
+<p>Must be at least 0. Must not be greater than 1000. Example: <code>25</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>track</code></b>&nbsp;&nbsp;
@@ -3988,10 +4105,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="track"                data-endpoint="POSTapi-v2-airflight-aircrafts"
-               value="1"
+               value="0"
                data-component="body">
     <br>
-<p>Must be between 0 and 360. Example: <code>1</code></p>
+<p>Must be between 0 and 360. Example: <code>0</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>vert_rate</code></b>&nbsp;&nbsp;
@@ -4000,10 +4117,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="vert_rate"                data-endpoint="POSTapi-v2-airflight-aircrafts"
-               value="-100"
+               value="-99"
                data-component="body">
     <br>
-<p>Must be between -100 and 100. Example: <code>-100</code></p>
+<p>Must be between -100 and 100. Example: <code>-99</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>seen</code></b>&nbsp;&nbsp;
@@ -4054,16 +4171,40 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>Must be between -100 and 0. Example: <code>-100</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>nic</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="nic"                data-endpoint="POSTapi-v2-airflight-aircrafts"
+               value="0"
+               data-component="body">
+    <br>
+<p>Must be between 0 and 11. Example: <code>0</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>rc</code></b>&nbsp;&nbsp;
+<small>number</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="rc"                data-endpoint="POSTapi-v2-airflight-aircrafts"
+               value="60"
+               data-component="body">
+    <br>
+<p>Must be at least 0. Example: <code>60</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>emergency</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
 <i>optional</i> &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
                               name="emergency"                data-endpoint="POSTapi-v2-airflight-aircrafts"
-               value="yvdljnikhwaykcmy"
+               value="dljnikhwaykcmyuw"
                data-component="body">
     <br>
-<p>Must not be greater than 20 characters. Example: <code>yvdljnikhwaykcmy</code></p>
+<p>Must not be greater than 20 characters. Example: <code>dljnikhwaykcmyuw</code></p>
         </div>
         </form>
 
@@ -4088,19 +4229,26 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"data\": [
         {
             \"icao\": \"bngzmi\",
-            \"flight\": \"yvdljnikhwaykcmy\",
-            \"squawk\": \"uwpwlv\",
-            \"lat\": -90,
+            \"registration\": \"yvdljnikhwaykcmy\",
+            \"aircraft_type\": \"uwpwlv\",
+            \"category\": \"qwrsit\",
+            \"wtc\": \"c\",
+            \"aircraft_desc\": \"p\",
+            \"flight\": \"scqldzsnrwtujwvl\",
+            \"squawk\": \"xjklqp\",
+            \"lat\": -89,
             \"lon\": -180,
-            \"altitude\": 5,
-            \"speed\": 10,
+            \"altitude\": 7,
+            \"speed\": 4,
             \"track\": 0,
-            \"vert_rate\": -99,
+            \"vert_rate\": -100,
             \"seen\": 4326.41688,
             \"seen_pos\": 4326.41688,
             \"messages\": 77,
             \"rssi\": -100,
-            \"emergency\": \"yvdljnikhwaykcmy\"
+            \"nic\": 0,
+            \"rc\": 60,
+            \"emergency\": \"dljnikhwaykcmyuw\"
         }
     ]
 }"
@@ -4122,19 +4270,26 @@ let body = {
     "data": [
         {
             "icao": "bngzmi",
-            "flight": "yvdljnikhwaykcmy",
-            "squawk": "uwpwlv",
-            "lat": -90,
+            "registration": "yvdljnikhwaykcmy",
+            "aircraft_type": "uwpwlv",
+            "category": "qwrsit",
+            "wtc": "c",
+            "aircraft_desc": "p",
+            "flight": "scqldzsnrwtujwvl",
+            "squawk": "xjklqp",
+            "lat": -89,
             "lon": -180,
-            "altitude": 5,
-            "speed": 10,
+            "altitude": 7,
+            "speed": 4,
             "track": 0,
-            "vert_rate": -99,
+            "vert_rate": -100,
             "seen": 4326.41688,
             "seen_pos": 4326.41688,
             "messages": 77,
             "rssi": -100,
-            "emergency": "yvdljnikhwaykcmy"
+            "nic": 0,
+            "rc": 60,
+            "emergency": "dljnikhwaykcmyuw"
         }
     ]
 };
@@ -4268,16 +4423,76 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>Must not be greater than 10 characters. Example: <code>bngzmi</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>registration</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="data.0.registration"                data-endpoint="POSTapi-v2-airflight-aircrafts-batch"
+               value="yvdljnikhwaykcmy"
+               data-component="body">
+    <br>
+<p>Must not be greater than 20 characters. Example: <code>yvdljnikhwaykcmy</code></p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>aircraft_type</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="data.0.aircraft_type"                data-endpoint="POSTapi-v2-airflight-aircrafts-batch"
+               value="uwpwlv"
+               data-component="body">
+    <br>
+<p>Must not be greater than 10 characters. Example: <code>uwpwlv</code></p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>category</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="data.0.category"                data-endpoint="POSTapi-v2-airflight-aircrafts-batch"
+               value="qwrsit"
+               data-component="body">
+    <br>
+<p>Must not be greater than 10 characters. Example: <code>qwrsit</code></p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>wtc</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="data.0.wtc"                data-endpoint="POSTapi-v2-airflight-aircrafts-batch"
+               value="c"
+               data-component="body">
+    <br>
+<p>Must not be greater than 1 character. Example: <code>c</code></p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>aircraft_desc</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="data.0.aircraft_desc"                data-endpoint="POSTapi-v2-airflight-aircrafts-batch"
+               value="p"
+               data-component="body">
+    <br>
+<p>Must not be greater than 5 characters. Example: <code>p</code></p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>flight</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
 <i>optional</i> &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
                               name="data.0.flight"                data-endpoint="POSTapi-v2-airflight-aircrafts-batch"
-               value="yvdljnikhwaykcmy"
+               value="scqldzsnrwtujwvl"
                data-component="body">
     <br>
-<p>Must not be greater than 20 characters. Example: <code>yvdljnikhwaykcmy</code></p>
+<p>Must not be greater than 20 characters. Example: <code>scqldzsnrwtujwvl</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>squawk</code></b>&nbsp;&nbsp;
@@ -4286,10 +4501,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="data.0.squawk"                data-endpoint="POSTapi-v2-airflight-aircrafts-batch"
-               value="uwpwlv"
+               value="xjklqp"
                data-component="body">
     <br>
-<p>Must not be greater than 10 characters. Example: <code>uwpwlv</code></p>
+<p>Must not be greater than 10 characters. Example: <code>xjklqp</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>lat</code></b>&nbsp;&nbsp;
@@ -4298,10 +4513,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="data.0.lat"                data-endpoint="POSTapi-v2-airflight-aircrafts-batch"
-               value="-90"
+               value="-89"
                data-component="body">
     <br>
-<p>Must be between -90 and 90. Example: <code>-90</code></p>
+<p>Must be between -90 and 90. Example: <code>-89</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>lon</code></b>&nbsp;&nbsp;
@@ -4322,10 +4537,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="data.0.altitude"                data-endpoint="POSTapi-v2-airflight-aircrafts-batch"
-               value="5"
+               value="7"
                data-component="body">
     <br>
-<p>Must be at least 0. Must not be greater than 60000. Example: <code>5</code></p>
+<p>Must be at least 0. Must not be greater than 60000. Example: <code>7</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>speed</code></b>&nbsp;&nbsp;
@@ -4334,10 +4549,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="data.0.speed"                data-endpoint="POSTapi-v2-airflight-aircrafts-batch"
-               value="10"
+               value="4"
                data-component="body">
     <br>
-<p>Must be at least 0. Must not be greater than 1000. Example: <code>10</code></p>
+<p>Must be at least 0. Must not be greater than 1000. Example: <code>4</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>track</code></b>&nbsp;&nbsp;
@@ -4358,10 +4573,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="data.0.vert_rate"                data-endpoint="POSTapi-v2-airflight-aircrafts-batch"
-               value="-99"
+               value="-100"
                data-component="body">
     <br>
-<p>Must be between -100 and 100. Example: <code>-99</code></p>
+<p>Must be between -100 and 100. Example: <code>-100</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>seen</code></b>&nbsp;&nbsp;
@@ -4412,16 +4627,40 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>Must be between -100 and 0. Example: <code>-100</code></p>
                     </div>
                                                                 <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>nic</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="data.0.nic"                data-endpoint="POSTapi-v2-airflight-aircrafts-batch"
+               value="0"
+               data-component="body">
+    <br>
+<p>Must be between 0 and 11. Example: <code>0</code></p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
+                        <b style="line-height: 2;"><code>rc</code></b>&nbsp;&nbsp;
+<small>number</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="data.0.rc"                data-endpoint="POSTapi-v2-airflight-aircrafts-batch"
+               value="60"
+               data-component="body">
+    <br>
+<p>Must be at least 0. Example: <code>60</code></p>
+                    </div>
+                                                                <div style="margin-left: 14px; clear: unset;">
                         <b style="line-height: 2;"><code>emergency</code></b>&nbsp;&nbsp;
 <small>string</small>&nbsp;
 <i>optional</i> &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
                               name="data.0.emergency"                data-endpoint="POSTapi-v2-airflight-aircrafts-batch"
-               value="yvdljnikhwaykcmy"
+               value="dljnikhwaykcmyuw"
                data-component="body">
     <br>
-<p>Must not be greater than 20 characters. Example: <code>yvdljnikhwaykcmy</code></p>
+<p>Must not be greater than 20 characters. Example: <code>dljnikhwaykcmyuw</code></p>
                     </div>
                                     </details>
         </div>
@@ -4579,6 +4818,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"duration\": 22,
+    \"read_at\": \"2022-10-12\",
     \"energy\": []
 }"
 </code></pre></div>
@@ -4597,6 +4837,7 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "duration": 22,
+    "read_at": "2022-10-12",
     "energy": []
 };
 
@@ -4729,6 +4970,18 @@ You can check the Dev Tools console for debugging information.</code></pre>
                data-component="body">
     <br>
 <p>Must be at least 1. Example: <code>22</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>read_at</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="read_at"                data-endpoint="POSTapi-v2-energy-readings"
+               value="2022-10-12"
+               data-component="body">
+    <br>
+<p>Must be a valid date. Must be a date after or equal to <code>2000-01-01</code>. Must be a date before or equal to <code>2026-09-17 14:24:30</code>. Example: <code>2022-10-12</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>energy</code></b>&nbsp;&nbsp;
@@ -5076,6 +5329,8 @@ sobrescribiendo el mismo. Repetir la petición deja el sistema igual.</p>
     \"temp\": 4326.41688,
     \"voltage\": 4326.41688,
     \"battery_level\": 0,
+    \"battery_voltage\": 4326.41688,
+    \"software_version\": \"m\",
     \"cpu\": 0,
     \"disk\": 0,
     \"ram\": 1,
@@ -5101,6 +5356,8 @@ let body = {
     "temp": 4326.41688,
     "voltage": 4326.41688,
     "battery_level": 0,
+    "battery_voltage": 4326.41688,
+    "software_version": "m",
     "cpu": 0,
     "disk": 0,
     "ram": 1,
@@ -5251,6 +5508,30 @@ You can check the Dev Tools console for debugging information.</code></pre>
                data-component="body">
     <br>
 <p>Must be between 0 and 100. Example: <code>0</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>battery_voltage</code></b>&nbsp;&nbsp;
+<small>number</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="battery_voltage"                data-endpoint="PUTapi-v2-hardware-devices--device_id--status"
+               value="4326.41688"
+               data-component="body">
+    <br>
+<p>Example: <code>4326.41688</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>software_version</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="software_version"                data-endpoint="PUTapi-v2-hardware-devices--device_id--status"
+               value="m"
+               data-component="body">
+    <br>
+<p>Must not be greater than 50 characters. Example: <code>m</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>cpu</code></b>&nbsp;&nbsp;
@@ -5801,8 +6082,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"user_id\": 16,
-    \"start_at\": \"2026-09-12 21:18:06\",
-    \"end_at\": \"2026-09-12 21:18:06\",
+    \"start_at\": \"2026-09-17 13:24:30\",
+    \"end_at\": \"2026-09-17 13:24:30\",
     \"duration\": 16,
     \"pulsations\": 39,
     \"pulsations_special_keys\": 84,
@@ -5826,8 +6107,8 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "user_id": 16,
-    "start_at": "2026-09-12 21:18:06",
-    "end_at": "2026-09-12 21:18:06",
+    "start_at": "2026-09-17 13:24:30",
+    "end_at": "2026-09-17 13:24:30",
     "duration": 16,
     "pulsations": 39,
     "pulsations_special_keys": 84,
@@ -5961,10 +6242,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_at"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="2026-09-12 21:18:06"
+               value="2026-09-17 13:24:30"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-12 21:18:06</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-17 13:24:30</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_at</code></b>&nbsp;&nbsp;
@@ -5973,10 +6254,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_at"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="2026-09-12 21:18:06"
+               value="2026-09-17 13:24:30"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-12 21:18:06</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-17 13:24:30</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
@@ -6071,8 +6352,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"user_id\": 16,
-    \"start_at\": \"2026-09-12 21:18:06\",
-    \"end_at\": \"2026-09-12 21:18:06\",
+    \"start_at\": \"2026-09-17 13:24:30\",
+    \"end_at\": \"2026-09-17 13:24:30\",
     \"duration\": 16,
     \"clicks_left\": 39,
     \"clicks_right\": 84,
@@ -6097,8 +6378,8 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "user_id": 16,
-    "start_at": "2026-09-12 21:18:06",
-    "end_at": "2026-09-12 21:18:06",
+    "start_at": "2026-09-17 13:24:30",
+    "end_at": "2026-09-17 13:24:30",
     "duration": 16,
     "clicks_left": 39,
     "clicks_right": 84,
@@ -6233,10 +6514,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_at"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="2026-09-12 21:18:06"
+               value="2026-09-17 13:24:30"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-12 21:18:06</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-17 13:24:30</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_at</code></b>&nbsp;&nbsp;
@@ -6245,10 +6526,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_at"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="2026-09-12 21:18:06"
+               value="2026-09-17 13:24:30"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-12 21:18:06</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-17 13:24:30</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
@@ -6963,9 +7244,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"sensors\": [
-        \"humidity\"
+        \"light\"
     ],
-    \"location_type\": \"outdoor\"
+    \"location_type\": \"indoor\"
 }"
 </code></pre></div>
 
@@ -6982,9 +7263,9 @@ const headers = {
 
 let body = {
     "sensors": [
-        "humidity"
+        "light"
     ],
-    "location_type": "outdoor"
+    "location_type": "indoor"
 };
 
 fetch(url, {
@@ -7114,10 +7395,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="location_type"                data-endpoint="GETapi-v2-weather-stations"
-               value="outdoor"
+               value="indoor"
                data-component="body">
     <br>
-<p>Example: <code>outdoor</code></p>
+<p>Example: <code>indoor</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>indoor</code></li> <li><code>outdoor</code></li></ul>
         </div>
@@ -7141,7 +7422,7 @@ Must be one of:
     --header "Accept: application/json" \
     --data "{
     \"sensors\": [
-        \"wind\"
+        \"air_quality\"
     ]
 }"
 </code></pre></div>
@@ -7159,7 +7440,7 @@ const headers = {
 
 let body = {
     "sensors": [
-        "wind"
+        "air_quality"
     ]
 };
 
@@ -8762,6 +9043,1835 @@ You can check the Dev Tools console for debugging information.</code></pre>
 <p>Example: <code>|{+-0p</code></p>
             </div>
                     </form>
+
+                <h1 id="impresoras">Impresoras</h1>
+
+    
+
+                                <h2 id="impresoras-GETapi-v2-printers">Listar impresoras accesibles.</h2>
+
+<p>
+</p>
+
+<p>Devuelve una colección paginada de impresoras filtrables por estado y tipo.</p>
+
+<span id="example-requests-GETapi-v2-printers">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "https://api.raupulus.dev/api/v2/printers" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "https://api.raupulus.dev/api/v2/printers"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v2-printers">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+content-language: en
+vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Unauthenticated&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v2-printers" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v2-printers"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v2-printers"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v2-printers" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v2-printers">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v2-printers" data-method="GET"
+      data-path="api/v2/printers"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-printers', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v2-printers"
+                    onclick="tryItOut('GETapi-v2-printers');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v2-printers"
+                    onclick="cancelTryOut('GETapi-v2-printers');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v2-printers"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v2/printers</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v2-printers"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v2-printers"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
+                    <h2 id="impresoras-GETapi-v2-printers--id-">Ficha de una impresora física.</h2>
+
+<p>
+</p>
+
+<p>Devuelve la configuración, formatos soportados y contador de trabajos pendientes.</p>
+
+<span id="example-requests-GETapi-v2-printers--id-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "https://api.raupulus.dev/api/v2/printers/16" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "https://api.raupulus.dev/api/v2/printers/16"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v2-printers--id-">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+content-language: en
+vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Unauthenticated&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v2-printers--id-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v2-printers--id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v2-printers--id-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v2-printers--id-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v2-printers--id-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v2-printers--id-" data-method="GET"
+      data-path="api/v2/printers/{id}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-printers--id-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v2-printers--id-"
+                    onclick="tryItOut('GETapi-v2-printers--id-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v2-printers--id-"
+                    onclick="cancelTryOut('GETapi-v2-printers--id-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v2-printers--id-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v2/printers/{id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v2-printers--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v2-printers--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="id"                data-endpoint="GETapi-v2-printers--id-"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the printer. Example: <code>16</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="impresoras-GETapi-v2-printers--printer_id--jobs">Listar trabajos de una impresora.</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-v2-printers--printer_id--jobs">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "https://api.raupulus.dev/api/v2/printers/16/jobs" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "https://api.raupulus.dev/api/v2/printers/16/jobs"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v2-printers--printer_id--jobs">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+content-language: en
+vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Unauthenticated&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v2-printers--printer_id--jobs" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v2-printers--printer_id--jobs"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v2-printers--printer_id--jobs"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v2-printers--printer_id--jobs" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v2-printers--printer_id--jobs">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v2-printers--printer_id--jobs" data-method="GET"
+      data-path="api/v2/printers/{printer_id}/jobs"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-printers--printer_id--jobs', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v2-printers--printer_id--jobs"
+                    onclick="tryItOut('GETapi-v2-printers--printer_id--jobs');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v2-printers--printer_id--jobs"
+                    onclick="cancelTryOut('GETapi-v2-printers--printer_id--jobs');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v2-printers--printer_id--jobs"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v2/printers/{printer_id}/jobs</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v2-printers--printer_id--jobs"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v2-printers--printer_id--jobs"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>printer_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="printer_id"                data-endpoint="GETapi-v2-printers--printer_id--jobs"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the printer. Example: <code>16</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="impresoras-GETapi-v2-printers--printer_id--favorites">Listar plantillas favoritas de una impresora.</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-v2-printers--printer_id--favorites">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "https://api.raupulus.dev/api/v2/printers/16/favorites" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "https://api.raupulus.dev/api/v2/printers/16/favorites"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v2-printers--printer_id--favorites">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+content-language: en
+vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Unauthenticated&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v2-printers--printer_id--favorites" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v2-printers--printer_id--favorites"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v2-printers--printer_id--favorites"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v2-printers--printer_id--favorites" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v2-printers--printer_id--favorites">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v2-printers--printer_id--favorites" data-method="GET"
+      data-path="api/v2/printers/{printer_id}/favorites"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-printers--printer_id--favorites', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v2-printers--printer_id--favorites"
+                    onclick="tryItOut('GETapi-v2-printers--printer_id--favorites');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v2-printers--printer_id--favorites"
+                    onclick="cancelTryOut('GETapi-v2-printers--printer_id--favorites');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v2-printers--printer_id--favorites"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v2/printers/{printer_id}/favorites</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v2-printers--printer_id--favorites"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v2-printers--printer_id--favorites"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>printer_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="printer_id"                data-endpoint="GETapi-v2-printers--printer_id--favorites"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the printer. Example: <code>16</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="impresoras-GETapi-v2-printers-jobs--id-">Detalle de un trabajo concreto.</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-v2-printers-jobs--id-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "https://api.raupulus.dev/api/v2/printers/jobs/16" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "https://api.raupulus.dev/api/v2/printers/jobs/16"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v2-printers-jobs--id-">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+content-language: en
+vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Unauthenticated&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v2-printers-jobs--id-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v2-printers-jobs--id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v2-printers-jobs--id-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v2-printers-jobs--id-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v2-printers-jobs--id-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v2-printers-jobs--id-" data-method="GET"
+      data-path="api/v2/printers/jobs/{id}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-printers-jobs--id-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v2-printers-jobs--id-"
+                    onclick="tryItOut('GETapi-v2-printers-jobs--id-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v2-printers-jobs--id-"
+                    onclick="cancelTryOut('GETapi-v2-printers-jobs--id-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v2-printers-jobs--id-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v2/printers/jobs/{id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v2-printers-jobs--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v2-printers-jobs--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="id"                data-endpoint="GETapi-v2-printers-jobs--id-"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the job. Example: <code>16</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="impresoras-POSTapi-v2-printers--printer_id--jobs">Encolar nuevo trabajo de impresión.</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-POSTapi-v2-printers--printer_id--jobs">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "https://api.raupulus.dev/api/v2/printers/16/jobs" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"content\": \"architecto\",
+    \"format\": \"architecto\",
+    \"note\": \"n\",
+    \"priority\": -100,
+    \"is_favorite\": false
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "https://api.raupulus.dev/api/v2/printers/16/jobs"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "content": "architecto",
+    "format": "architecto",
+    "note": "n",
+    "priority": -100,
+    "is_favorite": false
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-v2-printers--printer_id--jobs">
+</span>
+<span id="execution-results-POSTapi-v2-printers--printer_id--jobs" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-v2-printers--printer_id--jobs"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-v2-printers--printer_id--jobs"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-v2-printers--printer_id--jobs" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-v2-printers--printer_id--jobs">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-v2-printers--printer_id--jobs" data-method="POST"
+      data-path="api/v2/printers/{printer_id}/jobs"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-v2-printers--printer_id--jobs', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-v2-printers--printer_id--jobs"
+                    onclick="tryItOut('POSTapi-v2-printers--printer_id--jobs');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-v2-printers--printer_id--jobs"
+                    onclick="cancelTryOut('POSTapi-v2-printers--printer_id--jobs');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-v2-printers--printer_id--jobs"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/v2/printers/{printer_id}/jobs</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-v2-printers--printer_id--jobs"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-v2-printers--printer_id--jobs"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>printer_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="printer_id"                data-endpoint="POSTapi-v2-printers--printer_id--jobs"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the printer. Example: <code>16</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>content</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="content"                data-endpoint="POSTapi-v2-printers--printer_id--jobs"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>format</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="format"                data-endpoint="POSTapi-v2-printers--printer_id--jobs"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+Must be one of:
+<ul style="list-style-type: square;"><li><code>text</code></li> <li><code>escpos</code></li> <li><code>markdown</code></li> <li><code>json</code></li> <li><code>gcode</code></li></ul>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>note</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="note"                data-endpoint="POSTapi-v2-printers--printer_id--jobs"
+               value="n"
+               data-component="body">
+    <br>
+<p>Must not be greater than 255 characters. Example: <code>n</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>priority</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="priority"                data-endpoint="POSTapi-v2-printers--printer_id--jobs"
+               value="-100"
+               data-component="body">
+    <br>
+<p>Must be between -100 and 100. Example: <code>-100</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>is_favorite</code></b>&nbsp;&nbsp;
+<small>boolean</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <label data-endpoint="POSTapi-v2-printers--printer_id--jobs" style="display: none">
+            <input type="radio" name="is_favorite"
+                   value="true"
+                   data-endpoint="POSTapi-v2-printers--printer_id--jobs"
+                   data-component="body"             >
+            <code>true</code>
+        </label>
+        <label data-endpoint="POSTapi-v2-printers--printer_id--jobs" style="display: none">
+            <input type="radio" name="is_favorite"
+                   value="false"
+                   data-endpoint="POSTapi-v2-printers--printer_id--jobs"
+                   data-component="body"             >
+            <code>false</code>
+        </label>
+    <br>
+<p>Example: <code>false</code></p>
+        </div>
+        </form>
+
+                    <h2 id="impresoras-POSTapi-v2-printers-jobs--job_id--reprint">Reimprimir un trabajo existente duplicándolo en la cola.</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-POSTapi-v2-printers-jobs--job_id--reprint">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "https://api.raupulus.dev/api/v2/printers/jobs/16/reprint" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"priority\": -99
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "https://api.raupulus.dev/api/v2/printers/jobs/16/reprint"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "priority": -99
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-v2-printers-jobs--job_id--reprint">
+</span>
+<span id="execution-results-POSTapi-v2-printers-jobs--job_id--reprint" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-v2-printers-jobs--job_id--reprint"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-v2-printers-jobs--job_id--reprint"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-v2-printers-jobs--job_id--reprint" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-v2-printers-jobs--job_id--reprint">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-v2-printers-jobs--job_id--reprint" data-method="POST"
+      data-path="api/v2/printers/jobs/{job_id}/reprint"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-v2-printers-jobs--job_id--reprint', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-v2-printers-jobs--job_id--reprint"
+                    onclick="tryItOut('POSTapi-v2-printers-jobs--job_id--reprint');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-v2-printers-jobs--job_id--reprint"
+                    onclick="cancelTryOut('POSTapi-v2-printers-jobs--job_id--reprint');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-v2-printers-jobs--job_id--reprint"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/v2/printers/jobs/{job_id}/reprint</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-v2-printers-jobs--job_id--reprint"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-v2-printers-jobs--job_id--reprint"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>job_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="job_id"                data-endpoint="POSTapi-v2-printers-jobs--job_id--reprint"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the job. Example: <code>16</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>priority</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="priority"                data-endpoint="POSTapi-v2-printers-jobs--job_id--reprint"
+               value="-99"
+               data-component="body">
+    <br>
+<p>Must be between -100 and 100. Example: <code>-99</code></p>
+        </div>
+        </form>
+
+                    <h2 id="impresoras-PATCHapi-v2-printers-jobs--job_id--favorite">Alternar o marcar trabajo como favorito / plantilla.</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-PATCHapi-v2-printers-jobs--job_id--favorite">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request PATCH \
+    "https://api.raupulus.dev/api/v2/printers/jobs/16/favorite" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"is_favorite\": false
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "https://api.raupulus.dev/api/v2/printers/jobs/16/favorite"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "is_favorite": false
+};
+
+fetch(url, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-PATCHapi-v2-printers-jobs--job_id--favorite">
+</span>
+<span id="execution-results-PATCHapi-v2-printers-jobs--job_id--favorite" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-PATCHapi-v2-printers-jobs--job_id--favorite"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-PATCHapi-v2-printers-jobs--job_id--favorite"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-PATCHapi-v2-printers-jobs--job_id--favorite" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-PATCHapi-v2-printers-jobs--job_id--favorite">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-PATCHapi-v2-printers-jobs--job_id--favorite" data-method="PATCH"
+      data-path="api/v2/printers/jobs/{job_id}/favorite"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('PATCHapi-v2-printers-jobs--job_id--favorite', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-PATCHapi-v2-printers-jobs--job_id--favorite"
+                    onclick="tryItOut('PATCHapi-v2-printers-jobs--job_id--favorite');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-PATCHapi-v2-printers-jobs--job_id--favorite"
+                    onclick="cancelTryOut('PATCHapi-v2-printers-jobs--job_id--favorite');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-PATCHapi-v2-printers-jobs--job_id--favorite"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-purple">PATCH</small>
+            <b><code>api/v2/printers/jobs/{job_id}/favorite</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="PATCHapi-v2-printers-jobs--job_id--favorite"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="PATCHapi-v2-printers-jobs--job_id--favorite"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>job_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="job_id"                data-endpoint="PATCHapi-v2-printers-jobs--job_id--favorite"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the job. Example: <code>16</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>is_favorite</code></b>&nbsp;&nbsp;
+<small>boolean</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <label data-endpoint="PATCHapi-v2-printers-jobs--job_id--favorite" style="display: none">
+            <input type="radio" name="is_favorite"
+                   value="true"
+                   data-endpoint="PATCHapi-v2-printers-jobs--job_id--favorite"
+                   data-component="body"             >
+            <code>true</code>
+        </label>
+        <label data-endpoint="PATCHapi-v2-printers-jobs--job_id--favorite" style="display: none">
+            <input type="radio" name="is_favorite"
+                   value="false"
+                   data-endpoint="PATCHapi-v2-printers-jobs--job_id--favorite"
+                   data-component="body"             >
+            <code>false</code>
+        </label>
+    <br>
+<p>Example: <code>false</code></p>
+        </div>
+        </form>
+
+                    <h2 id="impresoras-DELETEapi-v2-printers-jobs--id-">Cancelar o eliminar trabajo de impresión.</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-DELETEapi-v2-printers-jobs--id-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request DELETE \
+    "https://api.raupulus.dev/api/v2/printers/jobs/16" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "https://api.raupulus.dev/api/v2/printers/jobs/16"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "DELETE",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-DELETEapi-v2-printers-jobs--id-">
+</span>
+<span id="execution-results-DELETEapi-v2-printers-jobs--id-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-DELETEapi-v2-printers-jobs--id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-DELETEapi-v2-printers-jobs--id-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-DELETEapi-v2-printers-jobs--id-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-DELETEapi-v2-printers-jobs--id-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-DELETEapi-v2-printers-jobs--id-" data-method="DELETE"
+      data-path="api/v2/printers/jobs/{id}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('DELETEapi-v2-printers-jobs--id-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-DELETEapi-v2-printers-jobs--id-"
+                    onclick="tryItOut('DELETEapi-v2-printers-jobs--id-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-DELETEapi-v2-printers-jobs--id-"
+                    onclick="cancelTryOut('DELETEapi-v2-printers-jobs--id-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-DELETEapi-v2-printers-jobs--id-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-red">DELETE</small>
+            <b><code>api/v2/printers/jobs/{id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="DELETEapi-v2-printers-jobs--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="DELETEapi-v2-printers-jobs--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="id"                data-endpoint="DELETEapi-v2-printers-jobs--id-"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the job. Example: <code>16</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="impresoras-POSTapi-v2-printers--printer_id--jobs-next">Reclamar siguiente trabajo disponible de forma atómica.</h2>
+
+<p>
+</p>
+
+<p>Consumido por el microcontrolador o agente físico para extraer un trabajo pendiente de la cola.</p>
+
+<span id="example-requests-POSTapi-v2-printers--printer_id--jobs-next">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "https://api.raupulus.dev/api/v2/printers/16/jobs/next" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "https://api.raupulus.dev/api/v2/printers/16/jobs/next"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "POST",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-v2-printers--printer_id--jobs-next">
+</span>
+<span id="execution-results-POSTapi-v2-printers--printer_id--jobs-next" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-v2-printers--printer_id--jobs-next"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-v2-printers--printer_id--jobs-next"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-v2-printers--printer_id--jobs-next" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-v2-printers--printer_id--jobs-next">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-v2-printers--printer_id--jobs-next" data-method="POST"
+      data-path="api/v2/printers/{printer_id}/jobs/next"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-v2-printers--printer_id--jobs-next', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-v2-printers--printer_id--jobs-next"
+                    onclick="tryItOut('POSTapi-v2-printers--printer_id--jobs-next');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-v2-printers--printer_id--jobs-next"
+                    onclick="cancelTryOut('POSTapi-v2-printers--printer_id--jobs-next');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-v2-printers--printer_id--jobs-next"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/v2/printers/{printer_id}/jobs/next</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-v2-printers--printer_id--jobs-next"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-v2-printers--printer_id--jobs-next"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>printer_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="printer_id"                data-endpoint="POSTapi-v2-printers--printer_id--jobs-next"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the printer. Example: <code>16</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>hardware_device_info</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="hardware_device_info"                data-endpoint="POSTapi-v2-printers--printer_id--jobs-next"
+               value=""
+               data-component="body">
+    <br>
+
+        </div>
+        </form>
+
+                    <h2 id="impresoras-PATCHapi-v2-printers-jobs--job_id--status">Notificar resultado de la impresión física.</h2>
+
+<p>
+</p>
+
+<p>Consumido por el microcontrolador para reportar el éxito ('completed') o fallo ('failed')
+de la ejecución del ticket.</p>
+
+<span id="example-requests-PATCHapi-v2-printers-jobs--job_id--status">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request PATCH \
+    "https://api.raupulus.dev/api/v2/printers/jobs/16/status" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"status\": \"out_of_paper\",
+    \"error_message\": \"b\"
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "https://api.raupulus.dev/api/v2/printers/jobs/16/status"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "status": "out_of_paper",
+    "error_message": "b"
+};
+
+fetch(url, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-PATCHapi-v2-printers-jobs--job_id--status">
+</span>
+<span id="execution-results-PATCHapi-v2-printers-jobs--job_id--status" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-PATCHapi-v2-printers-jobs--job_id--status"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-PATCHapi-v2-printers-jobs--job_id--status"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-PATCHapi-v2-printers-jobs--job_id--status" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-PATCHapi-v2-printers-jobs--job_id--status">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-PATCHapi-v2-printers-jobs--job_id--status" data-method="PATCH"
+      data-path="api/v2/printers/jobs/{job_id}/status"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('PATCHapi-v2-printers-jobs--job_id--status', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-PATCHapi-v2-printers-jobs--job_id--status"
+                    onclick="tryItOut('PATCHapi-v2-printers-jobs--job_id--status');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-PATCHapi-v2-printers-jobs--job_id--status"
+                    onclick="cancelTryOut('PATCHapi-v2-printers-jobs--job_id--status');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-PATCHapi-v2-printers-jobs--job_id--status"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-purple">PATCH</small>
+            <b><code>api/v2/printers/jobs/{job_id}/status</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="PATCHapi-v2-printers-jobs--job_id--status"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="PATCHapi-v2-printers-jobs--job_id--status"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>job_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="job_id"                data-endpoint="PATCHapi-v2-printers-jobs--job_id--status"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the job. Example: <code>16</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>status</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="status"                data-endpoint="PATCHapi-v2-printers-jobs--job_id--status"
+               value="out_of_paper"
+               data-component="body">
+    <br>
+<p>Example: <code>out_of_paper</code></p>
+Must be one of:
+<ul style="list-style-type: square;"><li><code>completed</code></li> <li><code>failed</code></li> <li><code>out_of_paper</code></li></ul>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>error_message</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="error_message"                data-endpoint="PATCHapi-v2-printers-jobs--job_id--status"
+               value="b"
+               data-component="body">
+    <br>
+<p>This field is required when <code>status</code> is <code>failed</code>. Must not be greater than 1000 characters. Example: <code>b</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>hardware_device_info</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="hardware_device_info"                data-endpoint="PATCHapi-v2-printers-jobs--job_id--status"
+               value=""
+               data-component="body">
+    <br>
+
+        </div>
+        </form>
+
+                    <h2 id="impresoras-POSTapi-v2-printers--printer_id--heartbeat">Reportar latido y telemetría (Heartbeat).</h2>
+
+<p>
+</p>
+
+<p>Consumido por el microcontrolador o agente local para reportar su estado operativo y telemetría hardware opcional.</p>
+
+<span id="example-requests-POSTapi-v2-printers--printer_id--heartbeat">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "https://api.raupulus.dev/api/v2/printers/16/heartbeat" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"status\": \"architecto\"
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "https://api.raupulus.dev/api/v2/printers/16/heartbeat"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "status": "architecto"
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-v2-printers--printer_id--heartbeat">
+</span>
+<span id="execution-results-POSTapi-v2-printers--printer_id--heartbeat" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-v2-printers--printer_id--heartbeat"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-v2-printers--printer_id--heartbeat"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-v2-printers--printer_id--heartbeat" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-v2-printers--printer_id--heartbeat">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-v2-printers--printer_id--heartbeat" data-method="POST"
+      data-path="api/v2/printers/{printer_id}/heartbeat"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-v2-printers--printer_id--heartbeat', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-v2-printers--printer_id--heartbeat"
+                    onclick="tryItOut('POSTapi-v2-printers--printer_id--heartbeat');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-v2-printers--printer_id--heartbeat"
+                    onclick="cancelTryOut('POSTapi-v2-printers--printer_id--heartbeat');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-v2-printers--printer_id--heartbeat"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/v2/printers/{printer_id}/heartbeat</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-v2-printers--printer_id--heartbeat"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-v2-printers--printer_id--heartbeat"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>printer_id</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="printer_id"                data-endpoint="POSTapi-v2-printers--printer_id--heartbeat"
+               value="16"
+               data-component="url">
+    <br>
+<p>The ID of the printer. Example: <code>16</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>status</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="status"                data-endpoint="POSTapi-v2-printers--printer_id--heartbeat"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+Must be one of:
+<ul style="list-style-type: square;"><li><code>ready</code></li> <li><code>busy</code></li> <li><code>out_of_paper</code></li> <li><code>cover_open</code></li> <li><code>offline</code></li> <li><code>error</code></li></ul>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>hardware_device_info</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="hardware_device_info"                data-endpoint="POSTapi-v2-printers--printer_id--heartbeat"
+               value=""
+               data-component="body">
+    <br>
+
+        </div>
+        </form>
 
             
 

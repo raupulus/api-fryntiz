@@ -39,7 +39,6 @@ class ProductionSeeder extends Seeder
         $this->call(CategoriesSeeder::class);
         $this->call(TagsSeeder::class);
         $this->call(TechnologiesSeeder::class);
-        $this->call(PrinterAvailableTypesSeeder::class);
         $this->call(ReferredPlatformsSeeder::class);
     }
 }
