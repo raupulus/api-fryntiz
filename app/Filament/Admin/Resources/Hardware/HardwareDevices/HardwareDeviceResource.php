@@ -227,6 +227,10 @@ class HardwareDeviceResource extends Resource
                             ->label('Avisar si deja de reportar')
                             ->helperText('Desactívalo en hardware que enciendes de forma esporádica a propósito, para que "iot:check-silent-devices" no lo marque como mudo cada día.')
                             ->default(true),
+                        Toggle::make('is_public')
+                            ->label('Visible públicamente')
+                            ->helperText('Si se activa, el dispositivo será visible en el catálogo público web de hardware.')
+                            ->default(false),
                         Textarea::make('description')
                             ->label('Descripción')
                             ->columnSpanFull(),
@@ -340,6 +344,10 @@ class HardwareDeviceResource extends Resource
                     ->label('Avisa si se calla')
                     ->boolean()
                     ->toggleable(isToggledHiddenByDefault: true),
+                IconColumn::make('is_public')
+                    ->label('Público')
+                    ->boolean()
+                    ->sortable(),
                 TextColumn::make('ip_local')
                     ->label('IP Local')
                     ->searchable(),
@@ -370,6 +378,8 @@ class HardwareDeviceResource extends Resource
                     ->options(HardwareLocationTypeEnum::options()),
                 TernaryFilter::make('notify_on_silence')
                     ->label('Avisa si se calla'),
+                TernaryFilter::make('is_public')
+                    ->label('Público'),
             ])
             ->recordActions([
                 EditAction::make(),

@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class HardwareDeviceFactory extends Factory
 {
+    protected $model = HardwareDevice::class;
+
     /**
      * Define the model's default state.
      *
@@ -20,7 +22,15 @@ class HardwareDeviceFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => fake()->word(),
+            'is_public' => false,
         ];
+    }
+
+    public function public(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'is_public' => true,
+        ]);
     }
 }

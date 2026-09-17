@@ -78,6 +78,7 @@ consumos, con sus resúmenes diarios e históricos— está en
 | `buy_at` | date | Fecha de compra |
 | `last_seen_at` | timestamp | Última conexión (se actualiza en cada subida de estado) |
 | `notify_on_silence` | boolean | Si `iot:check-silent-devices` debe avisar cuando este dispositivo deje de reportar. Por defecto `true`; se desactiva desde el panel en hardware que se enciende de forma esporádica a propósito |
+| `is_public` | boolean | Si el dispositivo es visible en el catálogo público web de hardware. Por defecto `false` (privacidad por diseño); se activa desde el panel en `HardwareDeviceResource` |
 | `ip_local` | string | IP local |
 | `ip_public` | string | IP pública. **La pone el servidor** desde la petición; lo que mande el dispositivo se ignora |
 | `ram` | decimal(5,2) | Último uso de memoria conocido en porcentaje (0-100) |
@@ -359,4 +360,4 @@ Resource Filament aparece bajo el grupo de navegación **Hardware**.
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-14
+> Creado: 2026-05-25 · Última revisión: 2026-09-17

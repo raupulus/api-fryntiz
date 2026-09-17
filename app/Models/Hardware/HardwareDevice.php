@@ -11,6 +11,7 @@ use App\Models\BaseModels\BaseModel;
 use App\Models\File;
 use App\Models\User;
 use App\Traits\BelongsToUser;
+use Database\Factories\HardwareDeviceFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -52,6 +53,7 @@ use function array_filter;
  * @property string|null $buy_at Fecha de compra del dispositivo
  * @property Carbon|null $last_seen_at Última vez que se vio el dispositivo
  * @property bool $notify_on_silence Si "iot:check-silent-devices" debe avisar cuando este dispositivo deje de reportar
+ * @property bool $is_public Indica si el dispositivo es visible en el catálogo público
  * @property string|null $ip_local Ip local del dispositivo
  * @property string|null $ip_public Ip pública del dispositivo
  * @property float|null $temp Última temperatura conocida del dispositivo en grados Celsius
@@ -134,7 +136,7 @@ class HardwareDevice extends BaseModel
         'name', 'name_friendly', 'location_type', 'zone', 'ref', 'model', 'brand',
         'software_version', 'hardware_version', 'serial_number', 'battery_type',
         'battery_nominal_capacity', 'battery_nominal_voltage', 'url_company', 'description', 'buy_at',
-        'last_seen_at', 'notify_on_silence', 'ip_local', 'ip_public', 'temp', 'voltage',
+        'last_seen_at', 'notify_on_silence', 'is_public', 'ip_local', 'ip_public', 'temp', 'voltage',
         'battery_level', 'cpu', 'disk', 'ram', 'uptime', 'extra',
         // Batería del propio dispositivo (D108). La puede mandar cualquier
         // endpoint IoT y siempre es opcional; no es una lectura de energía.
@@ -144,6 +146,7 @@ class HardwareDevice extends BaseModel
         'buy_at' => 'datetime',
         'last_seen_at' => 'datetime',
         'notify_on_silence' => 'boolean',
+        'is_public' => 'boolean',
         'location_type' => HardwareLocationTypeEnum::class,
         'temp' => 'float',
         'voltage' => 'float',
@@ -156,6 +159,29 @@ class HardwareDevice extends BaseModel
         'uptime' => 'integer',
         'extra' => 'array',
     ];
+
+    protected $attributes = [
+        'is_public' => false,
+    ];
+
+    /**
+     * Create a new factory instance for the model.
+     */
+    protected static function newFactory(): HardwareDeviceFactory
+    {
+        return HardwareDeviceFactory::new();
+    }
+
+    /**
+     * Limita la consulta a los dispositivos autorizados para el catálogo público.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    public function scopePublic(Builder $query): Builder
+    {
+        return $query->where('is_public', true);
+    }
 
     /**
      * Limita la consulta a los dispositivos que son estaciones meteorológicas,

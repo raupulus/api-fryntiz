@@ -79,8 +79,8 @@ Siguiendo la guía de identidad visual del proyecto (*Obsidian Flux* / *Raupulus
 
 ## 5. Tareas pendientes de implementación
 
-- [ ] **Migración/Modelo**: Añadir columna `is_public` (boolean, default false) a `hardware_devices` con su migración y scope en el modelo `HardwareDevice`.
-- [ ] **Filament Admin**: Añadir el toggle `is_public` en `HardwareDeviceResource` para controlar desde la intranet qué dispositivos son visibles públicamente.
+- [x] **Migración/Modelo**: Añadir columna `is_public` (boolean, default false) a `hardware_devices` con su migración y scope en el modelo `HardwareDevice`.
+- [x] **Filament Admin**: Añadir el toggle `is_public` en `HardwareDeviceResource` para controlar desde la intranet qué dispositivos son visibles públicamente.
 - [ ] **Rutas**: Registrar `GET /hardware` (y opcionalmente `GET /hardware/{device:slug}` o `{device}`) en `routes/hardware/web.php`.
 - [ ] **Controlador `HardwareDeviceController`**:
   - Método `index()`: consulta de dispositivos públicos con `with(['type', 'components.type', 'image'])`.
