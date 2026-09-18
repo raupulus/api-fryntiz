@@ -9,6 +9,7 @@ use App\Http\Traits\ImageTrait;
 use App\Models\ApiToken;
 use App\Models\BaseModels\BaseModel;
 use App\Models\File;
+use App\Models\Referred\ReferredThing;
 use App\Models\User;
 use App\Traits\BelongsToUser;
 use Database\Factories\HardwareDeviceFactory;
@@ -33,7 +34,6 @@ use function array_filter;
  * @property int|null $user_id Usuario asociado
  * @property int|null $image_id Relación con la imagen asociada
  * @property int|null $hardware_type_id Relación con el tipo de hardware asociado
- * @property int|null $referred_thing_id Relación con el dispositivo afiliado
  * @property string|null $name Nombre real del dispositivo, EJ: Raspberry Pi 4b+
  * @property string $slug Slug único del dispositivo para URLs públicas
  * @property string|null $name_friendly Nombre amistoso para reconocerlo EJ: Raspberry en azotea
@@ -110,7 +110,6 @@ use function array_filter;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareDevice whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareDevice whereNameFriendly($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareDevice whereRef($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareDevice whereReferredThingId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareDevice whereSerialNumber($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareDevice whereSoftwareVersion($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareDevice whereUpdatedAt($value)
@@ -119,6 +118,8 @@ use function array_filter;
  *
  * @property-read Collection<int, ApiToken> $apiTokens
  * @property-read int|null $api_tokens_count
+ * @property-read Collection<int, ReferredThing> $affiliateLinks
+ * @property-read Collection<int, ReferredThing> $deviceAffiliateLinks
  *
  * @mixin \Eloquent
  */
@@ -134,7 +135,7 @@ class HardwareDevice extends BaseModel
      * subida y dejaba el id en los datos, pero la asignación en masa lo
      * descartaba en silencio y la imagen nunca se guardaba.
      */
-    protected $fillable = ['user_id', 'hardware_type_id', 'referred_thing_id', 'image_id',
+    protected $fillable = ['user_id', 'hardware_type_id', 'image_id',
         'name', 'slug', 'name_friendly', 'location_type', 'zone', 'ref', 'model', 'brand',
         'software_version', 'hardware_version', 'serial_number', 'battery_type',
         'battery_nominal_capacity', 'battery_nominal_voltage', 'url_company', 'description', 'buy_at',
@@ -333,6 +334,26 @@ class HardwareDevice extends BaseModel
         return $this->hasMany(ApiToken::class, 'tokenable_id', 'user_id')
             ->where('personal_access_tokens.tokenable_type', User::class)
             ->where('personal_access_tokens.name', 'device:'.$this->getKey());
+    }
+
+    /**
+     * Enlaces de compra de afiliados asociados a este dispositivo y a sus componentes.
+     *
+     * @return HasMany<ReferredThing, $this>
+     */
+    public function affiliateLinks(): HasMany
+    {
+        return $this->hasMany(ReferredThing::class, 'hardware_device_id');
+    }
+
+    /**
+     * Enlaces de compra de afiliados aplicables únicamente al dispositivo completo.
+     *
+     * @return HasMany<ReferredThing, $this>
+     */
+    public function deviceAffiliateLinks(): HasMany
+    {
+        return $this->hasMany(ReferredThing::class, 'hardware_device_id')->whereNull('hardware_component_id');
     }
 
     public static function createModel(HardwareDevice $device, $request) {}

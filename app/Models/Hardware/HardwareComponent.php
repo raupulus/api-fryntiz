@@ -5,8 +5,13 @@ declare(strict_types=1);
 namespace App\Models\Hardware;
 
 use App\Models\BaseModels\BaseModel;
+use App\Models\Referred\ReferredThing;
 use App\Traits\BelongsToHardwareDevice;
+use Database\Factories\HardwareComponentFactory;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
@@ -28,6 +33,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $deleted_at
  * @property-read HardwareAvailableComponent|null $availableComponent
  * @property-read HardwareDevice|null $hardwareDevice
+ * @property-read Collection<int, ReferredThing> $affiliateLinks
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareComponent newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|HardwareComponent newQuery()
@@ -55,9 +61,15 @@ use Illuminate\Support\Carbon;
 class HardwareComponent extends BaseModel
 {
     use BelongsToHardwareDevice;
+    use HasFactory;
     use SoftDeletes;
 
     protected $table = 'hardware_components';
+
+    protected static function newFactory(): HardwareComponentFactory
+    {
+        return HardwareComponentFactory::new();
+    }
 
     protected $fillable = [
         'hardware_device_id',
@@ -74,5 +86,15 @@ class HardwareComponent extends BaseModel
     public function availableComponent(): BelongsTo
     {
         return $this->belongsTo(HardwareAvailableComponent::class, 'hardware_available_component_id');
+    }
+
+    /**
+     * Enlaces de compra de afiliados asociados a este componente.
+     *
+     * @return HasMany<ReferredThing, $this>
+     */
+    public function affiliateLinks(): HasMany
+    {
+        return $this->hasMany(ReferredThing::class, 'hardware_component_id');
     }
 }

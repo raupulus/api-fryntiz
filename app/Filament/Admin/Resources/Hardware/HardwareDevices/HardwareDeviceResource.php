@@ -424,6 +424,7 @@ class HardwareDeviceResource extends Resource
             RelationManagers\TokensRelationManager::class,
             RelationManagers\EnergyRelationManager::class,
             RelationManagers\ComponentsRelationManager::class,
+            RelationManagers\AffiliateLinksRelationManager::class,
         ];
     }
 

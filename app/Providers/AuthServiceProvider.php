@@ -26,6 +26,8 @@ use App\Models\Newsletter;
 use App\Models\Platform;
 use App\Models\Printer;
 use App\Models\PrinterStack;
+use App\Models\Referred\ReferredPlatform;
+use App\Models\Referred\ReferredThing;
 use App\Models\SmartPlant\SmartPlantPlant;
 use App\Models\SmartPlant\SmartPlantRegister;
 use App\Models\Tag;
@@ -59,6 +61,7 @@ use App\Policies\KeyCounterMousePolicy;
 use App\Policies\NewsletterPolicy;
 use App\Policies\PlatformPolicy;
 use App\Policies\PrinterPolicy;
+use App\Policies\ReferredThingPolicy;
 use App\Policies\SmartPlantPolicy;
 use App\Policies\SmartPlantRegisterPolicy;
 use App\Policies\TagPolicy;
@@ -108,6 +111,7 @@ class AuthServiceProvider extends ServiceProvider
         Platform::class => PlatformPolicy::class,
         Printer::class => PrinterPolicy::class,
         PrinterStack::class => PrinterPolicy::class,
+        ReferredThing::class => ReferredThingPolicy::class,
         SmartPlantPlant::class => SmartPlantPolicy::class,
         SmartPlantRegister::class => SmartPlantRegisterPolicy::class,
         Tag::class => TagPolicy::class,
@@ -130,6 +134,7 @@ class AuthServiceProvider extends ServiceProvider
         FileType::class,
         HardwareAvailableComponent::class,
         HardwareType::class,
+        ReferredPlatform::class,
     ];
 
     /**

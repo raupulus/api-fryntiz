@@ -61,7 +61,6 @@ consumos, con sus resúmenes diarios e históricos— está en
 | `id` | bigint | PK |
 | `user_id` | int | FK → `users.id` — propietario |
 | `hardware_type_id` | int | FK → `hardware_types.id` — tipo de dispositivo |
-| `referred_thing_id` | int | FK opcional — dispositivo referenciado |
 | `name` | string | Nombre técnico |
 | `slug` | string | Identificador amigable único para URLs públicas (ej. `raspberry-pi-5`) |
 | `name_friendly` | string | Nombre amigable |
@@ -395,6 +394,14 @@ El submódulo de impresoras (modelos `Printer`, `PrinterStack`,
 `PrinterAvailableType`) se documenta aparte en [printers.md](printers.md). Su
 Resource Filament aparece bajo el grupo de navegación **Hardware**.
 
+## Enlaces de compra de afiliados (Referred)
+
+Cada dispositivo hardware puede tener múltiples enlaces de afiliados asociados tanto
+al aparato completo como a cualquiera de sus componentes instalados (`hardware_components`).
+Se gestionan desde la pestaña `Enlaces de compra / Afiliados` en `HardwareDeviceResource`.
+Para el detalle completo de la arquitectura y el catálogo de plataformas de afiliación,
+ver [referred.md](referred.md).
+
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-17
+> Creado: 2026-05-25 · Última revisión: 2026-09-18

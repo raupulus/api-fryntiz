@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class HardwareComponentFactory extends Factory
 {
+    protected $model = HardwareComponent::class;
+
     /**
      * Define the model's default state.
      *
@@ -20,7 +22,9 @@ class HardwareComponentFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => fake()->words(2, true),
+            'brand' => fake()->company(),
+            'model' => fake()->word(),
         ];
     }
 }

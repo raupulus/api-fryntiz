@@ -10,6 +10,7 @@
 |---------|--------|-------------|
 | [weather-station.md](weather-station.md) | Estación Meteorológica | Sensores meteorológicos + integración AEMET |
 | [hardware.md](hardware.md) | Hardware | El dispositivo en sí: inventario, componentes y salud (IP, uptime, CPU, RAM, discos, temperatura) |
+| [referred.md](referred.md) | Enlaces de Afiliados / Referidos | Sistema de afiliados para compra de hardware y componentes en plataformas de venta |
 | [energy.md](energy.md) | Energía | Controlador solar y monitores de consumo: elementos, instalaciones, lecturas, resúmenes y acumulados |
 | [hardware/renogy-rover.md](hardware/renogy-rover.md) | Renogy Rover | Mapa Modbus del controlador solar y cómo entra cada bloque |
 | [printers.md](printers.md) | Impresoras | Gestión de impresoras y cola de impresión |
@@ -91,4 +92,4 @@ Comprobados contra el código el 2026-08-30.
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-08-30
+> Creado: 2026-05-25 · Última revisión: 2026-09-18

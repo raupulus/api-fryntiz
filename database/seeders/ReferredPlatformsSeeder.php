@@ -31,7 +31,22 @@ class ReferredPlatformsSeeder extends Seeder
                 'url_panel' => 'https://afiliados.amazon.es/home',
                 'url_register' => 'https://afiliados.amazon.es/signup',
             ],
-
+            [
+                'name' => 'AliExpress',
+                'slug' => 'aliexpress',
+                'description' => 'Plataforma de afiliados de AliExpress Portals',
+                'url' => 'https://portals.aliexpress.com',
+                'url_panel' => 'https://portals.aliexpress.com',
+                'url_register' => 'https://portals.aliexpress.com',
+            ],
+            [
+                'name' => 'PcComponentes',
+                'slug' => 'pccomponentes',
+                'description' => 'Programa de afiliados de PcComponentes',
+                'url' => 'https://www.pccomponentes.com',
+                'url_panel' => 'https://www.pccomponentes.com/afiliados',
+                'url_register' => 'https://www.pccomponentes.com/afiliados',
+            ],
         ];
 
         $now = Carbon::now();

@@ -1,6 +1,6 @@
 # AGENTS.md — Api Raupulus
 
-> **Última revisión:** 2026-09-14 · Verificado contra la rama `v2`.
+> **Última revisión:** 2026-09-18 · Verificado contra la rama `v2`.
 > Todo lo que hay aquí se ha comprobado contra el código. Si encuentras una discrepancia,
 > **corrige este fichero en el mismo commit** en el que la detectes.
 
@@ -250,7 +250,7 @@ api-fryntiz/
 │   ├── Events/               # Eventos de dominio (WeatherStationUpdateEvent y sub-eventos)
 │   ├── Exceptions/           # Excepciones personalizadas (JsonValidationException, JsonAuthorizationException)
 │   ├── Filament/             # Configuración de los paneles de Filament
-│   │   ├── Admin/            # Panel Admin: 24 Resources, 31 RelationManagers, 4 Clusters, 8 Widgets, 5 Pages
+│   │   ├── Admin/            # Panel Admin: 26 Resources, 32 RelationManagers, 4 Clusters, 8 Widgets, 5 Pages
 │   │   ├── Tenant/           # Panel Tenant/Usuario: Pages/Dashboard.php
 │   │   ├── Components/       # Componentes Filament (EditorJsField, ImageCropperUpload, YoutubeVideoField)
 │   │   └── Concerns/         # Traits de Filament (HasImageFileUpload)
@@ -265,15 +265,16 @@ api-fryntiz/
 │   ├── Jobs/                 # Trabajos en cola asíncronos (ProcessContentViewJob)
 │   ├── Mail/                 # Clases Mailable para notificaciones y suscripciones por correo
 │   ├── Mcp/                  # Implementación del servidor Model Context Protocol (Servers/ y Tools/)
-│   ├── Models/               # 97 Modelos Eloquent con PHPDoc completo
+│   ├── Models/               # 104 Modelos Eloquent con PHPDoc completo
 │   │   ├── BaseModels/       # BaseModel con métodos y scopes comunes
 │   │   ├── WeatherStation/   # Sensores meteorológicos físicos e integración AEMET
 │   │   ├── Content/          # CMS: Artículos, Páginas, Metadatos, Categorías, Tags, Tecnologías
 │   │   ├── CV/               # Secciones curriculares (Experiencia, Habilidades, Proyectos...)
 │   │   ├── Hardware/         # Dispositivos físicos, monitorización de energía solar y generadores
+│   │   ├── Referred/         # Enlaces de afiliados y plataformas de venta (Amazon, AliExpress...)
 │   │   └── (raíz)            # User, Platform, File, FileThumbnail, Gallery, Printer, Newsletter...
 │   ├── Notifications/        # Notificaciones del sistema
-│   ├── Policies/             # 23 Policies. Registro EXPLÍCITO en AuthServiceProvider
+│   ├── Policies/             # 25 Policies. Registro EXPLÍCITO en AuthServiceProvider
 │   ├── Providers/            # Service Providers de Laravel y paneles Filament (AdminPanelProvider, TenantPanelProvider)
 │   ├── Rules/                # Reglas de validación personalizadas (OwnedHardwareDevice, OwnedSmartPlant, KnownSensor)
 │   ├── Services/             # Service Layer con toda la lógica de negocio dividida por dominio (15 servicios + el DTO `CaptchaResult`)
@@ -282,8 +283,8 @@ api-fryntiz/
 ├── bootstrap/                # Arranque del framework y configuración de excepciones y middlewares (app.php, providers.php)
 ├── config/                   # Archivos de configuración de Laravel, Filament, Sanctum, CORS, AEMET y base de datos
 ├── database/                 # Base de datos PostgreSQL
-│   ├── factories/            # 94 Factories para generación de datos de prueba
-│   ├── migrations/           # 105 migraciones comentadas en todas sus tablas y columnas
+│   ├── factories/            # 97 Factories para generación de datos de prueba
+│   ├── migrations/           # 120 migraciones comentadas en todas sus tablas y columnas
 │   └── seeders/              # 18 Seeders ordenados para carga de catálogos y datos esenciales
 ├── docs/                     # Documentación técnica viva del proyecto (con fecha de revisión obligatoria)
 │   ├── apis/                 # Documentación técnica de referencia de APIs de terceros (AEMET OpenData)
@@ -582,6 +583,7 @@ parte de la tarea, no un extra.**
 |---------|---------------------|
 | `weather-station.md` | Estación meteorológica (sensores + AEMET) |
 | `hardware.md` | Hardware y energía (dispositivos, cargas solares, generadores) |
+| `referred.md` | Enlaces de afiliados (hardware y componentes) |
 | `keycounter.md` | Contador de pulsaciones (teclado y ratón) |
 | `smart-plant.md` | Plantas inteligentes |
 | `airflight.md` | Registro de vuelos ADS-B |
@@ -698,4 +700,4 @@ Resumen para no tener que releerlo todo. **El detalle está en los archivos, no 
 
 ---
 
-> Última revisión: 2026-09-14
+> Última revisión: 2026-09-18
