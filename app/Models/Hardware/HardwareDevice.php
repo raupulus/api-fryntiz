@@ -12,6 +12,7 @@ use App\Models\File;
 use App\Models\Referred\ReferredThing;
 use App\Models\User;
 use App\Traits\BelongsToUser;
+use App\Traits\HasGalleries;
 use Database\Factories\HardwareDeviceFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -125,7 +126,7 @@ use function array_filter;
  */
 class HardwareDevice extends BaseModel
 {
-    use BelongsToUser, HasFactory, ImageTrait;
+    use BelongsToUser, HasFactory, HasGalleries, ImageTrait;
     use SoftDeletes;
 
     protected $table = 'hardware_devices';

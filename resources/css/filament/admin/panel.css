@@ -230,3 +230,20 @@
 .dark .gd-active__meta {
     color: #d1d5db;
 }
+
+/* ── Galerías · Cuadrícula de fotos (ImagesRelationManager) ─────────────── */
+
+.fi-ta-image:has(.gl-card-image) {
+    width: 100% !important;
+    display: block !important;
+}
+
+.gl-card-image {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 220px !important;
+    max-height: 380px !important;
+    object-fit: cover !important;
+    border-radius: 0.5rem !important;
+    display: block !important;
+}

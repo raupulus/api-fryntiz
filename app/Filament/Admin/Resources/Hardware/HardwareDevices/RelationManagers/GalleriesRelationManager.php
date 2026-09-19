@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Admin\Resources\Content\Contents\RelationManagers;
+namespace App\Filament\Admin\Resources\Hardware\HardwareDevices\RelationManagers;
 
 use App\Filament\Admin\Resources\Galleries\Pages\EditGallery;
 use App\Models\Gallery;
@@ -20,13 +20,13 @@ class GalleriesRelationManager extends RelationManager
 {
     protected static string $relationship = 'galleries';
 
-    protected static ?string $title = 'Galerías';
+    protected static ?string $title = 'Galerías de fotos';
 
     public function table(Table $table): Table
     {
         return $table
             ->recordTitleAttribute('name')
-            ->inverseRelationship('contents')
+            ->inverseRelationship('hardwareDevices')
             ->modifyQueryUsing(fn (Builder $query) => $query->with(['image.fileType']))
             ->columns([
                 ImageColumn::make('image_id')

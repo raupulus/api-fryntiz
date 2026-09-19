@@ -8,6 +8,7 @@ use App\Helpers\TextFormatParseHelper;
 use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseModel;
 use App\Models\File;
+use App\Traits\HasGalleries;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -56,6 +57,7 @@ use Illuminate\Support\Carbon;
  */
 class ContentPage extends BaseModel
 {
+    use HasGalleries;
     use ImageTrait;
     use SoftDeletes;
 

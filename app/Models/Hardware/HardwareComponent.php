@@ -7,6 +7,7 @@ namespace App\Models\Hardware;
 use App\Models\BaseModels\BaseModel;
 use App\Models\Referred\ReferredThing;
 use App\Traits\BelongsToHardwareDevice;
+use App\Traits\HasGalleries;
 use Database\Factories\HardwareComponentFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -62,6 +63,7 @@ class HardwareComponent extends BaseModel
 {
     use BelongsToHardwareDevice;
     use HasFactory;
+    use HasGalleries;
     use SoftDeletes;
 
     protected $table = 'hardware_components';

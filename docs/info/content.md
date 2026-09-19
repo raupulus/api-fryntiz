@@ -19,7 +19,7 @@ Sistema de gestión de contenidos multi-plataforma y multi-tipo. Soporta artícu
 | `app/Models/Content/ContentTechnology.php` | `content_technologies` | Pivot contenido ↔ tecnología |
 | `app/Models/Content/ContentContributor.php` | `content_contributors` | Pivot contenido ↔ usuario contribuidor |
 | `app/Models/Content/ContentFile.php` | `content_files` | Pivot contenido ↔ archivo |
-| `app/Models/Content/ContentGallery.php` | `content_galleries` | Pivot contenido ↔ galería |
+| `app/Traits/HasGalleries.php` | `galleryables` | Relación polimórfica contenido ↔ galería (vía trait) |
 | `app/Models/Gallery.php` | `galleries` | Galería reutilizable de imágenes (no exclusiva de Content) |
 | `app/Models/GalleryImage.php` | `gallery_images` | Imagen (FK a `files`) perteneciente a una `Gallery` |
 | `app/Models/Content/ContentRelated.php` | `content_related` | Relación contenido ↔ contenido |
@@ -147,9 +147,8 @@ Sistema de gestión de contenidos multi-plataforma y multi-tipo. Soporta artícu
 - `Content` → `HasMany` → `ContentCategory` (vía `content_id`)
 - `Content` → `HasMany` → `ContentTag` (vía `content_id`)
 - `Content` → `HasMany` → `ContentTechnology` (vía `content_id`)
-- `Content` → `HasMany` → `ContentContributor` (vía `content_id`)
 - `Content` → `HasMany` → `ContentFile` (vía `content_id`)
-- `Content` → `BelongsToMany` → `Gallery` (vía pivote `content_galleries`; inversa `Gallery::contents()`)
+- `Content` → `MorphToMany` → `Gallery` (vía tabla polimórfica `galleryables` con trait `HasGalleries`; inversa `Gallery::contents()`)
 - `Content` → `HasMany` → `ContentRelated` (vía `content_id`)
 - `Content` → `HasOne` → `ContentSeo` (vía `content_id`)
 - `Content` → `HasOne` → `ContentMetadata` (vía `content_id`)
@@ -378,23 +377,18 @@ para escribir a mano el `gallery_id`). Implementado por completo:
 - `App\Models\Gallery` (tabla `galleries`, top-level, no bajo `Content/`
   porque es un recurso de imágenes reutilizable, igual que `File`):
   `user()`, `image()` (portada, FK a `files`), `images()` (`HasMany` →
-  `GalleryImage`), `contents()` (`BelongsToMany` → `Content`, inversa de
+  `GalleryImage`), `contents()` (`MorphToMany` → `Content`, inversa de
   `Content::galleries()`). `safeDelete()` sobrescrito: borra primero cada
   `GalleryImage` (y su `File`) antes de borrarse a sí misma.
 - `App\Models\GalleryImage` (tabla `gallery_images`): `gallery()`, `image()`
-  (FK a `files`).
-- `Content::galleries()` pasó de `HasMany` a `BelongsToMany` (pivote
-  `content_galleries`, sin columnas propias): una galería puede reutilizarse
-  en varios contenidos y un contenido puede tener varias galerías.
-  `ContentGallery` ahora expone `content()`/`gallery()` para quien consulte
-  el pivote directamente, aunque el `belongsToMany` no pasa por `->using()`
-  (mismo criterio que `Content::contentsRelated()`).
-- Recurso Filament nuevo `app/Filament/Admin/Resources/Galleries/`
-  (grupo «Gestión»): CRUD de galerías con portada
-  (`ImageCropperUpload` + `HasImageFileUpload`, igual que `CurriculumResource`)
-  y un `ImagesRelationManager` para subir/borrar las imágenes de la galería
-  (`DeleteAction` sobrescrita para llamar a `$record->safeDelete()` y no dejar
-  `files` huérfanos).
+  (FK a `files`), `order`, `caption`.
+- `Content::galleries()` utiliza el trait polimórfico `App\Traits\HasGalleries`
+  (pivote universal `galleryables` con orden): una galería puede reutilizarse
+  en varios contenidos, páginas, dispositivos hardware o componentes.
+- Recurso Filament `app/Filament/Admin/Resources/Galleries/`: CRUD de galerías
+  con selector de relación de aspecto, portada automática, subidas en lote y
+  `ImagesRelationManager` con tarjeta visual responsiva, arrastrar y soltar,
+  y borrado seguro.
 - `GalleriesRelationManager` de `ContentResource` reescrito al patrón
   Attach/Detach de `RelatedRelationManager`: `AttachAction` +
   `->inverseRelationship('contents')` explícito (evita que Filament adivine
@@ -415,4 +409,4 @@ para escribir a mano el `gallery_id`). Implementado por completo:
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-08-19
+> Creado: 2026-05-25 · Última revisión: 2026-09-19

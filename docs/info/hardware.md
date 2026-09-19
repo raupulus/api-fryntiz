@@ -89,7 +89,7 @@ consumos, con sus resúmenes diarios e históricos— está en
 | `cpu` | decimal | Último estado: uso de CPU (0-100) |
 | `disk` | decimal | Último estado: uso de disco (0-100) |
 | `uptime` | bigint | Último estado: tiempo de actividad (segundos) |
-| `extra` | json | Último estado: métricas adicionales (RAM, procesos, etc.) |
+| `extra` | jsonb | Último estado: métricas adicionales (RAM, procesos, etc.) en formato JSONB |
 
 > **Estado de dispositivo (sin histórico):** las columnas `temp`, `voltage`, `battery_level`, `battery_voltage`, `cpu`, `disk`, `ram`, `uptime`, `extra`, `ip_local`, `ip_public` y `last_seen_at` reflejan siempre el **último estado conocido** del propio dispositivo. No se guarda histórico. Se actualizan mediante el endpoint dedicado `PUT /api/v2/hardware/devices/{device}/status` o adjuntando una clave opcional `hardware_device_info` en **cualquier** subida IoT que reciba un `hardware_device_id`: energía (ver [`energy.md`](energy.md)), KeyCounter, SmartPlant, WeatherStation y AirFlight.
 >
@@ -116,6 +116,8 @@ consumos, con sus resúmenes diarios e históricos— está en
 - `HardwareDevice` → `BelongsTo` → `User` (vía `user_id`)
 - `HardwareDevice` → `BelongsTo` → `HardwareType` (vía `hardware_type_id`)
 - `HardwareDevice` → `HasMany` → `HardwareComponent`
+- `HardwareDevice` → `HasMany` → `ReferredThing` (vía `affiliateLinks()` y `deviceAffiliateLinks()`)
+- `HardwareDevice` → `MorphToMany` → `Gallery` (vía trait `HasGalleries` y tabla `galleryables`)
 - `HardwareDevice` → `HasMany` → `ApiToken` (vía `apiTokens()`, solo lectura: tokens del usuario propietario con nombre `device:{id}`)
 
 Las de energía —`HardwareEnergy` y las tablas de lecturas— están
@@ -398,10 +400,27 @@ Resource Filament aparece bajo el grupo de navegación **Hardware**.
 
 Cada dispositivo hardware puede tener múltiples enlaces de afiliados asociados tanto
 al aparato completo como a cualquiera de sus componentes instalados (`hardware_components`).
-Se gestionan desde la pestaña `Enlaces de compra / Afiliados` en `HardwareDeviceResource`.
-Para el detalle completo de la arquitectura y el catálogo de plataformas de afiliación,
-ver [referred.md](referred.md).
+
+## Galerías de imágenes y componentes
+
+Tanto los dispositivos hardware (`HardwareDevice`) como sus componentes instalados (`HardwareComponent`) implementan el trait `App\Traits\HasGalleries` para asociar colecciones fotográficas completas (montajes, esquemas de conexión, unboxing, revisiones técnicas o periféricos):
+
+1. **Gestión desde el Dispositivo (`HardwareDeviceResource`):**
+   - Pestaña **Galerías de fotos** gestionada por `GalleriesRelationManager`.
+   - **Vincular Galería (`AttachAction`):** Buscador con autocompletado que muestra la miniatura de portada y el número total de fotos.
+   - **Visualización in-situ (`viewImages`):** Abre un modal rápido con todas las fotografías en alta resolución y sus pies de foto sin abandonar la ficha del hardware.
+   - **Acceso directo a edición (`editGallery`):** Botón para abrir la galería en una nueva pestaña y gestionar o recortar sus fotos.
+   - **Desvincular (`DetachAction`):** Desvincula la galería del dispositivo sin borrar la galería ni sus archivos del almacenamiento.
+
+2. **Gestión desde la propia Galería (`GalleryResource`):**
+   - En la pestaña **Asociaciones** de la galería, se pueden seleccionar de forma simultánea:
+     - **Dispositivos Hardware (`hardwareDevices`):** Asocia la galería al aparato global.
+     - **Componentes de Hardware (`hardwareComponents`):** Asocia la galería a componentes específicos instalados (mostrando el nombre del componente y entre paréntesis el dispositivo al que pertenece).
+
+3. **Estructura polimórfica (`galleryables`):**
+   - Almacenamiento universal mediante `galleryable_type` (`App\Models\Hardware\HardwareDevice` o `App\Models\Hardware\HardwareComponent`), `galleryable_id` y `order`.
+   - Para la documentación completa del módulo de galerías, ver [galleries.md](galleries.md).
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-18
+> Creado: 2026-05-25 · Última revisión: 2026-09-19

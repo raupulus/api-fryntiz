@@ -17,6 +17,7 @@ use App\Models\PlatformTag;
 use App\Models\Tag;
 use App\Models\Technology;
 use App\Models\User;
+use App\Traits\HasGalleries;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -150,7 +151,7 @@ use function url;
  */
 class Content extends BaseModel
 {
-    use HasFactory, ImageTrait;
+    use HasFactory, HasGalleries, ImageTrait;
     use SoftDeletes;
 
     protected $table = 'contents';
@@ -350,14 +351,6 @@ class Content extends BaseModel
     public function technologiesJoin(): HasMany
     {
         return $this->hasMany(ContentTechnology::class, 'content_id', 'id');
-    }
-
-    /**
-     * Galerías asociadas a este contenido. Inversa de Gallery::contents().
-     */
-    public function galleries(): BelongsToMany
-    {
-        return $this->belongsToMany(Gallery::class, 'content_galleries', 'content_id', 'gallery_id');
     }
 
     /**

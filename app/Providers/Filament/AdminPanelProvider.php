@@ -54,6 +54,7 @@ class AdminPanelProvider extends PanelProvider
             ->pages([
                 Dashboard::class,
             ])
+            ->unsavedChangesAlerts()
             ->middleware([
                 // Que ni el panel ni su formulario de acceso acaben en un
                 // buscador. `robots.txt` pide que no se rastreen, que no es lo

@@ -1,6 +1,6 @@
 # AGENTS.md — Api Raupulus
 
-> **Última revisión:** 2026-09-18 · Verificado contra la rama `v2`.
+> **Última revisión:** 2026-09-19 · Verificado contra la rama `v2`.
 > Todo lo que hay aquí se ha comprobado contra el código. Si encuentras una discrepancia,
 > **corrige este fichero en el mismo commit** en el que la detectes.
 
@@ -250,7 +250,7 @@ api-fryntiz/
 │   ├── Events/               # Eventos de dominio (WeatherStationUpdateEvent y sub-eventos)
 │   ├── Exceptions/           # Excepciones personalizadas (JsonValidationException, JsonAuthorizationException)
 │   ├── Filament/             # Configuración de los paneles de Filament
-│   │   ├── Admin/            # Panel Admin: 26 Resources, 32 RelationManagers, 4 Clusters, 8 Widgets, 5 Pages
+│   │   ├── Admin/            # Panel Admin: 26 Resources, 33 RelationManagers, 4 Clusters, 8 Widgets, 5 Pages
 │   │   ├── Tenant/           # Panel Tenant/Usuario: Pages/Dashboard.php
 │   │   ├── Components/       # Componentes Filament (EditorJsField, ImageCropperUpload, YoutubeVideoField)
 │   │   └── Concerns/         # Traits de Filament (HasImageFileUpload)
@@ -265,7 +265,7 @@ api-fryntiz/
 │   ├── Jobs/                 # Trabajos en cola asíncronos (ProcessContentViewJob)
 │   ├── Mail/                 # Clases Mailable para notificaciones y suscripciones por correo
 │   ├── Mcp/                  # Implementación del servidor Model Context Protocol (Servers/ y Tools/)
-│   ├── Models/               # 104 Modelos Eloquent con PHPDoc completo
+│   ├── Models/               # 103 Modelos Eloquent con PHPDoc completo
 │   │   ├── BaseModels/       # BaseModel con métodos y scopes comunes
 │   │   ├── WeatherStation/   # Sensores meteorológicos físicos e integración AEMET
 │   │   ├── Content/          # CMS: Artículos, Páginas, Metadatos, Categorías, Tags, Tecnologías
@@ -283,8 +283,8 @@ api-fryntiz/
 ├── bootstrap/                # Arranque del framework y configuración de excepciones y middlewares (app.php, providers.php)
 ├── config/                   # Archivos de configuración de Laravel, Filament, Sanctum, CORS, AEMET y base de datos
 ├── database/                 # Base de datos PostgreSQL
-│   ├── factories/            # 97 Factories para generación de datos de prueba
-│   ├── migrations/           # 120 migraciones comentadas en todas sus tablas y columnas
+│   ├── factories/            # 98 Factories para generación de datos de prueba
+│   ├── migrations/           # 122 migraciones comentadas en todas sus tablas y columnas
 │   └── seeders/              # 18 Seeders ordenados para carga de catálogos y datos esenciales
 ├── docs/                     # Documentación técnica viva del proyecto (con fecha de revisión obligatoria)
 │   ├── apis/                 # Documentación técnica de referencia de APIs de terceros (AEMET OpenData)
@@ -700,4 +700,4 @@ Resumen para no tener que releerlo todo. **El detalle está en los archivos, no 
 
 ---
 
-> Última revisión: 2026-09-18
+> Última revisión: 2026-09-19
