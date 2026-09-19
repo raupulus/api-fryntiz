@@ -153,4 +153,26 @@ class PrinterServiceTest extends TestCase
         $this->service->toggleFavorite($job);
         $this->assertFalse($job->fresh()->is_favorite);
     }
+
+    #[Test]
+    public function update_job_status_out_of_paper_requeues_job_and_sets_printer_status(): void
+    {
+        $printer = $this->createPrinter(['status' => PrinterStatusEnum::Ready]);
+        $job = PrinterStack::create([
+            'printer_id' => $printer->id,
+            'content' => 'Imprimir',
+            'status' => PrintJobStatusEnum::Processing,
+            'print_count' => 0,
+        ]);
+
+        $updated = $this->service->updateJobStatus($job, 'out_of_paper', 'Papel agotado');
+
+        $this->assertSame(PrintJobStatusEnum::Pending, $updated->status);
+        $this->assertSame('Papel agotado', $updated->error_message);
+        $this->assertSame(0, $updated->print_count);
+
+        $printer->refresh();
+        $this->assertSame(PrinterStatusEnum::OutOfPaper, $printer->status);
+        $this->assertNotNull($printer->last_seen_at);
+    }
 }

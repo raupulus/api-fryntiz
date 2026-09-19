@@ -8,9 +8,8 @@ no versionada) y de `docs/info/` (documentación técnica de lo que existe).
 
 | Documento | Qué es | Cuándo |
 |-----------|--------|--------|
-| [`printers-api.md`](printers-api.md) | API del módulo de impresoras térmicas y cola de impresión | Cuando la v2 esté estable en producción |
 | [`content-conteo-palabras-y-tiempo-lectura.md`](content-conteo-palabras-y-tiempo-lectura.md) | Guardar conteo de caracteres y/o palabras por página y exponer tiempo estimado de lectura en la API de Content | Sin fecha; no bloquea el despliegue |
 | [`about-page-cms.md`](about-page-cms.md) | Plataforma de contenidos propia del backend para dinamizar `/about` (y otras páginas estáticas del frontend) sin desplegar código | Sin fecha; no bloquea el despliegue |
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-17
+> Creado: 2026-08-30 · Última revisión: 2026-09-19
 

@@ -267,9 +267,10 @@ void drain_queue() {
         bool ok = print_to_serial(job.content, job.format);
         if (ok) {
             api_patch_status(job.id, "completed", NULL);
+        } else if (digitalRead(CTS_PIN)) {
+            api_patch_status(job.id, "out_of_paper", "Agotado papel en mitad de impresion");
         } else {
-            const char* err = digitalRead(CTS_PIN) ? "out_of_paper" : "uart_error";
-            api_patch_status(job.id, "failed", err);
+            api_patch_status(job.id, "failed", "uart_error");
         }
     }
 }
@@ -277,4 +278,4 @@ void drain_queue() {
 
 ---
 
-> Creado: 2026-09-17 · Última revisión: 2026-09-17
+> Creado: 2026-09-17 · Última revisión: 2026-09-19

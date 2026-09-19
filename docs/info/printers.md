@@ -116,4 +116,4 @@ Cuelga directamente de `printer_id` (`printers.id`).
 
 ---
 
-> Creado: 2026-06-17 · Última revisión: 2026-09-17
+> Creado: 2026-06-17 · Última revisión: 2026-09-19

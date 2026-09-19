@@ -1,6 +1,6 @@
 # API del módulo de Impresoras
 
-> **Estado:** especificación definida y planificada; pendiente de implementación cuando se aborde la fase del módulo.
+> **Resuelto e implementado (2026-09-17):** implementado en su totalidad en la API V2 (`/api/v2/printers`), WebSockets en Laravel Reverb (`printer.{id}`) y panel Filament Admin. Documentación técnica viva en [`docs/info/printers.md`](../../info/printers.md) y especificación del contrato en [`docs/info/api/v2/printers.md`](../../info/api/v2/printers.md).
 
 ---
 
@@ -757,11 +757,11 @@ Mejoras a incorporar en `PrinterResource` y `PrinterStackRelationManager`:
 - [x] Tests de Feature para agentes: pop de siguiente trabajo con exclusión mutua (`lockForUpdate`), incremento verificado de `print_count` y `total_prints_count` tras `completed`, y reporte de heartbeat.
 - [x] Tests de Broadcast: comprobar emisión de `PrintJobCreated` y `PrintJobStatusUpdated` en el canal privado adecuado.
 - [x] Tests de Policy: aislamiento estricto entre usuarios y ligado `device:{id}`.
-- [x] Actualizar [`docs/info/printers.md`](../info/printers.md) con el contrato de endpoints, enums, WebSockets y flujos.
-- [x] Crear [`docs/info/api/v2/printers.md`](../info/api/v2/printers.md) y enlazarlo en el índice general de la API V2.
+- [x] Actualizar [`docs/info/printers.md`](../../info/printers.md) con el contrato de endpoints, enums, WebSockets y flujos.
+- [x] Crear [`docs/info/api/v2/printers.md`](../../info/api/v2/printers.md) y enlazarlo en el índice general de la API V2.
 - [x] Ejecutar `php artisan scribe:generate`.
 - [x] Pasar pipeline obligatorio (`pint`, `composer phpstan`, `php artisan test`).
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-17
+> Creado: 2026-08-30 · Última revisión: 2026-09-19

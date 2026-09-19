@@ -349,6 +349,48 @@ class PrintersTest extends ApiTestCase
     }
 
     #[Test]
+    public function device_can_report_out_of_paper_status_requeuing_job(): void
+    {
+        Event::fake([PrintJobStatusUpdated::class]);
+
+        $user = $this->createAuthenticatedUser();
+        $printer = $this->makePrinter($user, ['status' => PrinterStatusEnum::Ready]);
+        $job = PrinterStack::create([
+            'printer_id' => $printer->id,
+            'content' => 'Recibo de compra',
+            'status' => PrintJobStatusEnum::Processing,
+            'attempts' => 1,
+            'print_count' => 0,
+        ]);
+
+        $deviceHeaders = $this->deviceHeaders($printer->hardwareDevice, [TokenAbilities::PRINTERS_WRITE]);
+
+        $response = $this->patchJson(
+            $this->apiUrl("printers/jobs/{$job->id}/status"),
+            [
+                'status' => 'out_of_paper',
+            ],
+            $deviceHeaders
+        );
+
+        $this->assertSuccessResponse($response);
+        $this->assertSame('pending', $response->json('data.status'));
+
+        $this->assertDatabaseHas('printer_stack', [
+            'id' => $job->id,
+            'status' => 'pending',
+            'print_count' => 0,
+        ]);
+
+        $this->assertDatabaseHas('printers', [
+            'id' => $printer->id,
+            'status' => 'out_of_paper',
+        ]);
+
+        Event::assertDispatched(PrintJobStatusUpdated::class);
+    }
+
+    #[Test]
     public function device_can_send_heartbeat(): void
     {
         $user = $this->createAuthenticatedUser();

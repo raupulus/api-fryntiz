@@ -232,14 +232,28 @@ class PrinterService
      * y el odómetro global de la impresora.
      * Si `status` es `out_of_paper`, reencola el trabajo a `pending` y actualiza la impresora.
      */
-    public function updateJobStatus(PrinterStack $job, PrintJobStatusEnum|string $status, ?string $errorMessage = null): PrinterStack
+    public function updateJobStatus(PrinterStack $job, PrintJobStatusEnum|PrinterStatusEnum|string $status, ?string $errorMessage = null): PrinterStack
     {
-        $statusEnum = $status instanceof PrintJobStatusEnum ? $status : PrintJobStatusEnum::from((string) $status);
+        $isOutOfPaper = $status === 'out_of_paper' || $status === PrinterStatusEnum::OutOfPaper;
+        $statusEnum = $isOutOfPaper
+            ? null
+            : ($status instanceof PrintJobStatusEnum ? $status : PrintJobStatusEnum::from((string) $status));
 
-        DB::transaction(function () use ($job, $statusEnum, $errorMessage) {
+        DB::transaction(function () use ($job, $statusEnum, $isOutOfPaper, $errorMessage) {
             $printer = $job->printer;
 
-            if ($statusEnum === PrintJobStatusEnum::Completed) {
+            if ($isOutOfPaper) {
+                $job->status = PrintJobStatusEnum::Pending;
+                if ($errorMessage !== null) {
+                    $job->error_message = $errorMessage;
+                }
+                $job->save();
+
+                $printer->update([
+                    'status' => PrinterStatusEnum::OutOfPaper,
+                    'last_seen_at' => Carbon::now(),
+                ]);
+            } elseif ($statusEnum === PrintJobStatusEnum::Completed) {
                 $job->status = PrintJobStatusEnum::Completed;
                 $job->print_count = $job->print_count + 1;
                 $job->printed_at = Carbon::now();
