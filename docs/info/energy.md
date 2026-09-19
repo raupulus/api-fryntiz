@@ -249,7 +249,7 @@ sitios gana el de dentro.
    - Potencia: $P = V \cdot I$ (W)
    - Energía incremental: $\Delta Wh = \frac{P \cdot \text{duration}}{3600}$
    - Amperios-hora incrementales: $\Delta Ah = \frac{I \cdot \text{duration}}{3600}$
-   - `hardware_energy_readings.energy_source` describe el origen del **delta de esta lectura** (`energy_wh` / `energy_ah`), no el de los acumulados: vale `device` si el aparato manda ya el consumo del intervalo (`energy_wh` dentro del bloque) y `derived` si el servidor lo integra a partir de `power` y `duration`. No confundirlo con `energy_wh_source` / `energy_ah_source` de `hardware_energy_historical`, que son los de la sesión (§4.1).
+   - `hardware_energy_readings.energy_source` describe el origen del **delta de esta lectura** (`energy_wh` / `energy_ah`), no el de los acumulados: vale `device` si la energía del intervalo sale del aparato —su total de vida (§4.6) o su avance, en Wh o en Ah— y `derived` si el servidor la integra a partir de `power` y `duration`. No confundirlo con `energy_wh_source` / `energy_ah_source` de `hardware_energy_historical`, que son los de la sesión (§4.1).
    - Los acumulados nativos (`today_energy_wh`, `today_energy_ah`, `historical_energy_wh`, `historical_energy_ah`) mandan siempre sobre lo calculado en sus tablas de resumen.
 3. **Respaldo de Tensión Nominal (`nominal_voltage`):** Si un canal de consumo o sensor de corriente simple (ej. INA219 montado en la línea de un router) no mide tensión, el backend recurre a `nominal_voltage` del elemento con `voltage_source: nominal` y emite un warning informativo sin descartar la muestra. **Sólo se usa cuando no hay medida**: una tensión medida se guarda tal cual aunque se salga del rango del elemento (§4.5).
 4. **Cálculo Automático de SOC de Batería:** Si el payload incluye tensión de batería pero omite el porcentaje (`soc`), el backend lo calcula de forma proporcional entre `voltage_min` y `voltage_max`.
@@ -426,7 +426,7 @@ gana. La tabla completa, con su efecto:
 | `today_voltage_min` / `today_voltage_max` | `.voltage_min` / `.voltage_max` | **Ensancha** el rango; nunca lo recorta |
 | `today_amperage_max` | `.amperage_max` | Ensancha |
 | `today_power_max` | `.power_max` | Ensancha |
-| `historical_energy_wh` / `historical_energy_ah` | `hardware_energy_historical.energy_wh` / `.energy_ah` | Fija la magnitud como `device` y guarda el mayor de los dos |
+| `historical_energy_wh` / `historical_energy_ah` | `hardware_energy_historical.energy_wh` / `.energy_ah`, y la energía de cada lectura | Fija la magnitud como `device` y suma su avance (§4.0). Además, **su avance es la energía de la lectura** y manda sobre `energy_wh` / `energy_ah` (§4.6) |
 | `battery_full_charges` / `battery_over_discharges` | `.number_battery_*` | Guarda el mayor |
 | `total_operating_days` (alias `days_operating`) | `.days_operating` | Guarda el mayor |
 
@@ -500,6 +500,50 @@ que hay que ver:
 En una batería, `voltage_min` y `voltage_max` son además las tensiones a 0 % y a
 100 % de carga: de ahí sale `battery_percentage` cuando el aparato no lo manda.
 Conviene que sean las del banco real y no un rango de tolerancia ancho.
+
+### 4.6. La energía de cada lectura sale del total de vida (2026-09-19)
+
+**Si el aparato manda total de vida (`historical_energy_*`), la energía de la
+lectura es total de ahora − último total guardado**, magnitud a magnitud
+(`HardwareEnergyHistorical::intervalFromOdometer()`, usado en
+`HardwareService::energiaDelIntervalo()`). El avance que manda el aparato
+(`energy_wh` / `energy_ah`) sólo se usa si no hay total con el que restar.
+
+**Por qué.** El avance lo calcula el aparato restando su contador del día con
+el de la subida anterior, y ese «de la subida anterior» vive en su memoria: si
+se reinicia, lo que contó mientras estaba caído no llega nunca. El total de vida
+sigue contando y el último está guardado aquí. El 16/09/2026 la Pico del Rover
+estuvo 17 h caída y el día se quedó sin 180 Wh generados y 480 Wh consumidos
+que su total sí había contado.
+
+Así el día y el histórico salen del mismo contador y cuadran entre sí. Un
+aparato que no manda total de vida sigue exactamente igual que antes.
+
+| # | Escenario | Energía de la lectura |
+|---|---|---|
+| 1 | Normal, con total de vida | La resta; da lo mismo que el avance |
+| 2 | Vuelve de un corte (minutos, horas o días) | La resta: recupera todo lo del corte |
+| 3 | Primera lectura con total de vida (elemento nuevo o primera vez que lo manda) | El avance si llega; si no, **0**. Se guarda el total como referencia |
+| 4 | El total llega algo por debajo del guardado (lectura corrupta) | 0; la referencia no se mueve (§4.0) |
+| 5 | El total cae casi a cero (contador reseteado, aparato cambiado) | Se abre otra sesión (§4) y va como el 3 |
+| 6 | Sin total de vida, con avance | El avance, como siempre |
+| 7 | Sin total ni avance | Potencia × tiempo, como siempre (§4.3) |
+| 8 | Total en una magnitud y no en la otra | Cada una por su lado |
+| 9 | Salto imposible | Lectura sospechosa: no suma y la referencia no se mueve |
+
+**El 0 del escenario 3 es la excepción a «nunca se inventa un 0» (§4.3), y es a
+propósito.** Un aparato que manda total de vida lleva contadores; calcularle
+potencia × tiempo en su primera lectura sería inventar la energía que su
+firmware ya dejó de inventar. El 0 no baja ninguna media: sólo se suma.
+
+**Salto imposible.** Si el avance en Wh supera lo que el elemento puede dar
+—`rated_power_w` × horas desde su lectura anterior × 1,5—, la lectura se marca
+sospechosa y la respuesta lo avisa. Se compara contra un mínimo de 15 minutos:
+los contadores van en enteros (el Rover suma de 13 en 13 Wh) y dos escalones
+seguidos en cinco minutos no son un salto. Sin `rated_power_w` no se comprueba.
+
+**Límite.** Lo recuperado tras un corte se apunta entero al día (UTC) en que
+llega la lectura, no repartido por las horas del corte.
 
 ---
 
@@ -770,6 +814,7 @@ haga ruido. Qué prueba cada archivo:
 | `Api/V2/Energy/EnergyRowIdentityTest.php` | Que la fila de resumen la identifique **el elemento**, no el dispositivo: una fila mal atribuida no puede devolver un 500 ni abrir otra en paralelo |
 | `Api/V2/Energy/EnergyDeclaredValuesTest.php` | **Que todo lo que el aparato manda se guarde y lo que no manda se calcule.** Los ocho acumuladores del Rover, los máximos del día, el origen por magnitud, la tensión medida fuera de rango y el signo de la batería |
 | `Api/V2/Energy/EnergyOdometerTest.php` | **Que un odómetro aporte su avance y no su valor**: adoptarlo sobre un acumulado que ya existe no suma nada, el reinicio se juzga contra el propio odómetro y un retroceso pequeño ni suma ni mueve la referencia |
+| `Api/V2/Energy/EnergyIntervalFromOdometerTest.php` | **Que la energía de cada lectura salga del total de vida** cuando el aparato lo manda: un test por cada uno de los nueve escenarios de §4.6 |
 | `Api/V2/Energy/EnergyHistoricalResetTest.php` | Que un reinicio de odómetro abra sesión nueva sin tocar la anterior |
 | `Api/V2/Energy/EnergyMonitorSimpleTest.php` | Derivación de potencia, Wh y Ah, y respaldo de tensión nominal |
 

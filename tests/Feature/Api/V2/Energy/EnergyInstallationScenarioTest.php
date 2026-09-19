@@ -210,9 +210,11 @@ class EnergyInstallationScenarioTest extends ApiTestCase
         $this->assertSame(4.2, (float) $panel->amperage);
         $this->assertSame(144.9, (float) $panel->power, 'La potencia que manda el aparato manda sobre V×A.');
         $this->assertSame(60, $panel->delta_seconds);
-        // Wh del intervalo = A · s / 3600 · V = 4,2 · 60/3600 · 34,5
-        $this->assertEqualsWithDelta(2.415, (float) $panel->energy_wh, 0.0001);
-        $this->assertEqualsWithDelta(0.07, (float) $panel->energy_ah, 0.0001);
+        // Manda total de vida: es la primera lectura, así que sólo fija la
+        // referencia y su energía es 0. No se calcula potencia × tiempo para un
+        // aparato que lleva contadores.
+        $this->assertEqualsWithDelta(0.0, (float) $panel->energy_wh, 0.0001);
+        $this->assertEqualsWithDelta(0.0, (float) $panel->energy_ah, 0.0001);
         $this->assertSame('measured', $panel->voltage_source);
         $this->assertSame(3, $panel->charging_status);
         $this->assertSame('mppt', $panel->charging_status_label);
@@ -226,7 +228,8 @@ class EnergyInstallationScenarioTest extends ApiTestCase
         $this->assertSame(13.4, (float) $battery->voltage);
         $this->assertSame(13.4, (float) $battery->battery_voltage);
         $this->assertSame(92, $battery->battery_percentage);
-        $this->assertEqualsWithDelta(0.0833, (float) $battery->energy_ah, 0.0001);
+        // Primera lectura con total de vida: fija la referencia, energía 0.
+        $this->assertEqualsWithDelta(0.0, (float) $battery->energy_ah, 0.0001);
 
         // ── Consumo de la salida de carga ────────────────────────────────
         $load = HardwareEnergyReading::query()
@@ -235,7 +238,8 @@ class EnergyInstallationScenarioTest extends ApiTestCase
 
         $this->assertSame(12.1, (float) $load->voltage);
         $this->assertEqualsWithDelta(30.25, (float) $load->power, 0.0001, 'Sin potencia del aparato se deriva V×A.');
-        $this->assertEqualsWithDelta(0.5042, (float) $load->energy_wh, 0.0001);
+        // Primera lectura con total de vida: fija la referencia, energía 0.
+        $this->assertEqualsWithDelta(0.0, (float) $load->energy_wh, 0.0001);
     }
 
     #[Test]

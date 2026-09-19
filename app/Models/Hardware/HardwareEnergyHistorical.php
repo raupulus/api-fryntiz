@@ -373,6 +373,63 @@ class HardwareEnergyHistorical extends BaseModel
     }
 
     /**
+     * La energía de un intervalo según el total de vida del aparato:
+     * **total que llega − último total guardado**, magnitud a magnitud.
+     *
+     * Es lo que hace que un corte del aparato o de la red no pierda energía del
+     * día: el avance que calcula el aparato entre dos subidas se pierde si se
+     * reinicia, pero su total de vida sigue contando, y aquí está guardado el
+     * último que llegó. Vale para cualquier aparato que mande total de vida;
+     * al que no lo manda no le afecta.
+     *
+     * `null` en una magnitud significa «no se puede calcular así» y quien llama
+     * usa lo de siempre (el avance del aparato o potencia × tiempo):
+     *
+     * - no llega total de vida en esta lectura;
+     * - no hay uno anterior guardado (primera vez, elemento nuevo);
+     * - el total se ha reiniciado de verdad —la misma regla con la que
+     *   {@see self::accumulateForElement()} abre otra sesión—, así que no hay
+     *   referencia válida en ninguna de las dos magnitudes.
+     *
+     * Si el total llega **por debajo** del guardado sin llegar a reinicio, es
+     * una lectura corrupta: la energía del intervalo es 0, igual que en el
+     * histórico, que tampoco suma ni mueve la referencia.
+     *
+     * @return array{energy_wh: float|null, energy_ah: float|null}
+     */
+    public static function intervalFromOdometer(int $elementId, ?float $reportedWh, ?float $reportedAh): array
+    {
+        $sinOdometro = ['energy_wh' => null, 'energy_ah' => null];
+
+        if ($reportedWh === null && $reportedAh === null) {
+            return $sinOdometro;
+        }
+
+        $latest = static::query()
+            ->where('hardware_energy_id', $elementId)
+            ->orderByDesc('session_index')
+            ->first();
+
+        if ($latest === null
+            || self::odometroReiniciado($reportedWh, $latest->energy_wh_device_total)
+            || self::odometroReiniciado($reportedAh, $latest->energy_ah_device_total)
+        ) {
+            return $sinOdometro;
+        }
+
+        $avance = static fn (?float $reportado, ?float $anterior): ?float => match (true) {
+            $reportado === null, $anterior === null => null,
+            $reportado < $anterior => 0.0,
+            default => round($reportado - $anterior, 4),
+        };
+
+        return [
+            'energy_wh' => $avance($reportedWh, $latest->energy_wh_device_total),
+            'energy_ah' => $avance($reportedAh, $latest->energy_ah_device_total),
+        ];
+    }
+
+    /**
      * ¿El aparato ha vuelto a contar desde cero?
      *
      * Sólo se puede responder comparando su odómetro con **el último valor que

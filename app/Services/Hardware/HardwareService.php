@@ -152,16 +152,18 @@ class HardwareService
                     $measure = isset($genData['voltage']) ? (float) $genData['voltage'] : null;
                     [$voltage, $voltageSource] = $element->resolveVoltage($measure);
 
+                    $declarada = $this->energiaDelIntervalo($element, $genData, $readAt);
+
                     ['power' => $power, 'energy_wh' => $intervalWh, 'energy_ah' => $intervalAh] = $element->deriveMagnitudes(
                         $voltage,
                         $amperage,
                         isset($genData['power']) ? (float) $genData['power'] : null,
-                        isset($genData['energy_wh']) ? (float) $genData['energy_wh'] : null,
-                        isset($genData['energy_ah']) ? (float) $genData['energy_ah'] : null,
+                        $declarada['energy_wh'],
+                        $declarada['energy_ah'],
                         $intervalo
                     );
 
-                    $energySource = isset($genData['energy_wh']) ? 'device' : 'derived';
+                    $energySource = $declarada['source'];
 
                     $reading = new HardwareEnergyReading([
                         'hardware_device_id' => $device->id,
@@ -185,6 +187,11 @@ class HardwareService
                     if ($amperage !== null && $amperage < 0) {
                         $reading->markSuspicious('corriente negativa');
                         $warnings[] = "Generador: corriente negativa ({$amperage} A).";
+                    }
+
+                    if ($declarada['sospecha'] !== null) {
+                        $reading->markSuspicious($declarada['sospecha']);
+                        $warnings[] = "Generador: {$declarada['sospecha']}; lectura descartada.";
                     }
 
                     if ($voltage === null) {
@@ -251,12 +258,14 @@ class HardwareService
                     $measure = isset($batData['voltage']) ? (float) $batData['voltage'] : null;
                     [$voltage, $voltageSource] = $element->resolveVoltage($measure);
                     $amperage = isset($batData['amperage']) ? (float) $batData['amperage'] : null;
+                    $declarada = $this->energiaDelIntervalo($element, $batData, $readAt);
+
                     ['power' => $power, 'energy_wh' => $intervalWh, 'energy_ah' => $intervalAh] = $element->deriveMagnitudes(
                         $voltage,
                         $amperage,
                         isset($batData['power']) ? (float) $batData['power'] : null,
-                        isset($batData['energy_wh']) ? (float) $batData['energy_wh'] : null,
-                        isset($batData['energy_ah']) ? (float) $batData['energy_ah'] : null,
+                        $declarada['energy_wh'],
+                        $declarada['energy_ah'],
                         $intervalo
                     );
 
@@ -277,7 +286,7 @@ class HardwareService
                         'delta_seconds' => $intervalo,
                         'energy_wh' => $intervalWh,
                         'energy_ah' => $intervalAh,
-                        'energy_source' => isset($batData['energy_wh']) ? 'device' : 'derived',
+                        'energy_source' => $declarada['source'],
                         'voltage_source' => $voltageSource,
                         'battery_voltage' => $voltage,
                         'battery_percentage' => $soc,
@@ -285,6 +294,11 @@ class HardwareService
                         'charging_status' => isset($batData['charging_status']) ? (int) $batData['charging_status'] : null,
                         'charging_status_label' => $batData['charging_status_label'] ?? null,
                     ]);
+
+                    if ($declarada['sospecha'] !== null) {
+                        $reading->markSuspicious($declarada['sospecha']);
+                        $warnings[] = "Batería: {$declarada['sospecha']}; lectura descartada.";
+                    }
 
                     if ($voltage === null) {
                         $reading->markSuspicious('sin tensión de batería');
@@ -360,12 +374,14 @@ class HardwareService
                     $measure = isset($loadData['voltage']) ? (float) $loadData['voltage'] : null;
                     [$voltage, $voltageSource] = $element->resolveVoltage($measure);
 
+                    $declarada = $this->energiaDelIntervalo($element, $loadData, $readAt);
+
                     ['power' => $power, 'energy_wh' => $intervalWh, 'energy_ah' => $intervalAh] = $element->deriveMagnitudes(
                         $voltage,
                         $amperage,
                         isset($loadData['power']) ? (float) $loadData['power'] : null,
-                        isset($loadData['energy_wh']) ? (float) $loadData['energy_wh'] : null,
-                        isset($loadData['energy_ah']) ? (float) $loadData['energy_ah'] : null,
+                        $declarada['energy_wh'],
+                        $declarada['energy_ah'],
                         $intervalo
                     );
 
@@ -378,7 +394,7 @@ class HardwareService
                         'delta_seconds' => $intervalo,
                         'energy_wh' => $intervalWh,
                         'energy_ah' => $intervalAh,
-                        'energy_source' => isset($loadData['energy_wh']) ? 'device' : 'derived',
+                        'energy_source' => $declarada['source'],
                         'voltage_source' => $voltageSource,
                         'temperature' => isset($loadData['temperature']) ? (float) $loadData['temperature'] : null,
                         'fan' => isset($loadData['fan']) ? (int) $loadData['fan'] : null,
@@ -387,6 +403,11 @@ class HardwareService
                     if ($amperage !== null && $amperage < 0) {
                         $reading->markSuspicious('corriente negativa');
                         $warnings[] = "Consumo canal {$channel}: corriente negativa ({$amperage} A).";
+                    }
+
+                    if ($declarada['sospecha'] !== null) {
+                        $reading->markSuspicious($declarada['sospecha']);
+                        $warnings[] = "Consumo canal {$channel}: {$declarada['sospecha']}; lectura descartada.";
                     }
 
                     if ($voltage === null) {
@@ -433,6 +454,112 @@ class HardwareService
 
             return ['readings' => $readings, 'warnings' => $warnings];
         });
+    }
+
+    /**
+     * Margen sobre la potencia nominal del elemento antes de dar por imposible
+     * un avance del total de vida.
+     */
+    private const ODOMETER_POWER_MARGIN = 1.5;
+
+    /**
+     * Tiempo mínimo, en horas, contra el que se compara un avance del total de
+     * vida. Los contadores van en enteros (el Rover suma de 13 en 13 Wh) y un
+     * par de escalones seguidos en cinco minutos no es un salto imposible.
+     */
+    private const ODOMETER_MIN_HOURS = 0.25;
+
+    /**
+     * De dónde sale la energía de esta lectura, magnitud a magnitud.
+     *
+     * 1. **Total de vida del aparato**, si lo manda y hay uno anterior guardado:
+     *    total de ahora − total anterior ({@see HardwareEnergyHistorical::intervalFromOdometer()}).
+     *    Manda sobre el avance que calcula el aparato, que se pierde cuando se
+     *    reinicia: el 16/09/2026 la Pico del Rover estuvo 17 h caída y el día se
+     *    quedó sin 180 Wh generados y 480 Wh consumidos que el total de vida sí
+     *    había contado. Lo recuperado se apunta al día en que llega la lectura.
+     * 2. **El avance que manda el aparato** (`energy_wh` / `energy_ah`).
+     * 3. **Nada** (`null`): {@see HardwareEnergy::deriveMagnitudes()} lo deriva
+     *    de la potencia y el tiempo, como siempre.
+     *
+     * Un aparato sin total de vida sigue exactamente igual que antes.
+     *
+     * **Salto imposible.** Si el avance del total de vida en Wh supera lo que el
+     * elemento puede dar en el tiempo transcurrido —potencia nominal × horas
+     * desde su lectura anterior × margen—, se devuelve el motivo en `sospecha`:
+     * la lectura se marca sospechosa, no suma y la referencia no se mueve. Sin
+     * potencia nominal configurada no se comprueba.
+     *
+     * @param  array<string, mixed>  $bloque
+     * @return array{energy_wh: float|null, energy_ah: float|null, source: string, sospecha: string|null}
+     */
+    private function energiaDelIntervalo(HardwareEnergy $element, array $bloque, ?Carbon $readAt): array
+    {
+        $numero = static fn (string $clave): ?float => isset($bloque[$clave]) ? (float) $bloque[$clave] : null;
+
+        $porOdometro = HardwareEnergyHistorical::intervalFromOdometer(
+            $element->id,
+            $numero('historical_energy_wh'),
+            $numero('historical_energy_ah')
+        );
+
+        // Un aparato que manda total de vida lleva contadores: si en esta
+        // lectura no hay con qué restar (la primera, o tras un reinicio del
+        // contador) ni manda avance, la energía es 0, no potencia × tiempo.
+        // Inventarla es justo lo que se quitó del firmware del Rover.
+        $wh = $porOdometro['energy_wh']
+            ?? $numero('energy_wh')
+            ?? ($numero('historical_energy_wh') !== null ? 0.0 : null);
+
+        $ah = $porOdometro['energy_ah']
+            ?? $numero('energy_ah')
+            ?? ($numero('historical_energy_ah') !== null ? 0.0 : null);
+
+        return [
+            'energy_wh' => $wh,
+            'energy_ah' => $ah,
+            // Lo que no sale de potencia × tiempo sale del aparato: su total
+            // de vida o su avance, en Wh o en Ah.
+            'source' => ($wh !== null || $ah !== null) ? 'device' : 'derived',
+            'sospecha' => $this->saltoImposible($element, $porOdometro['energy_wh'], $readAt),
+        ];
+    }
+
+    /**
+     * El motivo si un avance del total de vida en Wh es físicamente imposible
+     * para el elemento, o `null` si es posible o no se puede saber.
+     */
+    private function saltoImposible(HardwareEnergy $element, ?float $avanceWh, ?Carbon $readAt): ?string
+    {
+        $nominal = (float) ($element->rated_power_w ?? 0.0);
+
+        if ($avanceWh === null || $avanceWh <= 0.0 || $nominal <= 0.0) {
+            return null;
+        }
+
+        $anterior = HardwareEnergyReading::query()
+            ->where('hardware_energy_id', $element->id)
+            ->where('is_suspicious', false)
+            ->max('created_at');
+
+        if ($anterior === null) {
+            return null;
+        }
+
+        $segundos = max(0.0, (float) Carbon::parse($anterior)->diffInSeconds($readAt ?? now(), false));
+        $horas = max($segundos / 3600.0, self::ODOMETER_MIN_HOURS);
+        $maximo = $nominal * $horas * self::ODOMETER_POWER_MARGIN;
+
+        if ($avanceWh <= $maximo) {
+            return null;
+        }
+
+        return sprintf(
+            'el total de vida avanza %s Wh en %s min, más de lo que da el elemento (%s W)',
+            round($avanceWh, 1),
+            round($segundos / 60),
+            round($nominal)
+        );
     }
 
     /**

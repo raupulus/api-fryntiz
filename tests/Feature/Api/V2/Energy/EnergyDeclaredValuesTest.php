@@ -243,13 +243,17 @@ class EnergyDeclaredValuesTest extends ApiTestCase
         // El generador declara los Wh pero no los Ah.
         unset($payload['generator']['today_energy_ah'], $payload['generator']['historical_energy_ah']);
 
+        // La primera lectura sólo fija la referencia del odómetro: su energía
+        // es 0 y de ahí no salen Ah. La segunda avanza 10 Wh.
+        $this->subir($payload)->assertStatus(201);
+        $payload['generator']['historical_energy_wh'] = 523765.0;
         $this->subir($payload)->assertStatus(201);
 
         $acumulado = $this->acumulado($this->panel);
 
         $this->assertSame(HardwareEnergyHistorical::SOURCE_DEVICE, $acumulado->energy_wh_source);
         $this->assertSame(HardwareEnergyHistorical::SOURCE_DERIVED, $acumulado->energy_ah_source);
-        $this->assertEqualsWithDelta(523755.0, (float) $acumulado->energy_wh, 0.001);
+        $this->assertEqualsWithDelta(523765.0, (float) $acumulado->energy_wh, 0.001);
         $this->assertGreaterThan(0.0, (float) $acumulado->energy_ah, 'Los Ah que el aparato no manda se calculan.');
     }
 
@@ -264,11 +268,15 @@ class EnergyDeclaredValuesTest extends ApiTestCase
         $this->subir($payload)->assertStatus(201);
         $primeros = (float) $this->acumulado($this->panel)->energy_ah;
 
+        // El odómetro avanza 10 Wh: esa es la energía de la segunda lectura, y
+        // de ella salen los Ah que el aparato no manda. Con el odómetro quieto
+        // la energía del intervalo sería 0 y no habría Ah que sumar.
+        $payload['generator']['historical_energy_wh'] = 523765.0;
         $this->subir($payload)->assertStatus(201);
         $segundos = (float) $this->acumulado($this->panel)->energy_ah;
 
         $this->assertGreaterThan($primeros, $segundos, 'Los Ah calculados siguen acumulando.');
-        $this->assertEqualsWithDelta(523755.0, (float) $this->acumulado($this->panel)->energy_wh, 0.001);
+        $this->assertEqualsWithDelta(523765.0, (float) $this->acumulado($this->panel)->energy_wh, 0.001);
     }
 
     #[Test]
