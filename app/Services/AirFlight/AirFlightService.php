@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -87,7 +88,22 @@ class AirFlightService
         }
 
         $aircraft->seen_last_at = now();
-        $aircraft->save();
+
+        $isNew = ! $aircraft->exists;
+
+        try {
+            $aircraft->save();
+        } catch (UniqueConstraintViolationException $e) {
+            // `icao` es único: otra petición (un reintento del receptor)
+            // dio de alta este mismo avión entre el `firstOrNew()` y el
+            // `save()`. Se repite entera para que ahora lo encuentre y
+            // aplique estos datos sobre la fila que ya existe.
+            if (! $isNew) {
+                throw $e;
+            }
+
+            return $this->addAircraft($data, $userId, $hardwareDeviceId);
+        }
 
         $path = $this->routeFieldsOnly($data);
 

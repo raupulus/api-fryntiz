@@ -406,6 +406,14 @@ class AirFlightAirPlane extends BaseModel
      */
     public static function searchHex($icao)
     {
+        // Un ICAO son exactamente 6 dígitos hexadecimales. dump1090 marca con
+        // `~` las direcciones que no son ICAO (TIS-B); `hexdec()` ignoraría
+        // ese carácter (con un deprecated) y devolvería el país de otra
+        // dirección que no tiene nada que ver.
+        if (! preg_match('/^[0-9a-f]{6}$/i', (string) $icao)) {
+            return null;
+        }
+
         try {
             $hexColor = hexdec($icao);
 

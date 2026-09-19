@@ -166,8 +166,34 @@ solo corrigió 21 y dejó 183, de los cuales 23 sí eran resolubles con
 Test de regresión:
 [`AirflightFixCommandTest`](../../tests/Feature/Console/AirflightFixCommandTest.php)
 (más de una página de ICAO irresolubles por delante de uno resoluble).
-Pendiente: volver a ejecutar `php artisan airflight:fix` en producción tras
-desplegar esto, para los ~23 aviones que se quedaron atrás la vez anterior.
+Ejecutado en producción tras desplegarlo: 44 de 204 aviones corregidos (los 21
+que ya alcanzaba el comando más los 23 que se quedaban atrás). Los 160
+restantes tienen un ICAO sin país posible en `FLAGS`.
+
+### `icao` único, ICAO válidos y `category` sin `''` (2026-09-19)
+
+Auditoría del dump de producción del 2026-09-19. Tres defectos de integridad en
+`airflight_airplanes`:
+
+- **Tres ICAO duplicados** (`348311`, `3483c9`, `3cc847`), creados en el mismo
+  segundo en julio de 2026, sin rutas. `addAircraft()` busca con `firstOrNew()`
+  pero nada en la base de datos impedía que dos peticiones simultáneas (un
+  reintento del receptor tras un timeout) dieran de alta el mismo avión. La
+  migración `2026_09_19_000001` fusiona los duplicados (conserva la fila más
+  antigua, le pasa las rutas y los datos que le falten) y convierte el índice
+  de `icao` en **único**. `addAircraft()` captura la violación de unicidad de
+  una carrera y repite la operación, que ya encuentra el avión.
+- **ICAO con `~`** (12 aviones de 2021–2023, direcciones no ICAO de TIS-B). La
+  validación acepta cualquier cadena de hasta 10 caracteres y `hexdec()` ignora
+  el `~`, así que `searchHex()` devolvía el país de otra dirección. Ahora sólo
+  resuelve 6 dígitos hexadecimales. Los 12 ya guardados conservan el país que
+  se les dio entonces.
+- **`category` vacía**: `''` en los 1933 aviones anteriores al 2026-09-08 y
+  `NULL` en los posteriores. La migración `2026_09_19_000002` deja `NULL`, que
+  es lo único que produce `addAircraft()`.
+
+Test:
+[`AirFlightIcaoIntegrityTest`](../../tests/Feature/Api/V2/Persistence/AirFlightIcaoIntegrityTest.php).
 
 ### Corrección sobre una confusión propia (2026-09-08 → 09)
 
@@ -699,4 +725,4 @@ cuyo caso sí son un duplicado exacto, tengan o no posición.
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-17
+> Creado: 2026-05-25 · Última revisión: 2026-09-19
