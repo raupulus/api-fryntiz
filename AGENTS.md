@@ -277,7 +277,7 @@ api-fryntiz/
 │   ├── Policies/             # 25 Policies. Registro EXPLÍCITO en AuthServiceProvider
 │   ├── Providers/            # Service Providers de Laravel y paneles Filament (AdminPanelProvider, TenantPanelProvider)
 │   ├── Rules/                # Reglas de validación personalizadas (OwnedHardwareDevice, OwnedSmartPlant, KnownSensor)
-│   ├── Services/             # Service Layer con toda la lógica de negocio dividida por dominio (15 servicios + el DTO `CaptchaResult`)
+│   ├── Services/             # Service Layer con toda la lógica de negocio dividida por dominio (20 servicios + el DTO `CaptchaResult`)
 │   ├── Support/              # Clases de soporte general (Auth, TokenAbilities, FilamentValidationRules)
 │   └── Traits/               # Traits reutilizables (ApiResponseTrait, BelongsToUser, HasSlug, Filterable...)
 ├── bootstrap/                # Arranque del framework y configuración de excepciones y middlewares (app.php, providers.php)

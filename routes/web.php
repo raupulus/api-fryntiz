@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Admin\EditorJsController;
+use App\Http\Controllers\Admin\YouTubeSearchController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\FileThumbnailController;
 use App\Http\Controllers\LanguageController;
@@ -100,6 +101,24 @@ Route::middleware(['auth', 'can:access-editorjs'])
         Route::get('/url-metadata', [EditorJsController::class, 'urlMetadata'])
             ->middleware('throttle:30,1')
             ->name('url-metadata');
+    });
+
+/*
+|--------------------------------------------------------------------------
+| Búsqueda de vídeos de YouTube (Panel Admin)
+|--------------------------------------------------------------------------
+|
+| Centraliza las peticiones a la API de YouTube Data v3 en el servidor para
+| no exponer la GOOGLE_API_KEY en el cliente, aplicar caché y rate limiting.
+|
+*/
+Route::middleware(['auth', 'can:access-youtube-search'])
+    ->prefix('admin/youtube')
+    ->name('admin.youtube.')
+    ->group(function () {
+        Route::get('/search', [YouTubeSearchController::class, 'search'])
+            ->middleware('throttle:30,1')
+            ->name('search');
     });
 
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

@@ -22,7 +22,7 @@ class YoutubeVideoField extends Field
 {
     protected string $view = 'filament.components.youtube-video-field';
 
-    protected string|Closure|null $apiKey = null;
+    protected string|Closure|null $searchEndpoint = null;
 
     protected array|Closure $channels = [];
 
@@ -31,12 +31,20 @@ class YoutubeVideoField extends Field
     protected string|Closure $platformStatePath = 'data.platform_id';
 
     /**
-     * Clave de API de YouTube (Google).
+     * Endpoint local del backend para realizar las búsquedas de YouTube de forma segura.
+     */
+    public function searchEndpoint(string|Closure|null $endpoint): static
+    {
+        $this->searchEndpoint = $endpoint;
+
+        return $this;
+    }
+
+    /**
+     * @deprecated Las peticiones ahora se gestionan en el backend. Ya no es necesario pasar la clave de API al componente.
      */
     public function apiKey(string|Closure|null $apiKey): static
     {
-        $this->apiKey = $apiKey;
-
         return $this;
     }
 
@@ -72,9 +80,9 @@ class YoutubeVideoField extends Field
         return $this;
     }
 
-    public function getApiKey(): ?string
+    public function getSearchEndpoint(): string
     {
-        return $this->evaluate($this->apiKey);
+        return (string) ($this->evaluate($this->searchEndpoint) ?? route('admin.youtube.search'));
     }
 
     public function getChannels(): array

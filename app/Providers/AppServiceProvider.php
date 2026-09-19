@@ -204,6 +204,12 @@ class AppServiceProvider extends ServiceProvider
             return $user->is_active && ($user->isAdmin() || $user->isEditor());
         });
 
+        // Quién puede buscar vídeos de YouTube a través del backend para el
+        // componente YoutubeVideoField. Mismo criterio de acceso al panel Admin.
+        Gate::define('access-youtube-search', function ($user) {
+            return $user->is_active && ($user->isAdmin() || $user->isEditor());
+        });
+
         // Gate: ver estadísticas globales
         Gate::define('view-statistics', function ($user) {
             return $user->isAdmin();

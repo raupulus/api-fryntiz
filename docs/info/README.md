@@ -18,6 +18,7 @@
 | [smart-plant.md](smart-plant.md) | Plantas Inteligentes | Sensores de humedad, luz, temperatura en plantas |
 | [airflight.md](airflight.md) | Registro de Vuelos | Detección y tracking de aviones |
 | [content.md](content.md) | CMS / Contenidos | Artículos, tutoriales, proyectos, páginas, reseñas |
+| [youtube-video-search.md](youtube-video-search.md) | Búsqueda de Vídeos de YouTube | Selector en Filament con backend proxy, control de acceso, rate limiting y caché |
 | [galleries.md](galleries.md) | Galerías | Agrupaciones de imágenes asociables a contenidos |
 | [cv.md](cv.md) | Currículum Vitae | 16 secciones de CV + generación PDF |
 | [platform.md](platform.md) | Plataformas | Gestión multi-sitio |
@@ -92,4 +93,4 @@ Comprobados contra el código el 2026-08-30.
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-18
+> Creado: 2026-05-25 · Última revisión: 2026-09-19

@@ -194,9 +194,11 @@ posteriores.
 
 | Archivo | Descripción |
 |---------|-------------|
-| `app/Filament/Components/YoutubeVideoField.php` | Componente Filament: `apiKey()`, `channels()`, `platformNames()`, `platformStatePath()` |
-| `resources/views/filament/components/youtube-video-field.blade.php` | Vista + componente Alpine (`youtubeVideoField`) |
-| `resources/js/youtube-video-search.js` | Clase `YoutubeVideoSearch` (modal de búsqueda vanilla JS, sin Alpine) |
+| `app/Filament/Components/YoutubeVideoField.php` | Componente Filament: `searchEndpoint()`, `channels()`, `platformNames()`, `platformStatePath()` |
+| `app/Http/Controllers/Admin/YouTubeSearchController.php` | Endpoint proxy `/admin/youtube/search` con Gate `access-youtube-search` y rate limiting |
+| `app/Services/YouTube/YouTubeService.php` | Servicio backend que consulta la API de YouTube v3 y cachea respuestas 30 min |
+| `resources/views/filament/components/youtube-video-field.blade.php` | Vista + componente Alpine (`youtubeVideoField`) con inyección de `searchEndpoint` |
+| `resources/js/youtube-video-search.js` | Clase `YoutubeVideoSearch` (modal de búsqueda vanilla JS, consume endpoint local) |
 | `resources/css/youtube-video-search-tailwind.css` | CSS del modal **y** del layout del campo (ver «Por qué CSS llano» abajo) |
 | `resources/css/youtube-video-search.css` | Copia intacta del CSS original de `main` (Bootstrap/AdminLTE), sin usar — se deja como referencia histórica, no la importa nada |
 
@@ -207,8 +209,7 @@ posteriores.
 - El canal de búsqueda se resuelve según la plataforma seleccionada
   (`Platform.youtube_channel_id`); `platformNames()` mapea `platform_id => title`
   (columna real de `platforms`, no `name`) para la insignia del canal.
-- La API key se toma de `config('google.api_key')` — en `local`/`testing` cae a
-  `GOOGLE_DEV_API_KEY` si existe (ver `config/google.php`).
+- **Seguridad y Quota**: La clave de API de Google (`config('google.api_key')`) **nunca se envía al cliente**. El frontend llama a `/admin/youtube/search`, protegido por sesión de Filament (`auth`), Gate `access-youtube-search` (SuperAdmin, Admin, Editor) y rate limiting (`throttle:30,1`). Las respuestas se cachean 30 minutos en Redis/DB para no quemar la cuota de YouTube (100 unidades por búsqueda). Documentación técnica completa y guía de portabilidad en [`youtube-video-search.md`](youtube-video-search.md).
 - El JS/CSS se inyectan por `@vite('resources/js/youtube-video-search.js')`
   dentro de un `@push('scripts')` en la propia vista del campo, no por un
   render hook de Filament.

@@ -59,6 +59,9 @@ desde el panel admin. `/dashboard` y `/dashboard/*` redirigen a `/panel` (301).
 - **Panel Tenant / Usuario (`/panel`):** Panel para usuarios autenticados (`TenantPanelProvider`).
   - Dashboard de cliente y visualización de recursos propios.
 
+## 4. Endpoints Internos de Soporte Web / Admin
+- `GET  /admin/youtube/search`: Endpoint proxy para búsqueda de vídeos de YouTube (`admin.youtube.search`). Protegido con `auth`, Gate `access-youtube-search` (SuperAdmin, Admin, Editor) y `throttle:30,1`. Resuelve llamadas de `YoutubeVideoField` sin exponer la API key de Google en el cliente.
+
 ---
 
 > Fuente original: `AGENTS.md` §6-bis (movido aquí el 2026-09-15 para no cargarlo en
@@ -67,4 +70,4 @@ desde el panel admin. `/dashboard` y `/dashboard/*` redirigen a `/panel` (301).
 
 ---
 
-> Creado: 2026-09-15 · Última revisión: 2026-09-17
+> Creado: 2026-09-15 · Última revisión: 2026-09-19

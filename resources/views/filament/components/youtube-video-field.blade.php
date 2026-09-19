@@ -7,7 +7,7 @@
         wire:ignore
         x-data="youtubeVideoField({
             state: $wire.$entangle('{{ $getStatePath() }}'),
-            apiKey: @js($getApiKey()),
+            searchEndpoint: @js($getSearchEndpoint()),
             channels: @js($getChannels()),
             platformNames: @js($getPlatformNames()),
             platformStatePath: @js($getPlatformStatePath()),
@@ -157,7 +157,7 @@
 
         <script>
             document.addEventListener('alpine:init', () => {
-                Alpine.data('youtubeVideoField', ({ state, apiKey, channels, platformNames, platformStatePath, uid }) => ({
+                Alpine.data('youtubeVideoField', ({ state, searchEndpoint, channels, platformNames, platformStatePath, uid }) => ({
                     state: state,
                     uid: uid,
                     searcher: null,
@@ -203,7 +203,7 @@
                         const modalContainer = this.$el.querySelector('#modal-' + uid);
 
                         this.searcher = new YoutubeVideoSearch(
-                            apiKey,
+                            searchEndpoint,
                             channelId,
                             modalContainer,
                             callback,

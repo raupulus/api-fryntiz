@@ -14,7 +14,7 @@ import '../css/youtube-video-search-tailwind.css';
 
 if (typeof window.YoutubeVideoSearch === 'undefined') {
 window.YoutubeVideoSearch = class YoutubeVideoSearch {
-    url = 'https://www.googleapis.com/youtube/v3/search';
+    endpointUrl = '/admin/youtube/search';
 
     totalResults = 0;
     resultsPerPage = 0;
@@ -37,7 +37,7 @@ window.YoutubeVideoSearch = class YoutubeVideoSearch {
     /**
      * Constructor para preparar el buscador.
      *
-     * @param apiKey Clave api de youtube.
+     * @param endpointUrl URL del endpoint local del backend (/admin/youtube/search).
      * @param channelId Id del canal sobre el que buscar.
      * @param boxTarget Elemento donde se pondrá el modal, o selector CSS
      *   para buscarlo en todo el documento. Se admite el elemento directo
@@ -47,8 +47,8 @@ window.YoutubeVideoSearch = class YoutubeVideoSearch {
      * @param callback Función que se llamará una vez cambiado el vídeo.
      * @param btnTarget Elemento o selector CSS para el botón que abre el modal.
      */
-    constructor(apiKey, channelId, boxTarget, callback, btnTarget = null) {
-        this.apiKey = apiKey;
+    constructor(endpointUrl, channelId, boxTarget, callback, btnTarget = null) {
+        this.endpointUrl = endpointUrl || '/admin/youtube/search';
         this.channelId = channelId;
         this.callback = callback;
 
@@ -393,28 +393,26 @@ window.YoutubeVideoSearch = class YoutubeVideoSearch {
             this.maxKnownPage = 1;
         }
 
-        //console.log('Realiza petición a la api de google con el valor: ', search);
-
         const params = {
             q: search,
-            part: 'id,snippet', // snippet por defecto
-            channelId: this.channelId,
-            type: 'video',
-            key: this.apiKey,
-            maxResults: 10,
-            order: 'relevance', // viewCount, rating, title, relevance, date
-            safeSearch: 'none',
+            max_results: 10,
+        };
+
+        if (this.channelId) {
+            params.channel_id = this.channelId;
         }
 
         if (pageToken) {
-            params.pageToken = pageToken
+            params.page_token = pageToken;
         }
 
-        fetch(this.url + '?' + new URLSearchParams(params), {
+        fetch(this.endpointUrl + '?' + new URLSearchParams(params), {
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json'
-            }
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+            },
+            credentials: 'same-origin',
         })
             .then(response => response.json())
             .then(data => {
