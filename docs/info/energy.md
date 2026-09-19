@@ -630,8 +630,12 @@ regulador en el lado de la batería (ver «Hoy» más arriba).
 `V_ref` es la `nominal_voltage` del elemento **batería** de la instalación, que
 es la tensión del bus —lo que el Renogy llama tensión de sistema—. Si no hay
 batería configurada se usa la del consumo y, a falta de las dos, 12 V. Las
-tarjetas en amperios instantáneos llevan la tensión en el título
-(`Balance a 12 V`) para que no haya duda de contra qué se comparan.
+corrientes de generador y consumo se refieren a ella.
+
+**El balance en amperios va a la tensión real de la batería**, la que mide el
+Rover en esa lectura, porque es la corriente que entra o sale de ella: con la
+batería a 13,7 V, 39 W son 2,8 A, no los 3,3 que salían dividiendo entre 12
+(2026-09-19). Si no hay lectura de batería se usa `V_ref`.
 
 Las tarjetas por dispositivo van todas en W y Wh, así que no necesitan
 referencia.

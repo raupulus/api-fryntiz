@@ -177,6 +177,13 @@ class EnergyController extends Controller
         // Todo lo que se pinte en amperios se lleva antes a esta tensión.
         $referenceVoltage = $this->referenceVoltage($solarIds);
 
+        // La tensión de la batería en este momento, la que mide el Rover. Los
+        // amperios que entran o salen de la batería son los vatios entre ella,
+        // no entre los 12 V nominales: a 13,7 V, 39 W son 2,8 A y no 3,3. Sin
+        // lectura de batería se cae a la nominal.
+        $batteryVoltageNow = (float) ($solarBatteryCurrent->whereNotNull('voltage')->avg('voltage') ?? 0.0);
+        $balanceVoltage = $batteryVoltageNow > 0.0 ? $batteryVoltageNow : $referenceVoltage;
+
         // Objeto con los cálculos agregados de producción (generador)
         $generator = (object) [
             'current' => round((float) $solarGeneratorCurrent->sum('power')),
@@ -292,10 +299,10 @@ class EnergyController extends Controller
                 'image' => asset('images/icons/battery-status.svg'),
                 'unit' => 'W',
             ], [
-                // En vatios el balance ya sale bien porque la potencia no
-                // depende de la tensión; en amperios hay que referirlos antes.
-                'title' => 'Balance a '.$referenceVoltage.' V',
-                'value' => round(($generator->current - $load->current) / $referenceVoltage, 1),
+                // Lo que entra (+) o sale (−) de la batería, en amperios a su
+                // tensión real.
+                'title' => 'Balance',
+                'value' => round(($generator->current - $load->current) / $balanceVoltage, 1),
                 'image' => asset('images/icons/battery-status.svg'),
                 'unit' => 'A',
             ], [

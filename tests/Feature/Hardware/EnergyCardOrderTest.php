@@ -284,11 +284,11 @@ class EnergyCardOrderTest extends TestCase
         $this->assertSame(5.3, round((float) $generator->current_amperage, 1));
         $this->assertSame('2.3', $load->current_amperage);
 
-        // Y hay una tarjeta que lo dice explícitamente.
-        $this->assertTrue(
-            $titles->contains(fn (string $t): bool => str_starts_with($t, 'Balance a ')),
-            'Debe haber un balance en amperios referido a una tensión concreta.'
-        );
+        // Y hay una tarjeta de balance en amperios; sin batería configurada va
+        // a la tensión de referencia: 36 W / 12 V = 3 A.
+        $balanceAmps = collect($response->viewData('currentStats'))
+            ->first(fn (array $stat): bool => $stat['title'] === 'Balance' && $stat['unit'] === 'A');
+        $this->assertSame(3.0, (float) $balanceAmps['value']);
     }
 
     /**
@@ -316,6 +316,40 @@ class EnergyCardOrderTest extends TestCase
         // 617 / 12 serían 51 y 376 / 12, 31.
         $this->assertSame(47.0, (float) $response->viewData('generator')->today_amperage);
         $this->assertSame(30.0, (float) $response->viewData('load')->today_amperage);
+    }
+
+    /**
+     * El balance en amperios va a la tensión real de la batería: 39 W a 13,7 V
+     * son 2,8 A, no los 3,3 que salen dividiendo entre 12.
+     */
+    #[Test]
+    public function the_amp_balance_uses_the_measured_battery_voltage(): void
+    {
+        $device = $this->device('Rover');
+        $this->generatedAllTime($device, 1_000);
+        $this->generatingNow($device, 66);
+        $this->consumingNow($device, 27);
+
+        $battery = HardwareEnergy::create([
+            'hardware_device_id' => $device->id,
+            'role' => HardwareEnergy::ROLE_BATTERY,
+            'sensor_position' => 0,
+            'nominal_voltage' => 12.0,
+            'is_active' => true,
+        ]);
+        HardwareEnergyReading::create([
+            'hardware_device_id' => $device->id,
+            'hardware_energy_id' => $battery->id,
+            'voltage' => 13.7,
+            'created_at' => now()->subMinutes(5),
+        ]);
+
+        $response = $this->get(route('hardware.energy.index'))->assertOk();
+
+        $balanceAmps = collect($response->viewData('currentStats'))
+            ->first(fn (array $stat): bool => $stat['title'] === 'Balance' && $stat['unit'] === 'A');
+
+        $this->assertSame(2.8, (float) $balanceAmps['value']);
     }
 
     /**
