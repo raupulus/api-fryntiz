@@ -186,8 +186,8 @@ Auditoría del dump de producción del 2026-09-19. Tres defectos de integridad e
 - **ICAO con `~`** (12 aviones de 2021–2023, direcciones no ICAO de TIS-B). La
   validación acepta cualquier cadena de hasta 10 caracteres y `hexdec()` ignora
   el `~`, así que `searchHex()` devolvía el país de otra dirección. Ahora sólo
-  resuelve 6 dígitos hexadecimales. Los 12 ya guardados conservan el país que
-  se les dio entonces.
+  resuelve 6 dígitos hexadecimales. A los 12 ya guardados se les puso
+  `country`/`flag` a `NULL` a mano con `tinker` en producción.
 - **`category` vacía**: `''` en los 1933 aviones anteriores al 2026-09-08 y
   `NULL` en los posteriores. La migración `2026_09_19_000002` deja `NULL`, que
   es lo único que produce `addAircraft()`.
