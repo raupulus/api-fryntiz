@@ -292,6 +292,33 @@ class EnergyCardOrderTest extends TestCase
     }
 
     /**
+     * Los Ah del día son los que cuenta el regulador, no los Wh entre 12: el
+     * Rover los mide a la tensión real de la batería, que ronda los 13 V.
+     */
+    #[Test]
+    public function todays_amp_hours_are_the_controllers_own(): void
+    {
+        $device = $this->device('Rover');
+        $this->generatedAllTime($device, 1_000);
+
+        foreach ([[$this->generatorEnergy($device), 617, 47], [$this->loadEnergy($device), 376, 30]] as [$element, $wh, $ah]) {
+            HardwareEnergyToday::create([
+                'hardware_device_id' => $device->id,
+                'hardware_energy_id' => $element->id,
+                'energy_wh' => $wh,
+                'energy_ah' => $ah,
+                'date' => today(),
+            ]);
+        }
+
+        $response = $this->get(route('hardware.energy.index'))->assertOk();
+
+        // 617 / 12 serían 51 y 376 / 12, 31.
+        $this->assertSame(47.0, (float) $response->viewData('generator')->today_amperage);
+        $this->assertSame(30.0, (float) $response->viewData('load')->today_amperage);
+    }
+
+    /**
      * Ordenar no puede alterar ninguna suma de las tarjetas de cabecera.
      */
     #[Test]

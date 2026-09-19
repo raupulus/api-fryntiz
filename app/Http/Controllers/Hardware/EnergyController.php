@@ -166,11 +166,8 @@ class EnergyController extends Controller
             ?? $solarLoadCurrent->whereNotNull('battery_percentage')->avg('battery_percentage')
             ?? 0;
 
-        $batteryFullChargesSum = (float) (
-            $solarBatteryHistorical->sum('number_battery_full_charges') > 0
-                ? $solarBatteryHistorical->sum('number_battery_full_charges')
-                : $solarGeneratorHistorical->sum('number_battery_full_charges')
-        );
+        // Una vez por batería: ver HardwareEnergyHistorical::batteryCycles().
+        $batteryFullChargesSum = HardwareEnergyHistorical::batteryCycles($solarBatteryHistorical, $solarGeneratorHistorical)['full'];
 
         // **La tensión de referencia de la instalación.**
         //
@@ -186,7 +183,10 @@ class EnergyController extends Controller
             'current_amperage' => round($this->amperageAtReference($solarGeneratorCurrent, $referenceVoltage), 1),
             'current_voltage' => Figures::rounded($solarGeneratorCurrent->avg('voltage') ?? 0, 1),
             'today' => round((float) $solarGeneratorToday->sum('energy_wh')),
-            'today_amperage' => round((float) $solarGeneratorToday->sum('energy_wh') / $referenceVoltage),
+            // Los Ah que cuenta el regulador, no Wh / 12: el Rover los mide a la
+            // tensión real de la batería (~13 V), y dividir entre la nominal
+            // daba 51 Ah donde el Rover llevaba 47.
+            'today_amperage' => round((float) $solarGeneratorToday->sum('energy_ah')),
             'historical' => number_format((float) $solarGeneratorHistorical->sum('energy_wh') / 1000, 1),
             'days_operating' => (int) ($solarGeneratorHistorical->max('days_operating') ?? 0),
             'battery_full_charge' => number_format($batteryFullChargesSum),
@@ -201,7 +201,7 @@ class EnergyController extends Controller
             'current_amperage' => number_format($this->amperageAtReference($solarLoadCurrent, $referenceVoltage), 1),
             'current_voltage' => Figures::rounded($solarLoadCurrent->avg('voltage') ?? 0, 1),
             'today' => round((float) $solarLoadToday->sum('energy_wh')),
-            'today_amperage' => round((float) $solarLoadToday->sum('energy_wh') / $referenceVoltage),
+            'today_amperage' => round((float) $solarLoadToday->sum('energy_ah')),
             'historical' => number_format((float) $solarLoadHistorical->sum('energy_wh') / 1000, 1),
             'battery_percentage' => number_format((float) ($solarLoadCurrent->whereNotNull('battery_percentage')->avg('battery_percentage') ?? 0)),
             'max_temp' => number_format((float) ($solarLoadCurrent->max('temperature') ?? 0), 1),
@@ -260,15 +260,14 @@ class EnergyController extends Controller
                 'image' => asset('images/icons/energy-green.svg'),
                 'unit' => 'Wh',
             ], [
-                // Los dos van referidos a la misma tensión, así que aquí sí se
-                // pueden comparar y restar. Sin eso, «65 Ah generados» a 24 V y
-                // «36 Ah consumidos» a 12 V invitan a una resta que sale mal.
-                'title' => 'Generado a '.$referenceVoltage.' V',
+                // Los dos son contadores del regulador medidos en el lado de la
+                // batería, así que se pueden comparar y restar tal cual.
+                'title' => 'Generado',
                 'value' => $generator->today_amperage,
                 'image' => asset('images/icons/solar-panel.svg'),
                 'unit' => 'Ah',
             ], [
-                'title' => 'Consumido a '.$referenceVoltage.' V',
+                'title' => 'Consumido',
                 'value' => $load->today_amperage,
                 'image' => asset('images/icons/energy-green.svg'),
                 'unit' => 'Ah',

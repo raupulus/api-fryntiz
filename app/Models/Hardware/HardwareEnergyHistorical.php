@@ -196,6 +196,41 @@ class HardwareEnergyHistorical extends BaseModel
         return $this->hardwareEnergy();
     }
 
+    // ──────────────────────────── Agregados ────────────────────────────
+
+    /**
+     * Cargas completas y descargas totales, contando cada batería una vez.
+     *
+     * El Renogy manda sus contadores de ciclos en el elemento generador **y**
+     * en el batería, así que sumar todos los elementos cuenta dos veces su
+     * batería. Por cada aparato se toma lo de su elemento batería y, si no lo
+     * tiene, lo del generador, que es donde lo guardaban los aparatos de V1
+     * como el Sunix.
+     *
+     * @param  iterable<self>  $battery  Históricos de elementos batería.
+     * @param  iterable<self>  $generator  Históricos de elementos generador.
+     * @return array{full: int, over: int}
+     */
+    public static function batteryCycles(iterable $battery, iterable $generator): array
+    {
+        $battery = collect($battery);
+        $generator = collect($generator);
+
+        $totals = ['full' => 0, 'over' => 0];
+
+        foreach ($battery->pluck('hardware_device_id')->merge($generator->pluck('hardware_device_id'))->unique() as $deviceId) {
+            $own = $battery->where('hardware_device_id', $deviceId);
+            $source = $own->sum('number_battery_full_charges') > 0
+                ? $own
+                : $generator->where('hardware_device_id', $deviceId);
+
+            $totals['full'] += (int) $source->sum('number_battery_full_charges');
+            $totals['over'] += (int) $source->sum('number_battery_over_discharges');
+        }
+
+        return $totals;
+    }
+
     // ───────────────────────────── Scopes ──────────────────────────────
 
     /**

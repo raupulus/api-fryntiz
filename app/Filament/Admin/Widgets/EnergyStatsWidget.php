@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Widgets;
 
+use App\Models\Hardware\HardwareDevice;
 use App\Models\Hardware\HardwareEnergy;
 use App\Models\Hardware\HardwareEnergyHistorical;
 use App\Models\Hardware\HardwareEnergyReading;
 use App\Models\Hardware\HardwareEnergyToday;
+use App\Models\Hardware\HardwareType;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Builder;
@@ -15,6 +17,11 @@ use Illuminate\Database\Eloquent\Builder;
 /**
  * Resumen completo de energía: estado actual, totales de hoy y acumulados
  * de los últimos 30 días, todo en una única cuadrícula de tarjetas.
+ *
+ * **Sólo la instalación solar**, igual que la cabecera de `/hardware/energy`:
+ * los aparatos de tipo `controlador-solar`. La Raspberry Pi 5 mide su consumo
+ * enchufada a la red de casa; sumarla al consumo solar falseaba el consumo, el
+ * balance neto y los acumulados de 30 días.
  */
 class EnergyStatsWidget extends BaseWidget
 {
@@ -32,6 +39,13 @@ class EnergyStatsWidget extends BaseWidget
 
     protected int|array|null $columns = 3;
 
+    /**
+     * Los aparatos de la instalación solar, calculados una vez por render.
+     *
+     * @var list<int>|null
+     */
+    private ?array $solarIds = null;
+
     protected function getStats(): array
     {
         return [
@@ -45,18 +59,22 @@ class EnergyStatsWidget extends BaseWidget
     {
         // Última lectura de cada elemento con rol de carga (consumo)
         $latestLoads = HardwareEnergyReading::query()
+            ->whereIn('hardware_device_id', $this->solarIds())
             ->whereHas('hardwareEnergy', static fn (Builder $q) => $q->where('role', HardwareEnergy::ROLE_LOAD)->where('is_active', true))
             ->whereIn('id', HardwareEnergyReading::query()
                 ->selectRaw('MAX(id)')
+                ->whereIn('hardware_device_id', $this->solarIds())
                 ->whereNotNull('hardware_energy_id')
                 ->groupBy('hardware_energy_id'))
             ->get();
 
         // Última lectura de cada elemento con rol de generación (producción)
         $latestGenerators = HardwareEnergyReading::query()
+            ->whereIn('hardware_device_id', $this->solarIds())
             ->whereHas('hardwareEnergy', static fn (Builder $q) => $q->where('role', HardwareEnergy::ROLE_GENERATOR)->where('is_active', true))
             ->whereIn('id', HardwareEnergyReading::query()
                 ->selectRaw('MAX(id)')
+                ->whereIn('hardware_device_id', $this->solarIds())
                 ->whereNotNull('hardware_energy_id')
                 ->groupBy('hardware_energy_id'))
             ->get();
@@ -67,10 +85,12 @@ class EnergyStatsWidget extends BaseWidget
 
         // Baterías: porcentaje medio de los elementos activos que reportan porcentaje
         $latestBatteries = HardwareEnergyReading::query()
+            ->whereIn('hardware_device_id', $this->solarIds())
             ->whereNotNull('battery_percentage')
             ->whereHas('hardwareEnergy', static fn (Builder $q) => $q->where('is_active', true))
             ->whereIn('id', HardwareEnergyReading::query()
                 ->selectRaw('MAX(id)')
+                ->whereIn('hardware_device_id', $this->solarIds())
                 ->whereNotNull('hardware_energy_id')
                 ->whereNotNull('battery_percentage')
                 ->groupBy('hardware_energy_id'))
@@ -106,11 +126,13 @@ class EnergyStatsWidget extends BaseWidget
         $today = now()->toDateString();
 
         $loadsToday = HardwareEnergyToday::query()
+            ->whereIn('hardware_device_id', $this->solarIds())
             ->where('date', $today)
             ->whereHas('hardwareEnergy', static fn (Builder $q) => $q->where('role', HardwareEnergy::ROLE_LOAD))
             ->get();
 
         $generatorsToday = HardwareEnergyToday::query()
+            ->whereIn('hardware_device_id', $this->solarIds())
             ->where('date', $today)
             ->whereHas('hardwareEnergy', static fn (Builder $q) => $q->where('role', HardwareEnergy::ROLE_GENERATOR))
             ->get();
@@ -121,6 +143,7 @@ class EnergyStatsWidget extends BaseWidget
         $peakConsumptionToday = (float) ($loadsToday->max('power_max') ?? 0);
 
         $batteryMinToday = (float) (HardwareEnergyToday::query()
+            ->whereIn('hardware_device_id', $this->solarIds())
             ->where('date', $today)
             ->whereNotNull('battery_percentage_min')
             ->min('battery_percentage_min') ?? 0);
@@ -154,11 +177,13 @@ class EnergyStatsWidget extends BaseWidget
 
         // Acumulado de los últimos 30 días sumando los agregados diarios
         $totalConsumption = (float) HardwareEnergyToday::query()
+            ->whereIn('hardware_device_id', $this->solarIds())
             ->where('date', '>=', $since)
             ->whereHas('hardwareEnergy', static fn (Builder $q) => $q->where('role', HardwareEnergy::ROLE_LOAD))
             ->sum('energy_wh');
 
         $totalGeneration = (float) HardwareEnergyToday::query()
+            ->whereIn('hardware_device_id', $this->solarIds())
             ->where('date', '>=', $since)
             ->whereHas('hardwareEnergy', static fn (Builder $q) => $q->where('role', HardwareEnergy::ROLE_GENERATOR))
             ->sum('energy_wh');
@@ -169,14 +194,26 @@ class EnergyStatsWidget extends BaseWidget
         // reinicio del odómetro. El panel público (`EnergyController`) siempre
         // lo leyó así; esto era la otra mitad de la contradicción.
         $allHistorical = HardwareEnergyHistorical::query()
+            ->with('hardwareEnergy:id,role')
+            ->whereIn('hardware_device_id', $this->solarIds())
             ->whereNotNull('hardware_energy_id')
             ->get();
 
         // Los días sí son un máximo y no una suma: dos elementos que llevan
         // 1.700 días cada uno no suman 3.400 días de instalación.
         $daysOperating = (int) ($allHistorical->max('days_operating') ?? 0);
-        $fullCharges = (int) $allHistorical->sum('number_battery_full_charges');
-        $overDischarges = (int) $allHistorical->sum('number_battery_over_discharges');
+
+        // Los ciclos, uno por batería: sumar todos los elementos contaba dos
+        // veces la del Renogy, que los manda en el generador y en la batería.
+        $byRole = static fn (string $role) => $allHistorical->filter(
+            static fn (HardwareEnergyHistorical $r): bool => $r->hardwareEnergy?->role === $role
+        );
+        $cycles = HardwareEnergyHistorical::batteryCycles(
+            $byRole(HardwareEnergy::ROLE_BATTERY),
+            $byRole(HardwareEnergy::ROLE_GENERATOR),
+        );
+        $fullCharges = $cycles['full'];
+        $overDischarges = $cycles['over'];
 
         return [
             Stat::make('Consumo acumulado (30d)', number_format($totalConsumption / 1000, 2).' kWh')
@@ -199,5 +236,16 @@ class EnergyStatsWidget extends BaseWidget
                 ->descriptionIcon('heroicon-m-arrow-path')
                 ->color($overDischarges > $fullCharges ? 'warning' : 'success'),
         ];
+    }
+
+    /**
+     * @return list<int>
+     */
+    private function solarIds(): array
+    {
+        return $this->solarIds ??= HardwareDevice::query()
+            ->whereHas('type', static fn (Builder $q) => $q->where('slug', HardwareType::SOLAR_CONTROLLER_SLUG))
+            ->pluck('id')
+            ->all();
     }
 }

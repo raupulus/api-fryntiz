@@ -560,7 +560,7 @@ En la pantalla de edición de cada elemento energético (`EditHardwareEnergy`) s
 
 ### 7.3. Dashboard y Widgets Analíticos
 - **`EnergyDashboard` (`/admin/energy/energy-dashboard`):** Página principal del cluster de energía, accesible para administradores.
-- **`EnergyStatsWidget`:** Cuadrícula de tarjetas con métricas en tiempo real (consumo actual en W, generación actual en W, balance neto con indicador de superávit/déficit, nivel medio de batería), agregados de hoy (Wh consumidos, Wh generados, pico de consumo) y acumulados de los últimos 30 días junto a métricas de odómetro.
+- **`EnergyStatsWidget`:** Cuadrícula de tarjetas con métricas en tiempo real (consumo actual en W, generación actual en W, balance neto con indicador de superávit/déficit, nivel medio de batería), agregados de hoy (Wh consumidos, Wh generados, pico de consumo) y acumulados de los últimos 30 días junto a métricas de odómetro. **Sólo suma la instalación solar** (aparatos `controlador-solar`), con el mismo criterio que la cabecera de `/hardware/energy` (§8.1): hasta el 2026-09-19 metía el consumo de la Raspberry Pi 5, que va a la red de casa. Las cargas y descargas completas se cuentan **una vez por batería** con `HardwareEnergyHistorical::batteryCycles()`: el Renogy manda sus contadores en el generador y en la batería, y sumar todos los elementos daba 3.497 cargas donde había 2.147.
 - **`EnergyHistoricalChart`:** Gráfico lineal temporal de los últimos 30 días que enfrenta la curva de generación total contra la curva de consumo total en vatios-hora (Wh) consultando `hardware_energy_today`.
 
 ---
@@ -600,8 +600,14 @@ La interfaz presenta tres bloques de tarjetas analíticas agregadas:
    generación y de consumo, y las dos tarjetas salían de ahí. Con la batería
    como elemento propio, el dato tiene un sitio y sólo uno. Por lo mismo, la
    tarjeta de tensiones decía «Panel / Batería» y enseñaba la del **consumo**.
-2. **Hoy:** Energía generada hoy (Wh), energía consumida hoy (Wh) y los mismos dos valores en amperios-hora referidos a la tensión del bus.
-3. **Histórico:** Energía total generada (kWh), total consumida (kWh), días acumulados en operación y ciclos completos de carga de batería.
+2. **Hoy:** Energía generada hoy (Wh), energía consumida hoy (Wh) y los mismos dos valores en amperios-hora.
+
+   **Los Ah del día son los que cuenta el regulador** (`energy_ah` del resumen
+   diario), no `Wh / 12`. El Rover mide los Ah de carga y de descarga en el lado
+   de la batería, a su tensión real (~13 V), así que ya son comparables entre sí.
+   Dividir los Wh entre la nominal los inflaba: el 2026-09-19 la web pintaba
+   51 Ah generados cuando el Rover llevaba 47.
+3. **Histórico:** Energía total generada (kWh), total consumida (kWh), días acumulados en operación y ciclos completos de carga de batería, contados una vez por batería (`HardwareEnergyHistorical::batteryCycles()`: el elemento batería de cada aparato y, si no lo tiene, su generador, que es donde los guardan los aparatos de V1 como el Sunix).
 
 #### La tensión de referencia
 
@@ -611,18 +617,21 @@ panel del Renogy genera a 24 V y el consumo va a 12 V, así que generar 5 A no
 compensa consumir 5 A. Son 10 A referidos a 12 V frente a 5, o sea 5 A netos a
 favor, no 0.
 
-Por eso **todo lo que se pinta en amperios se lleva antes a una tensión común**,
+Por eso **las corrientes instantáneas se llevan antes a una tensión común**,
 pasando por la potencia, que es la magnitud que no depende de ella:
 
 ```
-A_ref = W / V_ref        Ah_ref = Wh / V_ref
+A_ref = W / V_ref
 ```
+
+Los amperios-hora del día no pasan por aquí: salen ya del contador del
+regulador en el lado de la batería (ver «Hoy» más arriba).
 
 `V_ref` es la `nominal_voltage` del elemento **batería** de la instalación, que
 es la tensión del bus —lo que el Renogy llama tensión de sistema—. Si no hay
 batería configurada se usa la del consumo y, a falta de las dos, 12 V. Las
-tarjetas llevan la tensión en el título (`Generado a 12 V`) para que no haya
-duda de contra qué se comparan.
+tarjetas en amperios instantáneos llevan la tensión en el título
+(`Balance a 12 V`) para que no haya duda de contra qué se comparan.
 
 Las tarjetas por dispositivo van todas en W y Wh, así que no necesitan
 referencia.
@@ -775,7 +784,7 @@ haga ruido. Qué prueba cada archivo:
 | Archivo | Qué sujeta |
 |---|---|
 | `Hardware/EnergyHistoricalReadingTest.php` | Que el panel público y el widget de administración lean el histórico con el mismo criterio, y que la batería salga del rol `battery` |
-| `Hardware/EnergyCardOrderTest.php` | El orden en cascada de las tarjetas de `/hardware/energy`, **el escalado de los amperios a la tensión de referencia** y que los totales de cabecera cuenten sólo los aparatos de la instalación solar |
+| `Hardware/EnergyCardOrderTest.php` | El orden en cascada de las tarjetas de `/hardware/energy`, **el escalado de los amperios a la tensión de referencia**, que los Ah del día sean los del regulador y que los totales de cabecera cuenten sólo los aparatos de la instalación solar |
 | `Hardware/EnergyDeviceCardTest.php` | Sin generador: las filas de "generando" no salen y el resumen rápido pasa a CPU/temperatura/batería/RAM propios. Decimales a máximo dos sin forzar ceros. Varios consumos del mismo monitor, cada uno con su nombre y canal; con uno solo, sin cabecera |
 | `Unit/Support/FiguresTest.php` | `Figures::rounded()`: hasta N decimales sin forzar ceros, y que una cadena compuesta (no numérica) se devuelva tal cual |
 | `Filament/EnergyTelemetryReadOnlyTest.php` | Que ninguna pantalla de telemetría deje crear **ni editar** a mano, que borrar sea de administradores y con confirmación, y que el catálogo sí deje dar de alta elementos |
@@ -783,7 +792,7 @@ haga ruido. Qué prueba cada archivo:
 | `Filament/EnergyListTabsTest.php` | Las pestañas del listado: sólo la que tiene algo dentro, y que ninguna esconda nada de «Todos» |
 | `Filament/EnergyRoleTrendChartTest.php` | La gráfica de cada papel: potencia media por hora de la última semana, que las horas sin lecturas queden en blanco y no a cero, que sume los canales del mismo aparato, que las sospechosas no cuenten y que la batería conserve el signo |
 | `Filament/EnergyDeviceViewTest.php` | La ficha energética de un aparato: que cargue entera por HTTP con sus pestañas y sus tres tablas de telemetría, una pestaña por fila de `hardware_energy` y en el orden en que circula la energía, que cambiar de pestaña guarde sobre el elemento bueno, y que ni el papel ni el medidor se puedan cambiar una vez creados |
-| `Filament/EnergyWidgetsTest.php`, `EnergyRelationManagersTest.php`, `EnergyListsTest.php`, `DeviceEnergyRelationTest.php` | El panel de administración |
+| `Filament/EnergyWidgetsTest.php`, `EnergyRelationManagersTest.php`, `EnergyListsTest.php`, `DeviceEnergyRelationTest.php` | El panel de administración; el widget deja fuera los aparatos de la red de casa y cuenta los ciclos una vez por batería |
 | `Unit/Models/HardwareEnergyModelTest.php` | Accesores, casts, scopes y relaciones del elemento |
 | `Unit/Rules/EnergyTelemetryPayloadTest.php` | La validación del bloque `energy` |
 | `Unit/Rules/EnergyContractSurfaceTest.php` | **Que el contrato no se descuelgue del código**: que todo campo que lee el servicio esté validado, que todo campo validado lo lea el servicio, que los tres bloques ofrezcan los mismos acumuladores, y que la tabla por bloque del contrato diga exactamente lo que acepta el servidor |
@@ -791,4 +800,4 @@ haga ruido. Qué prueba cada archivo:
 
 ---
 
-> Creado: 2026-09-06 · Última revisión: 2026-09-15
+> Creado: 2026-09-06 · Última revisión: 2026-09-19
