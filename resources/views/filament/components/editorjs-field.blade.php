@@ -16,7 +16,7 @@
     >
         <div
             x-ref="editor"
-            class="min-h-[300px] border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 p-4"
+            class="ejs-editor"
         ></div>
     </div>
 </x-dynamic-component>

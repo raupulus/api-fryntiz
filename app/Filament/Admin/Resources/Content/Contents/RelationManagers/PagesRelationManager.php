@@ -63,6 +63,7 @@ class PagesRelationManager extends RelationManager
                     ->schema([
                         EditorJsField::make('content_json')
                             ->label('Contenido')
+                            ->hiddenLabel()
                             ->helperText('Editor.js. Se guarda en JSON, que es lo que consumen los clientes de la API.')
                             ->columnSpanFull(),
                     ]),

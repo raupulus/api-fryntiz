@@ -247,3 +247,30 @@
     border-radius: 0.5rem !important;
     display: block !important;
 }
+
+/* ── Contenidos · Editor.js (EditorJsField) ─────────────────────────────── */
+
+.ejs-editor {
+    min-height: 300px;
+    padding: 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    background: #ffffff;
+}
+
+/* Un tono más claro que el fondo del panel para que se distingan los
+   controles de Editor.js (el «+» y el asa de arrastre), que son oscuros. */
+.dark .ejs-editor {
+    border-color: #3f3f46;
+    background: #27272a;
+}
+
+.dark .ejs-editor .ce-toolbar__plus,
+.dark .ejs-editor .ce-toolbar__settings-btn {
+    color: #e4e4e7;
+}
+
+.dark .ejs-editor .ce-toolbar__plus:hover,
+.dark .ejs-editor .ce-toolbar__settings-btn:hover {
+    background: #3f3f46;
+}
