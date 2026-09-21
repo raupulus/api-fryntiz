@@ -297,6 +297,7 @@ api-fryntiz/
 ├── public/                   # Raíz web pública (index.php, assets compilados, robots.txt)
 ├── resources/                # Recursos de frontend
 │   ├── css/                  # Hojas de estilo Tailwind CSS v4 (app.css con tokens @theme y tema oscuro)
+│   ├── fonts/                # Fuentes para DomPDF (lato/, OFL) — sólo el PDF de currículums
 │   ├── js/                   # Scripts JavaScript (Vite 8, Alpine.js, componentes Vue puntuales)
 │   └── views/                # Vistas Blade públicas, layouts, correos y components/ (<x-button>, <x-input>...)
 ├── routes/                   # Definición de rutas: web.php, api/v2.php, console.php, ai.php y rutas por módulo

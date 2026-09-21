@@ -58,6 +58,19 @@
     --color-inverse-on-surface: #eaf1ff;
     --color-inverse-primary: #bfc2ff;
 
+    /*
+     * Documento de currículum (/cv/{slug}). Es el azul del CV impreso de 2024,
+     * el mismo que usa el PDF (resources/views/cv/pdf.blade.php): la vista web
+     * es la previsualización de lo que se descarga y tiene que parecerse.
+     */
+    --color-cv-sidebar: #40638e;
+    --color-on-cv-sidebar: #ffffff;
+    --color-cv-sidebar-footer: #464646;
+    --color-cv-accent: #40638e;
+    /* Botones de LinkedIn y GitHub del documento: colores de marca, iguales en ambos temas. */
+    --color-cv-linkedin: #0a66c2;
+    --color-cv-github: #111111;
+
     --font-family-headline: 'Inter', sans-serif;
     --font-family-body: 'Inter', sans-serif;
     --font-family-label: 'Inter', sans-serif;
@@ -105,6 +118,11 @@ html.dark {
     --color-inverse-surface: #dee2f0;
     --color-inverse-on-surface: #2c303b;
     --color-inverse-primary: #005ac2;
+
+    --color-cv-sidebar: #26405f;
+    --color-on-cv-sidebar: #eaf1ff;
+    --color-cv-sidebar-footer: #1b222d;
+    --color-cv-accent: #9ebfe6;
 }
 
 /* ============================================

@@ -315,11 +315,14 @@ class Curriculum extends BaseModel
     /**
      * Devuelve la ruta hacia la foto asociada al curriculum.
      *
+     * Sin imagen propia, el logotipo del sitio: es lo que lleva el CV impreso
+     * en la cabecera de la barra lateral, y queda mejor que la imagen genérica.
+     *
      * @return string
      */
     public function getUrlImageAttribute()
     {
-        return $this->image ? $this->image->url : File::urlDefaultImage('large');
+        return $this->image ? $this->image->url : asset('images/logo/logo320x320.webp');
     }
 
     // BORRAR desde aquí (refactorizando antes)

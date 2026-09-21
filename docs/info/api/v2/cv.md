@@ -112,8 +112,10 @@ camino, sea cual sea su visibilidad.
 }
 ```
 
-  `image` nunca es `null`: si el currículum no tiene imagen propia, sale la
-  imagen por defecto de la plataforma (`File::urlDefaultImage('large')`).
+  `image` nunca es `null`: si el currículum no tiene imagen propia, sale el
+  logotipo del sitio (`/images/logo/logo320x320.webp`). Hasta el 2026-09-21 era
+  la imagen genérica de la plataforma (`File::urlDefaultImage('large')`); el
+  cambio no afecta a la forma de la respuesta, sólo a la URL por defecto.
 
 ### `GET /curriculum/{slug}` — Un currículum completo
 
@@ -489,4 +491,4 @@ Las 3 tablas comparten esquema: `id`, `curriculum_id`, `image_id`, `title`,
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-06
+> Creado: 2026-08-30 · Última revisión: 2026-09-21

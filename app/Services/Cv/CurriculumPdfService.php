@@ -6,6 +6,7 @@ namespace App\Services\Cv;
 
 use App\Models\CV\Curriculum;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -32,6 +33,11 @@ class CurriculumPdfService
     public function generate(Curriculum $cv): string
     {
         $cv->loadMissing(CurriculumService::SECTIONS);
+
+        // La plantilla usa Lato (resources/fonts/lato) y DomPDF guarda las
+        // métricas de cada fuente en `storage/fonts`. Si el directorio no
+        // existe no puede registrarla y el PDF sale con la fuente por defecto.
+        File::ensureDirectoryExists((string) config('dompdf.options.font_cache', storage_path('fonts')));
 
         $pdf = Pdf::loadView('cv.pdf', ['cv' => $cv])
             ->setPaper('a4')

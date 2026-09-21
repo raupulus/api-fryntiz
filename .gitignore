@@ -43,6 +43,8 @@ storage/app/*.log
 storage/framework/cache/*
 storage/framework/sessions/*
 storage/framework/views/*
+# Métricas de fuentes que DomPDF genera al vuelo (PDF de currículums)
+storage/fonts/
 *.log
 
 # Ignorar archivos de herramientas de desarrollo y gestores de paquetes

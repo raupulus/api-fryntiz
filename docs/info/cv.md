@@ -74,6 +74,7 @@ romper consultas antiguas que aún lo miren.
 |---------|-------------|
 | `app/Services/Cv/CurriculumService.php` | `publicOnly()`, `bySlug()`, `byShareToken()`, `defaultCurriculum()` — todas cargan las 15 secciones (`CurriculumService::SECTIONS`) de una vez |
 | `app/Services/Cv/CurriculumPdfService.php` | Genera el PDF con DomPDF (`barryvdh/laravel-dompdf`) y lo guarda; `absolutePath()` da la ruta del que ya existe |
+| `app/Services/Cv/CurriculumDocument.php` | Prepara un CV para pintarse como documento (web y PDF): ordena y agrupa secciones, formatea periodos, parte descripciones en viñetas, decide qué va en la barra lateral y genera el QR. Ver «Maquetación» |
 
 ### Enums
 
@@ -88,6 +89,10 @@ romper consultas antiguas que aún lo miren.
 | `app/Policies/CurriculumPolicy.php` | `view`/`update`/`delete`: admin o el propio dueño. `create`: cualquier usuario que no sea un token de dispositivo IoT |
 | `app/Filament/Concerns/ScopesToOwner.php` | Usado por `CurriculumResource`. `viewAny()` devuelve `true` —cada quien tiene que ver su propio índice— y eso, sin scoping, hacía que un `Editor` viese en `/admin/c-v/curriculums` **el listado completo de los CV de todos los usuarios**, publicados o no (AR-SEC-02). La tabla se filtra por `user_id`; el administrador la ve entera |
 | `app/Console/Commands/CV/RegenerateCurriculumPdfsCommand.php` | `cv:regenerate-pdfs`, programado (ver `routes/console.php`) — regenera los PDF marcados con `pdf_needs_regeneration` |
+| `config/cv.php` | Contacto público del propietario (email, ubicación, web, LinkedIn, GitHub) y datos breves (teletrabajo, carné). Igual para todos los CV, por eso no es columna |
+| `resources/views/cv/pdf.blade.php` + `cv/partials/pdf-*.blade.php` | Plantilla del PDF (CSS compatible con DomPDF: tablas, nada de flex/grid) |
+| `resources/views/cv/show.blade.php` + `cv/partials/web-*.blade.php` | Vista web: la misma maquetación que el PDF, con Tailwind |
+| `resources/fonts/lato/` | Lato (SIL OFL 1.1) para el PDF. DomPDF guarda sus métricas en `storage/fonts/` (ignorado en git; `CurriculumPdfService` crea el directorio si falta) |
 
 ## Relaciones del modelo Curriculum (las 15 secciones, cargadas juntas por `CurriculumService::SECTIONS`)
 
@@ -127,14 +132,62 @@ JSON de respuesta, errores).
 | GET | `/curriculum/{slug}` | Un currículum completo, con sus 15 secciones |
 | GET | `/curriculum/{slug}/{section}` | Una sección suelta (9 valores válidos de `{section}`) |
 
+## Maquetación: la del CV impreso de 2024 (2026-09-21)
+
+La vista `cv.show` y el PDF reproducen el CV de 2024: columna principal a la
+izquierda (nombre, titular, contacto y secciones) y barra lateral azul a la
+derecha (logo, perfil, habilidades, intereses, repositorios, QR del enlace
+público y botones de LinkedIn/GitHub). Las dos vistas reciben los datos ya
+preparados de `CurriculumDocument`, así que lo que se previsualiza en la web es
+lo que se descarga.
+
+- **Cabecera:** el nombre es el `full_name` del usuario dueño; el titular, el
+  `title` del CV. El contacto sale de `config/cv.php`, **nunca** de
+  `users.email` (el de acceso al panel puede no ser público).
+- **Secciones de la columna principal, en este orden:** perfil (si no cabe en la
+  barra), experiencia (acreditada + autónomo + no acreditada + adicional,
+  mezcladas), habilidades (si no caben en la barra), educación (formación
+  reglada), formación complementaria, certificaciones y cursos (online, a dos
+  columnas), proyectos, trabajos, servicios, colaboraciones, otra experiencia
+  (`experienceOther`), y al final intereses y código abierto si no caben en la
+  barra. `experienceAdditional` (prácticas) antes no se pintaba en ningún sitio.
+- **Orden dentro de cada sección con fechas:** lo que sigue en curso (sin
+  `end_at`) primero, luego por `end_at` y `start_at` descendentes; lo que no
+  tiene ninguna fecha, al final. Proyectos, habilidades, etc. por `position`.
+- **Periodos** (no hay campo de precisión): un periodo del 1 de enero al 31 de
+  diciembre se muestra en años (`2007 – 2009`); cualquier otro, en mes/año
+  (`12/2018 – Actualidad`). Una fecha suelta (la `expedition_at` de un curso) en
+  31 de diciembre se muestra como año. Para meter un dato del que sólo se sabe el
+  año: inicio `YYYY-01-01`, fin `YYYY-12-31`.
+- **Descripciones:** texto plano (el panel usa `Textarea`). Cada línea que
+  empieza por `- ` es una viñeta; el resto, párrafos.
+- **Habilidades:** cada fila es un grupo (`name` = «Backend», `description` =
+  «PHP · Laravel · …»). `level` sigue pintando la barra si se rellena.
+- **Barra lateral:** en el PDF sólo existe en la primera página (DomPDF no parte
+  una columna entre páginas; con tablas deja páginas en blanco). Por eso
+  `CurriculumDocument::inSidebar()` estima por caracteres lo que ocupa cada bloque
+  (perfil, habilidades, intereses, repositorios, en ese orden) y lo pone en la
+  barra sólo si cabe entero; si no, va a la columna principal. La estimación es
+  conservadora a propósito: con una más ajustada las habilidades quedaban
+  tapadas por el bloque del QR. En la web la barra ocupa todo el alto y su
+  contenido es `sticky`.
+- **Saltos de página:** las entradas de hasta 450 caracteres no se parten entre
+  páginas; las más largas sí (si no, dejaban media página en blanco).
+- **Imagen:** la del CV si tiene; si no, el logotipo del sitio
+  (`public/images/logo/logo320x320.png` en el PDF, `.webp` en la web y en la API).
+- **Colores:** en la web, tokens `cv-sidebar`, `on-cv-sidebar`,
+  `cv-sidebar-footer`, `cv-accent`, `cv-linkedin` y `cv-github` en
+  `resources/css/app.css` (con variante oscura). En el PDF van en la propia
+  plantilla (DomPDF no lee el CSS de Vite).
+
 ## Rutas Web (`routes/cv/web.php`)
 
 | Ruta | Nombre | Descripción |
 |------|--------|-------------|
 | `GET /cv` | `cv.index` | Listado de currículums públicos: una tarjeta horizontal por cada uno (`Curriculum::scopePublicOnly()`), enlazada desde el home en la tarjeta que antes llevaba al panel de gestión |
-| `GET /cv/{slug}` | `cv.show` | Vista pública de un currículum completo, con botón de descarga del PDF en la esquina superior derecha (sólo si `is_downloadable`) |
+| `GET /cv/{slug}` | `cv.show` | Vista pública de un currículum con la maquetación del documento, y botones «Ver PDF» y «Descargar PDF» arriba a la derecha (sólo si `is_downloadable`) |
 | `GET /cv/pdf` | `cv.pdf.default` | PDF del currículum predeterminado |
-| `GET /cv/{slug}/pdf` | `cv.pdf` | PDF de un currículum público, por slug |
+| `GET /cv/{slug}/pdf` | `cv.pdf` | PDF de un currículum público, por slug. Se abre en el navegador (`inline`); con `?download=1` se descarga (`attachment`). Nombre: `<nombre-completo>-<slug>.pdf` |
 | `GET /cv/s/{shareToken}` | `cv.shared.pdf` | PDF de un currículum compartido por enlace (cabecera `X-Robots-Tag: noindex, nofollow`) |
 
 > ⚠️ **Orden de las rutas**: `/{slug}` va registrada la última del grupo, después
@@ -189,4 +242,4 @@ php artisan debug:seed-cv
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-14
+> Creado: 2026-05-25 · Última revisión: 2026-09-21

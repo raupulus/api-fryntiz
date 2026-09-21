@@ -6,9 +6,11 @@ namespace Tests\Feature\Cv;
 
 use App\Enums\CurriculumVisibilityEnum;
 use App\Models\CV\Curriculum;
+use App\Models\CV\CurriculumExperienceAccredited;
 use App\Models\User;
 use Database\Seeders\RolesTableSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Storage;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
@@ -124,6 +126,58 @@ class CurriculumWebRoutesTest extends TestCase
         $this->makeCurriculum(['title' => 'CV Compartido', 'slug' => 'cv-compartido', 'visibility' => CurriculumVisibilityEnum::Shared]);
 
         $this->get(route('cv.show', ['slug' => 'cv-compartido']))->assertStatus(404);
+    }
+
+    #[Test]
+    public function the_page_shows_the_document_with_bullets_and_both_pdf_links(): void
+    {
+        $cv = $this->makeCurriculum(['title' => 'CV Backend', 'slug' => 'cv-backend']);
+        CurriculumExperienceAccredited::create([
+            'curriculum_id' => $cv->id,
+            'title' => 'Desarrollador Web Full Stack',
+            'company' => 'Empresa SL',
+            'description' => "- Diseño de bases de datos\n- Integración de pasarelas de pago",
+            'start_at' => '2018-12-01',
+        ]);
+
+        $this->get(route('cv.show', ['slug' => 'cv-backend']))
+            ->assertOk()
+            ->assertSee('Experiencia')
+            ->assertSee('12/2018 – Actualidad')
+            ->assertSee('<li class="pl-3 -indent-3">– Diseño de bases de datos</li>', escape: false)
+            ->assertSee(config('cv.contact.email'))
+            ->assertSee(route('cv.pdf', ['slug' => 'cv-backend', 'download' => 1]), escape: false);
+    }
+
+    #[Test]
+    public function the_pdf_opens_inline_and_download_forces_an_attachment(): void
+    {
+        Storage::fake('public');
+        $this->makeCurriculum(['title' => 'CV Backend', 'slug' => 'cv-backend']);
+
+        $inline = $this->get(route('cv.pdf', ['slug' => 'cv-backend']));
+        $inline->assertOk();
+        $this->assertStringStartsWith('inline;', (string) $inline->headers->get('Content-Disposition'));
+
+        $download = $this->get(route('cv.pdf', ['slug' => 'cv-backend', 'download' => 1]));
+        $download->assertOk();
+        $this->assertStringStartsWith('attachment;', (string) $download->headers->get('Content-Disposition'));
+        $this->assertStringContainsString('cv-backend.pdf', (string) $download->headers->get('Content-Disposition'));
+    }
+
+    #[Test]
+    public function the_pdf_template_uses_the_public_contact_and_never_the_login_email(): void
+    {
+        $user = User::factory()->create(['name' => 'Raúl', 'surname' => 'Caro Pastorino', 'email' => 'acceso-privado@example.test']);
+        $cv = $this->makeCurriculum(['user_id' => $user->id, 'title' => 'Desarrollador Backend senior', 'slug' => 'cv-backend']);
+
+        $html = view('cv.pdf', ['cv' => $cv])->render();
+
+        $this->assertStringContainsString('Raúl Caro Pastorino', $html);
+        $this->assertStringContainsString('Desarrollador Backend senior', $html);
+        $this->assertStringContainsString((string) config('cv.contact.email'), $html);
+        $this->assertStringContainsString('data:image/svg+xml;base64,', $html);
+        $this->assertStringNotContainsString('acceso-privado@example.test', $html);
     }
 
     #[Test]

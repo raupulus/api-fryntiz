@@ -11,192 +11,236 @@
 @section('rs-url', route('cv.show', ['slug' => $cv->slug]))
 
 @section('content')
-    {{-- Volver --}}
-    <section class="pt-24 bg-surface">
-        <div class="max-w-5xl mx-auto px-6">
+    @php
+        /*
+         * Previsualización del currículum con la misma maquetación que el PDF
+         * (la del CV de 2024): columna principal y barra lateral azul. Qué va en
+         * cada sitio lo decide CurriculumDocument, igual que en cv/pdf, para
+         * que lo que se ve aquí sea lo que se descarga.
+         */
+        $doc = \App\Services\Cv\CurriculumDocument::for($cv);
+        $contact = $doc->contact();
+        $qr = $doc->qrCodeDataUri();
+        $display = fn (?string $url): string => rtrim((string) preg_replace('#^https?://(www\.)?#', '', (string) $url), '/');
+
+        $skills = $doc->skills();
+        $hobbies = $doc->hobbies();
+        $repositories = $doc->repositories();
+        $certifications = $doc->certifications();
+
+        $sections = [
+            'Experiencia' => $doc->experience(),
+            'Habilidades' => null,
+            'Educación' => $doc->education(),
+            'Formación complementaria' => $doc->complementary(),
+            'Certificaciones y cursos' => null,
+            'Proyectos' => $doc->projects(),
+            'Trabajos' => $doc->jobs(),
+            'Servicios' => $doc->services(),
+            'Colaboraciones' => $doc->collaborations(),
+            'Otra experiencia' => $doc->otherExperience(),
+        ];
+        $compactSections = ['Formación complementaria'];
+    @endphp
+
+    {{-- Volver y acciones --}}
+    <section class="pt-24 pb-6 bg-surface">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-wrap items-center justify-between gap-3">
             <a href="{{ route('cv.index') }}"
                class="inline-flex items-center gap-2 px-4 py-2 bg-surface-container rounded-lg text-on-surface hover:bg-surface-container-high transition-colors">
                 <span class="material-symbols-outlined text-sm">arrow_back</span>
                 Volver a Currículum
             </a>
+
+            {{-- Solo si el CV admite descarga. «Ver» lo abre en el navegador; «Descargar» fuerza la descarga. --}}
+            @if($cv->is_downloadable)
+                <div class="flex flex-wrap gap-2">
+                    <x-button :href="route('cv.pdf', ['slug' => $cv->slug])" variant="outline" icon="picture_as_pdf" target="_blank" rel="noopener">
+                        Ver PDF
+                    </x-button>
+                    <x-button :href="route('cv.pdf', ['slug' => $cv->slug, 'download' => 1])" icon="download">
+                        Descargar PDF
+                    </x-button>
+                </div>
+            @endif
         </div>
     </section>
 
-    {{-- Cabecera --}}
-    <section class="pt-8 pb-4 bg-surface">
-        <div class="max-w-5xl mx-auto px-6">
-            <div class="bg-surface-container-lowest rounded-xl shadow-lg p-6 md:p-8 flex flex-col sm:flex-row sm:items-start gap-6">
-                <img src="{{ $cv->url_image }}"
-                     alt="{{ $cv->title }}"
-                     class="w-24 h-24 rounded-full object-cover shrink-0">
+    <section class="pb-16 bg-surface">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6">
+            <article class="bg-surface-container-lowest rounded-xl shadow-xl overflow-clip grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_20rem]">
 
-                <div class="flex-1">
-                    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-                        <div>
-                            <h1 class="text-3xl md:text-4xl font-bold text-on-surface">{{ $cv->title }}</h1>
-                            @if($cv->user)
-                                <p class="text-on-surface-variant text-sm mt-1">{{ $cv->user->full_name }}</p>
-                            @endif
-                        </div>
+                {{-- Cabecera: nombre, titular y contacto --}}
+                <header class="px-6 pt-8 md:px-10 md:pt-10 md:col-start-1 md:row-start-1">
+                    <h1 class="text-4xl md:text-5xl font-light uppercase tracking-tight text-on-surface">{{ $doc->name() }}</h1>
+                    <p class="text-lg text-cv-accent mt-2">{{ $doc->headline() }}</p>
 
-                        {{-- Botón de descarga, esquina superior derecha. Solo si el CV admite descarga. --}}
-                        @if($cv->is_downloadable)
-                            <x-button :href="route('cv.pdf', ['slug' => $cv->slug])" icon="download" class="shrink-0">
-                                Descargar PDF
-                            </x-button>
+                    <ul class="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2 text-sm text-on-surface">
+                        @if($contact['email'])
+                            <li class="flex items-center gap-2 min-w-0"><span class="material-symbols-outlined text-base text-on-surface-variant">mail</span><a href="mailto:{{ $contact['email'] }}" class="underline truncate">{{ $contact['email'] }}</a></li>
+                        @endif
+                        @if($contact['website'])
+                            <li class="flex items-center gap-2 min-w-0"><span class="material-symbols-outlined text-base text-on-surface-variant">language</span><a href="{{ $contact['website'] }}" target="_blank" rel="noopener" class="underline truncate">{{ $display($contact['website']) }}</a></li>
+                        @endif
+                        @if($contact['linkedin'])
+                            <li class="flex items-center gap-2 min-w-0"><span class="material-symbols-outlined text-base text-on-surface-variant">link</span><a href="{{ $contact['linkedin'] }}" target="_blank" rel="noopener" class="underline truncate">linkedin.com</a></li>
+                        @endif
+                        @if($contact['location'])
+                            <li class="flex items-center gap-2 min-w-0"><span class="material-symbols-outlined text-base text-on-surface-variant">location_on</span>{{ $contact['location'] }}</li>
+                        @endif
+                        @if($contact['details'])
+                            <li class="flex items-center gap-2 min-w-0 lg:col-span-2"><span class="material-symbols-outlined text-base text-on-surface-variant">star</span>{{ implode(' · ', $contact['details']) }}</li>
+                        @endif
+                    </ul>
+                </header>
+
+                {{-- Barra lateral --}}
+                {{-- En pantalla la barra es tan alta como el documento: su contenido acompaña al desplazarse. --}}
+                <aside class="bg-cv-sidebar text-on-cv-sidebar md:col-start-2 md:row-start-1 md:row-span-2 mt-8 md:mt-0">
+                  <div class="md:sticky md:top-20">
+                    <div class="px-6 pt-8 pb-6">
+                        <img src="{{ $cv->url_image }}" alt="{{ $doc->name() }}" class="w-28 h-28 mx-auto object-contain">
+
+                        @if($doc->inSidebar('profile'))
+                            <h2 class="mt-6 pb-1 mb-3 border-b border-on-cv-sidebar/80 text-lg font-light uppercase tracking-wide">Perfil profesional</h2>
+                            <div class="space-y-2 text-sm leading-relaxed">
+                                @include('cv.partials.web-blocks', ['blocks' => $doc->profile()])
+                            </div>
+                        @endif
+
+                        @if($doc->inSidebar('skills'))
+                            <h2 class="mt-6 pb-1 mb-3 border-b border-on-cv-sidebar/80 text-lg font-light uppercase tracking-wide">Habilidades</h2>
+                            <dl class="space-y-2 text-sm">
+                                @foreach($skills as $skill)
+                                    <div>
+                                        <dt class="text-xs font-bold uppercase tracking-wide">{{ $skill['name'] }}</dt>
+                                        @if($skill['text'])<dd>{{ $skill['text'] }}</dd>@endif
+                                    </div>
+                                @endforeach
+                            </dl>
+                        @endif
+
+                        @if($doc->inSidebar('hobbies'))
+                            <h2 class="mt-6 pb-1 mb-3 border-b border-on-cv-sidebar/80 text-lg font-light uppercase tracking-wide">Intereses</h2>
+                            <ul class="space-y-1.5 text-sm">
+                                @foreach($hobbies as $hobby)
+                                    <li>{{ $hobby['title'] }}</li>
+                                @endforeach
+                            </ul>
+                        @endif
+
+                        @if($doc->inSidebar('repositories'))
+                            <h2 class="mt-6 pb-1 mb-3 border-b border-on-cv-sidebar/80 text-lg font-light uppercase tracking-wide">Código abierto</h2>
+                            <ul class="space-y-2 text-sm">
+                                @foreach($repositories as $repository)
+                                    <li>
+                                        <span class="block text-xs font-bold uppercase tracking-wide">{{ $repository['title'] }}</span>
+                                        <a href="{{ $repository['url'] }}" target="_blank" rel="noopener" class="hover:underline">{{ $display($repository['url']) }}</a>
+                                    </li>
+                                @endforeach
+                            </ul>
                         @endif
                     </div>
 
-                    @if(filled($cv->presentation))
-                        <p class="text-on-surface-variant mt-4 whitespace-pre-line">{{ $cv->presentation }}</p>
+                    <div>
+                        @if($qr)
+                            <div class="bg-cv-sidebar-footer text-center py-5">
+                                <img src="{{ $qr }}" alt="Código QR con el enlace a este currículum" class="w-28 h-28 mx-auto bg-white p-1">
+                                <p class="mt-2 inline-flex items-center gap-1"><span class="material-symbols-outlined text-base">language</span>CV Online</p>
+                            </div>
+                        @endif
+                        @if($contact['linkedin'] || $contact['github'])
+                            <div class="grid grid-cols-2 text-sm font-bold text-white">
+                                @if($contact['linkedin'])
+                                    <a href="{{ $contact['linkedin'] }}" target="_blank" rel="noopener" class="bg-cv-linkedin py-3 text-center hover:opacity-90">LinkedIn</a>
+                                @endif
+                                @if($contact['github'])
+                                    <a href="{{ $contact['github'] }}" target="_blank" rel="noopener" class="bg-cv-github py-3 text-center hover:opacity-90">GitHub</a>
+                                @endif
+                            </div>
+                        @endif
+                    </div>
+                  </div>
+                </aside>
+
+                {{-- Columna principal --}}
+                <div class="px-6 pb-10 md:px-10 md:col-start-1 md:row-start-2">
+                    @if(! $doc->inSidebar('profile') && filled($doc->profile()))
+                        <h2 class="mt-8 pb-1 mb-4 border-b border-outline-variant text-2xl font-light uppercase text-on-surface">Perfil profesional</h2>
+                        <div class="space-y-3 text-sm text-on-surface sm:pl-2">
+                            @include('cv.partials.web-blocks', ['blocks' => $doc->profile()])
+                        </div>
+                    @endif
+
+                    @foreach($sections as $title => $rows)
+                        @if($title === 'Habilidades')
+                            @if(! $doc->inSidebar('skills') && $skills)
+                                <h2 class="mt-8 pb-1 mb-4 border-b border-outline-variant text-2xl font-light uppercase text-on-surface">Habilidades</h2>
+                                <dl class="grid grid-cols-1 sm:grid-cols-[11rem_minmax(0,1fr)] gap-x-4 gap-y-2 text-sm sm:pl-2">
+                                    @foreach($skills as $skill)
+                                        <dt class="font-bold text-cv-accent">{{ $skill['name'] }}</dt>
+                                        <dd class="text-on-surface mb-1 sm:mb-0">{{ $skill['text'] }}</dd>
+                                    @endforeach
+                                </dl>
+                            @endif
+                            @continue
+                        @endif
+
+                        @if($title === 'Certificaciones y cursos')
+                            @if($certifications)
+                                <h2 class="mt-8 pb-1 mb-4 border-b border-outline-variant text-2xl font-light uppercase text-on-surface">Certificaciones y cursos</h2>
+                                <ul class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 sm:pl-2">
+                                    @foreach($certifications as $row)
+                                        @php $sub = collect([$row['subtitle']])->merge($row['meta'])->push($row['period'])->filter()->implode(' · '); @endphp
+                                        <li>
+                                            <p class="text-sm text-on-surface">{{ $row['title'] }}</p>
+                                            @if($sub !== '')
+                                                <p class="text-xs text-on-surface-variant">
+                                                    @if($row['credential_url'])
+                                                        <a href="{{ $row['credential_url'] }}" target="_blank" rel="noopener" class="text-cv-accent hover:underline">{{ $sub }}</a>
+                                                    @else
+                                                        {{ $sub }}
+                                                    @endif
+                                                </p>
+                                            @endif
+                                            @if($row['text'] !== '')
+                                                <p class="text-xs text-on-surface-variant">{{ $row['text'] }}</p>
+                                            @endif
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @endif
+                            @continue
+                        @endif
+
+                        @continue(! $rows)
+                        <h2 class="mt-8 pb-1 mb-4 border-b border-outline-variant text-2xl font-light uppercase text-on-surface">{{ $title }}</h2>
+                        <div class="space-y-5">
+                            @foreach($rows as $row)
+                                @include('cv.partials.web-entry', ['row' => $row, 'compact' => in_array($title, $compactSections, true)])
+                            @endforeach
+                        </div>
+                    @endforeach
+
+                    @if(! $doc->inSidebar('hobbies') && $hobbies)
+                        <h2 class="mt-8 pb-1 mb-4 border-b border-outline-variant text-2xl font-light uppercase text-on-surface">Intereses</h2>
+                        <div class="space-y-3">
+                            @foreach($hobbies as $row)
+                                @include('cv.partials.web-entry', ['row' => $row, 'compact' => true])
+                            @endforeach
+                        </div>
+                    @endif
+
+                    @if(! $doc->inSidebar('repositories') && $repositories)
+                        <h2 class="mt-8 pb-1 mb-4 border-b border-outline-variant text-2xl font-light uppercase text-on-surface">Código abierto</h2>
+                        <div class="space-y-3">
+                            @foreach($repositories as $row)
+                                @include('cv.partials.web-entry', ['row' => $row, 'compact' => true])
+                            @endforeach
+                        </div>
                     @endif
                 </div>
-            </div>
+            </article>
         </div>
     </section>
-
-    {{--
-        Cada sección se pinta igual: título y, por cada fila, lo que tenga
-        (mismo criterio que `cv/pdf.blade.php`, adaptado a Tailwind y con las
-        fechas ya convertidas —las columnas `start_at`/`end_at` no llevan cast
-        a Carbon en el modelo, así que aquí se parsean a mano).
-    --}}
-    @php
-        $timeline = [
-            'Experiencia acreditada' => $cv->experienceAccredited,
-            'Experiencia no acreditada' => $cv->experienceNoAccredited,
-            'Autónomo' => $cv->experienceSelfEmployed,
-            'Otra experiencia' => $cv->experienceOther,
-            'Formación académica' => $cv->academicTraining,
-            'Formación complementaria' => $cv->academicComplementary,
-            'Formación online' => $cv->academicComplementaryOnline,
-        ];
-
-        $listed = [
-            'Proyectos' => ['icon' => 'rocket_launch', 'rows' => $cv->projects],
-            'Repositorios' => ['icon' => 'code', 'rows' => $cv->repositories],
-            'Servicios' => ['icon' => 'handyman', 'rows' => $cv->services],
-            'Colaboraciones' => ['icon' => 'handshake', 'rows' => $cv->collaborations],
-            'Trabajos' => ['icon' => 'work', 'rows' => $cv->jobs],
-            'Aficiones' => ['icon' => 'interests', 'rows' => $cv->hobbies],
-        ];
-    @endphp
-
-    {{-- Habilidades --}}
-    @if($cv->skills->isNotEmpty())
-        <section class="py-8 bg-surface">
-            <div class="max-w-5xl mx-auto px-6">
-                <h2 class="text-2xl font-bold text-on-surface mb-4">Habilidades</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    @foreach($cv->skills as $skill)
-                        <div class="bg-surface-container-lowest rounded-lg p-4 shadow">
-                            <div class="flex items-center justify-between mb-1">
-                                <span class="font-bold text-on-surface">{{ $skill->name }}</span>
-                                @if($skill->level)
-                                    <span class="text-xs text-on-surface-variant">{{ $skill->level }}/10</span>
-                                @endif
-                            </div>
-                            @if($skill->level)
-                                <div class="w-full bg-surface-container rounded-full h-2">
-                                    <div class="bg-primary-container h-2 rounded-full" style="width: {{ min(100, max(0, $skill->level * 10)) }}%"></div>
-                                </div>
-                            @endif
-                            @if(filled($skill->description))
-                                <p class="text-on-surface-variant text-sm mt-2">{{ $skill->description }}</p>
-                            @endif
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        </section>
-    @endif
-
-    {{-- Experiencia y formación, en línea de tiempo --}}
-    @foreach($timeline as $title => $rows)
-        @continue($rows->isEmpty())
-        <section class="py-8 bg-surface odd:bg-surface-container-low">
-            <div class="max-w-5xl mx-auto px-6">
-                <h2 class="text-2xl font-bold text-on-surface mb-4">{{ $title }}</h2>
-                <div class="flex flex-col gap-4">
-                    @foreach($rows as $row)
-                        <div class="bg-surface-container-lowest rounded-lg p-5 shadow">
-                            <div class="flex flex-wrap items-baseline justify-between gap-2">
-                                <h3 class="font-bold text-on-surface">{{ $row->title }}</h3>
-                                @php
-                                    $start = $row->start_at ? \Illuminate\Support\Carbon::parse($row->start_at) : null;
-                                    $end = $row->end_at ? \Illuminate\Support\Carbon::parse($row->end_at) : null;
-                                @endphp
-                                @if($start)
-                                    <span class="text-xs text-on-surface-variant shrink-0">
-                                        {{ $start->format('m/Y') }} – {{ $end ? $end->format('m/Y') : 'actualidad' }}
-                                    </span>
-                                @endif
-                            </div>
-                            @if(filled($row->position) || filled($row->company) || filled($row->entity))
-                                <p class="text-sm text-on-tertiary-container font-semibold mt-1">
-                                    {{ collect([$row->position ?? null, $row->company ?? $row->entity ?? null])->filter()->implode(' · ') }}
-                                </p>
-                            @endif
-                            @if(filled($row->description))
-                                <p class="text-on-surface-variant text-sm mt-2">{{ $row->description }}</p>
-                            @endif
-                            @if(filled($row->learned))
-                                <p class="text-on-surface-variant text-sm mt-2"><strong>Aprendido:</strong> {{ $row->learned }}</p>
-                            @endif
-                            @if(filled($row->note))
-                                <p class="text-on-surface-variant text-xs mt-2 italic">{{ $row->note }}</p>
-                            @endif
-                            @if(filled($row->credential_url))
-                                <a href="{{ $row->credential_url }}" target="_blank" rel="noopener"
-                                   class="inline-flex items-center gap-1 text-xs text-on-tertiary-container font-bold uppercase tracking-widest mt-3 hover:underline">
-                                    Ver credencial
-                                    <span class="material-symbols-outlined text-sm">open_in_new</span>
-                                </a>
-                            @endif
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        </section>
-    @endforeach
-
-    {{-- Proyectos, repositorios, servicios, colaboraciones, trabajos, aficiones --}}
-    @foreach($listed as $title => $group)
-        @continue($group['rows']->isEmpty())
-        <section class="py-8 bg-surface odd:bg-surface-container-low">
-            <div class="max-w-5xl mx-auto px-6">
-                <h2 class="text-2xl font-bold text-on-surface mb-4">{{ $title }}</h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    @foreach($group['rows'] as $row)
-                        @php $link = $row->url ?? null; @endphp
-                        <div class="bg-surface-container-lowest rounded-lg p-5 shadow">
-                            <div class="flex items-start gap-3">
-                                <span class="material-symbols-outlined text-on-tertiary-container shrink-0">{{ $group['icon'] }}</span>
-                                <div class="flex-1">
-                                    <h3 class="font-bold text-on-surface">{{ $row->title ?? $row->name }}</h3>
-                                    @if(filled($row->role))
-                                        <p class="text-xs text-on-surface-variant">{{ $row->role }}</p>
-                                    @endif
-                                    @if(filled($row->description))
-                                        <p class="text-on-surface-variant text-sm mt-2">{{ $row->description }}</p>
-                                    @endif
-                                    <div class="flex flex-wrap gap-3 mt-2">
-                                        @if($link)
-                                            <a href="{{ $link }}" target="_blank" rel="noopener" class="text-xs text-on-tertiary-container font-bold hover:underline">Sitio</a>
-                                        @endif
-                                        @if(filled($row->urlinfo ?? null))
-                                            <a href="{{ $row->urlinfo }}" target="_blank" rel="noopener" class="text-xs text-on-tertiary-container font-bold hover:underline">Info</a>
-                                        @endif
-                                        @if(filled($row->repository ?? null))
-                                            <a href="{{ $row->repository }}" target="_blank" rel="noopener" class="text-xs text-on-tertiary-container font-bold hover:underline">Repositorio</a>
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        </section>
-    @endforeach
 @endsection

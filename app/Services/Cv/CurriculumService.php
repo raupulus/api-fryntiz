@@ -38,7 +38,9 @@ class CurriculumService
      */
     public function publicOnly(int $porPagina = 25): LengthAwarePaginator
     {
+        // `image` precargada: cada tarjeta del listado pinta `url_image`.
         return Curriculum::query()
+            ->with('image')
             ->publicOnly()
             ->orderByDesc('is_default')
             ->orderBy('title')
