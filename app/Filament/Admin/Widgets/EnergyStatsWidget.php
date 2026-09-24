@@ -83,20 +83,31 @@ class EnergyStatsWidget extends BaseWidget
         $currentGeneration = (float) $latestGenerators->sum('power');
         $balance = $currentGeneration - $currentConsumption;
 
-        // Baterías: porcentaje medio de los elementos activos que reportan porcentaje
-        $latestBatteries = HardwareEnergyReading::query()
-            ->whereIn('hardware_device_id', $this->solarIds())
-            ->whereNotNull('battery_percentage')
-            ->whereHas('hardwareEnergy', static fn (Builder $q) => $q->where('is_active', true))
+        // Carga de la batería: la de la última hora y del elemento batería, igual
+        // que la web. Antes cogía el último porcentaje de **cada** elemento sin
+        // límite de tiempo, y el generador y el consumo del Rover conservan
+        // copias al 100 % de cuando el porcentaje se replicaba en sus lecturas:
+        // con la batería al 68 % marcaba (100 + 100 + 68) / 3 = 89 %. Los otros
+        // papeles sólo cuentan si no hay lectura de batería.
+        $latestPercentages = HardwareEnergyReading::query()
+            ->with('hardwareEnergy:id,role')
             ->whereIn('id', HardwareEnergyReading::query()
                 ->selectRaw('MAX(id)')
                 ->whereIn('hardware_device_id', $this->solarIds())
-                ->whereNotNull('hardware_energy_id')
+                ->where('created_at', '>=', now()->subHour())
                 ->whereNotNull('battery_percentage')
+                ->whereHas('hardwareEnergy', static fn (Builder $q) => $q->where('is_active', true))
                 ->groupBy('hardware_energy_id'))
             ->get();
 
-        $batteryAvg = (float) ($latestBatteries->avg('battery_percentage') ?? 0);
+        $percentageOf = static fn (string $role) => $latestPercentages
+            ->filter(static fn (HardwareEnergyReading $r): bool => $r->hardwareEnergy?->role === $role)
+            ->avg('battery_percentage');
+
+        $batteryAvg = (float) ($percentageOf(HardwareEnergy::ROLE_BATTERY)
+            ?? $percentageOf(HardwareEnergy::ROLE_GENERATOR)
+            ?? $percentageOf(HardwareEnergy::ROLE_LOAD)
+            ?? 0);
 
         return [
             Stat::make('Consumo (ahora)', number_format($currentConsumption, 2).' W')

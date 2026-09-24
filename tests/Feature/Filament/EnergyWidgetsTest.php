@@ -241,6 +241,41 @@ class EnergyWidgetsTest extends TestCase
     }
 
     /**
+     * La carga es la de la batería de ahora, no una media con porcentajes
+     * viejos que el generador y el consumo guardaron cuando se replicaba en sus
+     * lecturas: con la batería al 68 % marcaba 89 %.
+     */
+    #[Test]
+    public function stats_widget_battery_percentage_is_the_batterys_current_one(): void
+    {
+        $this->actingAs($this->adminUser);
+
+        $battery = HardwareEnergy::create([
+            'hardware_device_id' => $this->device->id,
+            'hardware_device_monitorized_id' => $this->device->id,
+            'role' => HardwareEnergy::ROLE_BATTERY,
+            'sensor_position' => 0,
+            'nominal_voltage' => 12.0,
+            'is_active' => true,
+        ]);
+
+        foreach ([[$this->generator, 100, now()->subDays(19)], [$this->load, 100, now()->subDays(11)], [$battery, 68, now()->subMinutes(2)]] as [$element, $percentage, $at]) {
+            HardwareEnergyReading::create([
+                'hardware_device_id' => $this->device->id,
+                'hardware_energy_id' => $element->id,
+                'voltage' => 12.5,
+                'battery_percentage' => $percentage,
+                'created_at' => $at,
+            ]);
+        }
+
+        Livewire::test(EnergyStatsWidget::class)
+            ->assertSuccessful()
+            ->assertSee('68 %')
+            ->assertDontSee('89 %');
+    }
+
+    /**
      * El Renogy manda sus ciclos en el generador y en la batería: son los de
      * una sola batería y no se suman dos veces.
      */

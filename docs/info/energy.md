@@ -604,7 +604,7 @@ En la pantalla de edición de cada elemento energético (`EditHardwareEnergy`) s
 
 ### 7.3. Dashboard y Widgets Analíticos
 - **`EnergyDashboard` (`/admin/energy/energy-dashboard`):** Página principal del cluster de energía, accesible para administradores.
-- **`EnergyStatsWidget`:** Cuadrícula de tarjetas con métricas en tiempo real (consumo actual en W, generación actual en W, balance neto con indicador de superávit/déficit, nivel medio de batería), agregados de hoy (Wh consumidos, Wh generados, pico de consumo) y acumulados de los últimos 30 días junto a métricas de odómetro. **Sólo suma la instalación solar** (aparatos `controlador-solar`), con el mismo criterio que la cabecera de `/hardware/energy` (§8.1): hasta el 2026-09-19 metía el consumo de la Raspberry Pi 5, que va a la red de casa. Las cargas y descargas completas se cuentan **una vez por batería** con `HardwareEnergyHistorical::batteryCycles()`: el Renogy manda sus contadores en el generador y en la batería, y sumar todos los elementos daba 3.497 cargas donde había 2.147.
+- **`EnergyStatsWidget`:** Cuadrícula de tarjetas con métricas en tiempo real (consumo actual en W, generación actual en W, balance neto con indicador de superávit/déficit, nivel medio de batería), agregados de hoy (Wh consumidos, Wh generados, pico de consumo) y acumulados de los últimos 30 días junto a métricas de odómetro. **Sólo suma la instalación solar** (aparatos `controlador-solar`), con el mismo criterio que la cabecera de `/hardware/energy` (§8.1): hasta el 2026-09-19 metía el consumo de la Raspberry Pi 5, que va a la red de casa. «Batería media (ahora)» lee, como la web, las lecturas de la última hora y del elemento batería (los otros papeles sólo si no hay batería): el generador y el consumo del Rover guardan porcentajes viejos al 100 % de cuando se replicaba en sus lecturas, y promediarlos daba 89 % con la batería al 68 % (2026-09-24). Las cargas y descargas completas se cuentan **una vez por batería** con `HardwareEnergyHistorical::batteryCycles()`: el Renogy manda sus contadores en el generador y en la batería, y sumar todos los elementos daba 3.497 cargas donde había 2.147.
 - **`EnergyHistoricalChart`:** Gráfico lineal temporal de los últimos 30 días que enfrenta la curva de generación total contra la curva de consumo total en vatios-hora (Wh) consultando `hardware_energy_today`.
 
 ---
@@ -849,4 +849,4 @@ haga ruido. Qué prueba cada archivo:
 
 ---
 
-> Creado: 2026-09-06 · Última revisión: 2026-09-19
+> Creado: 2026-09-06 · Última revisión: 2026-09-24
