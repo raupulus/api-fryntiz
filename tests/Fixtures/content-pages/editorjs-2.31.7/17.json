@@ -1,0 +1,381 @@
+{
+  "time": 1790278480593,
+  "blocks": [
+    {
+      "id": "ApJ7nFc_AS",
+      "type": "header",
+      "data": {
+        "text": "Sobre el Proyecto",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "3aEYwTPkKz",
+      "type": "paragraph",
+      "data": {
+        "text": "Este proyecto consta de un conjunto de <b>scripts</b> para tener un entorno funcional con el que desarrollar en poco tiempo de forma automatizada y además tener\nsincronizada la configuración de distintos equipos/dispositivos con los que trabajo."
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "7Kqldfnqmb",
+      "type": "paragraph",
+      "data": {
+        "text": "Esta herramienta prepara completamente el entorno de programación, aplicaciones,\nservidores, comandos personalizados, interfaz gráfica, plantillas, repositorios... en <b>Debian</b> y <b>MacOS</b> principalmente pues son los que suelo utilizar a menudo aunque añado soporte parcial para Fedora, Rasbian/RaspberryOS, Gentoo."
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "fcc4pXEmOF",
+      "type": "paragraph",
+      "data": {
+        "text": "Todas las configuraciones y elecciones se han establecido a mi gusto pero lo comparto con\n<b>licencia GPLv3</b> para que sea utilizado o aprovechado por cualquiera que guste."
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "Hkfl6QHg7J",
+      "type": "header",
+      "data": {
+        "text": "Algunos Objetivos",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "XzvQfv9GAO",
+      "type": "paragraph",
+      "data": {
+        "text": "Se plantea lo más modular que me ha sido posible para que en algunos casos no\nsea necesario ejecutar el script completo y solo la parte que realmente\nnecesitas (si fuese el caso)."
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "mRYnAzGutO",
+      "type": "image",
+      "data": {
+        "caption": "Configurador de Apps en la herramienta",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/559/WGiSPQ2CiGsxg79r7kIRdnNmtuaMURpaf3AaMKWf.webp",
+          "path": "file/thumbnail/get/content/559/WGiSPQ2CiGsxg79r7kIRdnNmtuaMURpaf3AaMKWf.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/557/WGiSPQ2CiGsxg79r7kIRdnNmtuaMURpaf3AaMKWf.webp",
+          "path-thumbnail": "file/thumbnail/get/content/557/WGiSPQ2CiGsxg79r7kIRdnNmtuaMURpaf3AaMKWf.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/560/WGiSPQ2CiGsxg79r7kIRdnNmtuaMURpaf3AaMKWf.webp",
+          "path-large": "file/thumbnail/get/content/560/WGiSPQ2CiGsxg79r7kIRdnNmtuaMURpaf3AaMKWf.webp",
+          "content_id": 10,
+          "content_file_id": 44,
+          "file_id": 117,
+          "module": "content",
+          "title": "Apps.jpg",
+          "name": "WGiSPQ2CiGsxg79r7kIRdnNmtuaMURpaf3AaMKWf.jpg",
+          "alt": "Apps.jpg",
+          "size": 358974,
+          "extension": "jpg",
+          "mime": "image/jpeg",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/mbNDMkptfPzR3n4hcnj2B4Slx1t5nPDc_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "6oPtJ39r6g",
+      "type": "list",
+      "data": {
+        "style": "unordered",
+        "meta": {},
+        "items": [
+          {
+            "content": "Configurar terminales, <b>bash</b> y <b>zsh</b>",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Instalar tipografías",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Instalar editores con sus personalizaciones",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Instalar <b>IDEs</b>",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Configurar sistema y variables globales",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Ampliar repositorios desde fuentes estables y fiables",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Instalar configuraciones y personalizaciones para el sistema y programas en\nel HOME del usuario",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Instalar atajos y personalizaciones para trabajar con <b>git</b>, <b>GitHub</b> y <b>GitLab</b>",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Instalar servidores como <b>Apache2</b>, <b>PostgreSQL</b>, <b>MariaDB</b>",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Instalar lenguajes de programación, dependencias y librerías para → <b>php</b>,\n<b>python</b>, <b>nodejs</b>, <b>ruby</b>, <b>bash</b>....",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Instalar Navegadores WEB para desarrolladores como <b>Firefox Developer </b>y\n<b>Firefox Nightly</b>",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Instalar herramientas para ayudar a <b>debug</b> en <b>lenguajes web</b>",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Configurar interfaces gráficas",
+            "meta": {},
+            "items": []
+          }
+        ]
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "TitbqG74Kg",
+      "type": "header",
+      "data": {
+        "text": "Galería",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "u_1tgT3r3O",
+      "type": "image",
+      "data": {
+        "caption": "Servidores en la herramienta",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/569/slZVQFHzZZgGWd9dn2HdODqjtPJvTXSPL0j5A49p.webp",
+          "path": "file/thumbnail/get/content/569/slZVQFHzZZgGWd9dn2HdODqjtPJvTXSPL0j5A49p.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/567/slZVQFHzZZgGWd9dn2HdODqjtPJvTXSPL0j5A49p.webp",
+          "path-thumbnail": "file/thumbnail/get/content/567/slZVQFHzZZgGWd9dn2HdODqjtPJvTXSPL0j5A49p.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/569/slZVQFHzZZgGWd9dn2HdODqjtPJvTXSPL0j5A49p.webp",
+          "path-large": "file/thumbnail/get/content/569/slZVQFHzZZgGWd9dn2HdODqjtPJvTXSPL0j5A49p.webp",
+          "content_id": 10,
+          "content_file_id": 46,
+          "file_id": 119,
+          "module": "content",
+          "title": "Servidores.png",
+          "name": "slZVQFHzZZgGWd9dn2HdODqjtPJvTXSPL0j5A49p.png",
+          "alt": "Servidores.png",
+          "size": 24740,
+          "extension": "png",
+          "mime": "image/png",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/PzJsVPFMPA1tqGlCjTP6hCZspAL5HVJM_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "H0tYSnOV_6",
+      "type": "image",
+      "data": {
+        "caption": "Personalización en la herramienta",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/587/LSVEqKiWyEO6hrXjmckwUfLVweFCL3c3cQ5bmtpk.webp",
+          "path": "file/thumbnail/get/content/587/LSVEqKiWyEO6hrXjmckwUfLVweFCL3c3cQ5bmtpk.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/585/LSVEqKiWyEO6hrXjmckwUfLVweFCL3c3cQ5bmtpk.webp",
+          "path-thumbnail": "file/thumbnail/get/content/585/LSVEqKiWyEO6hrXjmckwUfLVweFCL3c3cQ5bmtpk.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/587/LSVEqKiWyEO6hrXjmckwUfLVweFCL3c3cQ5bmtpk.webp",
+          "path-large": "file/thumbnail/get/content/587/LSVEqKiWyEO6hrXjmckwUfLVweFCL3c3cQ5bmtpk.webp",
+          "content_id": 10,
+          "content_file_id": 50,
+          "file_id": 123,
+          "module": "content",
+          "title": "Personalización.png",
+          "name": "LSVEqKiWyEO6hrXjmckwUfLVweFCL3c3cQ5bmtpk.png",
+          "alt": "Personalización.png",
+          "size": 26722,
+          "extension": "png",
+          "mime": "image/png",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/PzJsVPFMPA1tqGlCjTP6hCZspAL5HVJM_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "uCmXK6mlWB",
+      "type": "image",
+      "data": {
+        "caption": "Previsualización de la herramienta",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/564/RTqRiMy4Xgf0j7GkaUKjylP5CLIspeSZGvsqPChT.webp",
+          "path": "file/thumbnail/get/content/564/RTqRiMy4Xgf0j7GkaUKjylP5CLIspeSZGvsqPChT.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/562/RTqRiMy4Xgf0j7GkaUKjylP5CLIspeSZGvsqPChT.webp",
+          "path-thumbnail": "file/thumbnail/get/content/562/RTqRiMy4Xgf0j7GkaUKjylP5CLIspeSZGvsqPChT.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/565/RTqRiMy4Xgf0j7GkaUKjylP5CLIspeSZGvsqPChT.webp",
+          "path-large": "file/thumbnail/get/content/565/RTqRiMy4Xgf0j7GkaUKjylP5CLIspeSZGvsqPChT.webp",
+          "content_id": 10,
+          "content_file_id": 45,
+          "file_id": 118,
+          "module": "content",
+          "title": "Preview.jpg",
+          "name": "RTqRiMy4Xgf0j7GkaUKjylP5CLIspeSZGvsqPChT.jpg",
+          "alt": "Preview.jpg",
+          "size": 329460,
+          "extension": "jpg",
+          "mime": "image/jpeg",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/mbNDMkptfPzR3n4hcnj2B4Slx1t5nPDc_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "cWMY59GoxT",
+      "type": "image",
+      "data": {
+        "caption": "Apps en la herramienta",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/573/rXUjxJyi3Yxonnqt8cOLjUZcvsgpEnvULZy6cNUZ.webp",
+          "path": "file/thumbnail/get/content/573/rXUjxJyi3Yxonnqt8cOLjUZcvsgpEnvULZy6cNUZ.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/571/rXUjxJyi3Yxonnqt8cOLjUZcvsgpEnvULZy6cNUZ.webp",
+          "path-thumbnail": "file/thumbnail/get/content/571/rXUjxJyi3Yxonnqt8cOLjUZcvsgpEnvULZy6cNUZ.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/574/rXUjxJyi3Yxonnqt8cOLjUZcvsgpEnvULZy6cNUZ.webp",
+          "path-large": "file/thumbnail/get/content/574/rXUjxJyi3Yxonnqt8cOLjUZcvsgpEnvULZy6cNUZ.webp",
+          "content_id": 10,
+          "content_file_id": 47,
+          "file_id": 120,
+          "module": "content",
+          "title": "Apps.jpg",
+          "name": "rXUjxJyi3Yxonnqt8cOLjUZcvsgpEnvULZy6cNUZ.jpg",
+          "alt": "Apps.jpg",
+          "size": 358974,
+          "extension": "jpg",
+          "mime": "image/jpeg",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/mbNDMkptfPzR3n4hcnj2B4Slx1t5nPDc_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "4mYgYqcjQM",
+      "type": "image",
+      "data": {
+        "caption": "I3wm en la herramienta",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/578/MDflbtPNnA1hC8pPiecrXkuUZhOyKUYwdCpe8eMb.webp",
+          "path": "file/thumbnail/get/content/578/MDflbtPNnA1hC8pPiecrXkuUZhOyKUYwdCpe8eMb.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/576/MDflbtPNnA1hC8pPiecrXkuUZhOyKUYwdCpe8eMb.webp",
+          "path-thumbnail": "file/thumbnail/get/content/576/MDflbtPNnA1hC8pPiecrXkuUZhOyKUYwdCpe8eMb.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/579/MDflbtPNnA1hC8pPiecrXkuUZhOyKUYwdCpe8eMb.webp",
+          "path-large": "file/thumbnail/get/content/579/MDflbtPNnA1hC8pPiecrXkuUZhOyKUYwdCpe8eMb.webp",
+          "content_id": 10,
+          "content_file_id": 48,
+          "file_id": 121,
+          "module": "content",
+          "title": "i3.png",
+          "name": "MDflbtPNnA1hC8pPiecrXkuUZhOyKUYwdCpe8eMb.png",
+          "alt": "i3.png",
+          "size": 214544,
+          "extension": "png",
+          "mime": "image/png",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/PzJsVPFMPA1tqGlCjTP6hCZspAL5HVJM_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "V9e6bCQIc_",
+      "type": "image",
+      "data": {
+        "caption": "IDEs en la herramienta",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/583/Oh2m0lNwSBaUER6Ea5JDHAFgx9f1CzrwRxdWs0L0.webp",
+          "path": "file/thumbnail/get/content/583/Oh2m0lNwSBaUER6Ea5JDHAFgx9f1CzrwRxdWs0L0.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/581/Oh2m0lNwSBaUER6Ea5JDHAFgx9f1CzrwRxdWs0L0.webp",
+          "path-thumbnail": "file/thumbnail/get/content/581/Oh2m0lNwSBaUER6Ea5JDHAFgx9f1CzrwRxdWs0L0.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/583/Oh2m0lNwSBaUER6Ea5JDHAFgx9f1CzrwRxdWs0L0.webp",
+          "path-large": "file/thumbnail/get/content/583/Oh2m0lNwSBaUER6Ea5JDHAFgx9f1CzrwRxdWs0L0.webp",
+          "content_id": 10,
+          "content_file_id": 49,
+          "file_id": 122,
+          "module": "content",
+          "title": "IDEs.png",
+          "name": "Oh2m0lNwSBaUER6Ea5JDHAFgx9f1CzrwRxdWs0L0.png",
+          "alt": "IDEs.png",
+          "size": 28055,
+          "extension": "png",
+          "mime": "image/png",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/PzJsVPFMPA1tqGlCjTP6hCZspAL5HVJM_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    }
+  ],
+  "version": "2.31.7"
+}

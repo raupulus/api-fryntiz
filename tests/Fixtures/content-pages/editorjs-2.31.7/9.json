@@ -1,0 +1,249 @@
+{
+  "time": 1790278472065,
+  "blocks": [
+    {
+      "id": "Hch8MCkHYI",
+      "type": "header",
+      "data": {
+        "text": "Sobre el Proyecto",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "A9KUvnN8id",
+      "type": "paragraph",
+      "data": {
+        "text": "Este proyecto es simplemente decorativo aún teniendo una posibilidad remota de conseguir resolver un bloque.<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "gQm_RY3zaO",
+      "type": "paragraph",
+      "data": {
+        "text": "Se trata de un gadget que intenta resolver bloques para ganar la recompensa de BTC.<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "cheT49ZsDn",
+      "type": "paragraph",
+      "data": {
+        "text": "He diseñado un soporte y adaptado el diseño original de la caja para permitir mejor ventilación e incorporar una batería de un vaper desechable evitando cortes mientras lo desplazo de un lugar a otro manteniendo una autonomía de pocas horas.<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "PZSsm_wjaH",
+      "type": "header",
+      "data": {
+        "text": "Software",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "tNFsqNukkd",
+      "type": "paragraph",
+      "data": {
+        "text": "Se utiliza el programa original de <b>Nerd Miner</b> para funcionar.<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "qA0okHYN-q",
+      "type": "paragraph",
+      "data": {
+        "text": "Sobre este software para el esp32 he añadido una sincronización de datos hacia una api propia dónde voy recogiendo las estadísticas cada un minuto lo que me permite monitorizar estos datos en la barra de tareas de mi escritorio y en otras pantallas.<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "6bFLQJVAs9",
+      "type": "header",
+      "data": {
+        "text": "Galería",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "TJFbrHDhlt",
+      "type": "image",
+      "data": {
+        "caption": "Lilygo T-Display S3",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/481/J267EfbAu5fAwYIG9ViB7RFugnPcciNeCGKReSpw.webp",
+          "path": "file/thumbnail/get/content/481/J267EfbAu5fAwYIG9ViB7RFugnPcciNeCGKReSpw.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/479/J267EfbAu5fAwYIG9ViB7RFugnPcciNeCGKReSpw.webp",
+          "path-thumbnail": "file/thumbnail/get/content/479/J267EfbAu5fAwYIG9ViB7RFugnPcciNeCGKReSpw.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/482/J267EfbAu5fAwYIG9ViB7RFugnPcciNeCGKReSpw.webp",
+          "path-large": "file/thumbnail/get/content/482/J267EfbAu5fAwYIG9ViB7RFugnPcciNeCGKReSpw.webp",
+          "content_id": 7,
+          "content_file_id": 32,
+          "file_id": 101,
+          "module": "content",
+          "title": "2023-12-28 15-50-30.jpeg",
+          "name": "J267EfbAu5fAwYIG9ViB7RFugnPcciNeCGKReSpw.jpg",
+          "alt": "2023-12-28 15-50-30.jpeg",
+          "size": 2883489,
+          "extension": "jpg",
+          "mime": "image/jpeg",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/mbNDMkptfPzR3n4hcnj2B4Slx1t5nPDc_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "kgd9RB9CKF",
+      "type": "image",
+      "data": {
+        "caption": "Lilygo T-Display S3",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/486/1VA3LkyjWBXQYpoQ0n4cgLqUFJ94pQl2VtEvCdtp.webp",
+          "path": "file/thumbnail/get/content/486/1VA3LkyjWBXQYpoQ0n4cgLqUFJ94pQl2VtEvCdtp.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/484/1VA3LkyjWBXQYpoQ0n4cgLqUFJ94pQl2VtEvCdtp.webp",
+          "path-thumbnail": "file/thumbnail/get/content/484/1VA3LkyjWBXQYpoQ0n4cgLqUFJ94pQl2VtEvCdtp.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/487/1VA3LkyjWBXQYpoQ0n4cgLqUFJ94pQl2VtEvCdtp.webp",
+          "path-large": "file/thumbnail/get/content/487/1VA3LkyjWBXQYpoQ0n4cgLqUFJ94pQl2VtEvCdtp.webp",
+          "content_id": 7,
+          "content_file_id": 33,
+          "file_id": 102,
+          "module": "content",
+          "title": "2023-12-28 15-50-31.jpeg",
+          "name": "1VA3LkyjWBXQYpoQ0n4cgLqUFJ94pQl2VtEvCdtp.jpg",
+          "alt": "2023-12-28 15-50-31.jpeg",
+          "size": 2928245,
+          "extension": "jpg",
+          "mime": "image/jpeg",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/mbNDMkptfPzR3n4hcnj2B4Slx1t5nPDc_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "6gpFpLPAGE",
+      "type": "image",
+      "data": {
+        "caption": "Lilygo T-Display S3 y batería de vaper",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/491/LzMZnTo6y6nePbYvwHjSNNaxiJIj5W4zT9aKZe2g.webp",
+          "path": "file/thumbnail/get/content/491/LzMZnTo6y6nePbYvwHjSNNaxiJIj5W4zT9aKZe2g.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/489/LzMZnTo6y6nePbYvwHjSNNaxiJIj5W4zT9aKZe2g.webp",
+          "path-thumbnail": "file/thumbnail/get/content/489/LzMZnTo6y6nePbYvwHjSNNaxiJIj5W4zT9aKZe2g.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/492/LzMZnTo6y6nePbYvwHjSNNaxiJIj5W4zT9aKZe2g.webp",
+          "path-large": "file/thumbnail/get/content/492/LzMZnTo6y6nePbYvwHjSNNaxiJIj5W4zT9aKZe2g.webp",
+          "content_id": 7,
+          "content_file_id": 34,
+          "file_id": 103,
+          "module": "content",
+          "title": "2023-12-29 16-06-48.jpeg",
+          "name": "LzMZnTo6y6nePbYvwHjSNNaxiJIj5W4zT9aKZe2g.jpg",
+          "alt": "2023-12-29 16-06-48.jpeg",
+          "size": 4289714,
+          "extension": "jpg",
+          "mime": "image/jpeg",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/mbNDMkptfPzR3n4hcnj2B4Slx1t5nPDc_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "Zd-f0WTEJT",
+      "type": "image",
+      "data": {
+        "caption": "Gadget BTC miner con esp32",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/496/dIjzLhuuXzWd1ACMyJx0g2PG1YS79KFrofAPNvT4.webp",
+          "path": "file/thumbnail/get/content/496/dIjzLhuuXzWd1ACMyJx0g2PG1YS79KFrofAPNvT4.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/494/dIjzLhuuXzWd1ACMyJx0g2PG1YS79KFrofAPNvT4.webp",
+          "path-thumbnail": "file/thumbnail/get/content/494/dIjzLhuuXzWd1ACMyJx0g2PG1YS79KFrofAPNvT4.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/497/dIjzLhuuXzWd1ACMyJx0g2PG1YS79KFrofAPNvT4.webp",
+          "path-large": "file/thumbnail/get/content/497/dIjzLhuuXzWd1ACMyJx0g2PG1YS79KFrofAPNvT4.webp",
+          "content_id": 7,
+          "content_file_id": 35,
+          "file_id": 104,
+          "module": "content",
+          "title": "2024-01-04 14-20-43.jpeg",
+          "name": "dIjzLhuuXzWd1ACMyJx0g2PG1YS79KFrofAPNvT4.jpg",
+          "alt": "2024-01-04 14-20-43.jpeg",
+          "size": 2069874,
+          "extension": "jpg",
+          "mime": "image/jpeg",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/mbNDMkptfPzR3n4hcnj2B4Slx1t5nPDc_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "j8xeuEHNRF",
+      "type": "image",
+      "data": {
+        "caption": "Gadget BTC miner con esp32",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/501/DrnT6r6DVv8dGdHe1oCUNnzVh8t1EvbnUWi8V85H.webp",
+          "path": "file/thumbnail/get/content/501/DrnT6r6DVv8dGdHe1oCUNnzVh8t1EvbnUWi8V85H.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/499/DrnT6r6DVv8dGdHe1oCUNnzVh8t1EvbnUWi8V85H.webp",
+          "path-thumbnail": "file/thumbnail/get/content/499/DrnT6r6DVv8dGdHe1oCUNnzVh8t1EvbnUWi8V85H.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/502/DrnT6r6DVv8dGdHe1oCUNnzVh8t1EvbnUWi8V85H.webp",
+          "path-large": "file/thumbnail/get/content/502/DrnT6r6DVv8dGdHe1oCUNnzVh8t1EvbnUWi8V85H.webp",
+          "content_id": 7,
+          "content_file_id": 36,
+          "file_id": 105,
+          "module": "content",
+          "title": "2024-01-12 21-27-24.jpeg",
+          "name": "DrnT6r6DVv8dGdHe1oCUNnzVh8t1EvbnUWi8V85H.jpg",
+          "alt": "2024-01-12 21-27-24.jpeg",
+          "size": 1771819,
+          "extension": "jpg",
+          "mime": "image/jpeg",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/mbNDMkptfPzR3n4hcnj2B4Slx1t5nPDc_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    }
+  ],
+  "version": "2.31.7"
+}

@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Console\Commands\Debug;
 
 use App\Console\Commands\Debug\Concerns\ResolvesDebugDefaults;
+use App\Enums\ContentStatusEnum;
 use App\Models\Category;
 use App\Models\Content\Content;
-use App\Models\Content\ContentAvailableStatus;
 use App\Models\Content\ContentAvailableType;
 use App\Models\Content\ContentCategory;
 use App\Models\Content\ContentMetadata;
@@ -16,6 +16,7 @@ use App\Models\Content\ContentSeo;
 use App\Models\Platform;
 use App\Models\PlatformCategory;
 use Carbon\Carbon;
+use Database\Seeders\ContentAvailableStatusSeeder;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -73,12 +74,9 @@ class SeedContentDebugCommand extends Command
             'description' => 'Artículos de prueba',
         ]);
 
-        $status = ContentAvailableStatus::query()->where('slug', 'published')->first()
-            ?? ContentAvailableStatus::create([
-                'name' => 'Publicado',
-                'slug' => 'published',
-                'description' => 'Publicado de prueba',
-            ]);
+        // Los estados con sus ids reales (el seeder no duplica los que ya hay):
+        // un «publicado» creado aquí a mano tendría otro id y no saldría en la API.
+        (new ContentAvailableStatusSeeder)->run();
 
         $this->info("Creando {$count} contenidos de prueba...");
 
@@ -88,7 +86,7 @@ class SeedContentDebugCommand extends Command
                 'author_id' => $userId,
                 'platform_id' => $platform->id,
                 'type_id' => $type->id,
-                'status_id' => $status->id,
+                'status_id' => ContentStatusEnum::Published->value,
                 'title' => $title,
                 'slug' => Str::slug($title).'-'.Str::random(5),
                 'excerpt' => fake()->paragraph(),

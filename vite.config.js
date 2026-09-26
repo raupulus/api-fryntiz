@@ -19,6 +19,10 @@ export default defineConfig({
                 // lo usa; el CSS se importa desde el propio módulo, así que
                 // `@vite()` inyecta las dos etiquetas con una sola entrada.
                 'resources/js/youtube-video-search.js',
+                // Editor.js del panel (núcleo, herramientas y componente
+                // Alpine). Lo carga el render hook de las páginas que tienen
+                // el editor, no todo el panel.
+                'resources/js/filament/editorjs.js',
             ],
             refresh: true,
         }),

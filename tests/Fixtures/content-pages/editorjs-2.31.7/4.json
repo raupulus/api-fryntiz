@@ -1,0 +1,119 @@
+{
+  "time": 1790278457672,
+  "blocks": [
+    {
+      "id": "o-sQhLMMxS",
+      "type": "header",
+      "data": {
+        "text": "Software",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "DiKtbTZm_V",
+      "type": "paragraph",
+      "data": {
+        "text": "Repositorio del proyecto <a href=\"https://gitlab.com/raupulus/raspberry-project-weather-station\">https://gitlab.com/raupulus/raspberry-project-weather-station</a>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "ay9s3fMbRH",
+      "type": "list",
+      "data": {
+        "style": "unordered",
+        "meta": {},
+        "items": [
+          {
+            "content": "Raspbian (Debian 10)",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Python 3.7.3-1",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Postgresql 11+200+deb10u1",
+            "meta": {},
+            "items": []
+          }
+        ]
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "rmmgE8yw0h",
+      "type": "header",
+      "data": {
+        "text": "Módulos python",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "v3PcW7GwAf",
+      "type": "list",
+      "data": {
+        "style": "unordered",
+        "meta": {},
+        "items": [
+          {
+            "content": "python3-requests",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "python3-sql",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "python3-postgresql",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "python3-sqlalchemy",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "python3-dotenv",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "python3-smbus",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "python3-rpi.gpio",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "python3-bme680",
+            "meta": {},
+            "items": []
+          }
+        ]
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    }
+  ],
+  "version": "2.31.7"
+}

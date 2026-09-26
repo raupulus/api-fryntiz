@@ -4,17 +4,36 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api\V2;
 
+use App\Enums\ContentPageFormatEnum;
+use App\Enums\ContentStatusEnum;
 use App\Models\Content\Content;
 use App\Models\Content\ContentPage;
 use App\Models\Content\ContentSeo;
 use App\Models\Platform;
+use App\Services\Content\ContentPageFormatService;
+use Database\Seeders\ContentAvailablePageRawSeeder;
 use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Feature\Api\ApiTestCase;
+use Tests\Traits\SeedsProductionContentStatuses;
 
 class ContentTest extends ApiTestCase
 {
+    use SeedsProductionContentStatuses;
+
     protected string $apiPrefix = 'api/v2';
+
+    /**
+     * Estados con los ids de producción, no los del seeder: con el seeder
+     * cambiado, esta clase dio por buena una API que en producción no servía
+     * ningún contenido.
+     */
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->seedContentStatusesAsProduction();
+    }
 
     #[Test]
     public function can_get_content_by_platform_and_slug(): void
@@ -23,7 +42,7 @@ class ContentTest extends ApiTestCase
         $content = Content::factory()->create([
             'platform_id' => $platform->id,
             'is_active' => true,
-            'status_id' => 2,
+            'status_id' => ContentStatusEnum::Published->value,
             'published_at' => now()->subDay(),
         ]);
 
@@ -39,7 +58,7 @@ class ContentTest extends ApiTestCase
         $content = Content::factory()->create([
             'platform_id' => $platform->id,
             'is_active' => true,
-            'status_id' => 2,
+            'status_id' => ContentStatusEnum::Published->value,
             'published_at' => now()->subDay(),
         ]);
 
@@ -63,7 +82,7 @@ class ContentTest extends ApiTestCase
     {
         $content = Content::factory()->create([
             'is_active' => true,
-            'status_id' => 2,
+            'status_id' => ContentStatusEnum::Published->value,
             'published_at' => now()->subDay(),
         ]);
         $response = $this->getJson($this->apiUrl("platforms/{$content->platform->slug}/contents/{$content->slug}/pages"));
@@ -89,7 +108,7 @@ class ContentTest extends ApiTestCase
         Content::factory()->count(3)->create([
             'platform_id' => $platform->id,
             'is_active' => true,
-            'status_id' => 2,
+            'status_id' => ContentStatusEnum::Published->value,
             'published_at' => now()->subDay(),
         ]);
 
@@ -103,7 +122,7 @@ class ContentTest extends ApiTestCase
     {
         $content = Content::factory()->create([
             'is_active' => true,
-            'status_id' => 2,
+            'status_id' => ContentStatusEnum::Published->value,
             'published_at' => now()->subDay(),
         ]);
         $response = $this->getJson($this->apiUrl("platforms/{$content->platform->slug}/contents/{$content->slug}/related"));
@@ -152,6 +171,74 @@ class ContentTest extends ApiTestCase
             ->assertStatus(404);
     }
 
+    // ─── Formato de las páginas (?format=) ───
+
+    /**
+     * Página publicada escrita en Editor.js, guardada como la guarda el panel.
+     *
+     * @return array{0: Platform, 1: Content}
+     */
+    private function makeEditorJsPage(): array
+    {
+        (new ContentAvailablePageRawSeeder)->run();
+
+        [$platform, $content] = $this->makePublishedContent();
+
+        $page = ContentPage::create([
+            'content_id' => $content->id,
+            'title' => 'Primera parte',
+            'slug' => 'primera-parte',
+            'order' => 1,
+        ]);
+
+        app(ContentPageFormatService::class)->save($page, ContentPageFormatEnum::EditorJs, (string) json_encode([
+            'time' => 1,
+            'version' => '2.29.0',
+            'blocks' => [['id' => 'p1', 'type' => 'paragraph', 'data' => ['text' => 'Hola <b>mundo</b>']]],
+        ]));
+
+        return [$platform, $content];
+    }
+
+    #[Test]
+    public function without_format_a_page_comes_in_its_own_format(): void
+    {
+        [$platform, $content] = $this->makeEditorJsPage();
+
+        $response = $this->getJson($this->apiUrl("platforms/{$platform->slug}/contents/{$content->slug}/pages/1"));
+
+        $this->assertSuccessResponse($response);
+        $response->assertJsonPath('data.format', 'editorjs')
+            ->assertJsonPath('data.source_format', 'editorjs')
+            ->assertJsonPath('data.body.blocks.0.data.text', 'Hola <b>mundo</b>');
+    }
+
+    #[Test]
+    public function a_page_can_be_asked_for_in_html_or_markdown(): void
+    {
+        [$platform, $content] = $this->makeEditorJsPage();
+        $url = "platforms/{$platform->slug}/contents/{$content->slug}/pages";
+
+        $html = $this->getJson($this->apiUrl("{$url}?format=html"));
+        $html->assertJsonPath('data.0.format', 'html')->assertJsonPath('data.0.source_format', 'editorjs');
+        $this->assertStringContainsString('Hola <b>mundo</b>', (string) $html->json('data.0.body'));
+
+        $this->getJson($this->apiUrl("{$url}/1?format=markdown"))
+            ->assertJsonPath('data.format', 'markdown')
+            ->assertJsonPath('data.body', "Hola **mundo**\n");
+    }
+
+    #[Test]
+    public function an_unknown_format_is_a_validation_error(): void
+    {
+        [$platform, $content] = $this->makeEditorJsPage();
+
+        $this->getJson($this->apiUrl("platforms/{$platform->slug}/contents/{$content->slug}/pages?format=pdf"))
+            ->assertStatus(422)
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('errors.format.0', 'El formato tiene que ser editorjs, markdown o html.');
+    }
+
     /**
      * Contenido publicado y visible, que es la condición para que la API lo
      * sirva.
@@ -165,7 +252,7 @@ class ContentTest extends ApiTestCase
         $content = Content::factory()->create([
             'platform_id' => $platform->id,
             'is_active' => true,
-            'status_id' => 2,
+            'status_id' => ContentStatusEnum::Published->value,
             'published_at' => now()->subDay(),
         ]);
 

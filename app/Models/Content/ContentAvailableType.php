@@ -65,6 +65,8 @@ class ContentAvailableType extends BaseModel
 
     /**
      * Relación con los contenidos que utilizan este tipo de contenido.
+     *
+     * @return HasMany<Content, $this>
      */
     public function contents(): HasMany
     {
@@ -73,12 +75,13 @@ class ContentAvailableType extends BaseModel
 
     /**
      * Relación con los contenidos activos que utilizan este tipo de contenido.
+     *
+     * @return HasMany<Content, $this>
      */
     public function contentsActive(): HasMany
     {
-        return $this->contents()
-            ->where('is_active', true)
-            ->whereNotNull('published_at');
+        // Publicados y activos: `Content::scopePublished()`.
+        return $this->contents()->published();
     }
 
     /**

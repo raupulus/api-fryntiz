@@ -1,0 +1,725 @@
+{
+  "time": 1790278503841,
+  "blocks": [
+    {
+      "id": "suw2z8ICqg",
+      "type": "header",
+      "data": {
+        "text": "Sensor Bosch BME680",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "nA6Bc6ItNz",
+      "type": "paragraph",
+      "data": {
+        "text": "El BME680 es un sensor ambiental avanzado fabricado por Bosch que mide\ncuatro parámetros clave: temperatura, presión atmosférica, humedad relativa y\ncalidad del aire."
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "GyasEYFW4u",
+      "type": "paragraph",
+      "data": {
+        "text": "Es una excelente opción para proyectos de monitoreo ambiental,\nya que proporciona información precisa sobre las condiciones del entorno en un\nsolo dispositivo. Este sensor se comunica a través del bus I2C y tiene una\nresolución de 16 bits para la medición de temperatura y presión, lo que\ngarantiza lecturas bastante precisas."
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "2mgHjagb3z",
+      "type": "list",
+      "data": {
+        "style": "unordered",
+        "meta": {},
+        "items": [
+          {
+            "content": "Temperatura: Rango de -40°C a +85°C.",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Presión: Rango de 300 a 1100 hPa.",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Humedad: Rango de 0 a 100%.",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Calidad del aire (IAQ): Medida como un índice que combina la detección de\ngases volátiles.",
+            "meta": {},
+            "items": []
+          }
+        ]
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "f0VwVMEK7P",
+      "type": "header",
+      "data": {
+        "text": "Tabla de conexiones:",
+        "level": 4
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "NkZ04fqEMp",
+      "type": "table",
+      "data": {
+        "withHeadings": true,
+        "stretched": false,
+        "content": [
+          [
+            "Pin Raspberry Pi Pico",
+            "Pin Sensor BME680"
+          ],
+          [
+            "SDA (14)",
+            "SDA"
+          ],
+          [
+            "SCL (15)",
+            "SCL"
+          ],
+          [
+            "VCC (3.3V)",
+            "VCC"
+          ],
+          [
+            "GND",
+            "GND"
+          ]
+        ]
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "mvdYqc_2ma",
+      "type": "list",
+      "data": {
+        "style": "unordered",
+        "meta": {},
+        "items": [
+          {
+            "content": "Dirección I2C: 0x77 (predeterminada)",
+            "meta": {},
+            "items": []
+          }
+        ]
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "gStZWjSwhL",
+      "type": "delimiter",
+      "data": {},
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "Kh_C13R8Vy",
+      "type": "header",
+      "data": {
+        "text": "Sensor BH1750",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "CorxR5JLwK",
+      "type": "paragraph",
+      "data": {
+        "text": "El BH1750 es un sensor digital de luz ambiente que mide la intensidad de la\nluz en lux. Utiliza el protocolo I2C para la comunicación y tiene una precisión\nbastante buena para aplicaciones generales de medición de luz. Es ideal para\nproyectos donde se desee saber la cantidad de luz ambiental para ajustar el\nbrillo de pantallas, controlar sistemas automáticos de iluminación o realizar\nanálisis de luminosidad."
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "UaGJC-j_Sy",
+      "type": "list",
+      "data": {
+        "style": "unordered",
+        "meta": {},
+        "items": [
+          {
+            "content": "Rango de medición: 1 lux a 65535 lux.",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Resolución: 1 lux.",
+            "meta": {},
+            "items": []
+          }
+        ]
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "2I8ZidUp4G",
+      "type": "header",
+      "data": {
+        "text": "Tabla de conexiones:",
+        "level": 4
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "EfQ1R0YyjU",
+      "type": "table",
+      "data": {
+        "withHeadings": true,
+        "stretched": false,
+        "content": [
+          [
+            "Pin Raspberry Pi Pico",
+            "Pin Sensor BH1750"
+          ],
+          [
+            "SDA (14)",
+            "SDA"
+          ],
+          [
+            "SCL (15)",
+            "SCL"
+          ],
+          [
+            "VCC (3.3V)",
+            "VCC"
+          ],
+          [
+            "GND",
+            "GND"
+          ]
+        ]
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "fDq0EA3huP",
+      "type": "list",
+      "data": {
+        "style": "unordered",
+        "meta": {},
+        "items": [
+          {
+            "content": "Dirección I2C: 0x23 (predeterminada)",
+            "meta": {},
+            "items": []
+          }
+        ]
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "gyYCoQjObb",
+      "type": "delimiter",
+      "data": {},
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "RTpkq9afL5",
+      "type": "header",
+      "data": {
+        "text": "Sensor VEML6070",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "S_kJQ3F-iz",
+      "type": "paragraph",
+      "data": {
+        "text": "El VEML6070 es un sensor UV que mide la radiación ultravioleta (UV). Es\nideal para proyectos que requieren monitoreo de la exposición a la luz solar y\nsus efectos, como estaciones meteorológicas o sistemas de alerta de radiación\nsolar. Este sensor es capaz de medir la luz UV-A y UV-B y tiene dos direcciones\nI2C para la lectura de datos de la radiación."
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "cYmRB0dUIC",
+      "type": "list",
+      "data": {
+        "style": "unordered",
+        "meta": {},
+        "items": [
+          {
+            "content": "Rango de medición: 0 a 15 mW/cm².",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Resolución: 0.001 mW/cm².",
+            "meta": {},
+            "items": []
+          }
+        ]
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "_-Rgac_X4G",
+      "type": "header",
+      "data": {
+        "text": "Tabla de conexiones:",
+        "level": 4
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "FpeiBPUS4b",
+      "type": "table",
+      "data": {
+        "withHeadings": true,
+        "stretched": false,
+        "content": [
+          [
+            "Pin Raspberry Pi Pico",
+            "Pin Sensor VEML6070"
+          ],
+          [
+            "SDA (14)",
+            "SDA"
+          ],
+          [
+            "SCL (15)",
+            "SCL"
+          ],
+          [
+            "VCC (3.3V)",
+            "VCC"
+          ],
+          [
+            "GND",
+            "GND"
+          ]
+        ]
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "17CxmLPjtS",
+      "type": "list",
+      "data": {
+        "style": "unordered",
+        "meta": {},
+        "items": [
+          {
+            "content": "Direcciones I2C:\n0x39 (escritura)0x38 (lectura byte bajo)0x39 (lectura byte alto)",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "0x39 (escritura)",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "0x38 (lectura byte bajo)",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "0x39 (lectura byte alto)",
+            "meta": {},
+            "items": []
+          }
+        ]
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "Plonsj-7iv",
+      "type": "delimiter",
+      "data": {},
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "Bci9E4Rv7L",
+      "type": "header",
+      "data": {
+        "text": "Sensor CJMCU-811",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "nIBO0e_8Ru",
+      "type": "paragraph",
+      "data": {
+        "text": "El CJMCU-811 es un sensor de gases que mide dos parámetros importantes en la\ncalidad del aire: CO2 (dióxido de carbono) y TVOC (compuestos orgánicos\nvolátiles totales). Este sensor es útil para detectar la contaminación del aire\ny el nivel de calidad del aire interior, por lo que es ideal para aplicaciones\nde monitoreo en espacios cerrados."
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "-YJ1QUgpk-",
+      "type": "list",
+      "data": {
+        "style": "unordered",
+        "meta": {},
+        "items": [
+          {
+            "content": "Rango de medición:\nCO2: 400 a 8192 ppm.TVOC: 0 a 1187 ppb.",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "CO2: 400 a 8192 ppm.",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "TVOC: 0 a 1187 ppb.",
+            "meta": {},
+            "items": []
+          }
+        ]
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "N_nT1CxUcj",
+      "type": "header",
+      "data": {
+        "text": "Tabla de conexiones:",
+        "level": 4
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "CeILl3E6bF",
+      "type": "table",
+      "data": {
+        "withHeadings": true,
+        "stretched": false,
+        "content": [
+          [
+            "Pin Raspberry Pi Pico",
+            "Pin Sensor CJMCU-811"
+          ],
+          [
+            "SDA (4)",
+            "SDA"
+          ],
+          [
+            "SCL (5)",
+            "SCL"
+          ],
+          [
+            "VCC (3.3V)",
+            "VCC"
+          ],
+          [
+            "GND",
+            "GND"
+          ]
+        ]
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "p216a9hn23",
+      "type": "list",
+      "data": {
+        "style": "unordered",
+        "meta": {},
+        "items": [
+          {
+            "content": "Dirección I2C: 0x5A (predeterminada)",
+            "meta": {},
+            "items": []
+          }
+        ]
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "JSDEI6_k7h",
+      "type": "delimiter",
+      "data": {},
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "JE6cgk89m5",
+      "type": "header",
+      "data": {
+        "text": "Micrófono MAX9814",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "Zt89_XVmS2",
+      "type": "paragraph",
+      "data": {
+        "text": "El MAX9814 es un micrófono con amplificación de audio que tiene salida\nanalógica. Permite la captación de sonidos en el entorno y puede ser usado para\ndetectar ruidos, sonidos o como parte de sistemas de monitoreo acústico. Su\nsalida analógica puede ser conectada directamente a la entrada ADC (convertidor\nanalógico a digital) de la Raspberry Pi Pico para ser procesada en el software."
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "CfPD8Jkl9k",
+      "type": "header",
+      "data": {
+        "text": "Tabla de conexiones:",
+        "level": 4
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "1ygOzvmxvB",
+      "type": "table",
+      "data": {
+        "withHeadings": true,
+        "stretched": false,
+        "content": [
+          [
+            "Pin Raspberry Pi Pico",
+            "Pin Micrófono MAX9814"
+          ],
+          [
+            "ADC (26)",
+            "OUT"
+          ],
+          [
+            "VCC (3.3V)",
+            "VCC"
+          ],
+          [
+            "GND",
+            "GND"
+          ]
+        ]
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "8cEVOwEwo6",
+      "type": "delimiter",
+      "data": {},
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "lKWyBO10mi",
+      "type": "header",
+      "data": {
+        "text": "Pantalla ST7735 128x160px 1,8\"",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "jqQ96NwAC9",
+      "type": "paragraph",
+      "data": {
+        "text": "La pantalla ST7735 es una pantalla a color con resolución de 128x160 píxeles\ny tamaño de 1,8\". Aunque es una pantalla de bajo costo y relativamente lenta en\ncomparación con otras pantallas más avanzadas, cumple perfectamente su función\nen proyectos de bajo presupuesto, como este, donde no se requiere una tasa de\nrefresco alta ni una gran resolución para mostrar datos. La comunicación con la\nRaspberry Pi Pico se realiza a través del bus SPI, lo que la hace bastante\neficiente en cuanto a tiempo de respuesta."
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "_oLrNh5opd",
+      "type": "header",
+      "data": {
+        "text": "Tabla de conexiones:",
+        "level": 4
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "ufWzOlCc8j",
+      "type": "table",
+      "data": {
+        "withHeadings": true,
+        "stretched": false,
+        "content": [
+          [
+            "Pin Raspberry Pi Pico",
+            "Pin Pantalla ST7735"
+          ],
+          [
+            "RESET (9)",
+            "RESET"
+          ],
+          [
+            "CE (13)",
+            "CE"
+          ],
+          [
+            "DC/A0 (12)",
+            "DC"
+          ],
+          [
+            "VCC (3.3V)",
+            "VCC"
+          ],
+          [
+            "BL (3)",
+            "Led (backlight)"
+          ],
+          [
+            "SCK (10)",
+            "SCK (Serial Clock)"
+          ],
+          [
+            "MOSI/SDA (11)",
+            "MOSI (Data)"
+          ],
+          [
+            "VCC (3.3V)",
+            "VCC"
+          ],
+          [
+            "GND",
+            "GND"
+          ]
+        ]
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "HW7fOshkiW",
+      "type": "delimiter",
+      "data": {},
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "K_K2EJpvBJ",
+      "type": "header",
+      "data": {
+        "text": "LEDs indicadores de estado",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "SzBRApUeWE",
+      "type": "paragraph",
+      "data": {
+        "text": "Los LEDs indicadores de estado permiten visualizar en tiempo real el estado del\nsistema y el proceso en el que se encuentra. Estos LEDs proporcionan una\nretroalimentación visual clara, lo que facilita la monitorización del\nfuncionamiento de la estación meteorológica."
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "_bqKb0M_SZ",
+      "type": "header",
+      "data": {
+        "text": "Tabla de conexiones:",
+        "level": 4
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "v-8FWLBbzX",
+      "type": "table",
+      "data": {
+        "withHeadings": true,
+        "stretched": false,
+        "content": [
+          [
+            "Pin Raspberry Pi Pico",
+            "LED indicador"
+          ],
+          [
+            "Pin 20",
+            "LED encendido correcto"
+          ],
+          [
+            "Pin 21",
+            "LED lectura de sensores"
+          ],
+          [
+            "Pin 22",
+            "LED subida de datos a API"
+          ]
+        ]
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    }
+  ],
+  "version": "2.31.7"
+}

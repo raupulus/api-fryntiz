@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Enums\ContentStatusEnum;
 use App\Models\Category;
 use App\Models\Content\Content;
 use App\Models\Content\ContentPage;
@@ -154,7 +155,7 @@ class ProjectDummyCommand extends Command
                     'user_id' => $user->id,
                     'platform_id' => $mainPlatform->id,
                     'type_id' => 1, // Artículo/Página
-                    'status_id' => 1, // Publicado
+                    'status_id' => ContentStatusEnum::Published->value,
                     'title' => $cData['title'],
                     'slug' => $slug,
                     'description' => $cData['description'],

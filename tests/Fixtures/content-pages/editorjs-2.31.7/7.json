@@ -1,0 +1,141 @@
+{
+  "time": 1790278463478,
+  "blocks": [
+    {
+      "id": "zNffCBPZJn",
+      "type": "header",
+      "data": {
+        "text": "Sobre el Proyecto",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "ZBlhjNHjmB",
+      "type": "paragraph",
+      "data": {
+        "text": "Este proyecto nace como práctica enfocada a tener una herramienta que además sea decorativa.<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "_iVNdp9KtB",
+      "type": "paragraph",
+      "data": {
+        "text": "La sitúo en una barra debajo de la pantalla principal y me sirve para poder ver de un vistazo estadísticas de redes sociales sin perder tiempo en entrar a cada una de ellas quedando todo centralizado y compactado.<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "_tvBcEZNik",
+      "type": "paragraph",
+      "data": {
+        "text": "Además he añadido más información de otros proyectos como el contador de pulsaciones por cada equipo, el clima en la zona, velocidad de minado con varios mineros, estado de la impresora 3D.<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "MnXYDFPm4h",
+      "type": "header",
+      "data": {
+        "text": "Diseño 3D propio",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "8v1KH2Raus",
+      "type": "paragraph",
+      "data": {
+        "text": "Para complementar el proyecto, también he creado el diseño de una caja que se puede imprimir en 3D, lo puedes encontrar aquí:<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "ceeiw2BbF-",
+      "type": "paragraph",
+      "data": {
+        "text": "<a href=\"https://www.thingiverse.com/thing:6640329\">https://www.thingiverse.com/thing:6640329</a>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "-Kjr5MpE9B",
+      "type": "image",
+      "data": {
+        "caption": "Diseño de Caja 3D para pico inky e-paper",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/363/K71VBSjEn05Xkfkv48a9zygxcWnGPmAVLu5C48hF.webp",
+          "path": "file/thumbnail/get/content/363/K71VBSjEn05Xkfkv48a9zygxcWnGPmAVLu5C48hF.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/361/K71VBSjEn05Xkfkv48a9zygxcWnGPmAVLu5C48hF.webp",
+          "path-thumbnail": "file/thumbnail/get/content/361/K71VBSjEn05Xkfkv48a9zygxcWnGPmAVLu5C48hF.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/364/K71VBSjEn05Xkfkv48a9zygxcWnGPmAVLu5C48hF.webp",
+          "path-large": "file/thumbnail/get/content/364/K71VBSjEn05Xkfkv48a9zygxcWnGPmAVLu5C48hF.webp",
+          "content_id": 5,
+          "content_file_id": 7,
+          "file_id": 73,
+          "module": "content",
+          "title": "3.jpeg",
+          "name": "K71VBSjEn05Xkfkv48a9zygxcWnGPmAVLu5C48hF.jpg",
+          "alt": "3.jpeg",
+          "size": 3951065,
+          "extension": "jpg",
+          "mime": "image/jpeg",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/mbNDMkptfPzR3n4hcnj2B4Slx1t5nPDc_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "N-85gSs8kM",
+      "type": "header",
+      "data": {
+        "text": "Software",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "gVWt4KrRNv",
+      "type": "paragraph",
+      "data": {
+        "text": "El proyecto está realizado en micropython creando una interfaz navegable propia y personalizada.<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "WghAPIdVjE",
+      "type": "paragraph",
+      "data": {
+        "text": "La decisión de hacerlo así y no utilizar una librería gráfica independiente ha sido tomada con fines educativos teniendo que diseñar el prototipo en figma, preparar clases para la interfaz y acciones de navegación, plantear un repintado de pantalla eficiente y refrescar cálculos mátematicos/geométricos en el proceso.<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    }
+  ],
+  "version": "2.31.7"
+}

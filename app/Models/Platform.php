@@ -129,6 +129,8 @@ class Platform extends BaseModel
 
     /**
      * Asocia todos los contenidos creados para la plataforma.
+     *
+     * @return HasMany<Content, $this>
      */
     public function contents(): HasMany
     {
@@ -138,13 +140,14 @@ class Platform extends BaseModel
     }
 
     /**
-     * Asocia todos los contenidos creados para la plataforma.
+     * Contenidos que se sirven a las webs: publicados y activos
+     * (`Content::scopePublished()`, la única definición de «publicado»).
+     *
+     * @return HasMany<Content, $this>
      */
     public function contentsActive(): HasMany
     {
-        return $this->contents()
-            ->where('contents.is_active', true)
-            ->whereNotNull('contents.published_at');
+        return $this->contents()->published();
     }
 
     /**

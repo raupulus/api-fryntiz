@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api\Content\V2;
 
 use App\Http\Api\CollectionQuery;
 use App\Http\Controllers\Api\V2\BaseApiController;
+use App\Http\Requests\Api\Content\V2\ContentPagesRequest;
 use App\Http\Resources\V2\Content\ContentPageResource;
 use App\Http\Resources\V2\Content\ContentRelatedResource;
 use App\Http\Resources\V2\Content\ContentResource;
@@ -108,8 +109,10 @@ class ContentController extends BaseApiController
 
     /**
      * Páginas de un contenido publicado.
+     *
+     *   ?format=editorjs|markdown|html   formato de `body` (por defecto, el de cada página)
      */
-    public function pages(string $platformSlug, string $contentSlug): JsonResponse
+    public function pages(ContentPagesRequest $request, string $platformSlug, string $contentSlug): JsonResponse
     {
         $content = $this->service->getBySlug($platformSlug, $contentSlug);
 
@@ -117,15 +120,20 @@ class ContentController extends BaseApiController
             return $this->notFoundResponse('Contenido no encontrado');
         }
 
-        return $this->successResponse(
-            ContentPageResource::collection($content->pages()->orderBy('order')->get())->resolve()
-        );
+        $pages = $content->pages()
+            ->with(['currentRawType', 'raws.availableType'])
+            ->orderBy('order')
+            ->get();
+
+        return $this->successResponse(ContentPageResource::collection($pages)->resolve($request));
     }
 
     /**
      * Una página concreta, por su orden dentro del contenido.
+     *
+     *   ?format=editorjs|markdown|html   formato de `body` (por defecto, el de la página)
      */
-    public function page(string $platformSlug, string $contentSlug, int $order): JsonResponse
+    public function page(ContentPagesRequest $request, string $platformSlug, string $contentSlug, int $order): JsonResponse
     {
         $content = $this->service->getBySlug($platformSlug, $contentSlug);
 
@@ -133,7 +141,10 @@ class ContentController extends BaseApiController
             return $this->notFoundResponse('Contenido no encontrado');
         }
 
-        $page = $content->pages()->where('order', $order)->first();
+        $page = $content->pages()
+            ->with(['currentRawType', 'raws.availableType'])
+            ->where('order', $order)
+            ->first();
 
         if (! $page) {
             return $this->notFoundResponse('Pagina no encontrada');

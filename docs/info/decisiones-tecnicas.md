@@ -429,6 +429,77 @@ de que sea un problema.
 
 ---
 
+### D30 · Los estados de contenido van por id, con el orden de la v1
+
+`content_available_status` tiene 1 borrador, **2 programado, 3 publicado**, 4 no publicado,
+5 copyright y 6 para eliminar: el orden de la base de producción, que viene de la v1. Parece
+más natural «publicado = 2», y así lo puso la v2 en su seeder en mayo de 2026; todo el código
+se escribió sobre ese orden y la API buscaba los publicados con el id de «programado».
+
+**No se reordena la base** para que case con un enum más bonito: son ids que ya están en las
+filas de producción. Manda la base; `ContentStatusEnum` y el seeder la copian.
+
+*Fijado por `ContentStatusOrderTest` (enum, seeder y producción iguales) y por
+`project:check-config`, que falla si la base desplegada no casa con el enum.*
+
+---
+
+### D31 · Un contenido publicado no vuelve a borrador ni a programado
+
+Una vez publicado, el estado no cambia: se retira de las webs desmarcando «Activo», o se
+elimina. Publicar, desde donde sea, marca «Activo»; a las webs sólo va lo publicado y activo.
+
+**Por qué.** Lo que se ha publicado ya lo han visto las webs, los buscadores y quien lo
+enlazara, y tiene fecha de publicación. Devolverlo a borrador la borraría y lo sacaría de las
+webs sin dejar rastro de que existió; ocultarlo con «Activo» conserva su historia y deja
+volver a enseñarlo tal cual. Las reglas están en `Content::applyPublicationRules()` (evento
+`saving`), así que valen igual desde el panel, la acción masiva y el cron.
+
+*Fijado por `ContentPublicationTest` y `ContentPublicationPanelTest`.*
+
+---
+
+### D32 · El panel de contenidos no lleva cabecera CSP
+
+Una CSP (lista de orígenes desde los que el navegador puede ejecutar código) sería una tercera
+capa contra el código escondido en las páginas. **No se pone.** El panel carga cosas de fuera
+(vídeos de YouTube, fuentes, miniaturas) y Filament, Livewire y Alpine evalúan código en línea:
+una CSP mal ajustada rompe pantallas en silencio, y ajustarla bien exige revisarlas una a una.
+
+Las dos capas que sí hay: el HTML de los textos de los bloques se limpia al guardar
+(`ContentHtmlSanitizer`, para todo el mundo) y el HTML libre (bloque `raw`, formato HTML, «JSON en
+crudo») es sólo de administradores, comprobado también en el servidor. Los vídeos incrustados
+tampoco se restringen a servicios conocidos por ahora.
+
+*Fijado por `ContentHtmlSanitizerTest` (batería de ataques de OWASP) y `ContentPageSavingTest`
+(HTML libre sólo de administradores, también el que se escribe dentro de un Markdown).*
+
+---
+
+### D33 · Los PDF se guardan con sus metadatos
+
+Las imágenes pierden todos sus metadatos al subirlas (GPS, modelo del móvil…). Los PDF **no**:
+quitarlos bien exige programas externos en el servidor (`exiftool` para borrarlos y `qpdf` para
+reescribir el fichero y que no se puedan recuperar), y los de estos PDF suelen ser la autoría
+puesta a propósito. Se suben tal cual.
+
+*Fijado por `EditorJsTest::a_pdf_is_stored_untouched_with_its_metadata` (mismo hash que el
+original). Decidido en la DUDA-5 del plan de contenidos del 2026-09-24.*
+
+---
+
+### D34 · Lo que no es imagen ni PDF se sirve como descarga
+
+El editor acepta cualquier fichero (D13), así que puede haber un `.html` o un `.svg` en el módulo
+de ficheros. Servidos en línea desde el dominio de la API, ejecutarían su código con ese origen.
+`FileController` sólo los enseña en el navegador si son JPEG, PNG, WebP, GIF o PDF
+(`File::INLINE_MIMES`); el resto sale con `Content-Disposition: attachment`. Las miniaturas son
+siempre imágenes generadas aquí y se enseñan.
+
+*Fijado por `EditorJsTest::only_images_and_pdfs_are_shown_in_the_browser_and_the_rest_is_downloaded`.*
+
+---
+
 ## Dependencias
 
 ### D7 · Las dependencias se mantienen al día, incluidos los majors
@@ -446,6 +517,23 @@ funcionaban.
 **D16**: asunto cerrado, no hace falta volver a levantarlo.
 
 *Origen: DEP-01, DEP-02, DEP-03.*
+
+---
+
+### D29 · Los paquetes de Editor.js van con versión exacta
+
+En `package.json`, `@editorjs/*`, `@calumk/editorjs-codecup`, `editorjs-alert` y `prismjs` llevan
+la versión exacta, sin `^`. No es una excepción a D7: se actualizan igual, pero **a propósito**,
+porque una versión nueva de una herramienta puede cambiar el formato de lo que se guarda. Pasó con
+`@editorjs/list` 2.x (listas en otro formato) y con el núcleo 2.30 (`data-empty` dentro del HTML
+de la alerta), y el HTML que ven las webs sale de esos datos. El procedimiento está en
+[`content.md`](content.md), «Actualizar el editor».
+
+Tampoco se deja al bloque de código bajar los lenguajes de resaltado de cdnjs, como hace por
+defecto: vienen de `prismjs` por npm, para que el panel no cargue scripts de fuera.
+
+*Fijado por `EditorJsAssetsTest` (versiones exactas) y `ServedHtmlRegressionTest` (las páginas
+reales regrabadas por el editor sirven el mismo HTML).*
 
 ---
 
@@ -597,4 +685,4 @@ existe— **qué test lo fija**.
 Lo que no va aquí: decisiones que el código ya explica por sí solo, y cosas que simplemente están
 pendientes (eso es `docs/future/`).
 
-> Creado: 2026-09-01 · Última revisión: 2026-09-14
+> Creado: 2026-09-01 · Última revisión: 2026-09-26

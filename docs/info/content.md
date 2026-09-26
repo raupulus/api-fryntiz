@@ -38,6 +38,8 @@ Sistema de gestión de contenidos multi-plataforma y multi-tipo. Soporta artícu
 |---------|-------------|
 | `app/Services/Content/ContentService.php` | Lógica: getBySlug, getRelated, getFeaturedForPlatform |
 | `app/Services/Content/ContentSeoService.php` | Lógica SEO del contenido |
+| `app/Services/Content/ContentFormatConverter.php` | Conversión de páginas entre Editor.js, Markdown y HTML, y el HTML que se sirve |
+| `app/Services/Content/ContentPageFormatService.php` | Fuente única de cada página: guardar, regenerar derivados, copias antes de cambiar de formato |
 
 ### Resources API V2
 | Archivo | Descripción |
@@ -49,15 +51,16 @@ Sistema de gestión de contenidos multi-plataforma y multi-tipo. Soporta artícu
 ### Enums
 | Archivo | Descripción |
 |---------|-------------|
-| `app/Enums/ContentStatusEnum.php` | Estados: borrador, publicado, archivado, etc. |
+| `app/Enums/ContentStatusEnum.php` | Estados con el id de la base: 1 borrador, 2 programado, 3 publicado, 4 no publicado, 5 copyright, 6 para eliminar (ver «Estados y publicación») |
 | `app/Enums/ContentTypeEnum.php` | Tipos: artículo, tutorial, proyecto, página, reseña |
-| `app/Enums/ContentPageRawTypeEnum.php` | Tipos raw: HTML, Markdown, JSON |
+| `app/Enums/ContentPageRawTypeEnum.php` | Tipos raw: HTML, Markdown, JSON (sin uso) |
+| `app/Enums/ContentPageFormatEnum.php` | Formatos de edición de una página: `editorjs`, `markdown`, `html` (el tipo en BD de Editor.js es `json`) |
 
 ### Otros
 | Archivo | Descripción |
 |---------|-------------|
 | `app/Policies/ContentPolicy.php` | Política de autorización |
-| `app/Console/Commands/Content/PublishContentCommand.php` | Publicar contenido programado |
+| `app/Console/Commands/ContentPublishCommand.php` + `app/Actions/PublishContentAction.php` | `content:publish`: publica los programados cuya fecha ha llegado (cada 5 minutos) |
 | `app/Console/Commands/SitemapGeneratorCommand.php` | Generar sitemap XML |
 
 ## Campos del modelo Content
@@ -67,7 +70,7 @@ Sistema de gestión de contenidos multi-plataforma y multi-tipo. Soporta artícu
 | `id` | bigint | PK |
 | `author_id` | int | FK → `users.id` — autor |
 | `platform_id` | int | FK → `platforms.id` — plataforma |
-| `status_id` | int | FK → `content_available_statuses.id` |
+| `status_id` | int | FK → `content_available_status.id` (`ContentStatusEnum`). Vacío en los contenidos que vienen de la v1 |
 | `type_id` | int | FK → `content_available_types.id` |
 | `image_id` | int | FK → `files.id` — imagen principal |
 | `title` | string | Título del contenido |
@@ -92,18 +95,63 @@ Sistema de gestión de contenidos multi-plataforma y multi-tipo. Soporta artícu
 | `published_at` | timestamp | Fecha de publicación |
 | `scheduled_at` | timestamp | Fecha de publicación programada |
 
+## Estados y publicación
+
+**Los ids son los de la base real**, que vienen de la v1: 1 borrador, 2
+programado, 3 publicado, 4 no publicado, 5 protegido por copyright, 6 para
+eliminar. En mayo de 2026 la v2 cambió el orden en el seeder (2 = publicado) y
+el código se escribió encima: la API buscaba los publicados con el id de
+«programado» y no servía nada. `ContentStatusEnum`, el seeder y
+`tests/Traits/SeedsProductionContentStatuses` tienen el mismo orden, y lo
+comprueban `ContentStatusOrderTest` y `project:check-config` (que falla si la
+base no casa con el enum).
+
+**Una sola definición de «publicado»:** `Content::scopePublished()` = estado
+3 **y** «Activo». La usan la API, `Platform::contentsActive()` (fichas y
+estadísticas de plataforma) y `ContentAvailableType::contentsActive()`. Antes
+había dos que no coincidían (`status_id = 2` y «activo y con fecha»).
+
+**Reglas** (`Content::applyPublicationRules()`, en el evento `saving`, así
+que valen igual desde el panel, la acción masiva o el cron):
+
+| Al pasar a… | Pasa |
+|---|---|
+| Publicado (desde donde sea) | Fecha de publicación de ese momento si no tenía, y «Activo» marcado |
+| Otro estado, estando publicado | **Se rechaza** (`ValidationException`): publicado es definitivo. Se retira de las webs desmarcando «Activo», o se elimina |
+| Borrador | Sin fecha de publicación |
+| Programado | Fecha programada obligatoria. El formulario exige además que sea futura |
+| 4, 5 o 6 | No toca las fechas |
+
+`Content::publish()` publica y deja visible (también uno publicado y oculto).
+Lo usan la acción masiva «Publicar» del panel y el cron.
+
+**Cron:** `content:publish` cada 5 minutos, `withoutOverlapping`. Recorre los
+programados vencidos de uno en uno con `publish()` (no un `update` masivo), así
+que pasan por las reglas y saltan los eventos del modelo, que regeneran la
+caché de la plataforma.
+
+**Panel:** el estado se elige de una lista con los nombres del enum; si el
+contenido está publicado, el selector queda bloqueado y explica cómo retirarlo.
+Al elegir «Programado» aparece «Publicar el», obligatoria y futura. La fecha de
+publicación es de sólo lectura. La tabla enseña «Sin estado» en los contenidos
+de la v1 (en producción, todos: no se tocan; se publican a mano cuando toque).
+
 ## Campos del modelo ContentPage
 
 | Campo | Tipo | Descripción |
 |-------|------|-------------|
 | `id` | bigint | PK |
 | `content_id` | int | FK → `contents.id` |
-| `current_page_raw_id` | int | FK → tipo de raw activo |
+| `current_page_raw_id` | int | FK → `content_available_page_raw.id`: formato fuente de la página, el que se edita (ver «Páginas: un formato por página») |
 | `image_id` | int | FK → `files.id` |
 | `title` | string | Título de la página |
 | `slug` | string | Slug |
-| `content` | text | Contenido |
+| `content` | text | HTML que se sirve a la web; se regenera desde la fuente al guardar |
 | `order` | int | Orden de la página |
+
+`content_page_raw` guarda la página en cada formato: la fuente y las versiones
+derivadas en Editor.js y Markdown. Las filas con `deleted_at` son las copias
+que se guardan antes de un cambio de formato.
 
 ## Campos del modelo ContentSeo
 
@@ -152,16 +200,21 @@ Sistema de gestión de contenidos multi-plataforma y multi-tipo. Soporta artícu
 - `Content` → `HasMany` → `ContentRelated` (vía `content_id`)
 - `Content` → `HasOne` → `ContentSeo` (vía `content_id`)
 - `Content` → `HasOne` → `ContentMetadata` (vía `content_id`)
-- `ContentPage` → `HasMany` → `ContentPageRaw` (vía `content_page_id`)
+- `ContentPage` → `HasMany` → `ContentPageRaw` (`raws()`, vía `content_page_id`)
+- `ContentPage` → `BelongsTo` → `ContentAvailablePageRaw` (`currentRawType()`, vía `current_page_raw_id`)
+- `ContentPageRaw` → `BelongsTo` → `ContentAvailablePageRaw` (`availableType()`, vía `available_page_raw_id`)
 
 ## Rutas API V2
 
+Contrato completo en [`api/v2/content.md`](api/v2/content.md).
+
 | Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
-| GET | `/api/v2/content/{platform:slug}/{content:slug}` | No | Ver contenido por plataforma y slug |
-| GET | `/api/v2/content/{content:slug}/pages` | No | Páginas de un contenido |
-| GET | `/api/v2/content/{content:slug}/pages/{order}` | No | Una página concreta del contenido por su orden (numérico) |
-| GET | `/api/v2/content/{content:slug}/related` | No | Contenido relacionado |
+| GET | `/api/v2/platforms/{platform:slug}/contents` | No | Contenidos publicados y activos de una plataforma |
+| GET | `/api/v2/platforms/{platform:slug}/contents/{content:slug}` | No | Un contenido publicado |
+| GET | `/api/v2/platforms/{platform:slug}/contents/{content:slug}/pages` | No | Páginas de un contenido; `?format=editorjs\|markdown\|html` |
+| GET | `/api/v2/platforms/{platform:slug}/contents/{content:slug}/pages/{order}` | No | Una página por su orden (numérico); `?format=` igual |
+| GET | `/api/v2/platforms/{platform:slug}/contents/{content:slug}/related` | No | Contenido relacionado |
 
 ## Comando de debug
 
@@ -302,23 +355,54 @@ posteriores.
 
 - Componente reutilizable `app/Filament/Components/EditorJsField.php` + vista
   `resources/views/filament/components/editorjs-field.blade.php`.
-- Carga Editor.js desde `public/vendor/editorjs/`. Los scripts y el componente
-  Alpine `editorJsField` viven en
-  `resources/views/filament/components/editorjs-scripts.blade.php` y se
-  inyectan vía `renderHook(PanelsRenderHook::SCRIPTS_AFTER, ..., scopes:
+- **Editor.js 2.31.7 empaquetado por Vite** (desde el 2026-09-24): núcleo,
+  herramientas, traducción y el componente Alpine `editorJsField` están en
+  `resources/js/filament/` (`editorjs.js` es la entrada, `editorjs-i18n.js` los
+  textos, `editorjs-code.js` el bloque de código). Antes eran ficheros sueltos
+  en `public/vendor/editorjs` (Editor.js 2.29 y herramientas de versiones
+  mezcladas), ya borrados. Las versiones están **fijadas** en `package.json`
+  (sin `^`): una actualización puede cambiar el formato de los datos, como
+  pasó con las listas, y se hace a propósito (ver «Actualizar el editor»).
+- `resources/views/filament/components/editorjs-scripts.blade.php` deja los
+  endpoints en `window.editorJsEndpoints` y carga el paquete con `@vite`. Se
+  inyecta vía `renderHook(PanelsRenderHook::SCRIPTS_AFTER, ..., scopes:
   EditContent::class)` en `AdminPanelProvider`. No usar `@push` desde la vista
   del campo: el modal se monta por Livewire tras la carga de la página y el
   push se descartaría. Si el campo se usa en otra página, añadir esa página a
   los `scopes` del hook.
+- **Todo en español**: el diccionario `i18n` cubre la interfaz del núcleo, los
+  nombres de bloque, los ajustes y los textos de cada herramienta. El bloque de
+  código escribe unos pocos textos directamente en el HTML sin pasar por
+  `i18n` («Hide Numbers», «Copied!»…): se cambian en el DOM con un
+  `MutationObserver` que no toca nada editable. Comprobado abriendo todos los
+  menús en Chrome: 109 textos de interfaz, ninguno en inglés.
+- **Títulos del 3 al 6** (3 por defecto): el h1 es el título del contenido y
+  el h2 el de la página.
+- **Atajos**: resaltar `Cmd/Ctrl+Shift+M`, aviso `Cmd/Ctrl+Shift+W`, cita
+  `Cmd/Ctrl+Shift+O` y código en línea `Cmd/Ctrl+Shift+C` (en `main`, código
+  en línea compartía atajo con resaltar).
+- **Bloque de código**: `@calumk/editorjs-codecup`, sucesor de
+  `@calumk/editorjs-codeflask` (el de `main`, retirado de npm). Guarda
+  `{code, language, showlinenumbers, showCopyButton}`, compatible con lo que
+  ya pintaba `_code.blade.php`. El paquete trae Prism con sólo HTML, CSS y JS
+  y un autoloader que **bajaba el resto de lenguajes de cdnjs**: los lenguajes
+  del desplegable vienen de npm (`prismjs`) y el autoloader apunta a una ruta
+  local, así que el panel no carga scripts de fuera.
+- **`data-empty`**: desde la 2.30, Editor.js marca con
+  `data-empty="true|false"` los elementos de bloque de cada zona editable y
+  las herramientas que guardan `innerHTML` (la alerta) se lo llevaban al JSON
+  y al HTML servido. `editorJsField` lo quita al volcar el contenido.
+- Modo oscuro: `panel.css` da la paleta del panel a los menús del editor, la
+  cabecera de la tabla, los botones de subir y el desplegable de lenguajes
+  (quedaban blanco sobre blanco), y tamaño a los títulos.
 - Fiabilidad del editor en el modal: Alpine llama `init()`/`destroy()`
   automáticamente (sin `x-init`), el `$watch` del state ignora los cambios
   generados por el propio editor (`lastSaved`) para no re-renderizar mientras
   se escribe, y un listener `focusout` vuelca el último cambio antes de pulsar
   «Guardar».
-- Integrado en `PagesRelationManager`, con tres pestañas sobre **el mismo
-  contenido**: «Editor visual», «JSON en crudo» y «HTML». El JSON se persiste en
-  la relación `raw()` (`content_page_raw`, tipo `json`); al editar se carga solo
-  el raw de tipo `json` (no el más reciente de cualquier tipo).
+- Integrado en `PagesRelationManager` como el editor del formato Editor.js
+  (ver «Páginas: un formato por página»), con dos pestañas sobre **el mismo
+  contenido**: «Editor visual» y «JSON en crudo».
 
   La primera se llamaba «Editor Visual (JSON)» y, con el `helperText`, daba a
   entender que el editor visual se había sustituido por un pegado de JSON. **El
@@ -326,47 +410,318 @@ posteriores.
   crudo existe a propósito —pegar el contenido de otra página es cómodo cuando
   se sabe lo que se hace— y comparte estado con el editor visual: lo que se pega
   en una se ve en la otra. Valida que sea un objeto con clave `blocks`.
+- La herramienta de alertas no cargaba en la v2 (el editor la buscaba en
+  `window` con otro nombre) y las alertas de la v1 salían como «The block can
+  not be displayed correctly». Con el paquete de Vite las herramientas se
+  importan, no se buscan en `window`.
+- Las imágenes que sube el editor de la v2 sólo traen `url`; la vista
+  `editor.fields._image` pedía también `url_thumbnail` y `url_large` y
+  reventaba al generar el HTML. `TextFormatParseHelper::getImageRaw()` usa
+  ahora `url` para las que falten (las de la v1 traen las tres y salen igual).
+
+## Páginas: un formato por página
+
+Cada página se escribe en **un** formato —Editor.js, Markdown o HTML—, su
+**fuente**, que marca `content_pages.current_page_raw_id`. En el panel sólo se
+ve y se edita el editor de ese formato; los demás se regeneran a partir de él
+al guardar. Una página nueva empieza en Editor.js.
+
+### Qué se guarda (`ContentPageFormatService::save()`)
+
+1. La fuente, en `content_page_raw` con su tipo (`json`, `markdown` o `html`).
+2. `content_pages.content`: el HTML que se sirve, generado desde la fuente.
+   En páginas Editor.js lo genera `TextFormatParseHelper`, el mismo de la v1:
+   comprobado con las 19 páginas reales, sale **idéntico** al que ya había.
+3. Las versiones derivadas en Editor.js y Markdown (la que no sea la fuente).
+   El HTML no se guarda aparte: es `content`. Si una derivada falla, se
+   registra en el log y no impide guardar la fuente; la API la convierte al
+   vuelo.
+4. Si el formato cambia, la fila de la fuente anterior **no se pisa**: se
+   borra con soft delete y queda como copia. También se guarda copia al
+   recuperar una versión anterior y cuando el guardado deja la página vacía.
+   `latestBackup()` devuelve la última.
+
+Un editor vacío no guarda nada (vaciar el editor por error no borra la página).
+
+### Páginas sin `current_page_raw_id`
+
+No se ha migrado nada. `sourceFormat()` decide así, y la próxima vez que se
+guarda la página queda marcada:
+
+- tiene JSON de Editor.js → Editor.js (así están las páginas de la v1);
+- sólo tiene HTML en `content` → HTML;
+- vacía → Editor.js.
+
+### Listas: dos formatos
+
+`@editorjs/list` 2.x (el del editor desde el 2026-09-24) guarda
+`{style, meta, items: [{content, meta, items}]}`, con listas anidadas,
+`style: checklist` y numeración con letras o romanos (`meta.counterType`,
+`meta.start`). Las 24 listas de la v1 están en el formato viejo (`items` como
+texto) y pasan al nuevo cuando se vuelve a guardar la página.
+
+`TextFormatParseHelper::listItems()` lee los dos (y los de `checklist` y
+NestedList) y las vistas `_list` / `_checkbox` pintan las sublistas dentro del
+elemento padre (`_list_box`, `_checkbox_box`). Una lista de casillas se pinta
+igual que el bloque `checklist`. Para una lista plana el HTML es **el mismo
+byte a byte** que el de la v1.
+
+Lo sujeta `ServedHtmlRegressionTest` con tres juegos de las 19 páginas reales:
+tal cual, con las listas pasadas al formato nuevo, y **regrabadas por el
+editor del panel** sin tocar nada (`tests/Fixtures/content-pages/editorjs-2.31.7`).
+Al regrabar sólo cambian cosas que la web no ve: las listas (formato nuevo y
+sin el `<br>` final de cada elemento), el pie de foto vacío (`null` → `""`),
+`textVariant` (`null` → `""`) y los datos del separador (`[]` → `{}`). La vista
+del párrafo pintaba una clase suelta `r-paragraph-` con `textVariant: ""`; ya
+no.
+
+### Actualizar el editor
+
+1. Subir las versiones en `package.json` (exactas) y `pnpm install`.
+2. Buscar en cada paquete sus `i18n.t(...)` y textos fijos nuevos y
+   añadirlos a `editorjs-i18n.js`.
+3. Abrir las páginas reales en el editor, regrabarlas con `editor.save()` sin
+   tocar nada y pasar `ServedHtmlRegressionTest` con ese JSON (un juego nuevo
+   de fixtures con la versión en el nombre de la carpeta).
+4. `pnpm build` y commitear `public/build`.
+
+### Conversiones (`ContentFormatConverter`)
+
+| De → a | Cómo |
+|---|---|
+| Editor.js → Markdown | Bloque a bloque. Sólo pasa a Markdown «de verdad» lo que, al volver a leerlo, da el mismo bloque con el mismo texto, enlaces (y su `target`), imágenes, clases y estilos (`survivesRoundTrip()`). Lo demás va envuelto (ver abajo) |
+| Editor.js → HTML | El HTML de cada bloque (el de la web), cada uno en su envoltorio |
+| Markdown → HTML | CommonMark con tablas, listas de tareas, tachado y autoenlaces |
+| Markdown / HTML → Editor.js | Se recorre el HTML: párrafos, títulos, listas (anidadas incluidas, en el formato de `@editorjs/list` 2.x), listas de tareas, citas (con pie si el último párrafo empieza por «—»), código, separadores, tablas e imágenes. Los títulos h1 y h2 pasan a h3, con aviso. Lo que no tiene bloque va como bloque `raw` (HTML), también una lista que mezcla numerada y con viñetas en sus niveles (en Editor.js todos los niveles son del mismo tipo) |
+| HTML → Markdown | HTML → bloques → Markdown, con las mismas reglas |
+
+**El envoltorio.** Un bloque que Markdown no sabe expresar (imagen del módulo
+de ficheros, con pie o con estilos; alerta; vídeo; tarjeta de enlace; adjunto;
+párrafo con variante; tabla sin cabecera…) va como HTML:
+
+```html
+<div data-editorjs-block="…base64 de {block, hash}…">
+…el HTML que genera ese bloque…
+</div>
+```
+
+La web ve el HTML del bloque (el envoltorio se quita al servir, también en
+páginas HTML) y, al volver a Editor.js, el bloque se recupera **tal cual**. Si
+se ha cambiado el HTML de dentro, la huella (`hash`) no coincide y lo que
+vuelve es un bloque `raw` con esos cambios, nunca el bloque viejo pisando lo
+editado. Comprobado con las 21 páginas de la copia local: Editor.js → Markdown →
+Editor.js se ve igual en todas, y Editor.js → HTML → Editor.js devuelve los
+bloques exactos.
+
+Detalles que costaron:
+
+- `Str::markdown()` usa el conversor de GitHub, que **escapa los `<iframe>`**:
+  un vídeo dentro del Markdown salía como texto. Se usa un conversor propio
+  con las mismas extensiones menos `DisallowedRawHtmlExtension`, y con
+  `allow_unsafe_links: false` para los enlaces `javascript:` de Markdown.
+- La v1 quita los saltos de línea del texto al generar el HTML (la web muestra
+  «ahorrarmesubir»). El Markdown dice lo que ya ve la web, no lo que se ve en
+  el editor.
+- Dos listas seguidas son una sola en Markdown aunque las separe una línea en
+  blanco: se separan con `<!-- -->`.
+- Los bloques que pasan a Markdown de verdad se sirven como HTML estándar
+  (`<h2>`, `<ul>`…), sin las clases `r-*` del HTML de Editor.js. El aviso de
+  la conversión lo dice.
+
+### Guardar una página
+
+`ContentPageFormatService::savePage()` guarda los datos de la página (título,
+slug, orden, imagen) y su contenido **en una sola transacción**: si algo falla,
+no se guarda nada, el modal sigue abierto con lo escrito y una notificación dice
+por qué. Antes se guardaban por separado y un contenido que fallaba dejaba el
+título cambiado y el contenido viejo. El panel lo usa con `->using()`.
+
+Antes de escribir nada:
+
+1. **Validación de bloques** (`ContentBlockValidator`): cada bloque trae su dato
+   principal —imagen y adjunto con fichero, vídeo con dirección, tarjeta con
+   enlace, tabla con filas, lista con elementos, código con texto, título con
+   texto— y es de un tipo conocido. Si no, el campo del formulario enseña
+   «Bloque 7 (imagen): no tiene fichero. Quítalo o vuelve a subir la imagen».
+   Un párrafo vacío no es error.
+2. **Limpieza del HTML** (`ContentHtmlSanitizer`, con `symfony/html-sanitizer`),
+   para todo el mundo: en los textos de los bloques sólo quedan negrita,
+   cursiva, subrayado, tachado, enlace (`http`, `https`, `mailto`), código en
+   línea, resaltado y salto de línea; en el mensaje de la alerta, además `div` y
+   `p`; en el título y la descripción de una tarjeta de enlace, sólo texto. Lo
+   que ya estaba limpio se guarda **sin cambiar un carácter** (las 19 páginas
+   reales no cambian). Los bloques `raw` y `code` no se tocan.
+3. **HTML libre, sólo administradores** (Admin y SuperAdmin):
+   - un Editor no ve el bloque de HTML ni «JSON en crudo», ni puede pasar una
+     página a HTML; si la página ya está en HTML, cambia título, slug, orden e
+     imagen, pero no el HTML;
+   - en el servidor, a un Editor se le rechaza un bloque `raw` nuevo o cambiado
+     (se compara con el HTML de los que ya tiene la página) y cualquier cambio de
+     HTML. Los que puso un administrador se conservan: sin la herramienta, el
+     editor los enseña como «no se puede mostrar» y los guarda tal cual;
+   - el HTML que un Editor escribe dentro de un Markdown se limpia con la misma
+     lista (`ContentMarkdownSanitizer`): etiqueta a etiqueta, sin tocar la
+     sintaxis de Markdown ni el código. Los envoltorios
+     `<div data-editorjs-block>` no se dan por buenos por su huella (no lleva
+     secreto): se limpia el bloque que guardan y se vuelve a generar su HTML.
+
+«JSON en crudo» se carga indentado y pasa por las mismas comprobaciones.
+
+**Plantillas que aguantan datos incompletos** (`TextFormatParseHelper` y
+`editor/fields/_*`): antes daban por hecho que cada bloque traía todo, y los
+adjuntos subidos desde el editor de la v2, las tarjetas de enlace de webs que
+no se dejan leer o un JSON pegado a mano reventaban el guardado. Ahora pintan lo
+que hay: tarjeta sin datos → enlace normal; adjunto sin miniatura ni icono →
+nombre y descarga; cita sin autor → sin línea de autor; alerta sin tipo →
+informativa a la izquierda; vídeo sin medidas → 580×320; aviso sin título →
+sólo el mensaje; título sin nivel → h3. El código de un bloque de código se
+enseña como texto (antes un `<div>` dentro se interpretaba como HTML).
+
+Queda una cosa: al pegar algo en «JSON en crudo», el editor visual lo pinta
+antes de guardar, así que un `onerror` pegado se ejecuta en el navegador de
+quien lo pega (sólo administradores ven esa pestaña). Al guardar se limpia y ya
+no se ejecuta para nadie más.
+
+### El panel (`PagesRelationManager`)
+
+- Un aviso arriba dice el formato de la página y tiene los botones «Pasar a …»
+  y, si hay copia, «Recuperar versión anterior». Columna «Formato» en la tabla.
+- **Editor.js**: el de siempre, con «Editor visual» y «JSON en crudo».
+- **Markdown**: `MarkdownEditor` (sin adjuntos: las imágenes van por URL) y
+  una pestaña «Vista previa».
+- **HTML**: `CodeEditor` y «Vista previa». **No** el `RichEditor` de antes: el
+  `RichEditor` pasa el HTML por TipTap al cargar y al guardar, y en las páginas
+  reales se comía entre el 70 y el 80 % del marcado (figuras, pies de foto,
+  clases de las tablas) aunque sólo se cambiase el título. Ojo si se guardó
+  alguna página desde el panel v2 antes de esto: su `content` pudo quedar
+  recortado.
+- Las vistas previas pasan por `Str::sanitizeHtml()`: las ve quien administra
+  el panel y el contenido lo puede escribir un editor.
+- Al guardar una página Markdown o HTML con títulos h1 o h2 sale un aviso (no
+  impide guardar): en la web esos niveles son el título del contenido y el de
+  la página. Markdown y HTML sí los guardan; sólo Editor.js los limita.
+
+Cambiar de formato, paso a paso:
+
+1. «Pasar a Markdown» convierte lo que hay en pantalla y lo enseña en un modal
+   con los avisos de lo que cambia. **No guarda nada.**
+2. «Convertir y editar en Markdown» abre la página en Markdown con el
+   resultado. El aviso pasa a «(sin guardar)» y aparece «Deshacer y volver a
+   Editor.js», que la deja como estaba.
+3. Para guardar hay que marcar la casilla «Entiendo que la página pasa de
+   Editor.js a Markdown…». Al guardar, Markdown es el formato de la página, se
+   regenera todo desde él y el Editor.js anterior queda como copia.
+4. «Recuperar versión anterior» sigue el mismo camino: enseña la copia, la
+   abre sin guardar, se puede deshacer y hay que confirmar al guardar. Lo que
+   había queda a su vez como copia.
+
+Los campos ocultos del formulario (`source_format`, `stored_format`,
+`original_format`, `original_content`, `pending_change`, `backup_id`) son el
+estado de ese camino, no columnas. `backup_id` viene del formulario, así que
+se comprueba que la copia sea de esa página antes de usarla.
+
+### API
+
+`GET …/pages` y `GET …/pages/{order}` devuelven `body` en el formato de cada
+página y dicen cuál en `format` (y la fuente en `source_format`); con
+`?format=editorjs|markdown|html` se pide otro. Contrato en
+[`api/v2/content.md`](api/v2/content.md).
 
 ### Las herramientas, y las que se habían perdido
 
 Al migrar el editor de `main` a Filament se quedaron por el camino cinco
 herramientas cuyos ficheros JS **seguían en el repositorio**, sin cargarse:
-`paragraph`, `image`, `link`, `attaches` y `codebox`. La de imagen es la que más
+`paragraph`, `image`, `link`, `attaches` y `codebox` (hoy todas cargan, y el
+bloque de código es `codecup`, ver arriba). La de imagen es la que más
 duele: se sustituyó por `SimpleImage`, que guarda la imagen **incrustada en el
 JSON como base64**, lo que hincha la fila de `content_page_raw` y no deja nada
 en el módulo de ficheros.
 
 `image`, `attaches` y `linkTool` necesitan endpoints, y ésa es la razón de que
-se cayeran. Están en `App\Http\Controllers\Admin\EditorJsController`:
+se cayeran. Están en `App\Http\Controllers\Admin\EditorJsController` y
+**cuelgan del contenido** (B5 de la auditoría del 2026-09-24):
 
 | Ruta | Para qué |
 |---|---|
-| `POST /admin/editorjs/upload` | Sube el fichero con `File::addFile()` al módulo `content-pages`, así que queda como una fila de `files` más: se ve en el panel, se sirve por `route('file.get', …)` y tiene miniaturas |
-| `GET /admin/editorjs/url-metadata` | Título, descripción e imagen de una página externa, para la tarjeta de `linkTool` |
+| `POST /admin/contents/{content}/editor/files` | Sube una imagen o un adjunto (`ContentFileService::store()`) |
+| `POST /admin/contents/{content}/editor/files/by-url` | Descarga una imagen pegada por URL y la guarda igual (C5) |
+| `GET /admin/contents/{content}/editor/url-metadata` | Título, descripción e imagen de una página externa, para la tarjeta de `linkTool` |
 
-Las dos van detrás de `auth` y del gate **`access-editorjs`** (mismo criterio que
-abre el panel: `Admin`, `SuperAdmin` o `Editor`, y la cuenta activa). Devuelven
-el formato que exige Editor.js —`{success: 1, file: {…}}` y
-`{success: 1, meta: {…}}`—, **no** el `{success, message, data}` de la API v2:
-son endpoints del panel, no de la API pública.
+Llevan `auth`, el gate **`access-editorjs`** (Admin, SuperAdmin o Editor, con la
+cuenta activa), la política **`update` sobre ese contenido** y el límite
+`content-editor`: 30 peticiones por minuto y usuario. El campo del editor recibe
+estas rutas de su contenido (`EditorJsField::content()` → `getEndpoints()`); ya
+no hay variable global. Devuelven el formato que exige Editor.js —`{success: 1,
+file: {…}}` y `{success: 1, meta: {…}}`— y los errores como `{success: 0,
+message}`, que el editor enseña (su cargador propio, `createUploader()`).
 
-⚠️ **`url-metadata` hace una petición saliente a una URL que elige quien
-escribe**, o sea SSRF si se deja abierto: `http://169.254.169.254/` es el
-servicio de metadatos de media nube y `http://127.0.0.1:9200` es el
-Elasticsearch de al lado. Lleva cuatro cierres, y si se toca hay que mantener
-los cuatro:
+### Ficheros del editor (`ContentFileService`)
+
+- **Vinculados al contenido:** cada fichero deja su fila en `content_files` y
+  va al módulo `content`, como en `main`.
+- **La respuesta tiene las claves de `main`**, que son las que ya guardan los
+  bloques publicados: `url` (copia de 640 px), `url_thumbnail` (160),
+  `url_large` (1280), `path`, `path-thumbnail`, `path-large`, `content_id`,
+  `content_file_id`, `file_id`, `module`, `title`, `alt`, `name`, `size`,
+  `extension`, `mime` y `file_type_image`. Si la imagen es más pequeña que una
+  copia, sale la mayor de las que hay. Para lo que no es imagen, las tres URL
+  son el propio fichero.
+- **Imágenes → WebP** a calidad 85, sin metadatos (ni GPS ni modelo del móvil),
+  giradas según su orientación y a 2560 px como mucho
+  (`File::addFile(..., webpOriginal: true)`). Lo mismo para las portadas del
+  contenido y de sus páginas. Los GIF se quedan como están (perderían la
+  animación). El resto de módulos, más adelante (`docs/future/`).
+- **HEIC, HEIF y AVIF** se abren con Imagick (`File::decodeImage()`) y pasan a
+  WebP. Sin Imagick con ese formato, 422 con «Este servidor no puede leer fotos
+  HEIC: conviértela a JPG». En producción hacen falta `php-imagick` y
+  `libheif`; se comprueba con `php -r 'var_dump(Imagick::queryFormats("HEI*"));'`.
+- **Límites:** 20 MB las imágenes (D12) y 50 MB el resto, con el motivo y el
+  tamaño («La imagen pesa 21 MB y el máximo para imágenes es 20 MB»).
+- **PDF y cualquier otro tipo, tal cual** (D13); los PDF conservan sus metadatos
+  (D33).
+- **Por URL:** mismo filtro que los metadatos (`PublicUrlFetcher`, abajo), tope
+  de 20 MB, tiene que ser una imagen, y después el mismo procesado.
+
+**Cómo se sirven** (`FileController`): sólo JPEG, PNG, WebP, GIF y PDF se
+enseñan en el navegador (`File::INLINE_MIMES`); el resto, como descarga (D34).
+Ficheros y miniaturas llevan `Cache-Control: public, max-age=300,
+must-revalidate` (`private` si el fichero es privado) y `Last-Modified`, para
+que un recorte se vea en cinco minutos como mucho.
+
+**Pie de foto → texto alternativo** (C3): al guardar la página, el pie de cada
+imagen (o el título de cada adjunto) pasa al título y al `alt` del fichero,
+**sólo si el pie ha cambiado desde el último guardado**; así se respeta un `alt`
+escrito a mano. Sólo para ficheros vinculados a ese contenido.
+
+**Pestaña de imágenes, lado servidor** (`ContentImageService`, H2; la pantalla
+llega con la de páginas): qué imágenes usa una página (bloques y portada), dónde
+más se usa cada una (otras páginas por su `file_id`, portadas, imagen SEO y
+galerías), editar título y `alt` sin tocar el fichero, y recortar o sustituir.
+Recortar y sustituir conservan el `file_id` **y los ids de las copias
+pequeñas** (`File::replacePixels()` y `regenerateThumbnailsInPlace()`): los
+bloques guardan las URLs de esas copias, así que no hay que tocarlos.
+
+### Peticiones a URLs ajenas (`PublicUrlFetcher`)
+
+Los metadatos de un enlace y la imagen por URL hacen una petición saliente a una
+dirección que elige quien escribe, o sea SSRF si se deja abierto:
+`http://169.254.169.254/` es el servicio de metadatos de media nube y
+`http://127.0.0.1:9200` el Elasticsearch de al lado. `App\Services\Http\PublicUrlFetcher`
+lleva cinco cierres, y si se toca hay que mantenerlos:
 
 1. sólo `http` y `https` —nada de `file://`, `gopher://` ni `dict://`;
 2. el host se **resuelve** y ninguna de sus IPs puede ser privada, de bucle ni
    de enlace local (`interna.midominio.com` puede apuntar a 10.0.0.5);
-3. sin seguir redirecciones: una redirección es otra URL que no ha pasado por
-   los dos puntos anteriores;
-4. tiempo de espera corto, `throttle:30,1` y sólo se leen los primeros 128 KB.
+3. la conexión va **a la IP comprobada** (`CURLOPT_RESOLVE`), no a lo que
+   resuelva el DNS un instante después;
+4. sin seguir redirecciones: una redirección es otra URL sin comprobar;
+5. tiempo de espera corto y tope de bytes (128 KB para los metadatos, 20 MB
+   para una imagen).
 
-Ante la duda responde `success: 0` y `linkTool` enseña el enlace pelado, que es
-un resultado perfectamente válido. Fijado por
+Ante la duda no se pide nada: los metadatos responden `success: 0` (la tarjeta
+se queda en enlace, que es válido) y la imagen, 422 con el motivo. Fijado por
 `tests/Feature/Filament/EditorJsTest.php`, que prueba las ocho URL que no debe
-tocar y comprueba que **no sale ninguna petición**.
+tocar, en las dos rutas, y comprueba que **no sale ninguna petición**.
 
 ## Galerías
 
@@ -410,4 +765,4 @@ para escribir a mano el `gallery_id`). Implementado por completo:
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-19
+> Creado: 2026-05-25 · Última revisión: 2026-09-26

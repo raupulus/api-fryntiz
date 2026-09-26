@@ -583,12 +583,6 @@ parameters:
 			path: app/Traits/HasSlug.php
 
 		-
-			message: '#^Trait App\\Traits\\HasStatus is used zero times and is not analysed\.$#'
-			identifier: trait.unused
-			count: 1
-			path: app/Traits/HasStatus.php
-
-		-
 			message: '#^PHPDoc tag @extends has invalid type App\\Models\\WeatherStation\\BaseWheaterStation\.$#'
 			identifier: class.notFound
 			count: 1

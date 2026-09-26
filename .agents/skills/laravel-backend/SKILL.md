@@ -41,7 +41,7 @@ extiendas `Illuminate\Database\Eloquent\Model` directamente.
 Antes de escribir lógica repetida, comprueba estos traits ya existentes en
 `app/Traits/` y reúsalos:
 
-`HasSlug`, `HasStatus`, `Filterable`, `HasTimestampScopes`, `ApiResponseTrait`,
+`HasSlug`, `Filterable`, `HasTimestampScopes`, `ApiResponseTrait`,
 `BelongsToUser`, `BelongsToHardwareDevice`.
 
 Las relaciones se declaran con **return type tipado** (`BelongsTo`, `HasMany`,
@@ -105,7 +105,7 @@ módulo en lugar de comprobar roles a mano dentro del controlador.
 php artisan project:install     # Inicializa proyecto (keys, BD, storage)
 php artisan project:clear       # Limpia cachés
 php artisan debug:seed-all      # Datos de prueba
-php artisan content:publish     # Publica contenidos programados (hourly)
+php artisan content:publish     # Publica contenidos programados (cada 5 minutos)
 php artisan sitemap:generate    # Genera sitemap (daily)
 php artisan aemet:*             # Integración AEMET (ver app/Console/Commands/AEMET/)
 ```

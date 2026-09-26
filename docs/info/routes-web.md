@@ -60,6 +60,7 @@ desde el panel admin. `/dashboard` y `/dashboard/*` redirigen a `/panel` (301).
   - Dashboard de cliente y visualización de recursos propios.
 
 ## 4. Endpoints Internos de Soporte Web / Admin
+- `POST /admin/contents/{content}/editor/files`, `POST …/editor/files/by-url` y `GET …/editor/url-metadata` (`admin.contents.editor.*`): subidas, imagen por URL y metadatos de enlaces del editor de un contenido. Protegidos con `auth`, Gate `access-editorjs`, la política `update` sobre ese contenido y el límite `content-editor` (30 por minuto y usuario). Sustituyen a las antiguas `/admin/editorjs/upload` y `/admin/editorjs/url-metadata`. Detalle en [`content.md`](content.md).
 - `GET  /admin/youtube/search`: Endpoint proxy para búsqueda de vídeos de YouTube (`admin.youtube.search`). Protegido con `auth`, Gate `access-youtube-search` (SuperAdmin, Admin, Editor) y `throttle:30,1`. Resuelve llamadas de `YoutubeVideoField` sin exponer la API key de Google en el cliente.
 
 ---
@@ -70,4 +71,4 @@ desde el panel admin. `/dashboard` y `/dashboard/*` redirigen a `/panel` (301).
 
 ---
 
-> Creado: 2026-09-15 · Última revisión: 2026-09-19
+> Creado: 2026-09-15 · Última revisión: 2026-09-26

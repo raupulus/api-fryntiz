@@ -183,7 +183,7 @@ de GDACS (`country=Spain`) más un cálculo de distancia en cliente, no hay
 
 | Comando | Descripción |
 |---------|-------------|
-| `content:publish` | Publica los contenidos programados cuya fecha de publicación ya ha pasado. |
+| `content:publish` | Publica los contenidos programados cuya fecha ya ha llegado: estado «publicado», «Activo» y fecha de publicación de ese momento. Cada 5 minutos. Los recorre de uno en uno para que pasen por las reglas de `Content` y salten sus eventos. |
 
 ---
 
@@ -507,4 +507,4 @@ worker de cola, sí.
 
 ---
 
-> Creado: 2026-05-26 · Última revisión: 2026-09-17
+> Creado: 2026-05-26 · Última revisión: 2026-09-24

@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\ContentStatusEnum;
 use App\Models\Content\Content;
 use App\Models\Content\ContentAvailableType;
 use App\Models\Platform;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 /**
@@ -35,7 +37,9 @@ class PostFactory extends Factory
         return [
             'platform_id' => Platform::factory(),
             'author_id' => User::factory(),
-            'status_id' => 1,
+            // Publicado y activo: lo que sale en las webs. Las reglas de
+            // publicación de `Content` se aplican igual al crear.
+            'status_id' => ContentStatusEnum::Published->value,
             'type_id' => $type->id,
             'title' => $title,
             'slug' => Str::slug($title),
@@ -50,17 +54,39 @@ class PostFactory extends Factory
     {
         return $this->state(fn () => [
             'is_active' => true,
-            'status_id' => 1,
+            'status_id' => ContentStatusEnum::Published->value,
             'published_at' => now()->subDay(),
         ]);
+    }
+
+    /**
+     * Publicado pero oculto («Activo» desmarcado). Se desmarca después de
+     * crearlo: al entrar en «publicado», el modelo lo marca como activo.
+     */
+    public function hidden(): static
+    {
+        return $this->published()->afterCreating(function (Content $content): void {
+            $content->is_active = false;
+            $content->save();
+        });
     }
 
     public function draft(): static
     {
         return $this->state(fn () => [
             'is_active' => false,
-            'status_id' => 2,
+            'status_id' => ContentStatusEnum::Draft->value,
             'published_at' => null,
+        ]);
+    }
+
+    public function scheduled(?Carbon $at = null): static
+    {
+        return $this->state(fn () => [
+            'is_active' => false,
+            'status_id' => ContentStatusEnum::Scheduled->value,
+            'published_at' => null,
+            'scheduled_at' => $at ?? now()->addDay(),
         ]);
     }
 

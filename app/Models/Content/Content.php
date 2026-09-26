@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Validation\ValidationException;
 
 use function url;
 
@@ -197,30 +198,18 @@ class Content extends BaseModel
     {
         parent::boot();
 
-        // Evento "saving": published_at es de solo lectura en el formulario, se
-        // calcula aquí para que sea imposible fijarlo a mano. Solo se marca como
-        // publicado si ya tiene al menos una página (si no, se queda sin fecha
-        // hasta que se añada contenido real).
-        static::saving(function ($model) {
-            if (
-                blank($model->published_at)
-                && $model->status_id === ContentStatusEnum::Published->value
-                && $model->pages()->exists()
-            ) {
-                $model->published_at = now();
-            }
-        });
+        // Reglas de publicación. Van aquí, y no en el formulario, para que se
+        // cumplan igual desde el panel, la acción masiva, el cron o cualquier
+        // otro sitio que guarde un contenido.
+        static::saving(fn (Content $model) => $model->applyPublicationRules());
 
         // Evento "saved": Se dispara después de ser guardado por primera vez y tras actualizarse
-        static::saved(function ($model) {
-            // $model->cleanAllCache(); // Es mejor hacerlo en store/update para tener la asociación de categorías
-            // \Log::info('El modelo Platform ha disparado saved:', ['modelo' => $model]);
-
-            $platform = $model->platform;
-
-            if ($platform) {
-                $platform->cleanAllCache();
-            }
+        static::saved(function (Content $model) {
+            // La plataforma se carga aparte, sola. La que cuelga del contenido
+            // puede venir de una carga de varios (la tabla del panel, el cron
+            // de publicar) y, con la carga perezosa bloqueada fuera de
+            // producción, regenerar su caché reventaba al publicar dos a la vez.
+            $model->platform()->first()?->cleanAllCache();
         });
 
         // Evento "updated": Solo se dispara cuando el modelo es actualizado
@@ -228,6 +217,87 @@ class Content extends BaseModel
             // $model->cleanAllCache();
             // \Log::info('El modelo Platform ha disparado updated:', ['modelo' => $model]);
         });
+    }
+
+    /**
+     * Estado como enum; null en los contenidos sin estado (los que vienen de la
+     * v1 lo tienen vacío).
+     */
+    public function statusEnum(): ?ContentStatusEnum
+    {
+        return $this->status_id === null ? null : ContentStatusEnum::tryFrom((int) $this->status_id);
+    }
+
+    /**
+     * ¿Está en estado «publicado»? Que salga en las webs depende además de
+     * «Activo»: ver `scopePublished()`.
+     */
+    public function isPublished(): bool
+    {
+        return $this->statusEnum() === ContentStatusEnum::Published;
+    }
+
+    /**
+     * Publica el contenido y lo deja visible.
+     *
+     * La fecha de publicación la pone `applyPublicationRules()` al guardar. Si
+     * ya estaba publicado pero oculto, vuelve a verse: «Publicar» siempre deja
+     * el contenido en las webs.
+     */
+    public function publish(): void
+    {
+        $this->status_id = ContentStatusEnum::Published->value;
+        $this->is_active = true;
+        $this->save();
+    }
+
+    /**
+     * Reglas de publicación (P1 y DUDA-3 de la auditoría de contenidos del
+     * 2026-09-24), aplicadas en cada guardado:
+     *
+     * - Al pasar a «publicado», desde donde sea: fecha de publicación de ese
+     *   momento si no tenía, y «Activo» marcado.
+     * - Publicado es definitivo: no vuelve a ningún otro estado. Se retira de
+     *   las webs desmarcando «Activo», o se elimina.
+     * - «Borrador» no tiene fecha de publicación.
+     * - «Programado» necesita la fecha en la que publicarse (que sea futura lo
+     *   valida el formulario: el cron publica lo que ya ha pasado).
+     * - Los demás estados no tocan las fechas.
+     *
+     * @throws ValidationException si se intenta sacar de «publicado» o programar sin fecha.
+     */
+    public function applyPublicationRules(): void
+    {
+        $status = $this->statusEnum();
+        $original = $this->exists ? ContentStatusEnum::tryFrom((int) $this->getOriginal('status_id')) : null;
+
+        if ($original === ContentStatusEnum::Published && $status !== ContentStatusEnum::Published) {
+            throw ValidationException::withMessages([
+                'status_id' => 'Un contenido publicado no cambia de estado. Para retirarlo de las webs, desmarca «Activo»; para quitarlo del todo, elimínalo.',
+            ]);
+        }
+
+        if ($status === ContentStatusEnum::Published) {
+            if ($original !== ContentStatusEnum::Published) {
+                $this->is_active = true;
+            }
+
+            $this->published_at ??= now();
+
+            return;
+        }
+
+        if ($status === ContentStatusEnum::Draft) {
+            $this->published_at = null;
+
+            return;
+        }
+
+        if ($status === ContentStatusEnum::Scheduled && $this->scheduled_at === null) {
+            throw ValidationException::withMessages([
+                'scheduled_at' => 'Para programar un contenido hace falta la fecha en la que se publica.',
+            ]);
+        }
     }
 
     /**
@@ -493,6 +563,8 @@ class Content extends BaseModel
 
     /**
      * Relación con la plataforma asociada al contenido
+     *
+     * @return BelongsTo<Platform, $this>
      */
     public function platform(): BelongsTo
     {
@@ -734,11 +806,17 @@ class Content extends BaseModel
     }
 
     /**
-     * Scope para filtrar contenidos publicados.
+     * Lo que se sirve a las webs: estado «publicado» **y** «Activo».
+     *
+     * Es la única definición de «publicado» del código: la usan la API, las
+     * fichas de plataforma (`Platform::contentsActive()`) y las estadísticas
+     * por tipo (`ContentAvailableType::contentsActive()`).
      */
     public function scopePublished(Builder $query): Builder
     {
-        return $query->where('status_id', 2);
+        return $query
+            ->where($this->qualifyColumn('status_id'), ContentStatusEnum::Published->value)
+            ->where($this->qualifyColumn('is_active'), true);
     }
 
     /**
@@ -762,6 +840,6 @@ class Content extends BaseModel
      */
     public function scopeScheduled(Builder $query): Builder
     {
-        return $query->where('status_id', 3);
+        return $query->where($this->qualifyColumn('status_id'), ContentStatusEnum::Scheduled->value);
     }
 }

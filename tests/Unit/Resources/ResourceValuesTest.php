@@ -8,6 +8,7 @@ use App\Http\Resources\V2\Content\ContentPageResource;
 use App\Http\Resources\V2\KeyCounter\MouseResource;
 use App\Http\Resources\V2\PlatformResource;
 use App\Http\Resources\V2\SmartPlant\SmartPlantRegisterResource;
+use App\Models\Content\ContentPage;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\SmartPlant\SmartPlantPlant;
 use App\Models\User;
@@ -64,7 +65,7 @@ class ResourceValuesTest extends ApiTestCase
     /**
      * Resource => [tabla, fila a insertar, claves que hoy salen nulas y por qué]
      *
-     * @return array<string,array{0:class-string,1:string,2:array<string,mixed>,3:array<string,string>}>
+     * @return array<string,array{0:class-string,1:string,2:array<string,mixed>,3:array<string,string>,4?:class-string}>
      */
     public static function resources(): array
     {
@@ -85,6 +86,9 @@ class ResourceValuesTest extends ApiTestCase
                     'body' => '`content_pages` guarda el texto en `content`, no en `body`',
                     'raw_type' => '`content_pages` no tiene `raw_type`; tiene `current_page_raw_id`',
                 ],
+                // El Resource pide el formato de la página a
+                // `ContentPageFormatService`, que necesita un `ContentPage`.
+                ContentPage::class,
             ],
 
             // `platforms` guarda el nombre en `title`, no en `name` (N1).
@@ -151,13 +155,14 @@ class ResourceValuesTest extends ApiTestCase
         string $resource,
         string $table,
         array $row,
-        array $brokenKeys
+        array $brokenKeys,
+        ?string $modelClass = null,
     ): void {
         if (! Schema::hasTable($table)) {
             $this->markTestSkipped("La tabla `{$table}` no existe.");
         }
 
-        $exitCode = $this->resourceOutput($resource, $table, $row);
+        $exitCode = $this->resourceOutput($resource, $table, $row, $modelClass);
 
         $broken = [];
         foreach ($brokenKeys as $key => $reason) {
@@ -194,13 +199,14 @@ class ResourceValuesTest extends ApiTestCase
         string $resource,
         string $table,
         array $row,
-        array $brokenKeys
+        array $brokenKeys,
+        ?string $modelClass = null,
     ): void {
         if (! Schema::hasTable($table) || $row === []) {
             $this->markTestSkipped("Sin fila de ejemplo para `{$table}`.");
         }
 
-        $exitCode = $this->resourceOutput($resource, $table, $row);
+        $exitCode = $this->resourceOutput($resource, $table, $row, $modelClass);
 
         $losses = [];
         foreach ($row as $column => $value) {
@@ -225,11 +231,16 @@ class ResourceValuesTest extends ApiTestCase
      * un modelo anónimo sin `$fillable` ni `$guarded`: el Resource recibe
      * exactamente lo que hay en la tabla, ni más ni menos.
      *
+     * Si el Resource necesita su modelo de verdad (porque delega en un servicio
+     * que lo tipa), se le pasa ese modelo, igualmente relleno con la fila tal
+     * cual está en la tabla.
+     *
      * @param  class-string  $resource
      * @param  array<string,mixed>  $row
+     * @param  class-string<Model>|null  $modelClass
      * @return array<string,mixed>
      */
-    private function resourceOutput(string $resource, string $table, array $row): array
+    private function resourceOutput(string $resource, string $table, array $row, ?string $modelClass = null): array
     {
         if (Schema::hasColumn($table, 'hardware_device_id')) {
             $row['hardware_device_id'] = $this->device->id;
@@ -256,7 +267,7 @@ class ResourceValuesTest extends ApiTestCase
         $id = DB::table($table)->insertGetId($row);
         $record = (array) DB::table($table)->find($id);
 
-        $model = new class extends Model
+        $model = $modelClass !== null ? new $modelClass : new class extends Model
         {
             public $timestamps = false;
 

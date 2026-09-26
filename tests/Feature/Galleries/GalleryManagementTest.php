@@ -29,14 +29,17 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Tests\TestCase;
+use Tests\Traits\UsesTemporaryStorage;
 
 class GalleryManagementTest extends TestCase
 {
     use RefreshDatabase;
+    use UsesTemporaryStorage;
 
     protected function setUp(): void
     {
         parent::setUp();
+        $this->useTemporaryStorage();
         Storage::fake('public');
 
         (new RolesTableSeeder)->run();

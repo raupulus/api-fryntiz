@@ -1,0 +1,105 @@
+{
+  "time": 1790278454793,
+  "blocks": [
+    {
+      "id": "ZNHB1ysEza",
+      "type": "header",
+      "data": {
+        "text": "Descripción del hardware utilizado",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "sC-Z02-3Wi",
+      "type": "paragraph",
+      "data": {
+        "text": "El hardware con el que ha sido utilizado y probado, esto no descarta funcionar"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "EsWN4YHgMt",
+      "type": "paragraph",
+      "data": {
+        "text": "en otro tipo de hardware similar o con pequeñas modificaciones."
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "-MjT-Xd3ya",
+      "type": "list",
+      "data": {
+        "style": "unordered",
+        "meta": {},
+        "items": [
+          {
+            "content": "Raspberry PI 2 y 4",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Sensor bosh BME280 (Humedad, presión y temperatura)",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Sensor Bosh BME680 (Humedad, presión, temperatura y calidad del aire)",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Sensor bh1750 (Luz)",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Sensor VEML6070 (UV)",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Sensor VEML6075 (UV, UVA, UVB)",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Sensor CJMCU3935 (Rayos)",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Sensor CJMCU811 (ECO2 y TVOC)",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Sensor MQ2 (Gases)",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Anemómetro de interruptor por iman, al girar cierra contactos.",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Veleta usando encoder",
+            "meta": {},
+            "items": []
+          }
+        ]
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    }
+  ],
+  "version": "2.31.7"
+}

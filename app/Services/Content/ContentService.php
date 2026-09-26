@@ -11,7 +11,8 @@ use Illuminate\Database\Eloquent\Collection;
 
 /**
  * Servicio principal del gestor de contenidos (CMS).
- * Maneja la lógica de negocio para obtener contenidos, destacados, y publicaciones programadas.
+ * Maneja la lógica de negocio para obtener contenidos publicados y destacados.
+ * Publicar los programados es cosa de `PublishContentAction` (`content:publish`).
  */
 class ContentService
 {
@@ -87,18 +88,5 @@ class ContentService
             ->orderByDesc('published_at')
             ->limit($limit)
             ->get();
-    }
-
-    /**
-     * Rutina que transiciona el estado de los contenidos programados a 'publicado'
-     * si su fecha de publicación es menor o igual a la actual.
-     *
-     * @return int Número de registros actualizados.
-     */
-    public function publishScheduled(): int
-    {
-        return Content::scheduled()
-            ->where('published_at', '<=', now())
-            ->update(['status_id' => 2]);
     }
 }

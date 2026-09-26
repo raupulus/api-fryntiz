@@ -8,15 +8,75 @@ importers:
 
   .:
     dependencies:
+      '@calumk/editorjs-codecup':
+        specifier: 1.3.0
+        version: 1.3.0
+      '@editorjs/attaches':
+        specifier: 1.3.2
+        version: 1.3.2
+      '@editorjs/checklist':
+        specifier: 1.6.0
+        version: 1.6.0
+      '@editorjs/delimiter':
+        specifier: 1.4.2
+        version: 1.4.2
+      '@editorjs/editorjs':
+        specifier: 2.31.7
+        version: 2.31.7
+      '@editorjs/embed':
+        specifier: 2.8.0
+        version: 2.8.0
+      '@editorjs/header':
+        specifier: 2.8.9
+        version: 2.8.9
+      '@editorjs/image':
+        specifier: 2.10.3
+        version: 2.10.3
+      '@editorjs/inline-code':
+        specifier: 1.5.2
+        version: 1.5.2
+      '@editorjs/link':
+        specifier: 2.6.2
+        version: 2.6.2
+      '@editorjs/list':
+        specifier: 2.0.9
+        version: 2.0.9
+      '@editorjs/marker':
+        specifier: 1.4.0
+        version: 1.4.0
+      '@editorjs/paragraph':
+        specifier: 2.11.7
+        version: 2.11.7
+      '@editorjs/quote':
+        specifier: 2.7.6
+        version: 2.7.6
+      '@editorjs/raw':
+        specifier: 2.5.1
+        version: 2.5.1
+      '@editorjs/table':
+        specifier: 2.4.6
+        version: 2.4.6
+      '@editorjs/text-variant-tune':
+        specifier: 1.0.3
+        version: 1.0.3
+      '@editorjs/warning':
+        specifier: 1.4.1
+        version: 1.4.1
       '@vitejs/plugin-vue':
         specifier: ^6.0.7
         version: 6.0.7(vite@8.0.16(@types/node@25.9.3)(jiti@2.7.0))(vue@3.5.38(typescript@6.0.3))
       alpinejs:
         specifier: ^3.15.12
         version: 3.15.12
+      editorjs-alert:
+        specifier: 1.1.4
+        version: 1.1.4
       laravel-echo:
         specifier: ^2.4.0
         version: 2.4.0(pusher-js@8.6.0)
+      prismjs:
+        specifier: 1.30.0
+        version: 1.30.0
       pusher-js:
         specifier: ^8.6.0
         version: 8.6.0
@@ -58,13 +118,106 @@ packages:
     engines: {node: '>=6.0.0'}
     hasBin: true
 
+  '@babel/runtime@7.29.7':
+    resolution: {integrity: sha512-Nq8OhGWiZIZGV6hLHoyAKLLcJihP/xFeBMGJoUrxTX2psI8dCifzLhZISFb+VWS3wFMRDmCGw5R+dOySCqPLhw==}
+    engines: {node: '>=6.9.0'}
+
   '@babel/types@7.29.7':
     resolution: {integrity: sha512-4zBIxpPzowiZpusoFkyGVwakdRJUyuH5PxQ/PrqghfdFWWasvnCdPfQXHrenDai+gyLARulZjZowCOj6fjT4pA==}
     engines: {node: '>=6.9.0'}
 
+  '@calumk/codecup@1.9.4':
+    resolution: {integrity: sha512-WWdgRnlMVMl7ivW8mQ3vsjtIh/qQ+29CHm+6uhX6jXOnCS3lXs4IE4e1i301Bmvxdd6EJvizHAF8cVi+QsNAnw==}
+
+  '@calumk/editorjs-codecup@1.3.0':
+    resolution: {integrity: sha512-qBqzF4ycpG1Dfbhbj4XKcHMKQVjf937W+Jb5Ha9xAPYOuuzcGzBUat2evH2XI/vUHnemr/Oj20hbyHYqbsucNQ==}
+
+  '@codexteam/ajax@4.2.0':
+    resolution: {integrity: sha512-54r/HZirqBPEV8rM9gZh570RCwG6M/iDAXT9Q9eGuMo9KZU49tw1dEDHjYsResGckfCsaymDqg4GnhfrBtX9JQ==}
+
+  '@codexteam/icons@0.0.4':
+    resolution: {integrity: sha512-V8N/TY2TGyas4wLrPIFq7bcow68b3gu8DfDt1+rrHPtXxcexadKauRJL6eQgfG7Z0LCrN4boLRawR4S9gjIh/Q==}
+
+  '@codexteam/icons@0.0.5':
+    resolution: {integrity: sha512-s6H2KXhLz2rgbMZSkRm8dsMJvyUNZsEjxobBEg9ztdrb1B2H3pEzY6iTwI4XUPJWJ3c3qRKwV4TrO3J5jUdoQA==}
+
+  '@codexteam/icons@0.0.6':
+    resolution: {integrity: sha512-L7Q5PET8PjKcBT5wp7VR+FCjwCi5PUp7rd/XjsgQ0CI5FJz0DphyHGRILMuDUdCW2MQT9NHbVr4QP31vwAkS/A==}
+
+  '@codexteam/icons@0.3.3':
+    resolution: {integrity: sha512-cp7mkZPgmBuSxigTm3Vb+DtVHYeX7qXfQd7o05vcLD8Ag5WvRlol2QSn5P10k0CDAJwmkH9nQGQLBycErS9lsQ==}
+
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
     engines: {node: '>=12'}
+
+  '@editorjs/attaches@1.3.2':
+    resolution: {integrity: sha512-hzwcOo/Lk1hTEzXXV0MSnwPsGIILaeM1R7SCMu4uUALftlQVugf+Vm4a9Rd66IT7TU3tfyiOwJPb/Ydp9zn36A==}
+    engines: {node: '>=20.0.0'}
+
+  '@editorjs/caret@1.1.0':
+    resolution: {integrity: sha512-dzUjrPV7mtqM0HR/7IwT1/1PfyMxUfe5MRXo9joFmBRDIcrQ5ikbqVxSL9+Hy5tQ+BUWBwqLUgX1UKTJylWW9Q==}
+
+  '@editorjs/checklist@1.6.0':
+    resolution: {integrity: sha512-hRNP36DInr73mSK3noHBQeoQb7DA12ANfqTXufEkTgQzx+k4mRJ0HdeGukTIR4JbwjHJ9ecUBnnQqIEGnxCFEg==}
+
+  '@editorjs/delimiter@1.4.2':
+    resolution: {integrity: sha512-S8q2LpeYdYkVShLp7K8c4HLthDHBevLw+sT+iO0+SH0oMvFmld9SUon3DFzMQ2gG07EOdZGRZ958+sVxyvFjZw==}
+
+  '@editorjs/dom@0.0.5':
+    resolution: {integrity: sha512-SZ78Gwpkp3EUhjBIp0lSojeQ35V9acF8SubJsMeOH/vlOUE40GOnvvwWZnF05lO7bIB0dOHhhJy4N7IIAWxP2w==}
+
+  '@editorjs/dom@1.1.0':
+    resolution: {integrity: sha512-aH8OeS3DXCDG2WP6yt/uS6Z9PstrA3Re930boIilxtMdF7Ht+pKJrq3OJnd7OCMPVO/y7UOAmtHNesVx6v4K2g==}
+
+  '@editorjs/editorjs@2.31.7':
+    resolution: {integrity: sha512-te4wI1heK3B8s0pz1asyRPEmOglfkb9ex5nvvCN5OUVDLSnohTszI+yyLI73qOIuUWxenIvJYkOuGHzh/a47Hw==}
+
+  '@editorjs/embed@2.8.0':
+    resolution: {integrity: sha512-GkgL07M1GmRXq+vtYPkP9RLoij19mIMeyr5GrNo/0Km2XHmvDz2h6KHsDbiHXbq/5hZ5UgWi86kr+/aK165OBg==}
+    engines: {node: '>=24.0.0'}
+
+  '@editorjs/header@2.8.9':
+    resolution: {integrity: sha512-eBL9/PLDKiE9ADZycmgps3PLz9Lw8w6rPFXr0mfHuhHQI/ynP/q1vLpyruBrRCflTLD2Dlj5nYPoJjL5mP/MFw==}
+
+  '@editorjs/helpers@0.0.4':
+    resolution: {integrity: sha512-ieg3dzo2m1/ELze/RMNADiAiC5amXxIlVXoJ5vvXITOu/p/dPsrF+Oi3h5gBYvtGk9vg5LJUSG5YWU0tBUO1tw==}
+
+  '@editorjs/helpers@1.2.2':
+    resolution: {integrity: sha512-saDNARvY3xd70H4KE0eBq2hlV0Z7SpfI1/1iVqyVt5PqhlEOIR5rWJFH4c63BHTa6BfiR/+PMl1n7X/X7SlptQ==}
+
+  '@editorjs/image@2.10.3':
+    resolution: {integrity: sha512-ekCsGICZOIdghF/U2T34H7CItqaWAoJDXbkRD+x8l/LIo/7Ozf7KovYm21qz+CluArgV4RurVFHqwlz+O0vfJA==}
+
+  '@editorjs/inline-code@1.5.2':
+    resolution: {integrity: sha512-IpEvwMTP3q89T/6vTi3ACoSMOcTdywtMsci1w19+Z/lxQn/NVuVah++ro93wQ/1ZVTyCr+TPUCchxwzY1/xaMg==}
+
+  '@editorjs/link@2.6.2':
+    resolution: {integrity: sha512-3cPx6M4ZvwDDvsi0E0fvMR3rvveAV/C0GRo1JLeZJ9cG9QgyoNolj4eu5Eqx3/r1XTC/he54qYEIZ/Dc4Lr4Ow==}
+
+  '@editorjs/list@2.0.9':
+    resolution: {integrity: sha512-rUTgDSt5wygD3Dp24bNyp6vvye/Xf4UWju0ZuvWeP13Z4cu2z1Jb5JFSTEhCou72XUGuf4xVhtsd8cm/bwUS1g==}
+
+  '@editorjs/marker@1.4.0':
+    resolution: {integrity: sha512-5ipEXfL44jTTRzgNp/p/YjMO7jT08S5z4V8qA3FFJTfdhKgQyM3mvP1zpdYKw47ZZpVWMCncvk5Nto3BxihEtg==}
+
+  '@editorjs/paragraph@2.11.7':
+    resolution: {integrity: sha512-qD6bbWvRc4VvP0mXDOm+hOhzzhUYR9ZjcAvgCuKWcCbUMpCvhVF1s8NX40zdjekPi6JEnuHTamCncTrSzVsVhw==}
+
+  '@editorjs/quote@2.7.6':
+    resolution: {integrity: sha512-D01KUMSDj2r+6Z+xjDkQqI+y6URpeHCvj0+P4pah+GtkG040lWjFb2H4pgHFXuol2cbfyAoraYSw85fuPheCvw==}
+
+  '@editorjs/raw@2.5.1':
+    resolution: {integrity: sha512-h7CjXtfSTe4Bj1CL84ch5NW0q0CdrlWsLzQ/kbaFTgx914CzKz4Ug+xgdvytVO1dd1QzB5/HCW0ic1VxtgkhMQ==}
+
+  '@editorjs/table@2.4.6':
+    resolution: {integrity: sha512-2dtum3RGqyXHX9OoMsmz92piSrzwy+QWnpN/Kt5n0oVHFfpeJwd25xLzwPVjwMlvUYrun1VPrKio5/63SLGbuQ==}
+
+  '@editorjs/text-variant-tune@1.0.3':
+    resolution: {integrity: sha512-zET/uTEnyY0wPYkFI41M6PhtBNqp5DHiUf/sbig4xpq1uwF9xgoJBZh92VultEJSjvLHFAQtD/dP8x7NJ7rouQ==}
+
+  '@editorjs/warning@1.4.1':
+    resolution: {integrity: sha512-7A+irJ6gIh6li4DC7qw/NiWCThlBgtoPUeeIVdldVjoATAu+a1GjS+w/5L24ReacgQJNPVQPPCoMaS1nB83agw==}
 
   '@emnapi/core@1.10.0':
     resolution: {integrity: sha512-yq6OkJ4p82CAfPl0u9mQebQHKPJkY7WrIuk205cTYnYe+k2Z8YBh11FrbRG/H6ihirqcacOgl2BIO8oyMQLeXw==}
@@ -780,6 +933,9 @@ packages:
   '@types/node@25.9.3':
     resolution: {integrity: sha512-603BddQMv3pUcr4U2dhujk83N2tTDVr/34wII2B6bJy6g+8WD6yUb11jszNs0gdi4PesVWl7ABt8nYMVpnLUcg==}
 
+  '@types/prismjs@1.26.6':
+    resolution: {integrity: sha512-vqlvI7qlMvcCBbVe0AKAb4f97//Hy0EBTaiW8AalRnG/xAN5zOiWWyrNqNXeq8+KAuvRewjCVY1+IPxk4RdNYw==}
+
   '@vitejs/plugin-vue@6.0.7':
     resolution: {integrity: sha512-km+p+XdSz9Sxm5rqUbqcSfZYaAniKxWBj1KURl+Jr7UaPvvX7BmaWMdP69I5rrFDeQGyxAG7NXdc57vz+snhWg==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -918,6 +1074,12 @@ packages:
       react: ^18 || ^19 || ^19.0.0-rc
       react-dom: ^18 || ^19 || ^19.0.0-rc
 
+  codex-notifier@1.1.2:
+    resolution: {integrity: sha512-DCp6xe/LGueJ1N5sXEwcBc3r3PyVkEEDNWCVigfvywAkeXcZMk9K41a31tkEFBW0Ptlwji6/JlAb49E3Yrxbtg==}
+
+  codex-tooltip@1.0.6:
+    resolution: {integrity: sha512-3MVjBjeJFQ4jGlPuYHYV3Yj0wnl1l9ppB5zeIFJeyo8Ala3WlZYtLK5yZEoyND2fxIyVmqsZORCftDGX3vbSGQ==}
+
   color-convert@2.0.1:
     resolution: {integrity: sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==}
     engines: {node: '>=7.0.0'}
@@ -1018,6 +1180,9 @@ packages:
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
     engines: {node: '>= 0.4'}
+
+  editorjs-alert@1.1.4:
+    resolution: {integrity: sha512-m6w/cRxnFucC3dyfrB+DTNXw70SnJNv05AX6P3bZ8qkbzB1OAJTuaFrEKZBdN0YvEvTe1zvg3S344EkPAveemQ==}
 
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
@@ -1894,14 +2059,126 @@ snapshots:
     dependencies:
       '@babel/types': 7.29.7
 
+  '@babel/runtime@7.29.7': {}
+
   '@babel/types@7.29.7':
     dependencies:
       '@babel/helper-string-parser': 7.29.7
       '@babel/helper-validator-identifier': 7.29.7
 
+  '@calumk/codecup@1.9.4':
+    dependencies:
+      '@types/prismjs': 1.26.6
+      prismjs: 1.30.0
+
+  '@calumk/editorjs-codecup@1.3.0':
+    dependencies:
+      '@calumk/codecup': 1.9.4
+
+  '@codexteam/ajax@4.2.0': {}
+
+  '@codexteam/icons@0.0.4': {}
+
+  '@codexteam/icons@0.0.5': {}
+
+  '@codexteam/icons@0.0.6': {}
+
+  '@codexteam/icons@0.3.3': {}
+
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
+
+  '@editorjs/attaches@1.3.2':
+    dependencies:
+      '@codexteam/ajax': 4.2.0
+      '@codexteam/icons': 0.3.3
+
+  '@editorjs/caret@1.1.0':
+    dependencies:
+      '@editorjs/dom': 1.1.0
+
+  '@editorjs/checklist@1.6.0':
+    dependencies:
+      '@codexteam/icons': 0.3.3
+
+  '@editorjs/delimiter@1.4.2':
+    dependencies:
+      '@codexteam/icons': 0.3.3
+
+  '@editorjs/dom@0.0.5':
+    dependencies:
+      '@editorjs/helpers': 0.0.4
+
+  '@editorjs/dom@1.1.0':
+    dependencies:
+      '@editorjs/helpers': 1.2.2
+
+  '@editorjs/editorjs@2.31.7':
+    dependencies:
+      '@editorjs/caret': 1.1.0
+      codex-notifier: 1.1.2
+      codex-tooltip: 1.0.6
+
+  '@editorjs/embed@2.8.0':
+    dependencies:
+      '@editorjs/editorjs': 2.31.7
+
+  '@editorjs/header@2.8.9':
+    dependencies:
+      '@codexteam/icons': 0.0.5
+      '@editorjs/editorjs': 2.31.7
+
+  '@editorjs/helpers@0.0.4': {}
+
+  '@editorjs/helpers@1.2.2':
+    dependencies:
+      codex-tooltip: 1.0.6
+
+  '@editorjs/image@2.10.3':
+    dependencies:
+      '@codexteam/icons': 0.3.3
+
+  '@editorjs/inline-code@1.5.2':
+    dependencies:
+      '@codexteam/icons': 0.3.3
+
+  '@editorjs/link@2.6.2':
+    dependencies:
+      '@babel/runtime': 7.29.7
+      '@codexteam/icons': 0.0.4
+
+  '@editorjs/list@2.0.9':
+    dependencies:
+      '@codexteam/icons': 0.3.3
+
+  '@editorjs/marker@1.4.0':
+    dependencies:
+      '@codexteam/icons': 0.0.5
+
+  '@editorjs/paragraph@2.11.7':
+    dependencies:
+      '@codexteam/icons': 0.0.4
+
+  '@editorjs/quote@2.7.6':
+    dependencies:
+      '@codexteam/icons': 0.3.3
+      '@editorjs/dom': 0.0.5
+
+  '@editorjs/raw@2.5.1':
+    dependencies:
+      '@codexteam/icons': 0.0.4
+
+  '@editorjs/table@2.4.6':
+    dependencies:
+      '@codexteam/icons': 0.0.6
+
+  '@editorjs/text-variant-tune@1.0.3': {}
+
+  '@editorjs/warning@1.4.1':
+    dependencies:
+      '@codexteam/icons': 0.3.3
+      '@editorjs/editorjs': 2.31.7
 
   '@emnapi/core@1.10.0':
     dependencies:
@@ -2551,6 +2828,8 @@ snapshots:
     dependencies:
       undici-types: 7.24.6
 
+  '@types/prismjs@1.26.6': {}
+
   '@vitejs/plugin-vue@6.0.7(vite@8.0.16(@types/node@25.9.3)(jiti@2.7.0))(vue@3.5.38(typescript@6.0.3))':
     dependencies:
       '@rolldown/pluginutils': 1.0.1
@@ -2730,6 +3009,10 @@ snapshots:
       - '@types/react'
       - '@types/react-dom'
 
+  codex-notifier@1.1.2: {}
+
+  codex-tooltip@1.0.6: {}
+
   color-convert@2.0.1:
     dependencies:
       color-name: 1.1.4
@@ -2804,6 +3087,8 @@ snapshots:
       call-bind-apply-helpers: 1.0.2
       es-errors: 1.3.0
       gopd: 1.2.0
+
+  editorjs-alert@1.1.4: {}
 
   ee-first@1.1.1: {}
 

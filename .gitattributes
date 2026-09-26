@@ -4,3 +4,6 @@
 *.js linguist-vendored
 CHANGELOG.md export-ignore
 docs/apis/*/src/** -text
+# Ficheros de prueba reales (fotos, HEIC, PDF): tal cual, sin tocar los saltos de
+# línea. Con `text=auto`, git trataba el PDF como texto y lo corrompía.
+tests/Fixtures/uploads/** binary

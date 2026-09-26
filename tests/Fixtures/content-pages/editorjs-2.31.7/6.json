@@ -1,0 +1,134 @@
+{
+  "time": 1790278460680,
+  "blocks": [
+    {
+      "id": "QGIOD344eS",
+      "type": "header",
+      "data": {
+        "text": "Sobre el Proyecto",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "bXayuqDivw",
+      "type": "paragraph",
+      "data": {
+        "text": "Este proyecto es un panel de gestión con la base de <b>AdminLTE</b> usando las tecnologías <b>Laravel</b> y <b>Vue 3</b>.<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "-NZfghNOrX",
+      "type": "paragraph",
+      "data": {
+        "text": "En el panel de gestión centralizo la gestión de varias pequeñas plataformas, apis y blogs:<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "ZTrXmxaS2z",
+      "type": "list",
+      "data": {
+        "style": "unordered",
+        "meta": {},
+        "items": [
+          {
+            "content": "Filtro los emails enviados desde todas las plataformas pasando severos filtros con AI y captcha además de bloquear duplicados.",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Recibo información de múltiples dispositivos IOT por ejemplo sensores desde microcontroladores como raspberry pi pico, esp32, esp8266, arduino, attiny...",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "APIs para servir recursos a mis otras plataformas.",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Gestión y autoelaboración de CV",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Control de eficiencia energética con monitorización de carga y consumo",
+            "meta": {},
+            "items": []
+          }
+        ]
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "_EA-hh7cvR",
+      "type": "header",
+      "data": {
+        "text": "APIs",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "PoeZeav4jQ",
+      "type": "paragraph",
+      "data": {
+        "text": "Algunas de las APIs que gestiono en la plataforma son:<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "T2acaIipkg",
+      "type": "list",
+      "data": {
+        "style": "unordered",
+        "meta": {},
+        "items": [
+          {
+            "content": "Contador de pulsaciones para estadísticas de trabajo y rendimiento distinguiendo equipos.",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Radar de vuelos detectados capturando información emitidas por los aviones.",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Monitorización de clima (uv, uva, uvb, humedad, humedad en tierra), simulación de iluminación según estación del año, gestión de riego y pulverización de agua para aumentar humedad.",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Monitorización de energía solar tanto generada, almacenada y consumida por cada dispositivo en mi red energética independiente de oficina.",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Gestión de entradas de contenido pudiendo editarlas en local y sincronizándose en su plataforma como entrada.",
+            "meta": {},
+            "items": []
+          }
+        ]
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    }
+  ],
+  "version": "2.31.7"
+}

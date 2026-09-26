@@ -1,0 +1,172 @@
+{
+  "time": 1790278451977,
+  "blocks": [
+    {
+      "id": "zvlP0EMyS8",
+      "type": "header",
+      "data": {
+        "text": "Objetivos",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "9GDG5Foth2",
+      "type": "paragraph",
+      "data": {
+        "text": "Durante este proyecto buscaba tener lecturas en tiempo real de todos los datos posibles relacionados con el clima y eventos atmosféricos.<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "oUDfHwxK2A",
+      "type": "paragraph",
+      "data": {
+        "text": "He procurado crear el hardware cuando me ha sido posible como por ejemplo la veleta con un encoder para la dirección del viento o el anemómetro utilizando interruptores de imanes.<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "1qWxFKGa5N",
+      "type": "paragraph",
+      "data": {
+        "text": "Básicamente las lecturas se van realizando constantemente y se suben cada minuto a mi propia api de forma que puedo consumir esos datos en desde otras aplicaciones.<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "xjcy-P4Lxu",
+      "type": "header",
+      "data": {
+        "text": "Lecturas conseguidas",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "LTxOe48vfU",
+      "type": "paragraph",
+      "data": {
+        "text": "En este momento se leen correctamente y se almacenan las lecturas de los siguientes datos:<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "5PjBmht2hM",
+      "type": "checklist",
+      "data": {
+        "items": [
+          {
+            "text": "Temperatura",
+            "checked": true
+          },
+          {
+            "text": "Humedad",
+            "checked": true
+          },
+          {
+            "text": "Presión Atmosférica",
+            "checked": true
+          },
+          {
+            "text": "Velocidad media del viento",
+            "checked": true
+          },
+          {
+            "text": "Ráfaga de viento más alta",
+            "checked": true
+          },
+          {
+            "text": "Ráfaga de viento más baja",
+            "checked": true
+          },
+          {
+            "text": "Calidad del aire",
+            "checked": true
+          },
+          {
+            "text": "Rayos que caen cercanos con distancia e intensidad",
+            "checked": true
+          },
+          {
+            "text": "Partículas en el aire (TVOC y ECO2)",
+            "checked": true
+          },
+          {
+            "text": "Gases (LPG, OZ, Humo/Tabaco)",
+            "checked": true
+          },
+          {
+            "text": "Indice solar",
+            "checked": true
+          },
+          {
+            "text": "UVA",
+            "checked": true
+          },
+          {
+            "text": "UVB",
+            "checked": true
+          }
+        ]
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "QMGMOHAQon",
+      "type": "header",
+      "data": {
+        "text": "Estado actual",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "VaAZwjbEZe",
+      "type": "paragraph",
+      "data": {
+        "text": "En estos momentos el proyecto lo tengo funcionando monitorizando y comparando lecturas para calibrar o corregir lo que sea necesario.<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "PyKFfZFHMC",
+      "type": "paragraph",
+      "data": {
+        "text": "Aún así considero que ya he cubierto los objetivos principales de aprendizaje en este aspecto por lo que es poco probable que lo siga ampliando o mejorando (tiene bastante margen para ello pero no lo veo rentable en estos momentos)<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "HAkhQaPnXu",
+      "type": "paragraph",
+      "data": {
+        "text": "Después de este proyecto he realizado otros similares utilizando microcontroladores (esp32, raspberry pi pico) con los que optimizo consumo energético y obtengo más precisión.<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    }
+  ],
+  "version": "2.31.7"
+}

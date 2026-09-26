@@ -1,0 +1,266 @@
+{
+  "time": 1790278474917,
+  "blocks": [
+    {
+      "id": "WNvuwiGQS4",
+      "type": "header",
+      "data": {
+        "text": "Sobre el Proyecto",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "ITAcZDD0mi",
+      "type": "paragraph",
+      "data": {
+        "text": "El objetivo de este proyecto es generar una \"idea\" basada en un sistema de roles con el que posteriormente terminar de generar un prompt mediante GPT3.5 Instruct."
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "rVhtKrh2CW",
+      "type": "paragraph",
+      "data": {
+        "text": "Este prompt se utilizará para generar un lote/colección de imágenes mediante la API Stable Diffusion autoalojado en mis servidores aunque también he implementado poder utilizar Dall-e."
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "zfMxG9ic1i",
+      "type": "paragraph",
+      "data": {
+        "text": "Una vez generado un lote de imágenes se subirán a mi propia API para ser almacenadas como galería. Puedes ver esta galería en la siguiente web de mi autoría <a href=\"https://aidyslexic.raupulus.dev\">https://aidyslexic.raupulus.dev</a>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "M45ftJBQDw",
+      "type": "paragraph",
+      "data": {
+        "text": "Posteriormente, las imágenes se publicarán en las redes sociales integradas. Hasta el momento: <a href=\"https://twitter.com/ai_automations\">Twitter</a>, <a href=\"https://www.instagram.com/ai_automations_experimental\">Instagram</a>, <a href=\"https://mastodon.online/@ai_automations_experimental\">Mastodon</a> y <a href=\"https://t.me/ai_automations_experimental\">Telegram</a>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "R86CMDQ2o-",
+      "type": "paragraph",
+      "data": {
+        "text": "Luego, con todas esas imágenes y utilizando la herramienta de video ffmpeg, se crea automáticamente un slideshow con transiciones entre imágenes y música de fondo."
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "ByomJtK63S",
+      "type": "paragraph",
+      "data": {
+        "text": "Este video se subirá automáticamente a <a href=\"https://www.tiktok.com/@ai_automations\">tiktok</a> con selenium y <a href=\"https://www.youtube.com/@ai_automations_experimental\">Youtube</a> utilizando su API. También se sincronizará enviando una petición a mi api para que el video se establezca como portada de colección/galería dentro de la web."
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "XZxvCASBW3",
+      "type": "image",
+      "data": {
+        "caption": "Imagen del sitio web https://aidyslexic.raupulus.dev",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/511/UWA8WhQ983LC4xvgho4cUX0kLhPYS4paZ7E67pPD.webp",
+          "path": "file/thumbnail/get/content/511/UWA8WhQ983LC4xvgho4cUX0kLhPYS4paZ7E67pPD.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/509/UWA8WhQ983LC4xvgho4cUX0kLhPYS4paZ7E67pPD.webp",
+          "path-thumbnail": "file/thumbnail/get/content/509/UWA8WhQ983LC4xvgho4cUX0kLhPYS4paZ7E67pPD.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/512/UWA8WhQ983LC4xvgho4cUX0kLhPYS4paZ7E67pPD.webp",
+          "path-large": "file/thumbnail/get/content/512/UWA8WhQ983LC4xvgho4cUX0kLhPYS4paZ7E67pPD.webp",
+          "content_id": 8,
+          "content_file_id": 37,
+          "file_id": 107,
+          "module": "content",
+          "title": "Captura de pantalla 2024-09-30 a las 19.54.54.png",
+          "name": "UWA8WhQ983LC4xvgho4cUX0kLhPYS4paZ7E67pPD.png",
+          "alt": "Captura de pantalla 2024-09-30 a las 19.54.54.png",
+          "size": 1660158,
+          "extension": "png",
+          "mime": "image/png",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/PzJsVPFMPA1tqGlCjTP6hCZspAL5HVJM_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "xSWaczeRRJ",
+      "type": "paragraph",
+      "data": {
+        "text": "<a href=\"https://aidyslexic.raupulus.dev\">https://aidyslexic.raupulus.dev</a>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "JiBfjXdOs8",
+      "type": "image",
+      "data": {
+        "caption": "Imagen del perfil en youtube https://www.youtube.com/@ai_automations_experimental",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/516/YQ38a8XWvDDLk5sTU8fVJqAUUjFFHADPhmLVDJVz.webp",
+          "path": "file/thumbnail/get/content/516/YQ38a8XWvDDLk5sTU8fVJqAUUjFFHADPhmLVDJVz.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/514/YQ38a8XWvDDLk5sTU8fVJqAUUjFFHADPhmLVDJVz.webp",
+          "path-thumbnail": "file/thumbnail/get/content/514/YQ38a8XWvDDLk5sTU8fVJqAUUjFFHADPhmLVDJVz.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/517/YQ38a8XWvDDLk5sTU8fVJqAUUjFFHADPhmLVDJVz.webp",
+          "path-large": "file/thumbnail/get/content/517/YQ38a8XWvDDLk5sTU8fVJqAUUjFFHADPhmLVDJVz.webp",
+          "content_id": 8,
+          "content_file_id": 38,
+          "file_id": 108,
+          "module": "content",
+          "title": "Captura de pantalla 2024-09-30 a las 20.04.54.png",
+          "name": "YQ38a8XWvDDLk5sTU8fVJqAUUjFFHADPhmLVDJVz.png",
+          "alt": "Captura de pantalla 2024-09-30 a las 20.04.54.png",
+          "size": 1696793,
+          "extension": "png",
+          "mime": "image/png",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/PzJsVPFMPA1tqGlCjTP6hCZspAL5HVJM_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "ByCSpRib4A",
+      "type": "paragraph",
+      "data": {
+        "text": "<a href=\"https://www.youtube.com/@ai_automations_experimental\">https://www.youtube.com/@ai_automations_experimental</a>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "47LwGDY92D",
+      "type": "header",
+      "data": {
+        "text": "Repositorios propios para el proyecto",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "6vOIO1I4J6",
+      "type": "list",
+      "data": {
+        "style": "unordered",
+        "meta": {},
+        "items": [
+          {
+            "content": "Generador de prompt desde AI ( <a href=\"https://gitlab.com/raupulus/python-ai-image-from-api-generator\">GITLAB</a> | <a href=\"https://github.com/raupulus/python-ai-image-from-api-generator\">GITHUB</a>)",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Sitio web con galería de imágenes ( <a href=\"https://gitlab.com/raupulus/laravel-ai-image-gallery\">GITLAB</a> | <a href=\"https://github.com/raupulus/laravel-ai-image-gallery\">GITHUB</a>)",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Publicar vídeos en redes sociales ( <a href=\"https://gitlab.com/raupulus/python-video-publisher\">GITLAB</a> | <a href=\"https://github.com/raupulus/python-video-publisher\">GITHUB</a>)",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Crear Slideshow con transiciones y música de fondo usando ffmpeg ( <a href=\"https://gitlab.com/raupulus/ffmpeg-slideshow-from-image-directory\">GITLAB</a> | <a href=\"https://github.com/raupulus/ffmpeg-slideshow-from-image-directory\">GITHUB</a>)",
+            "meta": {},
+            "items": []
+          }
+        ]
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "GnKUqSvQ7-",
+      "type": "header",
+      "data": {
+        "text": "Estado Actual del proyecto",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "sLTADYZsxf",
+      "type": "paragraph",
+      "data": {
+        "text": "El proyecto está considerado completo abarcando los objetivos planteados.<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "V2iR4PBrgr",
+      "type": "paragraph",
+      "data": {
+        "text": "Actualmente encuentro varios problemas que no solucionaré por considerarlos una inversión de tiempo sin recompensa, principalmente son la publicación en tiktok e instagram que al no ofrecer api para desarrolladores (o solo dar acceso a grandes creadores) me obligan a realizar una inversión de tiempo demasiado grande para renovar sesiones y evadir bloqueos por lo que esta funcionalidad queda implementada pero no se publica habitualmente.<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "b_EbVrsMPp",
+      "type": "paragraph",
+      "data": {
+        "text": "Para el resto de redes si que continua trabajando pero a menor velocidad, es decir, solo trabaja cuando mis servidores tienen muy poca demanda y a un ritmo lento para no interferir.<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "1kUSw_N6pD",
+      "type": "paragraph",
+      "data": {
+        "text": "Utilizo una raspberry pi 5 como cerebro para crear los slideshow en 4k y se encarga de ejecutar todos los programas desde generar el prompt hasta tener las imágenes y vídeos publicados pero la AI Stable diffusion la tengo en varios servidores de trabajo los cuales solo responden/generan imágenes cuando la saturación del servidor es menor a un 15% de recursos y solo ocupando un 50% de los recursos totales para no interferir con otras tareas.<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "caUV2TU1yL",
+      "type": "paragraph",
+      "data": {
+        "text": "En estos momentos al ser un proyecto experimental como hobby y no enfocarlo a obtener ingresos el ritmo de publicaciones es bastante bajo o con pausas intermitentes.<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    }
+  ],
+  "version": "2.31.7"
+}

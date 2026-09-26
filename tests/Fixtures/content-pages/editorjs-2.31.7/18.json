@@ -1,0 +1,176 @@
+{
+  "time": 1790278483454,
+  "blocks": [
+    {
+      "id": "eWp8-4HLq9",
+      "type": "header",
+      "data": {
+        "text": "Sobre el Proyecto",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "ePrH_mB8zM",
+      "type": "paragraph",
+      "data": {
+        "text": "El motivo de realizar esta guía es que no encontré una que me gustara lo suficiente, pero sobre todo al no encontrar ninguna estándar y bien aceptada por la comunidad como tal."
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "I0FzAPhzvz",
+      "type": "paragraph",
+      "data": {
+        "text": "Posiblemente hayan guías mejores, soluciones mejores o partes que no gusten demasiado pero esta ha sido mi decisión."
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "1kyKOHwfOP",
+      "type": "paragraph",
+      "data": {
+        "text": "En cualquier caso puedes sugerir cambios mediante Issues y serán debatidos o directamente aceptados si es alguna corrección demostrable."
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "uDkdQMKyxO",
+      "type": "paragraph",
+      "data": {
+        "text": "Todo esto es realmente orientativo."
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "JdiD5jJf-z",
+      "type": "header",
+      "data": {
+        "text": "Definiciones",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "8ON_6a1v1N",
+      "type": "paragraph",
+      "data": {
+        "text": "En la documentación se definen estás situaciones:<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "KsPKg3mRbW",
+      "type": "list",
+      "data": {
+        "style": "unordered",
+        "meta": {},
+        "items": [
+          {
+            "content": "Estructura de los scripts",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Espacios",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Comentarios",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Limitación de columnas",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Oxigenación del código",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Finales de línea",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Gestión de Variables",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Inicialización de variables",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Inicialización de constantes",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Condiciones y comprobaciones",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Declaración de funciones",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Declaración de bloques",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Secuencias",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Listar elementos por lotes",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Arrays",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Bloques con múltiples condiciones",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Otras decisiones menores",
+            "meta": {},
+            "items": []
+          }
+        ]
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    }
+  ],
+  "version": "2.31.7"
+}

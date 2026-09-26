@@ -215,6 +215,11 @@ class AppServiceProvider extends ServiceProvider
             return $user->isAdmin();
         });
 
+        // Editor de contenidos (subidas, imágenes por URL y metadatos de
+        // enlaces): 30 por minuto y usuario, también en los tests, que lo
+        // comprueban.
+        RateLimiter::for('content-editor', fn (Request $request) => Limit::perMinute(30)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
+
         if (app()->environment('testing')) {
             RateLimiter::for('api-global', fn () => Limit::none());
             RateLimiter::for('api-fallback', fn () => Limit::none());

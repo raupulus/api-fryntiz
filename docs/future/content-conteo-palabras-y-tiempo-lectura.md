@@ -34,23 +34,23 @@ se hace con otros derivados (p. ej. las miniaturas de imagen se generan al guard
 
 1. **Si se guardan las dos métricas (caracteres y palabras) o sólo una.** Ver el punto 2 de
    "Qué se quiere". Si sólo se necesitan para el tiempo de lectura, sobra una; si tienen otros usos
-   en las webs consumidoras, guardar ambas.
+   en las webs consumidoras, guardar ambas: Decidido: se guardan ambas métricas
 2. **Cómo se limpia el HTML antes de contar**: hay que hacer `strip_tags` + decodificar entidades
    (ya existe una utilidad similar en `ContentPage::sanitizeTitle()`) para no contar etiquetas ni
-   `&nbsp;` como caracteres o palabras del texto real.
+   `&nbsp;` como caracteres o palabras del texto real: decide la mejor forma por el tipo de página/formato para contar según origen.
 3. **Codificación multibyte**: usar `mb_strlen` (no `strlen`) para que las tildes y la `ñ` cuenten
    como un carácter, no como varios bytes. Para palabras, `str_word_count` no soporta bien acentos
-   ni español; hace falta una alternativa (p. ej. `preg_split` con una clase de caracteres Unicode).
+   ni español; hace falta una alternativa (p. ej. `preg_split` con una clase de caracteres Unicode): Si se implementa
 4. **Fórmula del tiempo de lectura**: la habitual parte de velocidad media de lectura en palabras
    por minuto (200-250 ppm). Si al final sólo se guardan caracteres, hay que convertir a una
    estimación de palabras (p. ej. dividiendo entre una longitud media de palabra en español,
-   ~5-6 caracteres) antes de aplicar la velocidad. Decidir la constante y si es configurable.
+   ~5-6 caracteres) antes de aplicar la velocidad. Decidir la constante y si es configurable: Se guardan palabras, estima el mejor cálculo a partir de ahí.
 5. **Dónde vive el cálculo**: como método en `ContentPage` (p. ej. un evento `saving` que recalcula
-   los conteos cuando cambia `content`), no en el Resource ni en el controlador.
+   los conteos cuando cambia `content`), no en el Resource ni en el controlador: Se guarda en ContentPage.
 6. **Migración**: añadir columnas a `content_pages` (caracteres, palabras y/o tiempo, según lo que
    se decida en el punto 1) y decidir si el sumatorio de `Content` se guarda también en caché
    (columna en `contents`) o se calcula con `withSum()` al vuelo sobre las páginas cargadas, como ya
-   se hace con `views_count` en `ContentResource`.
+   se hace con `views_count` en `ContentResource`: El sumatorio se calcula al vuelo.
 
 ## Dónde tocar cuando se aborde
 

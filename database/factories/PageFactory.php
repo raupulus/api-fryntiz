@@ -56,22 +56,14 @@ class PageFactory extends Factory
     public function active(): static
     {
         return $this->state(fn () => [
-            'content_id' => Content::factory()->state([
-                'is_active' => true,
-                'status_id' => 1,
-                'published_at' => now()->subDay(),
-            ]),
+            'content_id' => Content::factory()->published(),
         ]);
     }
 
     public function inactive(): static
     {
         return $this->state(fn () => [
-            'content_id' => Content::factory()->state([
-                'is_active' => false,
-                'status_id' => 2,
-                'published_at' => null,
-            ]),
+            'content_id' => Content::factory()->draft(),
         ]);
     }
 }

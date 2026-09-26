@@ -51,7 +51,7 @@ class FileThumbnailController extends Controller
             return response()->file(FileThumbnail::genericImagePath('not_authorized'));
         }
 
-        return $this->serve($thumbnail);
+        return $this->serve($thumbnail, $file);
     }
 
     /**
@@ -91,7 +91,7 @@ class FileThumbnailController extends Controller
      * la maqueta aguante y ni el cliente ni la caché se queden un 200 sobre algo
      * que no existe.
      */
-    private function serve(FileThumbnail $thumbnail): BinaryFileResponse
+    private function serve(FileThumbnail $thumbnail, File $file): BinaryFileResponse
     {
         $path = (string) $thumbnail->storagePathFile;
 
@@ -99,7 +99,8 @@ class FileThumbnailController extends Controller
             return $this->missing();
         }
 
-        return response()->file($path);
+        // Una miniatura siempre es una imagen generada aquí: se enseña.
+        return response()->file($path, File::cacheHeaders((bool) $file->is_private));
     }
 
     /**

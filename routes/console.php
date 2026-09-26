@@ -42,8 +42,9 @@ $warnOnFailure = static function (string $tarea): callable {
 
 // ── Contenido ────────────────────────────────────────────────────────────────
 
+// Cada 5 minutos: un contenido programado sale como mucho 5 minutos tarde.
 Schedule::command('content:publish')
-    ->hourly()
+    ->everyFiveMinutes()
     ->withoutOverlapping()
     ->onFailure($warnOnFailure('content:publish'));
 

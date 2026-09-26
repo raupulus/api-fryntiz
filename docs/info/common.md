@@ -31,7 +31,6 @@ Entidades compartidas transversales usadas por múltiples módulos: categorías 
 | Archivo | Descripción |
 |---------|-------------|
 | `app/Traits/HasSlug.php` | Generación automática de slug |
-| `app/Traits/HasStatus.php` | Gestión de estados |
 | `app/Traits/Filterable.php` | Filtrado dinámico de queries |
 | `app/Traits/HasTimestampScopes.php` | Scopes por rango de fechas |
 | `app/Traits/BelongsToUser.php` | Relación con User |
@@ -132,4 +131,4 @@ Todos son idempotentes (`firstOrCreate` por `slug`) y están registrados en
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-08-19
+> Creado: 2026-05-25 · Última revisión: 2026-09-24

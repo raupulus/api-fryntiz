@@ -453,7 +453,7 @@ Catálogo detallado: [`docs/info/commands.md`](docs/info/commands.md).
 
 **Arreglado y protegido por test** (`tests/Feature/Console/SchedulerTest.php` falla si algún
 `Schedule::command()` apunta a un comando que no existe). 16 tareas programadas, todas contra
-comandos reales: `content:publish` (hora), `sitemap:generate` (diario), los 9 comandos AEMET
+comandos reales: `content:publish` (cada 5 minutos), `sitemap:generate` (diario), los 9 comandos AEMET
 con la cadencia de cada producto, `keycounter:remove_duplicate` / `generate_duration`
 (semanal), `iot:check-silent-devices` (diario), `cv:regenerate-pdfs` (diario) y
 `queue:prune-failed` (diario).
@@ -701,4 +701,4 @@ Resumen para no tener que releerlo todo. **El detalle está en los archivos, no 
 
 ---
 
-> Última revisión: 2026-09-19
+> Última revisión: 2026-09-24

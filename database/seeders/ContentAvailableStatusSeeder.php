@@ -31,21 +31,24 @@ class ContentAvailableStatusSeeder extends Seeder
                 'icon' => 'fa-solid fa-compass-drafting',
                 'color' => '#ffa753',
             ],
+            // 2 = programado y 3 = publicado: el orden de la base real (la
+            // v1). La v2 los tuvo cambiados y la API no servía nada; ver
+            // `ContentStatusEnum`, que tiene que casar con estos ids.
             [
                 'id' => 2,
-                'name' => 'Publicado',
-                'slug' => 'published',
-                'description' => 'Contenido publicado correctamente.',
-                'icon' => 'fa-solid fa-eye',
-                'color' => '#39617b',
-            ],
-            [
-                'id' => 3,
                 'name' => 'Programado',
                 'slug' => 'programmed',
                 'description' => 'Programado para publicarse en la fecha especificada.',
                 'icon' => 'fa-solid fa-timer',
                 'color' => '#89ce40',
+            ],
+            [
+                'id' => 3,
+                'name' => 'Publicado',
+                'slug' => 'published',
+                'description' => 'Contenido publicado correctamente.',
+                'icon' => 'fa-solid fa-eye',
+                'color' => '#39617b',
             ],
             [
                 'id' => 4,

@@ -87,20 +87,19 @@ Route::middleware('auth')->group(function () {
 | que incrusta la imagen en el JSON como base64 —lo que hincha la fila de
 | `content_page_raw` y no deja nada en el módulo de ficheros.
 |
-| Detrás de `auth` y del gate del panel: sube ficheros al servidor y hace
-| peticiones salientes, así que no puede estar abierto. El throttle acota lo
-| segundo, que es lo que un editor podría usar para escanear la red interna
-| aunque la comprobación de IP privada ya lo impida.
+| Por contenido y con la política `update` sobre él: cada fichero queda
+| vinculado a su contenido. Detrás de `auth` y del gate del panel, porque sube
+| ficheros y hace peticiones salientes; el límite (`content-editor`, 30 por
+| minuto y usuario) acota lo segundo, que un editor podría usar para escanear
+| la red interna aunque la comprobación de IP privada ya lo impida.
 */
-Route::middleware(['auth', 'can:access-editorjs'])
-    ->prefix('admin/editorjs')
-    ->name('admin.editorjs.')
+Route::middleware(['auth', 'can:access-editorjs', 'can:update,content', 'throttle:content-editor'])
+    ->prefix('admin/contents/{content}/editor')
+    ->name('admin.contents.editor.')
     ->group(function () {
-        Route::post('/upload', [EditorJsController::class, 'upload'])->name('upload');
-
-        Route::get('/url-metadata', [EditorJsController::class, 'urlMetadata'])
-            ->middleware('throttle:30,1')
-            ->name('url-metadata');
+        Route::post('/files', [EditorJsController::class, 'upload'])->name('files.store');
+        Route::post('/files/by-url', [EditorJsController::class, 'uploadByUrl'])->name('files.by-url');
+        Route::get('/url-metadata', [EditorJsController::class, 'urlMetadata'])->name('url-metadata');
     });
 
 /*

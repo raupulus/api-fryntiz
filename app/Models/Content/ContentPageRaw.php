@@ -6,6 +6,7 @@ namespace App\Models\Content;
 
 use App\Models\BaseModels\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
@@ -18,7 +19,8 @@ use Illuminate\Support\Carbon;
  * @property string|null $content Contenido de la página en este formato.
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
- * @property string|null $deleted_at
+ * @property Carbon|null $deleted_at
+ * @property-read ContentAvailablePageRaw|null $availableType
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentPageRaw newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentPageRaw newQuery()
@@ -45,4 +47,14 @@ class ContentPageRaw extends BaseModel
         'available_page_raw_id',
         'content',
     ];
+
+    /**
+     * Formato de esta versión (`json` para Editor.js, `markdown`, `html`…).
+     *
+     * @return BelongsTo<ContentAvailablePageRaw, $this>
+     */
+    public function availableType(): BelongsTo
+    {
+        return $this->belongsTo(ContentAvailablePageRaw::class, 'available_page_raw_id', 'id');
+    }
 }

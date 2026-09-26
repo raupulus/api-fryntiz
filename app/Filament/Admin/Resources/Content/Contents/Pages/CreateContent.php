@@ -22,6 +22,6 @@ class CreateContent extends CreateRecord
      */
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        return $this->resolveImageUpload($data, 'image_id', 'contents');
+        return $this->resolveImageUpload($data, 'image_id', 'contents', webpOriginal: true);
     }
 }

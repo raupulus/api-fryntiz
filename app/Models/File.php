@@ -159,6 +159,51 @@ class File extends BaseModel
      */
     public const MAX_IMAGE_WIDTH = 2560;
 
+    /**
+     * Tipos que se enseñan en el navegador al servirlos. El resto se sirve como
+     * descarga (`Content-Disposition: attachment`): ver `FileController::serve()`.
+     */
+    public const INLINE_MIMES = [
+        'image/jpeg',
+        'image/pjpeg',
+        'image/png',
+        'image/webp',
+        'image/gif',
+        'application/pdf',
+    ];
+
+    /**
+     * Calidad del WebP al que se pasa el original cuando se pide
+     * (`addFile(..., webpOriginal: true)`; hoy, las imágenes de contenidos).
+     */
+    public const WEBP_QUALITY = 85;
+
+    /**
+     * Imágenes que se pueden guardar como WebP. Los GIF no: con GD perderían la
+     * animación.
+     */
+    public const WEBP_CONVERTIBLE_MIMES = [
+        'image/jpeg',
+        'image/pjpeg',
+        'image/png',
+        'image/webp',
+        'image/bmp',
+        'image/x-ms-bmp',
+        'image/x-windows-bmp',
+    ];
+
+    /**
+     * Fotos de móvil (HEIC/HEIF) y AVIF: GD no las lee. Se abren con Imagick
+     * si el servidor lo tiene con soporte para ellas (ver `canReadWithImagick()`).
+     */
+    public const IMAGICK_ONLY_MIMES = [
+        'image/heic',
+        'image/heif',
+        'image/heic-sequence',
+        'image/heif-sequence',
+        'image/avif',
+    ];
+
     protected $table = 'files';
 
     /**
@@ -263,13 +308,15 @@ class File extends BaseModel
      * @param  int|null  $file_id  Id del archivo si existiera.
      * @param  bool  $has_thumbnails  Si tiene miniaturas.
      * @param  bool  $validate  Si se comprueban tipo y tamaño contra SAFE_MIMES/MAX_FILE_SIZE.
+     * @param  bool  $webpOriginal  Guardar el original de una imagen como WebP (ver `convertStoredImageToWebp()`).
      */
     public static function addFile(UploadedFile $uploadedFile,
         string $path = 'upload',
         bool $is_private = true,
         ?int $file_id = null,
         bool $has_thumbnails = true,
-        bool $validate = true
+        bool $validate = true,
+        bool $webpOriginal = false,
     ): ?File {
 
         $fullPath = ($is_private ? 'private' : 'public').'/'.$path;
@@ -298,9 +345,6 @@ class File extends BaseModel
 
         $canEditImage = in_array($mime, self::$imageMimeCanEdit);
 
-        // # Obtengo el tipo de archivo o lo creo si no existe.
-        $fileType = FileType::addFileType($mime, $originalExtension);
-
         // # Cuando se está reemplazando un archivo se borra del disco el anterior.
         if ($file_id) {
             $oldFile = self::find($file_id);
@@ -314,13 +358,27 @@ class File extends BaseModel
         // las medidas y el tamaño del archivo ya procesado, porque cualquiera
         // de las tres operaciones los cambia y la fila debe describir el
         // archivo que hay en el disco, no el que llegó.
-        if ($canEditImage) {
+        if ($webpOriginal && self::canConvertToWebp($mime)) {
+            $converted = self::convertStoredImageToWebp(storage_path('app/'.$imageFullPath), (string) $mime);
+
+            if ($converted) {
+                [$width, $height, $size] = $converted;
+                $imageFullPath = (string) preg_replace('/\.[^.\/]*$/', '', $imageFullPath).'.webp';
+                $imageName = basename($imageFullPath);
+                $mime = 'image/webp';
+                $originalExtension = 'webp';
+            }
+        } elseif ($canEditImage) {
             $processed = self::processStoredImage(storage_path('app/'.$imageFullPath));
 
             if ($processed) {
                 [$width, $height, $size] = $processed;
             }
         }
+
+        // # Obtengo el tipo de archivo o lo creo si no existe. Después de
+        // procesarlo: si ha pasado a WebP, el tipo es otro.
+        $fileType = FileType::addFileType((string) $mime, $originalExtension);
 
         if ($fileType?->type !== 'image') {
             $width = $height = null;
@@ -445,6 +503,247 @@ class File extends BaseModel
         $size = @filesize($absolutePath);
 
         return [$width, $height, $size === false ? null : $size];
+    }
+
+    /**
+     * Cabeceras de caché al servir un fichero o una miniatura.
+     *
+     * Cinco minutos y revalidando: un recorte o una sustitución conservan el
+     * mismo `file_id` y la misma URL (H2), así que el navegador tiene que
+     * volver a preguntar pronto. `Last-Modified` lo pone la propia respuesta.
+     * Los privados, sólo en el navegador de quien los ve.
+     *
+     * @return array<string, string>
+     */
+    public static function cacheHeaders(bool $private): array
+    {
+        return ['Cache-Control' => ($private ? 'private' : 'public').', max-age=300, must-revalidate'];
+    }
+
+    /**
+     * ¿Se puede guardar como WebP una imagen de este tipo?
+     */
+    public static function canConvertToWebp(?string $mime): bool
+    {
+        if (in_array($mime, self::WEBP_CONVERTIBLE_MIMES, true)) {
+            return true;
+        }
+
+        return in_array($mime, self::IMAGICK_ONLY_MIMES, true) && self::canReadWithImagick((string) $mime);
+    }
+
+    /**
+     * ¿Hay Imagick con soporte para este tipo (HEIC, AVIF…)? En producción
+     * hacen falta `php-imagick` y `libheif`; ver docs/info/content.md.
+     */
+    public static function canReadWithImagick(string $mime): bool
+    {
+        if (! class_exists(\Imagick::class)) {
+            return false;
+        }
+
+        $format = match ($mime) {
+            'image/avif' => 'AVIF',
+            default => 'HEIC',
+        };
+
+        return \Imagick::queryFormats($format) !== [];
+    }
+
+    /**
+     * Deja el original de una imagen en WebP: girado, acotado a
+     * `MAX_IMAGE_WIDTH`, sin metadatos y a calidad `WEBP_QUALITY`. El fichero
+     * nuevo sustituye al subido (misma ruta, extensión `.webp`).
+     *
+     * @return array{0: int|null, 1: int|null, 2: int|null}|null Ancho, alto y tamaño, o null si no se ha podido.
+     */
+    protected static function convertStoredImageToWebp(string $absolutePath, string $mime): ?array
+    {
+        if (! file_exists($absolutePath)) {
+            return null;
+        }
+
+        $target = preg_replace('/\.[^.\/]*$/', '', $absolutePath).'.webp';
+
+        try {
+            // GD no lee HEIC ni AVIF: Imagick lo pasa a PNG en memoria y se
+            // sigue con el mismo camino que el resto. El giro de las fotos HEIC
+            // lo aplica libheif al leerlas.
+            $image = self::decodeImage($absolutePath, $mime);
+
+            if ($image->width() > self::MAX_IMAGE_WIDTH) {
+                $image->scale(width: self::MAX_IMAGE_WIDTH);
+            }
+
+            self::stripMetadata($image);
+
+            $image->encode(new WebpEncoder(quality: self::WEBP_QUALITY, strip: true))->save($target);
+        } catch (\Throwable $e) {
+            Log::warning('File: no se ha podido pasar la imagen a WebP', [
+                'path' => $absolutePath,
+                'message' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
+
+        // Si ya era un `.webp`, se ha sobrescrito en su sitio.
+        if ($target !== $absolutePath) {
+            @unlink($absolutePath);
+        }
+
+        clearstatcache(true, $target);
+
+        [$width, $height] = @getimagesize($target) ?: [null, null];
+        $size = @filesize($target);
+
+        return [$width, $height, $size === false ? null : $size];
+    }
+
+    /**
+     * Sustituye los píxeles de la imagen (recorte o imagen nueva) conservando
+     * el fichero: mismo id, y las copias pequeñas con sus ids y sus URLs (H2 de
+     * la auditoría de contenidos). Los bloques de las páginas guardan esas URLs,
+     * así que no hace falta tocarlos.
+     *
+     * El original se guarda en WebP como en `convertStoredImageToWebp()`.
+     */
+    public function replacePixels(ImageInterface $image): void
+    {
+        if ($image->width() > self::MAX_IMAGE_WIDTH) {
+            $image->scale(width: self::MAX_IMAGE_WIDTH);
+        }
+
+        self::stripMetadata($image);
+
+        $old = $this->storagePathFile;
+        $name = (string) preg_replace('/\.[^.\/]*$/', '', (string) $this->name).'.webp';
+        $target = storage_path('app/'.$this->storage_path.'/'.$name);
+
+        $image->encode(new WebpEncoder(quality: self::WEBP_QUALITY, strip: true))->save($target);
+
+        if ($old !== '' && $old !== $target && file_exists($old)) {
+            unlink($old);
+        }
+
+        clearstatcache(true, $target);
+        [$width, $height] = @getimagesize($target) ?: [null, null];
+
+        $this->update([
+            'name' => $name,
+            'width' => $width,
+            'height' => $height,
+            'size' => @filesize($target) ?: null,
+            'file_type_id' => FileType::addFileType('image/webp', 'webp')?->id,
+        ]);
+
+        $this->regenerateThumbnailsInPlace();
+    }
+
+    /**
+     * Vuelve a generar las copias pequeñas **sobre las mismas filas**: mismo id,
+     * misma ruta y mismo nombre. Si la imagen es ahora más estrecha que una
+     * copia, la copia se queda con el ancho de la imagen (no se amplía); si es
+     * más ancha y falta alguna copia, se crea.
+     */
+    public function regenerateThumbnailsInPlace(): void
+    {
+        $this->unsetRelation('thumbnails');
+        $image = Image::decodePath($this->storagePathFile);
+        $existing = [];
+
+        foreach ($this->thumbnails as $thumbnail) {
+            $width = self::$thumbnailsSizeWidth[$thumbnail->key] ?? null;
+            $path = (string) $thumbnail->storagePathFile;
+
+            if ($width === null || $path === '') {
+                continue;
+            }
+
+            $copy = clone $image;
+
+            if ($copy->width() > $width) {
+                $copy->scale(width: $width);
+            }
+
+            if (! is_dir(dirname($path))) {
+                mkdir(dirname($path), 0755, true);
+            }
+
+            // Las copias de JPEG y PNG ya eran WebP; las de otros tipos (GIF)
+            // pasan a serlo. Cambia el nombre pero no el id, que es por lo que
+            // se sirven (el nombre de la URL es decorativo).
+            $name = (string) $thumbnail->name;
+
+            if (! str_ends_with(strtolower($name), '.webp')) {
+                $name = (string) preg_replace('/\.[^.\/]*$/', '', $name).'.webp';
+                @unlink($path);
+                $path = dirname($path).'/'.$name;
+            }
+
+            $copy->encode(new WebpEncoder(quality: 90, strip: true))->save($path);
+            clearstatcache(true, $path);
+
+            $thumbnail->update([
+                'name' => $name,
+                'file_type_id' => FileType::addFileType('image/webp', 'webp')?->id,
+                'width' => $copy->width(),
+                'height' => $copy->height(),
+                'size' => @filesize($path) ?: null,
+            ]);
+            $existing[] = $thumbnail->key;
+        }
+
+        foreach (self::$thumbnailsSizeWidth as $key => $width) {
+            if (in_array($key, $existing, true) || (int) $this->width <= $width) {
+                continue;
+            }
+
+            $directory = storage_path('app/'.$this->storage_path.'/'.$width);
+            $name = (string) preg_replace('/\.[^.\/]*$/', '', (string) $this->name).'.webp';
+
+            if (! is_dir($directory)) {
+                mkdir($directory, 0755, true);
+            }
+
+            $copy = (clone $image)->scale(width: $width);
+            $copy->encode(new WebpEncoder(quality: 90, strip: true))->save($directory.'/'.$name);
+
+            FileThumbnail::create([
+                'file_id' => $this->id,
+                'file_type_id' => FileType::addFileType('image/webp', 'webp')?->id,
+                'module' => $this->module,
+                'path' => $this->path.'/'.$width,
+                'storage_path' => $this->storage_path.'/'.$width,
+                'name' => $name,
+                'key' => $key,
+                'width' => $copy->width(),
+                'height' => $copy->height(),
+                'size' => @filesize($directory.'/'.$name) ?: null,
+            ]);
+        }
+
+        $this->unsetRelation('thumbnails');
+    }
+
+    /**
+     * Abre una imagen para trabajar con ella, también HEIC y AVIF (con Imagick).
+     */
+    public static function decodeImage(string $absolutePath, string $mime): ImageInterface
+    {
+        if (in_array($mime, self::IMAGICK_ONLY_MIMES, true)) {
+            $imagick = new \Imagick($absolutePath);
+            $imagick->setImageFormat('png');
+            $image = Image::decodeBinary($imagick->getImageBlob());
+            $imagick->clear();
+
+            return $image;
+        }
+
+        $image = Image::decodePath($absolutePath);
+        $image->orient();
+
+        return $image;
     }
 
     /**

@@ -27,6 +27,6 @@ class EditContent extends EditRecord
      */
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        return $this->resolveImageUpload($data, 'image_id', 'contents');
+        return $this->resolveImageUpload($data, 'image_id', 'contents', webpOriginal: true);
     }
 }

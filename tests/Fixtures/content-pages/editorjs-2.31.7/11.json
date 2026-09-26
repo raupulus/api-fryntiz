@@ -1,0 +1,288 @@
+{
+  "time": 1790278477775,
+  "blocks": [
+    {
+      "id": "THbj86jwsE",
+      "type": "header",
+      "data": {
+        "text": "Sobre el Proyecto",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "t2L12ubiYb",
+      "type": "paragraph",
+      "data": {
+        "text": "En este proyecto utilizo sensores de entrada analógica para una monitorización constante de consumo energético.<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "qd2DrrtvzE",
+      "type": "paragraph",
+      "data": {
+        "text": "El objetivo es controlar cuanto están consumiendo los equipos <b>subiendo estos datos a mi API</b> y poder mejorar la <b>gestión de energía</b> principalmente para realizar tareas más pesadas en algunos dispositivos (y por lo tanto de más consumo) en momentos dónde tengo más energía almacenada/generada mediante placas solares y posponer otras tareas poco relevante.<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "wmSITPUDlh",
+      "type": "paragraph",
+      "data": {
+        "text": "Utilizo una pantalla con ahorro de energía implementado para apagarse tras un periodo de inactividad reactivándose al pulsar de nuevo el botón.<br>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "u5wxQQaCz_",
+      "type": "header",
+      "data": {
+        "text": "Hardware",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "p0IFINvpp5",
+      "type": "list",
+      "data": {
+        "style": "unordered",
+        "meta": {},
+        "items": [
+          {
+            "content": "Microcontrolador <b>Raspberry Pi Pico W</b>",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Pantalla <b>ST7735</b> 1.8 SPI 128x160",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Sensor de intensidad <b>ACS712</b>",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "Sensor de voltaje <b>MAX471</b>",
+            "meta": {},
+            "items": []
+          },
+          {
+            "content": "ADC extra de 4 canales <b>ADS1115</b>",
+            "meta": {},
+            "items": []
+          }
+        ]
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "mevqKFAdh9",
+      "type": "header",
+      "data": {
+        "text": "Software",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "exhYeoOb8S",
+      "type": "paragraph",
+      "data": {
+        "text": "El proyecto es open source y se encuentra alojado en gitlab <a href=\"https://gitlab.com/raupulus/rpi-pico-energy-monitor\">https://gitlab.com/raupulus/rpi-pico-energy-monitor</a> y en github <a href=\"https://github.com/raupulus/rpi-pico-energy-monitor\">https://github.com/raupulus/rpi-pico-energy-monitor</a>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "rtJn61hRtL",
+      "type": "header",
+      "data": {
+        "text": "Galería",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "i0od7kngjG",
+      "type": "image",
+      "data": {
+        "caption": "Proyecto monitor de energía en desarrollo",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/526/frGDh9VRPSuPfyARoLSnjB1BkGXvjyH8fJA5S4NN.webp",
+          "path": "file/thumbnail/get/content/526/frGDh9VRPSuPfyARoLSnjB1BkGXvjyH8fJA5S4NN.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/524/frGDh9VRPSuPfyARoLSnjB1BkGXvjyH8fJA5S4NN.webp",
+          "path-thumbnail": "file/thumbnail/get/content/524/frGDh9VRPSuPfyARoLSnjB1BkGXvjyH8fJA5S4NN.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/527/frGDh9VRPSuPfyARoLSnjB1BkGXvjyH8fJA5S4NN.webp",
+          "path-large": "file/thumbnail/get/content/527/frGDh9VRPSuPfyARoLSnjB1BkGXvjyH8fJA5S4NN.webp",
+          "content_id": 9,
+          "content_file_id": 39,
+          "file_id": 110,
+          "module": "content",
+          "title": "2023-02-14 20-10-22.jpeg",
+          "name": "frGDh9VRPSuPfyARoLSnjB1BkGXvjyH8fJA5S4NN.jpg",
+          "alt": "2023-02-14 20-10-22.jpeg",
+          "size": 3652558,
+          "extension": "jpg",
+          "mime": "image/jpeg",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/mbNDMkptfPzR3n4hcnj2B4Slx1t5nPDc_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "3ksYGd4Fqs",
+      "type": "image",
+      "data": {
+        "caption": "Proyecto monitor de energía en desarrollo",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/531/z7A6OcKbFxEflIRvRQdH7AhpQz47cgJ3KC1ZIovx.webp",
+          "path": "file/thumbnail/get/content/531/z7A6OcKbFxEflIRvRQdH7AhpQz47cgJ3KC1ZIovx.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/529/z7A6OcKbFxEflIRvRQdH7AhpQz47cgJ3KC1ZIovx.webp",
+          "path-thumbnail": "file/thumbnail/get/content/529/z7A6OcKbFxEflIRvRQdH7AhpQz47cgJ3KC1ZIovx.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/532/z7A6OcKbFxEflIRvRQdH7AhpQz47cgJ3KC1ZIovx.webp",
+          "path-large": "file/thumbnail/get/content/532/z7A6OcKbFxEflIRvRQdH7AhpQz47cgJ3KC1ZIovx.webp",
+          "content_id": 9,
+          "content_file_id": 40,
+          "file_id": 111,
+          "module": "content",
+          "title": "2023-03-06 19-16-08.jpeg",
+          "name": "z7A6OcKbFxEflIRvRQdH7AhpQz47cgJ3KC1ZIovx.jpg",
+          "alt": "2023-03-06 19-16-08.jpeg",
+          "size": 3742046,
+          "extension": "jpg",
+          "mime": "image/jpeg",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/mbNDMkptfPzR3n4hcnj2B4Slx1t5nPDc_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "UDUkfrX5uZ",
+      "type": "image",
+      "data": {
+        "caption": "Proyecto monitor de energía diseño de interfaz",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/536/6gUwZkSYgFyze537ZYbt2GD9R3ClGpHR07BMeEUC.webp",
+          "path": "file/thumbnail/get/content/536/6gUwZkSYgFyze537ZYbt2GD9R3ClGpHR07BMeEUC.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/534/6gUwZkSYgFyze537ZYbt2GD9R3ClGpHR07BMeEUC.webp",
+          "path-thumbnail": "file/thumbnail/get/content/534/6gUwZkSYgFyze537ZYbt2GD9R3ClGpHR07BMeEUC.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/537/6gUwZkSYgFyze537ZYbt2GD9R3ClGpHR07BMeEUC.webp",
+          "path-large": "file/thumbnail/get/content/537/6gUwZkSYgFyze537ZYbt2GD9R3ClGpHR07BMeEUC.webp",
+          "content_id": 9,
+          "content_file_id": 41,
+          "file_id": 112,
+          "module": "content",
+          "title": "2023-03-07 02-06-15.jpeg",
+          "name": "6gUwZkSYgFyze537ZYbt2GD9R3ClGpHR07BMeEUC.jpg",
+          "alt": "2023-03-07 02-06-15.jpeg",
+          "size": 1312756,
+          "extension": "jpg",
+          "mime": "image/jpeg",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/mbNDMkptfPzR3n4hcnj2B4Slx1t5nPDc_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "Sciy7ghfFJ",
+      "type": "image",
+      "data": {
+        "caption": "Proyecto monitor de energía en desarrollo",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/541/IJzBjhNXjLEaBm1fmqz5ecazoHXlIl98DgyerC6J.webp",
+          "path": "file/thumbnail/get/content/541/IJzBjhNXjLEaBm1fmqz5ecazoHXlIl98DgyerC6J.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/539/IJzBjhNXjLEaBm1fmqz5ecazoHXlIl98DgyerC6J.webp",
+          "path-thumbnail": "file/thumbnail/get/content/539/IJzBjhNXjLEaBm1fmqz5ecazoHXlIl98DgyerC6J.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/542/IJzBjhNXjLEaBm1fmqz5ecazoHXlIl98DgyerC6J.webp",
+          "path-large": "file/thumbnail/get/content/542/IJzBjhNXjLEaBm1fmqz5ecazoHXlIl98DgyerC6J.webp",
+          "content_id": 9,
+          "content_file_id": 42,
+          "file_id": 113,
+          "module": "content",
+          "title": "2023-03-07 13-40-08.jpeg",
+          "name": "IJzBjhNXjLEaBm1fmqz5ecazoHXlIl98DgyerC6J.jpg",
+          "alt": "2023-03-07 13-40-08.jpeg",
+          "size": 3524321,
+          "extension": "jpg",
+          "mime": "image/jpeg",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/mbNDMkptfPzR3n4hcnj2B4Slx1t5nPDc_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "OfLIXKfjxn",
+      "type": "image",
+      "data": {
+        "caption": "Proyecto monitor de energía en desarrollo",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/546/EvrnlZ4JMAJrd9PK7AjabRZEgrpkLBZ2SLmS8kl0.webp",
+          "path": "file/thumbnail/get/content/546/EvrnlZ4JMAJrd9PK7AjabRZEgrpkLBZ2SLmS8kl0.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/544/EvrnlZ4JMAJrd9PK7AjabRZEgrpkLBZ2SLmS8kl0.webp",
+          "path-thumbnail": "file/thumbnail/get/content/544/EvrnlZ4JMAJrd9PK7AjabRZEgrpkLBZ2SLmS8kl0.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/547/EvrnlZ4JMAJrd9PK7AjabRZEgrpkLBZ2SLmS8kl0.webp",
+          "path-large": "file/thumbnail/get/content/547/EvrnlZ4JMAJrd9PK7AjabRZEgrpkLBZ2SLmS8kl0.webp",
+          "content_id": 9,
+          "content_file_id": 43,
+          "file_id": 114,
+          "module": "content",
+          "title": "2023-03-16 11-32-38.jpeg",
+          "name": "EvrnlZ4JMAJrd9PK7AjabRZEgrpkLBZ2SLmS8kl0.jpg",
+          "alt": "2023-03-16 11-32-38.jpeg",
+          "size": 2563564,
+          "extension": "jpg",
+          "mime": "image/jpeg",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/mbNDMkptfPzR3n4hcnj2B4Slx1t5nPDc_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    }
+  ],
+  "version": "2.31.7"
+}

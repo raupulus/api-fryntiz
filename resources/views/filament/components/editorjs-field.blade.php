@@ -12,6 +12,8 @@
             state: $wire.$entangle('{{ $getStatePath() }}'),
             placeholder: @js($getPlaceholder() ?? 'Escribe tu contenido aquí...'),
             readOnly: @js($isDisabled()),
+            allowRaw: @js($canUseRawHtml()),
+            endpoints: @js($getEndpoints()),
         })"
     >
         <div

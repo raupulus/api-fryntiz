@@ -284,7 +284,17 @@ class FileController extends Controller
             return $this->missing();
         }
 
-        return response()->file($file->storagePathFile);
+        $headers = File::cacheHeaders($file->is_private);
+
+        // Sólo se enseñan en el navegador los tipos que no pueden ejecutar
+        // nada (B2 de la auditoría de contenidos): el editor acepta cualquier
+        // fichero (D13), y un HTML o un SVG servido en línea desde el dominio
+        // de la API ejecutaría su código con ese origen. El resto, descarga.
+        if (! in_array($file->fileType?->mime, File::INLINE_MIMES, true)) {
+            return response()->download($file->storagePathFile, $file->original_name ?: $file->name, $headers);
+        }
+
+        return response()->file($file->storagePathFile, $headers);
     }
 
     /**

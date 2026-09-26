@@ -187,11 +187,16 @@
 ## Contenidos (`/platforms/{platform:slug}/contents`)
 
 Todos los contenidos de esta sección exigen **plataforma existente y
-contenido en estado publicado** (`status_id = 2`, columna interna; no
-comprueban `is_active`). Un contenido en borrador, programado o archivado
-responde `404` exactamente igual que uno que no existe: no hay forma de
-distinguirlos desde fuera, y así debe seguir siendo (evita enumerar
-contenido no público).
+contenido publicado y activo**: estado «publicado» (`status_id = 3`, columna
+interna) **y** `is_active`. Un contenido en borrador, programado, publicado
+pero oculto, o en cualquier otro estado responde `404` exactamente igual que
+uno que no existe: no hay forma de distinguirlos desde fuera, y así debe seguir
+siendo (evita enumerar contenido no público).
+
+⚠️ **Cambio (2026-09-24).** Antes se servía `status_id = 2` sin mirar
+`is_active`, y en la base real el 2 es «programado»: la API no servía los
+publicados. Los contenidos que vienen de la v1 no tienen estado y no salen
+hasta publicarlos desde el panel.
 
 ### `GET /platforms/{platform:slug}/contents` — Contenidos publicados de una plataforma
 
@@ -238,10 +243,10 @@ contenido no público).
         "updated_at": "2021-05-08T20:21:49.000000Z"
       },
       "status": {
-        "id": 2,
+        "id": 3,
         "file_id": null,
         "name": "Publicado",
-        "slug": "publicado",
+        "slug": "published",
         "description": null,
         "icon": null,
         "color": "#000000",
@@ -335,9 +340,16 @@ contenido no público).
 
 - **Auth**: pública.
 - **Parámetros de ruta**: igual que el endpoint anterior.
+- **Query** (`ContentPagesRequest`):
+
+  | Parámetro | Valores | Por defecto | Qué hace |
+  |---|---|---|---|
+  | `format` | `editorjs`, `markdown`, `html` | el de cada página | Formato en el que sale `body` |
+
 - **Sin paginación**: `data` es un array con **todas** las páginas del
   contenido, ordenadas por `order` ascendente (no hay `meta`).
-- **Respuesta 200** (`ContentPageResource`):
+- **Respuesta 200** (`ContentPageResource`), sin `?format=` y con una página
+  escrita en Editor.js y otra en Markdown:
 
 ```json
 {
@@ -349,9 +361,30 @@ contenido no público).
       "content_id": 42,
       "order": 1,
       "title": "Introducción",
-      "body": "<p>Contenido HTML procesado de la página...</p>",
+      "format": "editorjs",
+      "source_format": "editorjs",
+      "body": {
+        "time": 1790002185625,
+        "blocks": [
+          { "id": "Ss55HIfvAf", "type": "paragraph", "data": { "text": "Hola <b>mundo</b>" } }
+        ],
+        "version": "2.29.0"
+      },
       "slug": "introduccion",
-      "current_page_raw_id": 55,
+      "current_page_raw_id": 2,
+      "created_at": "2026-08-15T09:00:00.000000Z",
+      "updated_at": "2026-08-20T10:00:00.000000Z"
+    },
+    {
+      "id": 102,
+      "content_id": 42,
+      "order": 2,
+      "title": "Sobre mí",
+      "format": "markdown",
+      "source_format": "markdown",
+      "body": "## Sobre mí\n\nTexto en **Markdown**.\n",
+      "slug": "sobre-mi",
+      "current_page_raw_id": 1,
       "created_at": "2026-08-15T09:00:00.000000Z",
       "updated_at": "2026-08-20T10:00:00.000000Z"
     }
@@ -359,14 +392,70 @@ contenido no público).
 }
 ```
 
-  `body` viene de la columna real `content` (se mantiene la clave `body`
-  porque es la que ya consumen las webs). `current_page_raw_id` es `null`
-  cuando la página usa directamente el campo `body`/`content` sin haberse
-  generado desde un formato en bruto (Markdown, editor.js, etc.).
-- **Errores**: `404` `{"success": false, "message": "Contenido no encontrado"}`
-  si la plataforma o el contenido no existen o el contenido no está
-  publicado. Si el contenido existe pero no tiene páginas, responde `200`
-  con `"data": []`, no `404`.
+  - `format`: formato en el que viene `body` en esta respuesta. **Es lo que
+    tiene que mirar el frontend para saber cómo pintar `body`.**
+  - `source_format`: formato en el que se escribe la página en el panel (su
+    fuente). Sin `?format=`, `format` y `source_format` coinciden.
+  - `body`:
+    - `editorjs` → **objeto** `{time, blocks, version}` de Editor.js, no texto.
+      En una página vacía, `{"blocks": []}`.
+
+      Los bloques `list` llegan en **dos formatos** según cuándo se guardó la
+      página (desde el 2026-09-24 el panel usa Editor.js 2.31 y
+      `@editorjs/list` 2.x):
+
+      ```json
+      {"style": "unordered", "items": ["Uno", "Dos"]}
+      {"style": "ordered", "meta": {"counterType": "numeric", "start": 3},
+       "items": [{"content": "Uno", "meta": {}, "items": [
+         {"content": "Uno bis", "meta": {}, "items": []}]}]}
+      ```
+
+      El nuevo admite listas anidadas (`items` dentro de cada elemento),
+      `style: "checklist"` (con `meta.checked` en cada elemento) y numeración
+      con letras o romanos (`counterType`: `numeric`, `lower-roman`,
+      `upper-roman`, `lower-alpha`, `upper-alpha`). Quien pinte el JSON tiene
+      que aceptar los dos; con `?format=html` no cambia nada, el HTML sale
+      igual.
+    - `markdown` → texto Markdown (GitHub: tablas y listas de tareas). Los
+      bloques de Editor.js que Markdown no sabe expresar (imágenes del módulo
+      de ficheros, alertas, vídeos, tarjetas de enlace…) van como HTML dentro
+      de un `<div data-editorjs-block="…">`; al pintarlo como Markdown se ven
+      igual que en Editor.js.
+    - `html` → el HTML que se sirve de siempre (columna `content`), ya sin esos
+      envoltorios. En páginas Editor.js es el mismo HTML que generaba la v1,
+      salvo que desde el 2026-09-24: el código de los bloques de código sale
+      escapado (antes se interpretaba como HTML), una tarjeta de enlace sin
+      título, descripción ni imagen sale como enlace normal
+      (`<p class="r-web-preview-simple"><a …>`), y el HTML de los textos de los
+      bloques viene limpio (sólo formato en línea).
+  - Una página se puede pedir en cualquier formato aunque no sea el suyo: se
+    devuelve la versión derivada que se guardó desde el panel o, en páginas
+    que no se han vuelto a guardar desde que existe esto, se convierte al
+    vuelo.
+  - `current_page_raw_id` es el id del **tipo** de la fuente en
+    `content_available_page_raw` (`2` = json/Editor.js, `1` = markdown,
+    `6` = html), no el de una fila de `content_page_raw`. Puede ser `null` en
+    páginas antiguas: `source_format` ya dice cuál es su formato.
+
+  ⚠️ **Cambio de contrato (2026-09-23).** Antes `body` era **siempre** HTML.
+  Ahora, sin `?format=`, sale en el formato de cada página, y casi todas las
+  páginas existentes son Editor.js. Quien necesite HTML como antes tiene que
+  pedir `?format=html`.
+- **Errores**:
+  - `404` `{"success": false, "message": "Contenido no encontrado"}` si la
+    plataforma o el contenido no existen o el contenido no está publicado. Si
+    el contenido existe pero no tiene páginas, responde `200` con
+    `"data": []`, no `404`.
+  - `422` si `format` no es uno de los tres:
+
+    ```json
+    {
+      "success": false,
+      "message": "…",
+      "errors": { "format": ["El formato tiene que ser editorjs, markdown o html."] }
+    }
+    ```
 
 ### `GET /platforms/{platform:slug}/contents/{content:slug}/pages/{order}` — Una página por su orden
 
@@ -376,6 +465,8 @@ contenido no público).
   `1`). La ruta tiene `->whereNumber('order')`: si `{order}` no es numérico,
   la ruta **ni siquiera casa** y la petición cae en el 404 genérico `"API V2 -
   Endpoint no encontrado"`, no en el 404 propio de este controlador.
+- **Query**: `?format=editorjs|markdown|html`, igual que en el listado de
+  páginas (por defecto, el formato de la página).
 - **Respuesta 200**: un único `ContentPageResource` (misma forma que cada
   elemento de `pages` de arriba).
 - **Errores**:
@@ -384,6 +475,7 @@ contenido no público).
   - `404` `{"success": false, "message": "Pagina no encontrada"}` (sin tilde,
     tal como lo devuelve el controlador) si el contenido existe pero no tiene
     ninguna página con ese `order`.
+  - `422` si `format` no es `editorjs`, `markdown` ni `html`.
 
 ### `GET /platforms/{platform:slug}/contents/{content:slug}/related` — Contenidos relacionados
 
@@ -467,4 +559,4 @@ contenido no público).
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-06
+> Creado: 2026-08-30 · Última revisión: 2026-09-25

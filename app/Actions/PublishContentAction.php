@@ -4,27 +4,35 @@ declare(strict_types=1);
 
 namespace App\Actions;
 
-use App\Enums\ContentStatusEnum;
 use App\Models\Content\Content;
 
 /**
- * Acción responsable de publicar automáticamente los contenidos que han alcanzado su fecha de programación.
+ * Publica los contenidos programados cuya fecha ya ha llegado.
+ *
+ * Lo lanza `content:publish` cada 5 minutos. Recorre los contenidos de uno en
+ * uno con `Content::publish()` en vez de hacer un `update` masivo: así pasan
+ * por las reglas de publicación (fecha de publicación de ese momento y
+ * «Activo» marcado) y saltan los eventos del modelo, de los que depende la
+ * caché de la plataforma.
  */
 class PublishContentAction
 {
     /**
-     * Ejecuta la consulta de actualización masiva cambiando el estado a "Publicado"
-     * para aquellos registros en estado "Programado" cuya fecha sea anterior o igual a ahora.
-     *
-     * @return int Número total de registros afectados y publicados.
+     * @return int Contenidos publicados.
      */
     public function execute(): int
     {
-        return Content::where('status_id', ContentStatusEnum::Scheduled)
+        $published = 0;
+
+        Content::query()
+            ->scheduled()
             ->where('scheduled_at', '<=', now())
-            ->update([
-                'status_id' => ContentStatusEnum::Published,
-                'published_at' => now(),
-            ]);
+            ->lazyById()
+            ->each(function (Content $content) use (&$published): void {
+                $content->publish();
+                $published++;
+            });
+
+        return $published;
     }
 }

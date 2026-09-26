@@ -6,6 +6,7 @@ namespace App\Support\Http;
 
 use App\Traits\ApiResponseTrait;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Throwable;
 
 /**
@@ -208,6 +209,13 @@ final class ApiEnvelope
 
             if (is_array($value)) {
                 $input[$key] = self::redact($value);
+            }
+
+            // Un fichero subido no se puede pasar a JSON (lleva un recurso
+            // dentro): con él, cualquier error de una subida —un 403, un 422—
+            // acababa en un 500 al montar esta sección.
+            if ($value instanceof UploadedFile) {
+                $input[$key] = ['file' => $value->getClientOriginalName(), 'size' => $value->getSize()];
             }
         }
 

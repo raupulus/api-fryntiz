@@ -1,0 +1,198 @@
+{
+  "time": 1790278466286,
+  "blocks": [
+    {
+      "id": "aIqFlea09v",
+      "type": "header",
+      "data": {
+        "text": "Sobre el proyecto",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "1wpfpM24ag",
+      "type": "alert",
+      "data": {
+        "type": "warning",
+        "align": "left",
+        "message": "<div>Proyecto actualmente en curso y una etapa de desarrollo temprana.</div><div>Actualmente solo tengo los diseños en 3D, esquemas del proyecto, la base del proyecto y código para la mayoría de las funcionalidades desarrollados en otros proyectos de forma simplificada para experimentar antes de unirlos en este.<br></div>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "iQk227av01",
+      "type": "paragraph",
+      "data": {
+        "text": "Proyecto de Smart Plant con el que monitorizar el cultivo de plantas en macetas y regarlas cuando sea necesario. Se toman lecturas de <b>luz, humedad, uva, humedad en tierra.</b>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "4vxSsa_2UI",
+      "type": "header",
+      "data": {
+        "text": "Modelo para la caja 3D",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "MapOIBfziH",
+      "type": "paragraph",
+      "data": {
+        "text": "Actualmente está en fase de <b>prototipo</b> y he decidido no subirlo hasta completarlo para ahorrarme\nsubir modificaciones con las correcciones que puedan surgir."
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "HmnsOK8Rmc",
+      "type": "paragraph",
+      "data": {
+        "text": "Puedes seguirme en thingiverse en el siguiente enlace si quieres o volver en el futuro:\n<a href=\"https://www.thingiverse.com/raupulus/designs\" target=\"_blank\">https://www.thingiverse.com/raupulus/designs</a>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "sghrP5YEO8",
+      "type": "image",
+      "data": {
+        "caption": "Smart Plant Primer Boceto en 3D",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/393/zFFtgRArPxUGyVEhVPcQBvDAxfSJHgIqg6Qt3BbN.webp",
+          "path": "file/thumbnail/get/content/393/zFFtgRArPxUGyVEhVPcQBvDAxfSJHgIqg6Qt3BbN.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/391/zFFtgRArPxUGyVEhVPcQBvDAxfSJHgIqg6Qt3BbN.webp",
+          "path-thumbnail": "file/thumbnail/get/content/391/zFFtgRArPxUGyVEhVPcQBvDAxfSJHgIqg6Qt3BbN.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/394/zFFtgRArPxUGyVEhVPcQBvDAxfSJHgIqg6Qt3BbN.webp",
+          "path-large": "file/thumbnail/get/content/394/zFFtgRArPxUGyVEhVPcQBvDAxfSJHgIqg6Qt3BbN.webp",
+          "content_id": 6,
+          "content_file_id": 10,
+          "file_id": 78,
+          "module": "content",
+          "title": "1.jpeg",
+          "name": "zFFtgRArPxUGyVEhVPcQBvDAxfSJHgIqg6Qt3BbN.jpg",
+          "alt": "1.jpeg",
+          "size": 3027501,
+          "extension": "jpg",
+          "mime": "image/jpeg",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/mbNDMkptfPzR3n4hcnj2B4Slx1t5nPDc_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "KJ0AScjzFs",
+      "type": "image",
+      "data": {
+        "caption": "Smart Plant colador impreso en 3D",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/388/u2Hub9U5nuyn8HppHNCM0ln9BLak6oyT6tyZE1yj.webp",
+          "path": "file/thumbnail/get/content/388/u2Hub9U5nuyn8HppHNCM0ln9BLak6oyT6tyZE1yj.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/386/u2Hub9U5nuyn8HppHNCM0ln9BLak6oyT6tyZE1yj.webp",
+          "path-thumbnail": "file/thumbnail/get/content/386/u2Hub9U5nuyn8HppHNCM0ln9BLak6oyT6tyZE1yj.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/389/u2Hub9U5nuyn8HppHNCM0ln9BLak6oyT6tyZE1yj.webp",
+          "path-large": "file/thumbnail/get/content/389/u2Hub9U5nuyn8HppHNCM0ln9BLak6oyT6tyZE1yj.webp",
+          "content_id": 6,
+          "content_file_id": 9,
+          "file_id": 77,
+          "module": "content",
+          "title": "2.jpeg",
+          "name": "u2Hub9U5nuyn8HppHNCM0ln9BLak6oyT6tyZE1yj.jpg",
+          "alt": "2.jpeg",
+          "size": 2103539,
+          "extension": "jpg",
+          "mime": "image/jpeg",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/mbNDMkptfPzR3n4hcnj2B4Slx1t5nPDc_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "vzXUkIp-0T",
+      "type": "image",
+      "data": {
+        "caption": "Smart Plant Base 3D con imitación de ladrillos",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/398/FwsjVAxzjgR6loJRVJQn3JqTGd2YvH055pXR074Q.webp",
+          "path": "file/thumbnail/get/content/398/FwsjVAxzjgR6loJRVJQn3JqTGd2YvH055pXR074Q.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/396/FwsjVAxzjgR6loJRVJQn3JqTGd2YvH055pXR074Q.webp",
+          "path-thumbnail": "file/thumbnail/get/content/396/FwsjVAxzjgR6loJRVJQn3JqTGd2YvH055pXR074Q.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/399/FwsjVAxzjgR6loJRVJQn3JqTGd2YvH055pXR074Q.webp",
+          "path-large": "file/thumbnail/get/content/399/FwsjVAxzjgR6loJRVJQn3JqTGd2YvH055pXR074Q.webp",
+          "content_id": 6,
+          "content_file_id": 11,
+          "file_id": 79,
+          "module": "content",
+          "title": "3.jpeg",
+          "name": "FwsjVAxzjgR6loJRVJQn3JqTGd2YvH055pXR074Q.jpg",
+          "alt": "3.jpeg",
+          "size": 2113856,
+          "extension": "jpg",
+          "mime": "image/jpeg",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/mbNDMkptfPzR3n4hcnj2B4Slx1t5nPDc_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "A70yNmuB8l",
+      "type": "image",
+      "data": {
+        "caption": "Imprimiendo Base para Smart Plant en 3D con huecos para electrónica",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/403/nGjIhSWjUgq8AtNidOODIkzkOyNxbV9nMchqEO9G.webp",
+          "path": "file/thumbnail/get/content/403/nGjIhSWjUgq8AtNidOODIkzkOyNxbV9nMchqEO9G.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/401/nGjIhSWjUgq8AtNidOODIkzkOyNxbV9nMchqEO9G.webp",
+          "path-thumbnail": "file/thumbnail/get/content/401/nGjIhSWjUgq8AtNidOODIkzkOyNxbV9nMchqEO9G.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/404/nGjIhSWjUgq8AtNidOODIkzkOyNxbV9nMchqEO9G.webp",
+          "path-large": "file/thumbnail/get/content/404/nGjIhSWjUgq8AtNidOODIkzkOyNxbV9nMchqEO9G.webp",
+          "content_id": 6,
+          "content_file_id": 12,
+          "file_id": 80,
+          "module": "content",
+          "title": "4.jpeg",
+          "name": "nGjIhSWjUgq8AtNidOODIkzkOyNxbV9nMchqEO9G.jpg",
+          "alt": "4.jpeg",
+          "size": 2966522,
+          "extension": "jpg",
+          "mime": "image/jpeg",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/mbNDMkptfPzR3n4hcnj2B4Slx1t5nPDc_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    }
+  ],
+  "version": "2.31.7"
+}

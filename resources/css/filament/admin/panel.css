@@ -274,3 +274,96 @@
 .dark .ejs-editor .ce-toolbar__settings-btn:hover {
     background: #3f3f46;
 }
+
+/* Modo oscuro de los menús y herramientas de Editor.js. Los menús del núcleo
+   y la tabla se pintan con variables propias; los botones de subir y el
+   desplegable de lenguajes del bloque de código, con colores fijos claros
+   (en oscuro, el desplegable y la cabecera de la tabla quedaban en blanco
+   sobre blanco). El desplegable se cuelga de <body>, fuera de .ejs-editor. */
+.dark .ce-popover,
+.dark .tc-popover {
+    --color-background: #27272a;
+    --color-border: #3f3f46;
+    --color-shadow: rgba(0, 0, 0, 0.45);
+    --color-text-primary: #e4e4e7;
+    --color-text-secondary: #a1a1aa;
+    --color-border-icon: #52525b;
+    --color-border-icon-disabled: #3f3f46;
+    --color-background-item-hover: #3f3f46;
+    --color-background-item-focus: rgba(56, 189, 248, 0.14);
+    --color-background-hover: #3f3f46;
+    color: #e4e4e7;
+}
+
+.dark .cdx-search-field {
+    background: #18181b;
+    border-color: #3f3f46;
+}
+
+.dark .cdx-search-field__input {
+    color: #e4e4e7;
+}
+
+.dark .ejs-editor .tc-wrap {
+    --color-background: #3f3f46;
+    --color-border: #52525b;
+    --color-text-secondary: #a1a1aa;
+}
+
+.dark .ejs-editor .tc-toolbox {
+    --toggler-dots-color: #a1a1aa;
+    --toggler-dots-color-hovered: #e4e4e7;
+}
+
+.dark .ejs-editor .cdx-button {
+    border-color: #52525b;
+    background: #18181b;
+    color: #d4d4d8;
+}
+
+.dark .editorjs-codeCup_languageDropdown {
+    border-color: #3f3f46;
+    background: #27272a;
+    color: #e4e4e7;
+}
+
+.dark .editorjs-codeCup_languageOption {
+    border-bottom-color: #3f3f46;
+}
+
+.dark .editorjs-codeCup_languageOption:hover {
+    background-color: #3f3f46;
+}
+
+/* La fila de cabecera de la tabla es `sticky` con z-index 2 y tapaba la
+   primera opción del menú de filas («Añadir fila encima»). */
+.ejs-editor .tc-toolbox {
+    z-index: 3;
+}
+
+/* El reset de Filament deja los h3–h6 con el tamaño y el peso del texto, y
+   en el editor un título no se distinguía de un párrafo. */
+.ejs-editor .ce-header {
+    margin: 0.75em 0 0.25em;
+    padding: 0;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.ejs-editor h3.ce-header {
+    font-size: 1.375rem;
+}
+
+.ejs-editor h4.ce-header {
+    font-size: 1.2rem;
+}
+
+.ejs-editor h5.ce-header {
+    font-size: 1.05rem;
+}
+
+.ejs-editor h6.ce-header {
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}

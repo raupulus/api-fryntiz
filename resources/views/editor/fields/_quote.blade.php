@@ -7,7 +7,10 @@
 
     <p class="r-blockquote-title">{!! $text !!}</p>
 
-    <p class="r-blockquote-caption">&mdash;{!! $caption !!}</p>
+    {{-- Sin autor, sin línea de autor: antes pintaba un «—» suelto. --}}
+    @if(trim(strip_tags($caption)) !== '')
+        <p class="r-blockquote-caption">&mdash;{!! $caption !!}</p>
+    @endif
 
     <hr>
 </blockquote>

@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
+use App\Enums\ContentStatusEnum;
 use Filament\Facades\Filament;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Throwable;
 
 /**
  * Comprueba que la configuración desplegada no tiene fallos silenciosos.
@@ -51,6 +54,7 @@ class ProjectCheckConfigCommand extends Command
         $this->checkSession();
         $this->checkPolicies();
         $this->checkQueuesAndBroadcast();
+        $this->checkContentStatuses();
 
         return $this->report();
     }
@@ -267,6 +271,48 @@ class ProjectCheckConfigCommand extends Command
                 );
             }
         }
+    }
+
+    /**
+     * Los ids de `content_available_status` tienen que ser los de
+     * `ContentStatusEnum`.
+     *
+     * Si no casan no hay ningún error: la API busca los contenidos publicados
+     * con el id de otro estado y no sirve nada. Es lo que pasó con la v2, que
+     * cambió el orden en el seeder mientras la base conservaba el de la v1.
+     */
+    private function checkContentStatuses(): void
+    {
+        try {
+            $slugs = DB::table('content_available_status')->pluck('slug', 'id');
+        } catch (Throwable) {
+            $this->note(
+                'No se han podido leer los estados de contenido',
+                'Sin conexión con la base o sin la tabla `content_available_status`.'
+            );
+
+            return;
+        }
+
+        $wrong = [];
+
+        foreach (ContentStatusEnum::cases() as $status) {
+            $slug = $slugs->get($status->value);
+
+            if ($slug !== $status->slug()) {
+                $wrong[] = "el {$status->value} tendría que ser «{$status->slug()}» y es «".($slug ?? 'nada').'»';
+            }
+        }
+
+        if ($wrong === []) {
+            return;
+        }
+
+        $this->recordFailure(
+            'Estados de contenido con otros ids',
+            'La API buscaría los contenidos publicados con un id que no es el de «publicado» y no '.
+            'serviría ninguno, sin un solo error: '.implode('; ', $wrong).'.'
+        );
     }
 
     /**

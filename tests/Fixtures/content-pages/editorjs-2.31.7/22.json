@@ -1,0 +1,377 @@
+{
+  "time": 1790278492249,
+  "blocks": [
+    {
+      "id": "qJyqK7RMb1",
+      "type": "header",
+      "data": {
+        "text": "KeyCounter Display - Un gadget con Raspberry Pi Pico, servidor Websockets y micropython.",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "wh1ofLoDYd",
+      "type": "paragraph",
+      "data": {
+        "text": "Para el proyecto del contador de pulsaciones he utilizado una pantalla junto a una Raspberry Pi Pico creando un servidor <b>websockets</b> en ella conectando desde cada equipo que se conecte como cliente."
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "P5l0Bet7S9",
+      "type": "embed",
+      "data": {
+        "service": "youtube",
+        "source": "https://youtu.be/Tvh2LaYt-_s",
+        "embed": "https://www.youtube.com/embed/Tvh2LaYt-_s",
+        "width": 580,
+        "height": 320,
+        "caption": "Presentación Proyecto KeyCounter Display - Raspberry Pi Pico con servidor Websockets y Pantalla"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "nlOj8KNPkQ",
+      "type": "paragraph",
+      "data": {
+        "text": "Está programado en <b>micropython</b> y utiliza detección de ip local a través de mi <b>API</b> informando a esta de la dirección de red que ocupa en cada momento (para permitir desplazarla de ubicación) sincronizándose así con los ordenadores que conectan al websocket como clientes."
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "MOVSrqnf1m",
+      "type": "paragraph",
+      "data": {
+        "text": "Las <b>estadísticas</b> se van actualizando en la pantalla a medida que voy pulsando teclas generando una gráfica con el progreso de las pulsaciones en base a la velocidad media de escritura."
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "ZDLFwBs-Cv",
+      "type": "image",
+      "data": {
+        "caption": "Pantalla con estado de pulsaciones en el keycounter",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/688/YzKnLnzrtdWCUGRKsc2Cwtr7usMzva4fcnvSrxjk.webp",
+          "path": "file/thumbnail/get/content/688/YzKnLnzrtdWCUGRKsc2Cwtr7usMzva4fcnvSrxjk.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/686/YzKnLnzrtdWCUGRKsc2Cwtr7usMzva4fcnvSrxjk.webp",
+          "path-thumbnail": "file/thumbnail/get/content/686/YzKnLnzrtdWCUGRKsc2Cwtr7usMzva4fcnvSrxjk.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/689/YzKnLnzrtdWCUGRKsc2Cwtr7usMzva4fcnvSrxjk.webp",
+          "path-large": "file/thumbnail/get/content/689/YzKnLnzrtdWCUGRKsc2Cwtr7usMzva4fcnvSrxjk.webp",
+          "content_id": 15,
+          "content_file_id": 58,
+          "file_id": 145,
+          "module": "content",
+          "title": "2024-10-12 12-59-44.jpeg",
+          "name": "YzKnLnzrtdWCUGRKsc2Cwtr7usMzva4fcnvSrxjk.jpg",
+          "alt": "2024-10-12 12-59-44.jpeg",
+          "size": 2990939,
+          "extension": "jpg",
+          "mime": "image/jpeg",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/mbNDMkptfPzR3n4hcnj2B4Slx1t5nPDc_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "qIC5o2mLI_",
+      "type": "paragraph",
+      "data": {
+        "text": "En el caso de utilizar varios equipos se reemplaza esta gráfica por las estadísticas del segundo equipo."
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "BbXLYcAoSM",
+      "type": "image",
+      "data": {
+        "caption": "Keycounter con dos equipos enviando datos a la pantalla",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/683/OmWA1lTRiWCgDM6KokuLBgRmk62mudI5jgdyqwyC.webp",
+          "path": "file/thumbnail/get/content/683/OmWA1lTRiWCgDM6KokuLBgRmk62mudI5jgdyqwyC.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/681/OmWA1lTRiWCgDM6KokuLBgRmk62mudI5jgdyqwyC.webp",
+          "path-thumbnail": "file/thumbnail/get/content/681/OmWA1lTRiWCgDM6KokuLBgRmk62mudI5jgdyqwyC.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/684/OmWA1lTRiWCgDM6KokuLBgRmk62mudI5jgdyqwyC.webp",
+          "path-large": "file/thumbnail/get/content/684/OmWA1lTRiWCgDM6KokuLBgRmk62mudI5jgdyqwyC.webp",
+          "content_id": 15,
+          "content_file_id": 57,
+          "file_id": 144,
+          "module": "content",
+          "title": "2024-10-22 22-03-16.jpeg",
+          "name": "OmWA1lTRiWCgDM6KokuLBgRmk62mudI5jgdyqwyC.jpg",
+          "alt": "2024-10-22 22-03-16.jpeg",
+          "size": 2072634,
+          "extension": "jpg",
+          "mime": "image/jpeg",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/mbNDMkptfPzR3n4hcnj2B4Slx1t5nPDc_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "3KfADpB2AE",
+      "type": "paragraph",
+      "data": {
+        "text": "También implemento función de ahorrar energía para apagarse tras 5 minutos de inactividad (realmente reduce el brillo/retroiluminación al 10-20%)"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "ATukjRQxu9",
+      "type": "header",
+      "data": {
+        "text": "Repositorio para el Gadget",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "JzbDvucCMl",
+      "type": "linkTool",
+      "data": {
+        "link": "https://gitlab.com/raupulus/rpi-pico-project-picodisplay2-keycounter-websocket",
+        "meta": {
+          "content_page_id": null,
+          "title": "Raúl Caro Pastorino / rpi-pico-project-picodisplay2-keycounter-websocket · GitLab",
+          "description": "Proyecto con raspberry pi pico como servidor websockets en el que se utiliza la pantalla Pico Display 2.0 para mostrar estadísticas de los equipos en la red local...",
+          "keywords": null,
+          "images": [
+            "https://gitlab.com/uploads/-/system/project/avatar/62496091/2024-10-12_12-59-44_en_tamaño_mediano.jpeg?width=48"
+          ],
+          "image": {
+            "url": "https://gitlab.com/uploads/-/system/project/avatar/62496091/2024-10-12_12-59-44_en_tamaño_mediano.jpeg?width=48"
+          }
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "m5is6JiVz9",
+      "type": "linkTool",
+      "data": {
+        "link": "https://github.com/raupulus/rpi-pico-project-picodisplay2-keycounter-websocket",
+        "meta": {
+          "content_page_id": null,
+          "title": "GitHub - raupulus/rpi-pico-project-picodisplay2-keycounter-websocket: Proyecto con raspberry pi pico como servidor websockets en el que se utiliza la pantalla Pico Display 2.0 para mostrar estadísticas de los equipos en la red local de la cantidad de teclas pulsadas",
+          "description": "Proyecto con raspberry pi pico como servidor websockets en el que se utiliza la pantalla Pico Display 2.0 para mostrar estadísticas de los equipos en la red local de la cantidad de teclas pulsadas - raupulus/rpi-pico-project-picodisplay2-keycounter-websocket",
+          "keywords": null,
+          "images": [
+            "https://github.com/raupulus/rpi-pico-project-picodisplay2-keycounter-websocket/raw/main/docs/images/6.png",
+            "https://github.com/raupulus/rpi-pico-project-picodisplay2-keycounter-websocket/raw/main/docs/images/1.jpeg",
+            "https://github.com/raupulus/rpi-pico-project-picodisplay2-keycounter-websocket/raw/main/docs/images/2.jpeg",
+            "https://github.com/raupulus/rpi-pico-project-picodisplay2-keycounter-websocket/raw/main/docs/images/4.jpeg",
+            "https://github.com/raupulus/rpi-pico-project-picodisplay2-keycounter-websocket/raw/main/docs/images/5.jpeg"
+          ],
+          "image": {
+            "url": "https://repository-images.githubusercontent.com/871235411/a39d6909-a12e-4f6d-badc-e9df3d4b6ec4"
+          }
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "YCVfZrRdar",
+      "type": "header",
+      "data": {
+        "text": "Repositorio del proyecto KeyCounter para Gnu/Linux y MacOS",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "hUMV9uJx_A",
+      "type": "linkTool",
+      "data": {
+        "link": "https://gitlab.com/raupulus/python-keycounter",
+        "meta": {
+          "content_page_id": null,
+          "title": "Raúl Caro Pastorino / python-keycounter · GitLab",
+          "description": "Herramienta en python 3 para contar la cantidad de teclas que se ha pulsado en un tiempo determinado o sesión.",
+          "keywords": null,
+          "images": [
+            "https://gitlab.com/uploads/-/system/project/avatar/16879219/Captura_de_pantalla_2023-03-15_a_las_2.37.51_en_tamaño_grande.jpeg?width=48"
+          ],
+          "image": {
+            "url": "https://gitlab.com/uploads/-/system/project/avatar/16879219/Captura_de_pantalla_2023-03-15_a_las_2.37.51_en_tamaño_grande.jpeg?width=48"
+          }
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "udqGYJ-eX5",
+      "type": "linkTool",
+      "data": {
+        "link": "https://github.com/raupulus/python-keycounter",
+        "meta": {
+          "content_page_id": null,
+          "title": "GitHub - raupulus/python-keycounter: Herramienta en python 3 para contar la cantidad de teclas que se ha pulsado en un tiempo determinado o sesión. - Este repositorio es un mirror de https://gitlab.com/raupulus/python-keycounter",
+          "description": "Herramienta en python 3 para contar la cantidad de teclas que se ha pulsado en un tiempo determinado o sesión. - Este repositorio es un mirror de https://gitlab.com/raupulus/python-keycounter - raupulus/python-keycounter",
+          "keywords": null,
+          "images": [
+            "https://github.com/raupulus/python-keycounter/raw/main/docs/images/1.png",
+            "https://github.com/raupulus/python-keycounter/raw/main/docs/images/2.jpeg",
+            "https://github.com/raupulus/python-keycounter/raw/main/docs/images/3.jpeg",
+            "https://github.com/raupulus/python-keycounter/raw/main/docs/images/4.jpg",
+            "https://github.com/raupulus/python-keycounter/raw/main/docs/images/socket_unix1.png",
+            "https://github.com/raupulus/python-keycounter/raw/main/docs/images/macos_1.png",
+            "https://github.com/raupulus/python-keycounter/raw/main/docs/images/macos_2.png",
+            "https://github.com/raupulus/python-keycounter/raw/main/docs/images/macos_3.png",
+            "https://github.com/raupulus/python-keycounter/raw/main/docs/images/macos_4.png",
+            "https://github.com/raupulus/python-keycounter/raw/main/docs/images/serial1.jpeg",
+            "https://github.com/raupulus/python-keycounter/raw/main/docs/images/serial2.jpeg",
+            "https://github.com/raupulus/python-keycounter/raw/main/docs/images/serial3.jpeg",
+            "https://github.com/raupulus/python-keycounter/raw/main/docs/images/serial4.jpeg"
+          ],
+          "image": {
+            "url": "https://repository-images.githubusercontent.com/240191480/b727f6eb-33dc-4acf-b6bd-fffb7b3c8df4"
+          }
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "-6B7Zftn18",
+      "type": "header",
+      "data": {
+        "text": "Modelo 3D para la caja de la pantalla y Raspberry Pi Pico",
+        "level": 3
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "SHcAhFqO9f",
+      "type": "image",
+      "data": {
+        "caption": "Imagen del modelo 3d para el gadget keycounter al colocar la raspberry pi pico",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/699/a4Vk3EHrTvJvjmwPiotUCBsgt9ZB1R9iFFBJOCmw.webp",
+          "path": "file/thumbnail/get/content/699/a4Vk3EHrTvJvjmwPiotUCBsgt9ZB1R9iFFBJOCmw.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/697/a4Vk3EHrTvJvjmwPiotUCBsgt9ZB1R9iFFBJOCmw.webp",
+          "path-thumbnail": "file/thumbnail/get/content/697/a4Vk3EHrTvJvjmwPiotUCBsgt9ZB1R9iFFBJOCmw.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/699/a4Vk3EHrTvJvjmwPiotUCBsgt9ZB1R9iFFBJOCmw.webp",
+          "path-large": "file/thumbnail/get/content/699/a4Vk3EHrTvJvjmwPiotUCBsgt9ZB1R9iFFBJOCmw.webp",
+          "content_id": 15,
+          "content_file_id": 61,
+          "file_id": 148,
+          "module": "content",
+          "title": "1.webp",
+          "name": "a4Vk3EHrTvJvjmwPiotUCBsgt9ZB1R9iFFBJOCmw.webp",
+          "alt": "1.webp",
+          "size": 70318,
+          "extension": "webp",
+          "mime": "image/webp",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/ezKkCDYmpAqsmJJ8pe1FclTjhya8pidi_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "a-Xs844hVR",
+      "type": "image",
+      "data": {
+        "caption": "Imagen del modelo para el gadget keycounter vista lateral",
+        "withBorder": false,
+        "withBackground": false,
+        "stretched": false,
+        "file": {
+          "url": "https://api.fryntiz.dev/file/thumbnail/get/content/695/qbVhPnQOzVtJeHAlA7wlbR0zpeyTAvxQ0V0uNeD6.webp",
+          "path": "file/thumbnail/get/content/695/qbVhPnQOzVtJeHAlA7wlbR0zpeyTAvxQ0V0uNeD6.webp",
+          "url_thumbnail": "https://api.fryntiz.dev/file/thumbnail/get/content/693/qbVhPnQOzVtJeHAlA7wlbR0zpeyTAvxQ0V0uNeD6.webp",
+          "path-thumbnail": "file/thumbnail/get/content/693/qbVhPnQOzVtJeHAlA7wlbR0zpeyTAvxQ0V0uNeD6.webp",
+          "url_large": "https://api.fryntiz.dev/file/thumbnail/get/content/695/qbVhPnQOzVtJeHAlA7wlbR0zpeyTAvxQ0V0uNeD6.webp",
+          "path-large": "file/thumbnail/get/content/695/qbVhPnQOzVtJeHAlA7wlbR0zpeyTAvxQ0V0uNeD6.webp",
+          "content_id": 15,
+          "content_file_id": 60,
+          "file_id": 147,
+          "module": "content",
+          "title": "2.jpeg",
+          "name": "qbVhPnQOzVtJeHAlA7wlbR0zpeyTAvxQ0V0uNeD6.jpg",
+          "alt": "2.jpeg",
+          "size": 176437,
+          "extension": "jpg",
+          "mime": "image/jpeg",
+          "file_type_image": "https://api.fryntiz.dev/storage/icons/file_types/mbNDMkptfPzR3n4hcnj2B4Slx1t5nPDc_128.webp"
+        }
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "GwpVQaNu7v",
+      "type": "paragraph",
+      "data": {
+        "text": "<a href=\"https://www.thingiverse.com/thing:6662007\">https://www.thingiverse.com/thing:6662007</a>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "IBdwwLQjX-",
+      "type": "paragraph",
+      "data": {
+        "text": "<a href=\"https://www.printables.com/model/912580-raspberry-pi-pico-display-20-pimoroni-version-320x\">https://www.printables.com/model/912580-raspberry-pi-pico-display-20-pimoroni-version-320x</a>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    },
+    {
+      "id": "Wt8D_s0Q48",
+      "type": "paragraph",
+      "data": {
+        "text": "<a href=\"https://makerworld.com/es/models/495837#profileId-410056\">https://makerworld.com/es/models/495837#profileId-410056</a>"
+      },
+      "tunes": {
+        "textVariant": ""
+      }
+    }
+  ],
+  "version": "2.31.7"
+}

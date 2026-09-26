@@ -9,8 +9,9 @@ use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseModel;
 use App\Models\File;
 use App\Traits\HasGalleries;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
@@ -36,7 +37,8 @@ use Illuminate\Support\Carbon;
  * @property-read string $url_image_normal
  * @property-read string $url_image_small
  * @property-read File|null $image
- * @property-read ContentPageRaw|null $raw
+ * @property-read Collection<int, ContentPageRaw> $raws
+ * @property-read ContentAvailablePageRaw|null $currentRawType
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentPage newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentPage newQuery()
@@ -74,13 +76,28 @@ class ContentPage extends BaseModel
     ];
 
     /**
-     * Relación con el contenido RAW desde el que se genera el código HTML final.
-     * En caso de tener varios orígenes, se tomará el actualizado más recientemente.
+     * Versiones de la página en cada formato (Editor.js, Markdown, HTML).
+     *
+     * Una es la fuente, la que marca `current_page_raw_id`; las demás se
+     * regeneran a partir de ella al guardar. Las filas borradas (soft delete)
+     * son las copias que se guardan antes de cambiar de formato. Quien sabe
+     * leerlas es `ContentPageFormatService`.
+     *
+     * @return HasMany<ContentPageRaw, $this>
      */
-    public function raw(): HasOne
+    public function raws(): HasMany
     {
-        return $this->hasOne(ContentPageRaw::class, 'content_page_id', 'id')
-            ->orderByDesc('updated_at');
+        return $this->hasMany(ContentPageRaw::class, 'content_page_id', 'id');
+    }
+
+    /**
+     * Tipo de la fuente de la página (el formato en el que se edita).
+     *
+     * @return BelongsTo<ContentAvailablePageRaw, $this>
+     */
+    public function currentRawType(): BelongsTo
+    {
+        return $this->belongsTo(ContentAvailablePageRaw::class, 'current_page_raw_id', 'id');
     }
 
     /**
@@ -125,13 +142,15 @@ class ContentPage extends BaseModel
     {
         $content = $this->contentModel;
 
-        // # Contenido en bruto asociado a esta página.
-        $raws = ContentPageRaw::where('content_page_id', $this->id)->get();
+        // # Contenido en bruto asociado a esta página, incluidas las copias de
+        // # antes de cambiar de formato: también pueden apuntar a ficheros.
+        $raws = ContentPageRaw::withTrashed()->where('content_page_id', $this->id)->get();
+        $jsonTypeId = ContentAvailablePageRaw::query()->where('type', 'json')->value('id');
 
         foreach ($raws as $raw) {
 
             // # Cuando es un JSON, proviene del editor.js
-            if ($raw->available_page_raw_id === 2) {
+            if ($jsonTypeId !== null && $raw->available_page_raw_id === $jsonTypeId) {
                 $jsonRaw = json_decode($raw->content, true);
 
                 $blocks = $jsonRaw['blocks'] ?? null;
