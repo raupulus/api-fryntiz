@@ -45,7 +45,14 @@ class CurriculumPdfService
 
         $path = self::FOLDER.'/'.$cv->slug.'-'.$cv->id.'.pdf';
 
-        Storage::disk(self::DISK)->put($path, $pdf->output());
+        // El disco no lanza excepciones (`throw` desactivado): si no puede
+        // escribir —por ejemplo, el PDF lo creó www-data y el comando se lanza
+        // con otro usuario—, `put()` devuelve false en silencio. Sin esta
+        // comprobación el CV quedaba marcado como regenerado y se seguía
+        // sirviendo el PDF viejo.
+        if (! Storage::disk(self::DISK)->put($path, $pdf->output())) {
+            throw new \RuntimeException("No se pudo escribir el PDF en {$path}: revisa los permisos de storage/app/public (¿se lanzó el comando con un usuario distinto al del servidor web?).");
+        }
 
         // Se borra el anterior si el slug ha cambiado: si no, cada renombrado
         // dejaría un PDF huérfano en el disco para siempre.

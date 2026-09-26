@@ -230,6 +230,14 @@ Los compartidos por token y los privados nunca aparecen. Ver skill `seo`.
 - Si al pedir el PDF no existe o está marcado para regenerar, el controlador
   web lo genera al vuelo antes de servirlo (mejor una descarga lenta que un
   PDF caducado); si la generación falla y hay uno viejo, se sirve el viejo.
+- `CurriculumPdfService::generate()` **lanza excepción si no puede escribir el
+  fichero**. El disco `public` no lanza por su cuenta (`put()` devuelve `false`),
+  y hasta el 2026-09-21 ese `false` se ignoraba: el CV quedaba marcado como
+  regenerado y se seguía sirviendo el PDF viejo. Pasó en producción al lanzar el
+  comando con el usuario `fryntiz` sobre PDF creados por `www-data`. El comando
+  hay que lanzarlo con el usuario del servidor web:
+  `sudo -u www-data php8.5 artisan cv:regenerate-pdfs --force` (`--force` marca
+  todos; sin él sólo se regeneran los ya marcados).
 - El comando programado `cv:regenerate-pdfs` (`app/Console/Commands/CV/RegenerateCurriculumPdfsCommand.php`)
   regenera en batch los que están marcados, para no depender solo de la
   primera visita.
