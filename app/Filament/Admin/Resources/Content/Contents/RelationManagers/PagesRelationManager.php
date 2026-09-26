@@ -5,15 +5,20 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Content\Contents\RelationManagers;
 
 use App\Enums\ContentPageFormatEnum;
+use App\Enums\ContentPageVersionReasonEnum;
+use App\Exceptions\ContentPageConflictException;
 use App\Filament\Components\EditorJsField;
 use App\Filament\Components\ImageCropperUpload;
 use App\Filament\Concerns\HasImageFileUpload;
+use App\Models\Content\Content;
 use App\Models\Content\ContentPage;
-use App\Models\Content\ContentPageRaw;
+use App\Models\Content\ContentPageVersion;
 use App\Models\User;
 use App\Services\Content\ContentConversion;
 use App\Services\Content\ContentFormatConverter;
+use App\Services\Content\ContentPageDraftService;
 use App\Services\Content\ContentPageFormatService;
+use App\Services\Content\ContentPageHistoryService;
 use Closure;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
@@ -39,6 +44,7 @@ use Filament\Support\Enums\Width;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -62,11 +68,14 @@ use RuntimeException;
  *     revisarlo y seguir escribiendo. «Deshacer» vuelve al formato de antes tal
  *     y como estaba, mientras no se haya guardado.
  *  3. Para guardar hay que marcar una casilla que dice qué va a pasar. Al
- *     guardar, la fuente anterior queda como copia y se puede traer de vuelta
- *     con «Recuperar versión anterior», que sigue el mismo camino.
+ *     guardar, lo anterior pasa al historial de versiones y se puede traer de
+ *     vuelta con «Recuperar versión anterior», que sigue el mismo camino.
  *
  * Los campos ocultos (`source_format`, `stored_format`, `original_*`,
- * `pending_change`, `backup_id`) son el estado de ese camino, no columnas.
+ * `pending_change`, `backup_id`, `opened_at`) son el estado de ese camino, no
+ * columnas. `opened_at` es el `updated_at` de la página al abrir el modal: si
+ * alguien la guarda mientras tanto, no se pisa (D4) y lo escrito queda en el
+ * borrador de quien guardaba.
  */
 class PagesRelationManager extends RelationManager
 {
@@ -91,6 +100,7 @@ class PagesRelationManager extends RelationManager
             Hidden::make('original_content'),
             Hidden::make('pending_change'),
             Hidden::make('backup_id'),
+            Hidden::make('opened_at'),
 
             $this->formatCallout(),
 
@@ -254,6 +264,7 @@ class PagesRelationManager extends RelationManager
                         // Indentado: en «JSON en crudo» se lee (C9).
                         $data[$format->formField()] = $format === ContentPageFormatEnum::EditorJs ? $this->prettyJson($content) : $content;
                         $data['backup_id'] = $service->latestBackup($record)?->id;
+                        $data['opened_at'] = $record->updated_at?->toIso8601String();
 
                         return $data;
                     })
@@ -291,8 +302,8 @@ class PagesRelationManager extends RelationManager
             'convert' => "Has pasado la página de {$original} a {$current} y todavía no se ha guardado nada. "
                 ."Revisa el resultado: al guardar, {$current} será el formato de la página y los demás se regenerarán desde aquí. "
                 ."Si algo no está bien, «Deshacer» vuelve a {$original} tal y como estaba.",
-            'restore' => "Has cargado la copia anterior, en {$current}, y todavía no se ha guardado nada. "
-                .'Revísala: al guardar sustituye al contenido actual, que a su vez queda como copia. '
+            'restore' => "Has cargado la versión anterior, en {$current}, y todavía no se ha guardado nada. "
+                .'Revísala: al guardar sustituye al contenido actual, que pasa al historial. '
                 ."«Deshacer» vuelve a {$original} tal y como estaba.",
             default => 'Es el único formato que se edita y el que la API sirve por defecto. Los demás se generan a partir de este al guardar.',
         };
@@ -304,7 +315,7 @@ class PagesRelationManager extends RelationManager
         $current = $this->currentFormat($get)->label();
 
         if ($get('pending_change') === 'restore') {
-            return "Entiendo que al guardar el contenido actual se sustituye por la copia cargada, en {$current}. Lo que hay ahora queda a su vez como copia.";
+            return "Entiendo que al guardar el contenido actual se sustituye por la versión cargada, en {$current}. Lo que hay ahora pasa al historial.";
         }
 
         if ($stored === $current) {
@@ -404,46 +415,46 @@ class PagesRelationManager extends RelationManager
             ->button()
             ->visible(fn (Get $get): bool => filled($get('backup_id')) && blank($get('pending_change')))
             ->modalHeading('Recuperar la versión anterior')
-            ->modalDescription('Es la copia que se guardó antes del último cambio de formato. Todavía no se guarda nada: si aceptas, se abre en el editor para que la revises, y hasta que no guardes puedes deshacerlo.')
+            ->modalDescription('Es la última versión del historial: lo que había antes del último cambio. Todavía no se guarda nada: si aceptas, se abre en el editor para que la revises, y hasta que no guardes puedes deshacerlo.')
             ->modalWidth(Width::FiveExtraLarge)
             ->fillForm(function (Get $get, ?ContentPage $record): array {
                 $backup = $this->backupFor($record, $get('backup_id'));
 
                 if ($backup === null) {
-                    return ['result' => '', 'notes' => 'No se ha encontrado la copia.', 'failed' => '1'];
+                    return ['result' => '', 'notes' => 'No se ha encontrado la versión.', 'failed' => '1'];
                 }
 
-                $format = $this->formatService()->formatOf($backup);
-
                 return [
-                    'result' => (string) $backup->content,
+                    'result' => $backup->content,
                     'notes' => sprintf(
-                        'Copia en %s guardada el %s.',
-                        $format?->label() ?? $backup->availableType?->type,
-                        $backup->deleted_at?->timezone(config('app.display_timezone', 'Europe/Madrid'))->format('d/m/Y H:i'),
+                        'Versión en %s del %s, guardada en el historial por: %s.',
+                        $backup->format->label(),
+                        $backup->created_at?->timezone(config('app.display_timezone', 'Europe/Madrid'))->format('d/m/Y H:i'),
+                        mb_strtolower($backup->reason->label()),
                     ),
                 ];
             })
             ->schema([
                 Hidden::make('failed'),
                 Hidden::make('notes'),
-                Callout::make('Copia')
+                Callout::make('Versión')
                     ->description(fn (Get $get): HtmlString => $this->notesHtml((string) $get('notes')))
                     ->info(),
-                Textarea::make('result')->label('Contenido de la copia')->readOnly()->rows(16),
+                Textarea::make('result')->label('Contenido de la versión')->readOnly()->rows(16),
             ])
             ->modalSubmitActionLabel('Cargar esta versión')
             ->action(function (array $data, Get $get, Set $set, Action $action, ?ContentPage $record): void {
                 $backup = $this->backupFor($record, $get('backup_id'));
-                $format = $backup !== null ? $this->formatService()->formatOf($backup) : null;
 
-                if ($backup === null || $format === null) {
-                    Notification::make()->danger()->title('No se ha encontrado la copia')->send();
+                if ($backup === null) {
+                    Notification::make()->danger()->title('No se ha encontrado la versión')->send();
                     $action->halt();
+
+                    return;
                 }
 
                 // El contenido sale de la base de datos, no del formulario.
-                $this->applyChange($get, $set, $format, (string) $backup->content, 'restore');
+                $this->applyChange($get, $set, $backup->format, $backup->content, 'restore');
             });
     }
 
@@ -480,10 +491,19 @@ class PagesRelationManager extends RelationManager
     {
         $format = ContentPageFormatEnum::tryFrom((string) ($data['source_format'] ?? '')) ?? ContentPageFormatEnum::EditorJs;
         $content = isset($data[$format->formField()]) ? (string) $data[$format->formField()] : null;
-        $keepBackup = filled($data['pending_change'] ?? null);
+        $reason = match ($data['pending_change'] ?? null) {
+            'restore' => ContentPageVersionReasonEnum::Restore,
+            'convert' => ContentPageVersionReasonEnum::FormatChange,
+            default => null,
+        };
+        $keepBackup = $reason !== null;
+        $openedAt = filled($data['opened_at'] ?? null) ? Carbon::parse((string) $data['opened_at']) : null;
 
         try {
-            $saved = $this->formatService()->savePage($page, $this->pageAttributes($data), $format, $content, $keepBackup, $this->currentUser());
+            $saved = $this->formatService()->savePage($page, $this->pageAttributes($data), $format, $content, $reason, $this->currentUser(), $openedAt);
+        } catch (ContentPageConflictException $e) {
+            $this->keepInDraft($page, $data, $format, $content, $openedAt);
+            $this->refuse($action, $e->getMessage());
         } catch (ValidationException $e) {
             $this->refuse($action, implode(' ', Arr::flatten($e->errors())));
         } catch (InvalidArgumentException|RuntimeException $e) {
@@ -517,6 +537,34 @@ class PagesRelationManager extends RelationManager
     }
 
     /**
+     * La página se ha guardado desde otro sitio: lo escrito aquí va al
+     * borrador de quien guardaba, para no perderlo (D4).
+     *
+     * @param  array<string, mixed>  $data
+     */
+    private function keepInDraft(ContentPage $page, array $data, ContentPageFormatEnum $format, ?string $content, ?Carbon $openedAt): void
+    {
+        $user = $this->currentUser();
+        $owner = $this->getOwnerRecord();
+
+        if ($user === null || ! $owner instanceof Content || $content === null || trim($content) === '') {
+            return;
+        }
+
+        app(ContentPageDraftService::class)->save(
+            $user,
+            $owner,
+            $page->exists ? $page : null,
+            $format,
+            $content,
+            isset($data['title']) ? (string) $data['title'] : null,
+            isset($data['slug']) ? (string) $data['slug'] : null,
+            is_numeric($data['image_id'] ?? null) ? (int) $data['image_id'] : null,
+            $openedAt,
+        );
+    }
+
+    /**
      * No se guarda nada: se avisa y el modal sigue abierto.
      */
     private function refuse(Action $action, string $reason): never
@@ -544,7 +592,7 @@ class PagesRelationManager extends RelationManager
     {
         foreach ([
             'content_json', 'content_markdown', 'content_html', 'source_format', 'stored_format',
-            'original_format', 'original_content', 'pending_change', 'backup_id', 'confirm_format_change',
+            'original_format', 'original_content', 'pending_change', 'backup_id', 'opened_at', 'confirm_format_change',
         ] as $key) {
             unset($data[$key]);
         }
@@ -600,18 +648,15 @@ class PagesRelationManager extends RelationManager
     }
 
     /**
-     * Copia de ESTA página: el id viene del formulario y no se da por bueno.
+     * Versión de ESTA página: el id viene del formulario y no se da por bueno.
      */
-    private function backupFor(?ContentPage $record, mixed $backupId): ?ContentPageRaw
+    private function backupFor(?ContentPage $record, mixed $backupId): ?ContentPageVersion
     {
         if ($record === null || blank($backupId)) {
             return null;
         }
 
-        return ContentPageRaw::onlyTrashed()
-            ->with('availableType')
-            ->where('content_page_id', $record->id)
-            ->find((int) $backupId);
+        return app(ContentPageHistoryService::class)->find($record, $backupId);
     }
 
     /**

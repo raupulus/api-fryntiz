@@ -18,6 +18,7 @@ use App\Models\Tag;
 use App\Models\Technology;
 use App\Models\User;
 use App\Services\Content\ContentContributorService;
+use App\Services\Content\ContentFileUsageService;
 use App\Traits\HasGalleries;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -207,6 +208,11 @@ class Content extends BaseModel
         // Colaboradores automáticos de la plataforma (DUDA-1).
         static::created(fn (Content $model) => app(ContentContributorService::class)->applyToNewContent($model));
 
+        // Al eliminarlo definitivamente, sus ficheros quedan sin usar (C2): la
+        // tarea diaria los borra a los 30 días. Irse a la papelera no, porque
+        // se puede restaurar.
+        static::forceDeleting(fn (Content $model) => app(ContentFileUsageService::class)->markAllOf($model->id));
+
         // Evento "saved": Se dispara después de ser guardado por primera vez y tras actualizarse
         static::saved(function (Content $model) {
             // La plataforma se carga aparte, sola. La que cuelga del contenido
@@ -346,6 +352,8 @@ class Content extends BaseModel
 
     /**
      * Relación con las páginas asociadas al contenido.
+     *
+     * @return HasMany<ContentPage, $this>
      */
     public function pages(): HasMany
     {
@@ -742,21 +750,16 @@ class Content extends BaseModel
     }
 
     /**
-     * Elimina el contenido de la plataforma y lo que tenga asociado.
+     * A la papelera, sin tocar sus ficheros ni su SEO: se puede restaurar.
+     *
+     * Antes borraba en el acto la imagen SEO, la portada y los ficheros de sus
+     * páginas mientras el contenido se quedaba en la papelera (borrado
+     * lógico): al restaurarlo, las imágenes ya no estaban. Los ficheros se
+     * limpian al eliminarlo definitivamente (C2, `ContentFileUsageService`).
      */
     public function safeDelete(): bool
     {
-        $this->seo?->safeDelete();
-
-        $pages = $this->pages;
-
-        if ($pages->count()) {
-            foreach ($pages as $page) {
-                $page->safeDelete();
-            }
-        }
-
-        return parent::safeDelete();
+        return (bool) $this->delete();
     }
 
     /**

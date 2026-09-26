@@ -204,7 +204,7 @@ class ContentPageFormatsTest extends TestCase
         $page->refresh();
         $this->assertSame(Format::EditorJs, $this->service->sourceFormat($page));
         $this->assertStringContainsString('Texto original', (string) $page->content);
-        // Lo que había (el Markdown) queda a su vez como copia.
+        // Lo que había (el Markdown) pasa a su vez al historial.
         $this->assertSame('Versión en Markdown', $this->service->latestBackup($page)?->content);
     }
 

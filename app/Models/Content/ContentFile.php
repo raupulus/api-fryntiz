@@ -14,7 +14,8 @@ use Illuminate\Support\Carbon;
  *
  * @property int $id
  * @property int|null $file_id FK al al archivo
- * @property int|null $content_id FK al contenido que se asocia con el archivo
+ * @property int|null $content_id FK al contenido que se asocia con el archivo (nula si el contenido se eliminó definitivamente)
+ * @property Carbon|null $unused_since Desde cuándo no lo usa nada (ver ContentFileUsageService)
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
@@ -41,5 +42,10 @@ class ContentFile extends BaseModel
     protected $fillable = [
         'content_id',
         'file_id',
+        'unused_since',
+    ];
+
+    protected $casts = [
+        'unused_since' => 'datetime',
     ];
 }

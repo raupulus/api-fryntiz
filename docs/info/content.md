@@ -10,6 +10,8 @@ Sistema de gestión de contenidos multi-plataforma y multi-tipo. Soporta artícu
 | `app/Models/Content/Content.php` | `contents` | Contenido principal |
 | `app/Models/Content/ContentPage.php` | `content_pages` | Páginas del contenido |
 | `app/Models/Content/ContentPageRaw.php` | `content_page_raw` | Contenido raw (HTML/Markdown/JSON) de páginas |
+| `app/Models/Content/ContentPageVersion.php` | `content_page_versions` | Historial: lo que tenía una página antes de cada cambio |
+| `app/Models/Content/ContentPageDraft.php` | `content_page_drafts` | Borradores sin guardar, uno por usuario y página |
 | `app/Models/Content/ContentAvailablePageRaw.php` | `content_available_page_raw` | Tipos de raw disponibles |
 | `app/Models/Content/ContentAvailableType.php` | `content_available_types` | Tipos de contenido disponibles |
 | `app/Models/Content/ContentAvailableStatus.php` | — | Estados disponibles |
@@ -39,7 +41,11 @@ Sistema de gestión de contenidos multi-plataforma y multi-tipo. Soporta artícu
 | `app/Services/Content/ContentService.php` | Lógica: getBySlug, getRelated, getFeaturedForPlatform |
 | `app/Services/Content/ContentSeoService.php` | Lógica SEO del contenido |
 | `app/Services/Content/ContentFormatConverter.php` | Conversión de páginas entre Editor.js, Markdown y HTML, y el HTML que se sirve |
-| `app/Services/Content/ContentPageFormatService.php` | Fuente única de cada página: guardar, regenerar derivados, copias antes de cambiar de formato |
+| `app/Services/Content/ContentPageFormatService.php` | Fuente única de cada página: guardar, regenerar derivados; al guardar, historial, bloqueo, fecha de apertura, borrador y ficheros sin usar |
+| `app/Services/Content/ContentPageHistoryService.php` | Historial de versiones de las páginas (50 por página, 30 días) |
+| `app/Services/Content/ContentPageDraftService.php` | Borradores de las páginas en el servidor, uno por usuario y página |
+| `app/Services/Content/ContentPageLockService.php` | Bloqueo de cada página a un usuario mientras la edita (`ContentPageLockState`: cómo está para quien pregunta) |
+| `app/Services/Content/ContentFileUsageService.php` | Marca los ficheros de contenido que ya no usa nada y borra los que llevan 30 días así |
 | `app/Services/Content/ContentContributorService.php` | Añadir y quitar colaboradores, y el colaborador automático por plataforma |
 
 ### Resources API V2
@@ -56,6 +62,7 @@ Sistema de gestión de contenidos multi-plataforma y multi-tipo. Soporta artícu
 | `app/Enums/ContentTypeEnum.php` | Tipos: artículo, tutorial, proyecto, página, reseña |
 | `app/Enums/ContentPageRawTypeEnum.php` | Tipos raw: HTML, Markdown, JSON (sin uso) |
 | `app/Enums/ContentPageFormatEnum.php` | Formatos de edición de una página: `editorjs`, `markdown`, `html` (el tipo en BD de Editor.js es `json`) |
+| `app/Enums/ContentPageVersionReasonEnum.php` | Por qué una versión pasó al historial: `save`, `format_change`, `restore`, `draft_restore`, `emptied` |
 
 ### Otros
 | Archivo | Descripción |
@@ -64,6 +71,8 @@ Sistema de gestión de contenidos multi-plataforma y multi-tipo. Soporta artícu
 | `app/Policies/ContentPagePolicy.php` | Las páginas siguen a la política de su contenido |
 | `app/Models/PlatformUser.php` | Plataformas de un Editor (`platform_user`) y su interruptor de colaborador automático |
 | `app/Console/Commands/ContentPublishCommand.php` + `app/Actions/PublishContentAction.php` | `content:publish`: publica los programados cuya fecha ha llegado (cada 5 minutos) |
+| `app/Console/Commands/ContentPruneDraftsAndVersionsCommand.php` | `content:prune-drafts-and-versions`: borradores y versiones de más de 30 días, y versiones que pasan de 50 por página (diaria) |
+| `app/Console/Commands/ContentPurgeUnusedFilesCommand.php` | `content:purge-unused-files`: ficheros de contenido que llevan 30 días sin usar (diaria) |
 | `app/Console/Commands/SitemapGeneratorCommand.php` | Generar sitemap XML |
 
 ## Campos del modelo Content
@@ -152,10 +161,15 @@ de la v1 (en producción, todos: no se tocan; se publican a mano cuando toque).
 | `slug` | string | Slug |
 | `content` | text | HTML que se sirve a la web; se regenera desde la fuente al guardar |
 | `order` | int | Orden de la página |
+| `locked_by_user_id` | int | FK → `users.id` (SET NULL): quién la tiene bloqueada |
+| `locked_since` | timestamp | Desde cuándo la tiene bloqueada ese usuario (para el aviso) |
+| `locked_at` | timestamp | Última renovación del bloqueo: caduca a los 2 minutos |
+| `lock_token` | string(64) | Pestaña que tiene el bloqueo |
 
 `content_page_raw` guarda la página en cada formato: la fuente y las versiones
-derivadas en Editor.js y Markdown. Las filas con `deleted_at` son las copias
-que se guardan antes de un cambio de formato.
+derivadas en Editor.js y Markdown. Hasta F6 del plan de contenidos, las filas
+con `deleted_at` eran las copias de antes de un cambio de formato; ahora lo
+anterior va al historial (`content_page_versions`) y ya no se crean.
 
 ## Campos del modelo ContentSeo
 
@@ -207,6 +221,8 @@ que se guardan antes de un cambio de formato.
 - `ContentPage` → `HasMany` → `ContentPageRaw` (`raws()`, vía `content_page_id`)
 - `ContentPage` → `BelongsTo` → `ContentAvailablePageRaw` (`currentRawType()`, vía `current_page_raw_id`)
 - `ContentPageRaw` → `BelongsTo` → `ContentAvailablePageRaw` (`availableType()`, vía `available_page_raw_id`)
+- `ContentPage` → `HasMany` → `ContentPageVersion` (`versions()`) y `ContentPageDraft` (`drafts()`)
+- `ContentPage` → `BelongsTo` → `User` (`lockedBy()`, vía `locked_by_user_id`)
 - `Content` → `BelongsToMany` → `User` (`contributors()`, pivote `content_contributors`; inversa `User::contributedContents()`)
 
 Las relaciones con pivote (`contributors()`, `technologies()`, `tagsPlatform()`,
@@ -522,10 +538,10 @@ al guardar. Una página nueva empieza en Editor.js.
    El HTML no se guarda aparte: es `content`. Si una derivada falla, se
    registra en el log y no impide guardar la fuente; la API la convierte al
    vuelo.
-4. Si el formato cambia, la fila de la fuente anterior **no se pisa**: se
-   borra con soft delete y queda como copia. También se guarda copia al
-   recuperar una versión anterior y cuando el guardado deja la página vacía.
-   `latestBackup()` devuelve la última.
+4. Si el contenido cambia, lo que había pasa al **historial de versiones**
+   (ver «Borradores, bloqueo, historial y ficheros sin usar»), con su motivo:
+   cambio de formato, recuperación, página vaciada o guardado normal.
+   `latestBackup()` devuelve la última versión.
 
 Un editor vacío no guarda nada (vaciar el editor por error no borra la página).
 
@@ -671,7 +687,7 @@ no se ejecuta para nadie más.
 ### El panel (`PagesRelationManager`)
 
 - Un aviso arriba dice el formato de la página y tiene los botones «Pasar a …»
-  y, si hay copia, «Recuperar versión anterior». Columna «Formato» en la tabla.
+  y, si hay historial, «Recuperar versión anterior». Columna «Formato» en la tabla.
 - **Editor.js**: el de siempre, con «Editor visual» y «JSON en crudo».
 - **Markdown**: `MarkdownEditor` (sin adjuntos: las imágenes van por URL) y
   una pestaña «Vista previa».
@@ -696,15 +712,20 @@ Cambiar de formato, paso a paso:
    Editor.js», que la deja como estaba.
 3. Para guardar hay que marcar la casilla «Entiendo que la página pasa de
    Editor.js a Markdown…». Al guardar, Markdown es el formato de la página, se
-   regenera todo desde él y el Editor.js anterior queda como copia.
-4. «Recuperar versión anterior» sigue el mismo camino: enseña la copia, la
-   abre sin guardar, se puede deshacer y hay que confirmar al guardar. Lo que
-   había queda a su vez como copia.
+   regenera todo desde él y el Editor.js anterior pasa al historial.
+4. «Recuperar versión anterior» sigue el mismo camino: enseña la última
+   versión del historial, la abre sin guardar, se puede deshacer y hay que
+   confirmar al guardar. Lo que había pasa a su vez al historial.
 
 Los campos ocultos del formulario (`source_format`, `stored_format`,
-`original_format`, `original_content`, `pending_change`, `backup_id`) son el
-estado de ese camino, no columnas. `backup_id` viene del formulario, así que
-se comprueba que la copia sea de esa página antes de usarla.
+`original_format`, `original_content`, `pending_change`, `backup_id`,
+`opened_at`) son el estado de ese camino, no columnas. `backup_id` viene del
+formulario, así que se comprueba que la versión sea de esa página antes de
+usarla. `opened_at` es la fecha de la página al abrir el modal: si alguien la
+guarda mientras tanto, no se pisa y lo escrito va al borrador (ver D4 abajo).
+
+El modal no coge el bloqueo (eso llega con la pantalla propia de F8), pero sí
+lo respeta: si alguien tiene la página bloqueada, no guarda y dice quién.
 
 ### API
 
@@ -808,6 +829,105 @@ Ante la duda no se pide nada: los metadatos responden `success: 0` (la tarjeta
 se queda en enlace, que es válido) y la imagen, 422 con el motivo. Fijado por
 `tests/Feature/Filament/EditorJsTest.php`, que prueba las ocho URL que no debe
 tocar, en las dos rutas, y comprueba que **no sale ninguna petición**.
+
+## Borradores, bloqueo, historial y ficheros sin usar
+
+Fase F6 del plan de contenidos del 2026-09-24 (D1, P4, D4, G5 y C2 de la
+auditoría). Es el servidor: la pantalla que lo usa llega en F8.
+
+### Historial (`ContentPageHistoryService`, tabla `content_page_versions`)
+
+- Una versión es lo que tenía la página **antes** de un cambio, con su
+  formato, título, contenido, huella, motivo (`ContentPageVersionReasonEnum`) y
+  quién guardó el cambio.
+- Sólo se crea si el contenido cambia. La huella (`hash()`) no cuenta el
+  `time` de Editor.js (cambia en cada guardado del editor sin que cambie nada)
+  ni la indentación del JSON, ni los saltos de línea de Windows. Cambiar sólo
+  el título no crea versión.
+- Como mucho 50 por página: al crear la 51 se borra la más antigua. Las de más
+  de 30 días las borra `content:prune-drafts-and-versions`.
+- Sustituye a las copias como filas borradas de `content_page_raw`.
+
+### Borradores (`ContentPageDraftService`, tabla `content_page_drafts`)
+
+- Uno por usuario y página (y uno por usuario y contenido para una página
+  nueva, con un índice único parcial). Cada borrador es sólo de quien lo
+  escribió: `find()` nunca da el de otro, y `restore()` y `discard()` de otro
+  dan `AuthorizationException`.
+- `save()` sólo escribe si lo que llega es distinto del último borrador y de
+  lo guardado (huella de formato, título, slug, imagen y contenido). Si es
+  igual a lo guardado, borra el borrador que hubiera.
+- `base_page_updated_at` es la fecha de la página al abrirla: `isOutdated()`
+  dice si se ha guardado después («La página ha cambiado desde tu borrador»).
+- `restore()` guarda el borrador en su página (o crea la página, si era nueva)
+  con motivo `draft_restore`: lo que había queda en el historial.
+- Al guardar una página se borra el borrador de quien guarda, no el de los
+  demás. Los de más de 30 días sin tocar los borra la tarea diaria.
+
+### Bloqueo (`ContentPageLockService`)
+
+- `acquire()` con un `lock_token` por pestaña: la coge si está libre, caducada
+  o ya era de esa pestaña. Si no, devuelve el estado sin tocar nada:
+  «Ana la está editando desde hace 5 minutos…» u «Ya la tienes abierta en otra
+  pestaña…».
+- `renew()` con cada autoguardado; `false` es «bloqueo perdido» (caducó y la
+  cogió otro, o un administrador forzó el desbloqueo). `release()` al salir.
+- Caduca a los 2 minutos (`TTL_SECONDS`) sin renovar.
+- `forceUnlock()`: sólo administradores. El borrador del desplazado sigue ahí.
+- Todo se escribe con el constructor de consultas: el bloqueo **no toca
+  `updated_at`**, que es la fecha que usa D4. `acquire()` lee la fila con
+  `FOR UPDATE`, así que dos pestañas a la vez no se la quedan las dos.
+
+### Al guardar (`ContentPageFormatService::savePage()`)
+
+Dentro de la misma transacción, con la fila de la página leída con
+`FOR UPDATE`:
+
+1. Si otro tiene el bloqueo (otro usuario u otra pestaña), no guarda:
+   `ContentPageLockedException` con el aviso de quién.
+2. **D4, la última red:** si llega `openedAt` y la página se ha guardado
+   después, no guarda: `ContentPageConflictException` («Esta página se ha
+   modificado mientras la editabas. Tu versión está a salvo en el borrador;
+   recarga para ver la otra»). Quien llama guarda lo escrito en el borrador;
+   el modal de páginas ya lo hace. Con el bloqueo, sólo pasa tras un
+   desbloqueo forzado. La fecha va al segundo, como `updated_at`.
+3. Guarda, deja lo anterior en el historial y borra el borrador de quien
+   guarda.
+4. Marca y desmarca los ficheros del contenido (abajo).
+
+### Ficheros sin usar (`ContentFileUsageService`, `content_files.unused_since`)
+
+- **En uso** = aparece en alguna página del contenido (también las de la
+  papelera, que se pueden restaurar, y sus formatos guardados), en una versión,
+  en un borrador, o es portada del contenido, de una página, de su SEO o de un
+  borrador. Se reconoce por su `file_id` en el JSON de Editor.js y por sus URLs
+  (`/file/get|download|resize/{módulo}/{id}` y las de sus miniaturas,
+  `/file/thumbnail/get/{módulo}/{id de la miniatura}`), también con las barras
+  escapadas del JSON. Con la copia de producción, los 71 ficheros de contenido
+  salen en uso.
+- Cada guardado de página marca con `unused_since` los que no están en uso y
+  desmarca los que vuelven. También la tarea de podar historial y borradores,
+  en los contenidos donde ha borrado algo.
+- A la papelera no se marca nada. **Eliminar definitivamente** una página
+  vuelve a mirar los de su contenido; un contenido marca todos los suyos, y sus
+  filas se quedan con `content_id` nulo (la clave pasó de CASCADE a SET NULL)
+  para que la tarea los encuentre.
+- `content:purge-unused-files` borra los marcados hace más de 30 días
+  —fichero, miniaturas del disco y sus filas— después de comprobar en **toda**
+  la base que nada los usa: otro contenido que lo tenga en uso, el texto de
+  cualquier página, versión o borrador, o cualquier columna con clave foránea a
+  `files` (portadas, galerías, usuarios…). Si algo lo usa, lo desmarca y no lo
+  borra.
+- `Content::safeDelete()` y `ContentPage::safeDelete()` ya no borran ficheros:
+  borraban del disco las imágenes de un contenido o página que se quedaba en la
+  papelera. (Ninguna pantalla los usaba.)
+
+Tareas diarias (hora de Madrid): `content:prune-drafts-and-versions` a las
+04:00 y `content:purge-unused-files` a las 04:15.
+
+Fijado por `ContentPageDraftTest`, `ContentPageLockTest`,
+`ContentPageHistoryTest`, `ContentFileUsageTest` (con ficheros de verdad en el
+disco) y `ContentPageSavingTest` (conflicto en el modal).
 
 ## Galerías
 

@@ -521,6 +521,27 @@ la DUDA-1 y la DUDA-2 del plan de contenidos del 2026-09-24.*
 
 ---
 
+### D36 · Los ficheros de contenido se borran a los 30 días sin usar, no al quitarlos
+
+Quitar una imagen de una página no borra el fichero. Al guardar, se marca como «sin usar» si
+no aparece en ninguna página (tampoco en la papelera), versión del historial, borrador ni
+portada, y una tarea diaria lo borra a los 30 días, después de comprobar en toda la base que
+nada lo usa.
+
+**Por qué.** `main` lo borraba en el acto y al cortar y pegar un bloque para moverlo la imagen
+se perdía. Con el historial de versiones, además, una imagen quitada puede volver al recuperar
+una versión: borrarla antes de que caduque la versión dejaría la página rota. Un contenido o una
+página en la papelera tampoco marcan nada, porque se pueden restaurar.
+
+Para que eliminar un contenido definitivamente no deje ficheros huérfanos, la clave
+`content_files.content_id` pasa de CASCADE a SET NULL: las filas se quedan, marcadas, hasta que
+la tarea borra sus ficheros.
+
+*Fijado por `ContentFileUsageTest`, con ficheros de verdad en el disco. C2 de la auditoría de
+contenidos del 2026-09-24.*
+
+---
+
 ## Dependencias
 
 ### D7 · Las dependencias se mantienen al día, incluidos los majors

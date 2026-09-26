@@ -54,6 +54,21 @@ Schedule::command('sitemap:generate')
     ->withoutOverlapping()
     ->onFailure($warnOnFailure('sitemap:generate'));
 
+// Borradores y versiones de páginas de más de 30 días, y versiones que pasan
+// de 50 por página. Antes que la purga: puede dejar ficheros sin usar.
+Schedule::command('content:prune-drafts-and-versions')
+    ->dailyAt('04:00')
+    ->timezone('Europe/Madrid')
+    ->withoutOverlapping()
+    ->onFailure($warnOnFailure('content:prune-drafts-and-versions'));
+
+// Ficheros de contenido que llevan 30 días sin usar.
+Schedule::command('content:purge-unused-files')
+    ->dailyAt('04:15')
+    ->timezone('Europe/Madrid')
+    ->withoutOverlapping()
+    ->onFailure($warnOnFailure('content:purge-unused-files'));
+
 // ── AEMET ────────────────────────────────────────────────────────────────────
 //
 // La cadencia de cada uno sale de la `periodicidad` que declara AEMET para su

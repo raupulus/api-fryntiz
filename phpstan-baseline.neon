@@ -295,12 +295,6 @@ parameters:
 			path: app/Models/CV/CurriculumSkill.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$order\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/Content/ContentPage.php
-
-		-
 			message: '#^PHPDoc tag @return with type mixed is not subtype of native type string\.$#'
 			identifier: return.phpDocType
 			count: 1

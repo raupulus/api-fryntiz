@@ -12,17 +12,16 @@ use App\Filament\Components\EditorJsField;
 use App\Models\Content\Content;
 use App\Models\Content\ContentPage;
 use App\Models\User;
-use App\Services\Content\ContentBlockValidator;
-use App\Services\Content\ContentFormatConverter;
-use App\Services\Content\ContentHtmlSanitizer;
-use App\Services\Content\ContentMarkdownSanitizer;
+use App\Services\Content\ContentPageDraftService;
 use App\Services\Content\ContentPageFormatService;
+use App\Services\Content\ContentPageHistoryService;
 use Database\Seeders\ContentAvailablePageRawSeeder;
 use Database\Seeders\ContentAvailableTypesSeeder;
 use Database\Seeders\RolesTableSeeder;
 use Filament\Actions\Testing\TestAction;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
@@ -183,15 +182,11 @@ class ContentPageSavingTest extends TestCase
         $this->actingAsRole(UserRoleEnum::Admin);
         $page = $this->page($this->editorJs([['id' => 'p1', 'type' => 'paragraph', 'data' => ['text' => 'Antes']]]), 'Título viejo');
 
-        // Un fallo al guardar el contenido, después de haber escrito el título.
-        $mock = Mockery::mock(ContentPageFormatService::class, [
-            app(ContentFormatConverter::class),
-            app(ContentBlockValidator::class),
-            app(ContentHtmlSanitizer::class),
-            app(ContentMarkdownSanitizer::class),
-        ])->makePartial();
-        $mock->shouldReceive('save')->andThrow(new RuntimeException('Fallo forzado al guardar el contenido.'));
-        $this->app->instance(ContentPageFormatService::class, $mock);
+        // Un fallo al guardar el contenido, después de haber escrito el título
+        // (pasar lo anterior al historial va justo antes de escribir la fuente).
+        $history = Mockery::mock(ContentPageHistoryService::class)->makePartial();
+        $history->shouldReceive('record')->andThrow(new RuntimeException('Fallo forzado al guardar el contenido.'));
+        $this->app->instance(ContentPageHistoryService::class, $history);
 
         $this->edit($page)
             ->fillForm(['title' => 'Título nuevo', 'content_json' => $this->editorJs([['id' => 'p1', 'type' => 'paragraph', 'data' => ['text' => 'Después']]])], 'mountedActionSchema0')
@@ -201,6 +196,27 @@ class ContentPageSavingTest extends TestCase
         $page->refresh();
         $this->assertSame('Título viejo', $page->title);
         $this->assertStringContainsString('Antes', (string) $page->content);
+    }
+
+    #[Test]
+    public function if_the_page_is_saved_elsewhere_meanwhile_it_is_not_overwritten_and_the_work_goes_to_the_draft(): void
+    {
+        $user = $this->actingAsRole(UserRoleEnum::Admin);
+        $page = $this->page($this->editorJs([['id' => 'p1', 'type' => 'paragraph', 'data' => ['text' => 'Antes']]]));
+
+        $modal = $this->edit($page);
+
+        // Mientras el modal está abierto, se guarda desde otra pestaña.
+        Carbon::setTestNow(now()->addMinute());
+        $this->service->savePage($page->refresh(), [], Format::EditorJs, $this->editorJs([['id' => 'p1', 'type' => 'paragraph', 'data' => ['text' => 'Otra pestaña']]]), author: $user);
+
+        $modal
+            ->fillForm(['content_json' => $this->editorJs([['id' => 'p1', 'type' => 'paragraph', 'data' => ['text' => 'Lo mío']]])], 'mountedActionSchema0')
+            ->callMountedAction()
+            ->assertNotified('No se ha guardado la página');
+
+        $this->assertStringContainsString('Otra pestaña', (string) $page->refresh()->content);
+        $this->assertStringContainsString('Lo mío', (string) app(ContentPageDraftService::class)->find($user, $this->content, $page)?->content);
     }
 
     // ── Código escondido ────────────────────────────────────────────────────

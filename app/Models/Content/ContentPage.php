@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Models\Content;
 
-use App\Helpers\TextFormatParseHelper;
 use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseModel;
 use App\Models\File;
+use App\Models\User;
+use App\Services\Content\ContentFileUsageService;
 use App\Traits\HasGalleries;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -26,6 +27,10 @@ use Illuminate\Support\Carbon;
  * @property string|null $slug Slug de la página
  * @property string|null $content Contenido de la página en html procesado
  * @property int|null $order Orden de la página al mostrarse
+ * @property int|null $locked_by_user_id Quién la tiene bloqueada (ver ContentPageLockService)
+ * @property Carbon|null $locked_since
+ * @property Carbon|null $locked_at
+ * @property string|null $lock_token
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
@@ -39,6 +44,9 @@ use Illuminate\Support\Carbon;
  * @property-read File|null $image
  * @property-read Collection<int, ContentPageRaw> $raws
  * @property-read ContentAvailablePageRaw|null $currentRawType
+ * @property-read Collection<int, ContentPageVersion> $versions
+ * @property-read Collection<int, ContentPageDraft> $drafts
+ * @property-read User|null $lockedBy
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentPage newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|ContentPage newQuery()
@@ -75,19 +83,62 @@ class ContentPage extends BaseModel
         'order',
     ];
 
+    protected $casts = [
+        'locked_since' => 'datetime',
+        'locked_at' => 'datetime',
+    ];
+
+    protected static function booted(): void
+    {
+        // Eliminada definitivamente, sus ficheros pueden quedarse sin usar
+        // (C2). A la papelera no: se puede restaurar.
+        static::forceDeleted(fn (ContentPage $page) => app(ContentFileUsageService::class)->refresh($page->content_id));
+    }
+
     /**
      * Versiones de la página en cada formato (Editor.js, Markdown, HTML).
      *
      * Una es la fuente, la que marca `current_page_raw_id`; las demás se
-     * regeneran a partir de ella al guardar. Las filas borradas (soft delete)
-     * son las copias que se guardan antes de cambiar de formato. Quien sabe
-     * leerlas es `ContentPageFormatService`.
+     * regeneran a partir de ella al guardar. Quien sabe leerlas es
+     * `ContentPageFormatService`. (Las versiones anteriores están en
+     * `versions()`.)
      *
      * @return HasMany<ContentPageRaw, $this>
      */
     public function raws(): HasMany
     {
         return $this->hasMany(ContentPageRaw::class, 'content_page_id', 'id');
+    }
+
+    /**
+     * Historial: lo que había antes de cada cambio (`ContentPageHistoryService`).
+     *
+     * @return HasMany<ContentPageVersion, $this>
+     */
+    public function versions(): HasMany
+    {
+        return $this->hasMany(ContentPageVersion::class, 'content_page_id', 'id');
+    }
+
+    /**
+     * Borradores de esta página, uno por usuario (`ContentPageDraftService`).
+     *
+     * @return HasMany<ContentPageDraft, $this>
+     */
+    public function drafts(): HasMany
+    {
+        return $this->hasMany(ContentPageDraft::class, 'content_page_id', 'id');
+    }
+
+    /**
+     * Quién la tiene bloqueada. Para saber si el bloqueo sigue vigente, ver
+     * `ContentPageLockService::state()`.
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function lockedBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'locked_by_user_id', 'id');
     }
 
     /**
@@ -136,55 +187,24 @@ class ContentPage extends BaseModel
     }
 
     /**
-     * Elimina de forma segura la página y cualquier elemento asociado, incluso del storage.
+     * A la papelera, y las páginas que van detrás suben un puesto.
+     *
+     * Sus ficheros se quedan: se puede restaurar. Antes los borraba en el acto
+     * del disco (también la portada) mientras la página se quedaba en la
+     * papelera. Se limpian al eliminarla definitivamente (C2,
+     * `ContentFileUsageService`).
      */
     public function safeDelete(): bool
     {
-        $content = $this->contentModel;
+        $this->contentModel?->pages()
+            ->where('order', '>', $this->order)
+            ->get()
+            ->each(function (ContentPage $page): void {
+                $page->order--;
+                $page->save();
+            });
 
-        // # Contenido en bruto asociado a esta página, incluidas las copias de
-        // # antes de cambiar de formato: también pueden apuntar a ficheros.
-        $raws = ContentPageRaw::withTrashed()->where('content_page_id', $this->id)->get();
-        $jsonTypeId = ContentAvailablePageRaw::query()->where('type', 'json')->value('id');
-
-        foreach ($raws as $raw) {
-
-            // # Cuando es un JSON, proviene del editor.js
-            if ($jsonTypeId !== null && $raw->available_page_raw_id === $jsonTypeId) {
-                $jsonRaw = json_decode($raw->content, true);
-
-                $blocks = $jsonRaw['blocks'] ?? null;
-
-                if ($blocks && count($blocks)) {
-                    $blocksToDelete = TextFormatParseHelper::searchBlocks($blocks, [
-                        'attaches',
-                        'image',
-                    ]);
-
-                    $filesId = $blocksToDelete->pluck('data.file.file_id')->toArray();
-                    $contentFilesId = $blocksToDelete->pluck('data.file.content_file_id')->toArray();
-
-                    $files = File::whereIn('id', $filesId)->get();
-
-                    foreach ($files as $f) {
-                        $f->safeDelete();
-                    }
-
-                    ContentFile::whereIn('id', $contentFilesId)->delete();
-                }
-            }
-        }
-
-        // # Borro la imagen principal de la página.
-        $this->image?->safeDelete();
-
-        // # Reordeno todas las páginas.
-        $content->pages()->where('order', '>', $this->order)->get()->map(function ($page) {
-            $page->order--;
-            $page->save();
-        });
-
-        return $this->delete();
+        return (bool) $this->delete();
     }
 
     /**

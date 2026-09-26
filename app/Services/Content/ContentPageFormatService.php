@@ -5,12 +5,19 @@ declare(strict_types=1);
 namespace App\Services\Content;
 
 use App\Enums\ContentPageFormatEnum;
+use App\Enums\ContentPageVersionReasonEnum;
+use App\Exceptions\ContentPageConflictException;
+use App\Exceptions\ContentPageLockedException;
 use App\Models\Content\ContentAvailablePageRaw;
 use App\Models\Content\ContentFile;
 use App\Models\Content\ContentPage;
+use App\Models\Content\ContentPageDraft;
 use App\Models\Content\ContentPageRaw;
+use App\Models\Content\ContentPageVersion;
 use App\Models\File;
 use App\Models\User;
+use Carbon\CarbonInterface;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
@@ -28,9 +35,18 @@ use Throwable;
  *  - Editor.js y Markdown, si no son la fuente, se regeneran a partir de ella
  *    (el HTML no se guarda aparte: es `content`).
  *
- * Antes de cambiar de formato, la fila de la fuente anterior se borra con soft
- * delete en vez de pisarla: esas filas borradas son las copias que el panel
- * ofrece en «Recuperar versión anterior».
+ * Si el guardado cambia el contenido, lo que había antes pasa al historial de
+ * versiones (`ContentPageHistoryService`, G5), con el motivo: guardado, cambio
+ * de formato, recuperación de una versión o de un borrador, o página vaciada.
+ * Antes se guardaba sólo al cambiar de formato, como fila borrada de
+ * `content_page_raw`.
+ *
+ * `savePage()`, además (F6 del plan de contenidos del 2026-09-24):
+ *  - no guarda si otro tiene la página bloqueada (`ContentPageLockService`);
+ *  - no guarda si la página se ha guardado desde otro sitio después de abrirla
+ *    (D4: la fecha con la que se abrió no coincide con `updated_at`);
+ *  - borra el borrador de quien guarda;
+ *  - marca y desmarca los ficheros del contenido que ya no se usan (C2).
  *
  * Páginas sin `current_page_raw_id` (anteriores a esto, o nuevas sin contenido):
  * si tienen JSON de Editor.js, la fuente es Editor.js; si sólo tienen HTML en
@@ -45,6 +61,9 @@ class ContentPageFormatService
         private readonly ContentBlockValidator $validator,
         private readonly ContentHtmlSanitizer $sanitizer,
         private readonly ContentMarkdownSanitizer $markdownSanitizer,
+        private readonly ContentPageHistoryService $history,
+        private readonly ContentPageLockService $locks,
+        private readonly ContentFileUsageService $usage,
     ) {}
 
     /**
@@ -119,10 +138,15 @@ class ContentPageFormatService
      * y un contenido que fallaba dejaba el título cambiado y el contenido viejo.
      *
      * @param  array<string, mixed>  $attributes  Columnas de `content_pages`.
+     * @param  ContentPageVersionReasonEnum|null  $reason  Motivo de la versión que se guarde (recuperar una versión o un borrador); si no, se deduce.
      * @param  User|null  $author  Quién guarda; null es el sistema (se le trata como administrador).
+     * @param  CarbonInterface|null  $openedAt  `updated_at` que tenía la página al abrirla; si ha cambiado, no se guarda (D4).
+     * @param  string|null  $lockToken  Pestaña que guarda, si tiene el bloqueo.
      * @return bool Si se ha guardado el contenido (false si venía vacío).
      *
      * @throws ValidationException si el contenido no se puede guardar tal cual (ver `save()`).
+     * @throws ContentPageLockedException si otro tiene la página bloqueada.
+     * @throws ContentPageConflictException si la página se ha guardado desde otro sitio después de abrirla.
      * @throws RuntimeException si faltan los tipos en `content_available_page_raw`.
      */
     public function savePage(
@@ -130,18 +154,69 @@ class ContentPageFormatService
         array $attributes,
         ContentPageFormatEnum $format,
         ?string $content,
-        bool $keepBackup = false,
+        ?ContentPageVersionReasonEnum $reason = null,
         ?User $author = null,
+        ?CarbonInterface $openedAt = null,
+        ?string $lockToken = null,
     ): bool {
-        return DB::transaction(function () use ($page, $attributes, $format, $content, $keepBackup, $author): bool {
+        $saved = DB::transaction(function () use ($page, $attributes, $format, $content, $reason, $author, $openedAt, $lockToken): bool {
+            if ($page->exists) {
+                $this->guard($page, $author, $openedAt, $lockToken);
+            }
+
+            $previousTitle = $page->exists ? $page->getOriginal('title') : null;
             $page->fill($attributes)->save();
 
-            return $this->save($page, $format, $content, $keepBackup, $author);
+            $saved = $this->persist($page, $format, $content, $reason, $author, $previousTitle);
+            $this->forgetDraft($page, $author);
+
+            return $saved;
         });
+
+        $this->usage->refresh($page->content_id);
+
+        return $saved;
+    }
+
+    /**
+     * Nadie más tiene el bloqueo y la página sigue como cuando se abrió. La
+     * fila se lee con `FOR UPDATE`: dos guardados a la vez no pasan los dos.
+     *
+     * @throws ContentPageLockedException
+     * @throws ContentPageConflictException
+     */
+    private function guard(ContentPage $page, ?User $author, ?CarbonInterface $openedAt, ?string $lockToken): void
+    {
+        $current = DB::table('content_pages')->where('id', $page->id)->lockForUpdate()->value('updated_at');
+
+        $this->locks->assertCanSave($page, $author, $lockToken);
+
+        if ($openedAt !== null && $current !== null
+            && Carbon::parse($current)->format('Y-m-d H:i:s') !== Carbon::instance($openedAt)->utc()->format('Y-m-d H:i:s')) {
+            throw new ContentPageConflictException;
+        }
+    }
+
+    /**
+     * Al guardar, el borrador de quien guarda ya no hace falta.
+     */
+    private function forgetDraft(ContentPage $page, ?User $author): void
+    {
+        if ($author === null) {
+            return;
+        }
+
+        ContentPageDraft::query()
+            ->where('user_id', $author->id)
+            ->where(fn ($query) => $query
+                ->where('content_page_id', $page->id)
+                ->orWhere(fn ($new) => $new->whereNull('content_page_id')->where('content_id', $page->content_id)))
+            ->delete();
     }
 
     /**
      * Guarda la fuente de la página y regenera todo lo que sale de ella.
+     * (Sin comprobar bloqueo ni fecha de apertura: eso es `savePage()`.)
      *
      * Antes de escribir nada:
      *  - Editor.js: cada bloque tiene que traer su dato principal
@@ -154,15 +229,37 @@ class ContentPageFormatService
      * Si `$content` está vacío no se toca nada (vaciar un editor por error no
      * borra la página), y devuelve false.
      *
-     * @param  bool  $keepBackup  Guardar copia de la fuente actual aunque no cambie el formato (al recuperar una versión anterior).
+     * @param  ContentPageVersionReasonEnum|null  $reason  Motivo de la versión que se guarde; si no, se deduce.
      * @param  User|null  $author  Quién guarda; null es el sistema (se le trata como administrador).
      *
      * @throws ValidationException si el contenido no se puede guardar tal cual, con un mensaje por problema.
      * @throws InvalidArgumentException si el contenido no es válido para su formato.
      * @throws RuntimeException si faltan los tipos en `content_available_page_raw`.
      */
-    public function save(ContentPage $page, ContentPageFormatEnum $format, ?string $content, bool $keepBackup = false, ?User $author = null): bool
+    public function save(ContentPage $page, ContentPageFormatEnum $format, ?string $content, ?ContentPageVersionReasonEnum $reason = null, ?User $author = null): bool
     {
+        $saved = $this->persist($page, $format, $content, $reason, $author, $page->title);
+
+        if ($saved) {
+            $this->usage->refresh($page->content_id);
+        }
+
+        return $saved;
+    }
+
+    /**
+     * @throws ValidationException
+     * @throws InvalidArgumentException
+     * @throws RuntimeException
+     */
+    private function persist(
+        ContentPage $page,
+        ContentPageFormatEnum $format,
+        ?string $content,
+        ?ContentPageVersionReasonEnum $reason,
+        ?User $author,
+        ?string $previousTitle,
+    ): bool {
         if ($content === null || trim($content) === '') {
             return false;
         }
@@ -174,17 +271,20 @@ class ContentPageFormatService
         // Primero lo que puede fallar, antes de escribir nada.
         $served = $this->converter->toServedHtml($content, $format);
 
-        DB::transaction(function () use ($page, $format, $content, $keepBackup, $types, $served, $previousBlocks): void {
+        DB::transaction(function () use ($page, $format, $content, $reason, $author, $previousTitle, $types, $served, $previousBlocks): void {
             $page->unsetRelation('raws')->unsetRelation('currentRawType');
 
             $previous = $this->sourceFormat($page);
             $previousContent = $this->sourceContent($page);
 
-            // Una página que se queda vacía también guarda copia de lo que tenía.
-            $isEmptying = trim(strip_tags($served, '<img><iframe>')) === '';
-
-            if ($previousContent !== '' && ($previous !== $format || $keepBackup || $isEmptying)) {
-                $this->keepCopy($page, $previous, $types);
+            // Lo que había pasa al historial si cambia algo del contenido.
+            if (trim($previousContent) !== ''
+                && ContentPageHistoryService::hash($previous, $previousContent) !== ContentPageHistoryService::hash($format, $content)) {
+                $this->history->record($page, $previous, $previousContent, $previousTitle, $reason ?? match (true) {
+                    $previous !== $format => ContentPageVersionReasonEnum::FormatChange,
+                    trim(strip_tags($served, '<img><iframe>')) === '' => ContentPageVersionReasonEnum::Emptied,
+                    default => ContentPageVersionReasonEnum::Save,
+                }, $author);
             }
 
             $this->putRaw($page, $format, $content, $types);
@@ -413,31 +513,19 @@ class ContentPageFormatService
     }
 
     /**
-     * Última copia guardada antes de un cambio de formato, si la hay.
+     * Última versión del historial, la que ofrece «Recuperar versión anterior».
      */
-    public function latestBackup(ContentPage $page): ?ContentPageRaw
+    public function latestBackup(ContentPage $page): ?ContentPageVersion
     {
-        $typeIds = ContentAvailablePageRaw::query()
-            ->whereIn('type', array_map(fn (ContentPageFormatEnum $format): string => $format->rawType(), ContentPageFormatEnum::cases()))
-            ->pluck('id');
-
-        return ContentPageRaw::onlyTrashed()
-            ->with('availableType')
-            ->where('content_page_id', $page->id)
-            ->whereIn('available_page_raw_id', $typeIds)
-            ->latest('deleted_at')
-            ->latest('id')
-            ->first();
+        return $this->history->latest($page);
     }
 
     /**
-     * Formato de una copia (o de cualquier versión guardada).
+     * Formato de una versión del historial.
      */
-    public function formatOf(ContentPageRaw $raw): ?ContentPageFormatEnum
+    public function formatOf(ContentPageVersion $version): ContentPageFormatEnum
     {
-        $type = $raw->availableType?->type;
-
-        return $type === null ? null : ContentPageFormatEnum::fromRawType($type);
+        return $version->format;
     }
 
     /**
@@ -450,28 +538,6 @@ class ContentPageFormatService
         return $page->raws
             ->sortByDesc('updated_at')
             ->first(fn (ContentPageRaw $raw): bool => $raw->availableType?->type === $format->rawType());
-    }
-
-    /**
-     * Deja la fuente actual como copia (fila borrada) antes de sustituirla.
-     *
-     * @param  array<string, int>  $types
-     */
-    private function keepCopy(ContentPage $page, ContentPageFormatEnum $format, array $types): void
-    {
-        $raw = $this->rawFor($page, $format);
-
-        if ($raw === null) {
-            // Página antigua en HTML sin fila propia: el HTML sólo está en
-            // `content`, que se va a regenerar. Se copia antes.
-            $raw = $page->raws()->create([
-                'available_page_raw_id' => $types[$format->rawType()],
-                'content' => $this->sourceContent($page),
-            ]);
-        }
-
-        $raw->delete();
-        $page->unsetRelation('raws');
     }
 
     /**

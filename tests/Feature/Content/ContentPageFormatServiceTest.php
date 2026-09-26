@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Tests\Feature\Content;
 
 use App\Enums\ContentPageFormatEnum as Format;
+use App\Enums\ContentPageVersionReasonEnum as Reason;
 use App\Models\Content\Content;
 use App\Models\Content\ContentAvailablePageRaw;
 use App\Models\Content\ContentPage;
 use App\Models\Content\ContentPageRaw;
+use App\Models\Content\ContentPageVersion;
 use App\Services\Content\ContentFormatConverter;
 use App\Services\Content\ContentPageFormatService;
 use Database\Seeders\ContentAvailablePageRawSeeder;
@@ -92,11 +94,15 @@ class ContentPageFormatServiceTest extends TestCase
         $this->assertSame(Format::Markdown, $this->service->sourceFormat($page));
         $this->assertStringContainsString('<h1>Nueva</h1>', (string) $page->content);
 
-        // La fuente anterior no se pisa: queda como copia recuperable.
+        // La fuente anterior no se pisa: pasa al historial, como cambio de formato.
         $backup = $this->service->latestBackup($page);
         $this->assertNotNull($backup);
         $this->assertSame(Format::EditorJs, $this->service->formatOf($backup));
         $this->assertSame($original, $backup->content);
+        $this->assertSame(Reason::FormatChange, $backup->reason);
+
+        // Y ya no como fila borrada de `content_page_raw` (el mecanismo de antes).
+        $this->assertSame(0, ContentPageRaw::onlyTrashed()->where('content_page_id', $page->id)->count());
 
         // Y el Editor.js vivo es el derivado del Markdown nuevo.
         $this->assertStringContainsString('Otra cosa', $this->service->contentIn($page, Format::EditorJs));
@@ -127,6 +133,26 @@ class ContentPageFormatServiceTest extends TestCase
 
         $this->assertSame('', (string) $page->refresh()->content);
         $this->assertStringContainsString('Algo', (string) $this->service->latestBackup($page)?->content);
+        $this->assertSame(Reason::Emptied, $this->service->latestBackup($page)?->reason);
+    }
+
+    #[Test]
+    public function saving_the_same_content_again_does_not_add_a_version(): void
+    {
+        $page = $this->page();
+        $this->service->save($page, Format::EditorJs, $this->editorJs('Algo'));
+
+        // El mismo contenido, con otra marca de tiempo del editor e indentado:
+        // no ha cambiado nada.
+        $same = (string) json_encode(['time' => 999] + json_decode($this->editorJs('Algo'), true), JSON_PRETTY_PRINT);
+        $this->service->save($page->refresh(), Format::EditorJs, $same);
+
+        $this->assertSame(0, ContentPageVersion::query()->where('content_page_id', $page->id)->count());
+
+        $this->service->save($page->refresh(), Format::EditorJs, $this->editorJs('Otra cosa'));
+
+        $this->assertSame(1, ContentPageVersion::query()->where('content_page_id', $page->id)->count());
+        $this->assertSame(Reason::Save, $this->service->latestBackup($page)?->reason);
     }
 
     #[Test]

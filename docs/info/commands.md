@@ -184,6 +184,8 @@ de GDACS (`country=Spain`) más un cálculo de distancia en cliente, no hay
 | Comando | Descripción |
 |---------|-------------|
 | `content:publish` | Publica los contenidos programados cuya fecha ya ha llegado: estado «publicado», «Activo» y fecha de publicación de ese momento. Cada 5 minutos. Los recorre de uno en uno para que pasen por las reglas de `Content` y salten sus eventos. |
+| `content:prune-drafts-and-versions` | Borra los borradores de páginas sin tocar en 30 días, las versiones del historial de más de 30 días y las que pasan de 50 por página; después vuelve a mirar los ficheros de los contenidos afectados. Diaria, 04:00 hora de Madrid. |
+| `content:purge-unused-files` | Borra los ficheros de contenido que llevan 30 días sin usar (fichero, miniaturas y filas), comprobando antes en toda la base que nada los usa; si algo los usa, los desmarca. Diaria, 04:15 hora de Madrid. Detalle en [content.md](content.md#borradores-bloqueo-historial-y-ficheros-sin-usar). |
 
 ---
 
@@ -507,4 +509,4 @@ worker de cola, sí.
 
 ---
 
-> Creado: 2026-05-26 · Última revisión: 2026-09-24
+> Creado: 2026-05-26 · Última revisión: 2026-09-26
