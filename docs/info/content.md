@@ -40,6 +40,7 @@ Sistema de gestión de contenidos multi-plataforma y multi-tipo. Soporta artícu
 | `app/Services/Content/ContentSeoService.php` | Lógica SEO del contenido |
 | `app/Services/Content/ContentFormatConverter.php` | Conversión de páginas entre Editor.js, Markdown y HTML, y el HTML que se sirve |
 | `app/Services/Content/ContentPageFormatService.php` | Fuente única de cada página: guardar, regenerar derivados, copias antes de cambiar de formato |
+| `app/Services/Content/ContentContributorService.php` | Añadir y quitar colaboradores, y el colaborador automático por plataforma |
 
 ### Resources API V2
 | Archivo | Descripción |
@@ -59,7 +60,9 @@ Sistema de gestión de contenidos multi-plataforma y multi-tipo. Soporta artícu
 ### Otros
 | Archivo | Descripción |
 |---------|-------------|
-| `app/Policies/ContentPolicy.php` | Política de autorización |
+| `app/Policies/ContentPolicy.php` | Política de autorización (ver «Permisos») |
+| `app/Policies/ContentPagePolicy.php` | Las páginas siguen a la política de su contenido |
+| `app/Models/PlatformUser.php` | Plataformas de un Editor (`platform_user`) y su interruptor de colaborador automático |
 | `app/Console/Commands/ContentPublishCommand.php` + `app/Actions/PublishContentAction.php` | `content:publish`: publica los programados cuya fecha ha llegado (cada 5 minutos) |
 | `app/Console/Commands/SitemapGeneratorCommand.php` | Generar sitemap XML |
 
@@ -123,7 +126,8 @@ que valen igual desde el panel, la acción masiva o el cron):
 | 4, 5 o 6 | No toca las fechas |
 
 `Content::publish()` publica y deja visible (también uno publicado y oculto).
-Lo usan la acción masiva «Publicar» del panel y el cron.
+Lo usan la acción masiva «Publicar» del panel (sólo sobre los que el usuario
+puede publicar, ver «Permisos») y el cron.
 
 **Cron:** `content:publish` cada 5 minutos, `withoutOverlapping`. Recorre los
 programados vencidos de uno en uno con `publish()` (no un `update` masivo), así
@@ -203,6 +207,88 @@ que se guardan antes de un cambio de formato.
 - `ContentPage` → `HasMany` → `ContentPageRaw` (`raws()`, vía `content_page_id`)
 - `ContentPage` → `BelongsTo` → `ContentAvailablePageRaw` (`currentRawType()`, vía `current_page_raw_id`)
 - `ContentPageRaw` → `BelongsTo` → `ContentAvailablePageRaw` (`availableType()`, vía `available_page_raw_id`)
+- `Content` → `BelongsToMany` → `User` (`contributors()`, pivote `content_contributors`; inversa `User::contributedContents()`)
+
+Las relaciones con pivote (`contributors()`, `technologies()`, `tagsPlatform()`,
+`contentsRelated*()`) y las consultas de categorías y etiquetas **ignoran las
+filas borradas** del pivote (`wherePivotNull('deleted_at')`). Todas esas tablas
+tienen borrado lógico y antes no se filtraba: un colaborador quitado seguía
+contando como colaborador.
+
+## Permisos
+
+Admin y SuperAdmin hacen todo. Un Editor trabaja en los contenidos donde es
+**autor** (control completo) o **colaborador** (edita). Sus plataformas sólo
+dicen **dónde puede crear**, no qué puede editar (D35).
+
+| Acción | Admin | Editor autor | Editor colaborador | Otro Editor |
+|---|---|---|---|---|
+| Verlo en la lista, abrirlo, editar datos y páginas, subir ficheros, vincular relacionados y galerías | Sí | Sí | Sí | No (404) |
+| Eliminar y restaurar | Sí | Sí | No | No |
+| Cambiar autor, plataforma y colaboradores (`manage`) | Sí | Sí | No | No |
+| Publicar al momento | Sí | Sí | No | No |
+| Programar | Cualquier fecha futura | Cualquier fecha futura | Con al menos 7 días de margen | No |
+
+- **Crear:** un Admin, en cualquier plataforma; un Editor, sólo si tiene alguna
+  plataforma asignada, sólo en ésas y siempre como autor (`createIn()`).
+- **Borrar definitivamente:** sólo el SuperAdmin.
+- Un contenido sin plataforma sólo lo alcanzan los administradores y su autor.
+- Las páginas siguen al contenido: `ContentPagePolicy` delega en `update` de
+  `ContentPolicy`.
+
+Fijado por `tests/Unit/Policies/ContentPolicyTest.php` (la matriz: cada perfil
+por cada acción, incluido el colaborador quitado) y
+`tests/Feature/Filament/ContentPermissionsPanelTest.php` (el panel).
+
+### Dónde se aplica
+
+- **Lista:** `ContentResource::getEloquentQuery()` le deja a un Editor sólo los
+  contenidos donde es autor o colaborador. Uno ajeno, abierto por URL, da 404.
+- **Plataforma:** al crear, sólo las suyas (validado en el servidor con `in`,
+  no sólo en el desplegable). Bloqueada para quien no tiene `manage`.
+- **Autor:** un Editor que crea es el autor; el campo sale bloqueado y
+  `CreateContent` lo fija por si llegara otro valor. Al cambiarlo, sólo vale un
+  usuario activo Admin o Editor (un autor antiguo de otro rol se conserva).
+- **Estado:** quien no puede publicar no tiene «Publicado» en la lista, y
+  «Publicar el» se valida con `schedule()`, con el aviso de los 7 días.
+- **Acciones masivas** «Publicar» y «Eliminar»: `authorizeIndividualRecords()`,
+  contenido a contenido. Los que no puede se saltan y Filament lo avisa.
+- **Relaciones:** Colaboradores (añadir y quitar sólo con `manage`), Relacionados
+  y Galerías (vincular y desvincular con `update`). Las tres se ocultan a quien
+  no puede ver el contenido.
+- **Rutas del editor:** `can:update,content` (ver «Guardar una página»).
+- La pantalla de páginas (F8) y la vista previa (F7) del plan de contenidos
+  usarán la misma política cuando existan.
+
+### Colaboradores
+
+- Quitar un colaborador **borra su fila** de `content_contributors` (borrado
+  lógico). Esa fila es la marca de «quitado a mano» y se respeta siempre.
+- `App\Services\Content\ContentContributorService`: `add()` (recupera la fila
+  borrada en vez de duplicarla; el autor nunca es colaborador de lo suyo),
+  `remove()`, `applyToNewContent()` y `applyToExistingContents()`.
+- **Colaborador automático** (`platform_user.auto_contributor`, modelo
+  `App\Models\PlatformUser`):
+  - al crear un contenido en la plataforma entran los Editores activos con el
+    interruptor encendido, menos el autor;
+  - al encenderlo, entra en los contenidos que ya existen en esa plataforma,
+    salvo en los que tenga fila (activa o quitada a mano);
+  - al apagarlo no sale de ninguno: sólo deja de entrar en los nuevos.
+- Se gestiona en la ficha del usuario (Sistema → Usuarios → «Plataformas»,
+  visible con el rol Editor): plataforma + interruptor «Colaborador automático».
+- `Content::saveContributors()` sólo toca la relación. Antes, con una lista
+  vacía, `contributors()->delete()` **borraba los usuarios**. `saveTags()` y
+  `saveCategories()` guardan la etiqueta o categoría de la plataforma, quitan
+  (fila borrada) las que sobran y recuperan las que vuelven.
+
+### Selectores de vincular
+
+Autor, colaboradores, relacionados y galerías buscan al escribir, desde dos
+letras, 50 resultados como mucho y sin precargar la tabla entera, y enseñan
+sólo nombres. Los colaboradores posibles son Editores activos que no sean el
+autor ni colaboren ya (un administrador no necesita serlo); en la tabla de
+colaboradores, la columna de email es sólo para administradores. Los
+relacionados son sólo contenidos de la misma plataforma que el usuario alcanza.
 
 ## Rutas API V2
 

@@ -17,6 +17,7 @@ use App\Models\PlatformTag;
 use App\Models\Tag;
 use App\Models\Technology;
 use App\Models\User;
+use App\Services\Content\ContentContributorService;
 use App\Traits\HasGalleries;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -203,6 +204,9 @@ class Content extends BaseModel
         // otro sitio que guarde un contenido.
         static::saving(fn (Content $model) => $model->applyPublicationRules());
 
+        // Colaboradores automáticos de la plataforma (DUDA-1).
+        static::created(fn (Content $model) => app(ContentContributorService::class)->applyToNewContent($model));
+
         // Evento "saved": Se dispara después de ser guardado por primera vez y tras actualizarse
         static::saved(function (Content $model) {
             // La plataforma se carga aparte, sola. La que cuelga del contenido
@@ -362,6 +366,7 @@ class Content extends BaseModel
     public function contentsRelated(): BelongsToMany
     {
         return $this->belongsToMany(self::class, 'content_related', 'content_id', 'content_related_id')
+            ->wherePivotNull('deleted_at')
             ->where('contents.platform_id', $this->platform_id);
     }
 
@@ -371,7 +376,8 @@ class Content extends BaseModel
      */
     public function contentsRelatedAllPlatforms(): BelongsToMany
     {
-        return $this->belongsToMany(self::class, 'content_related', 'content_id', 'content_related_id');
+        return $this->belongsToMany(self::class, 'content_related', 'content_id', 'content_related_id')
+            ->wherePivotNull('deleted_at');
     }
 
     /**
@@ -380,6 +386,7 @@ class Content extends BaseModel
     public function contentsRelatedMe(): BelongsToMany
     {
         return $this->belongsToMany(self::class, 'content_related', 'content_related_id', 'content_id')
+            ->wherePivotNull('deleted_at')
             ->where('contents.platform_id', $this->platform_id);
     }
 
@@ -388,15 +395,31 @@ class Content extends BaseModel
      */
     public function contentsRelatedMeAllPlatforms(): BelongsToMany
     {
-        return $this->belongsToMany(self::class, 'content_related', 'content_related_id', 'content_id');
+        return $this->belongsToMany(self::class, 'content_related', 'content_related_id', 'content_id')
+            ->wherePivotNull('deleted_at');
     }
 
     /**
      * Relación con los colaboradores asociados al contenido.
      */
+    /**
+     * @return BelongsToMany<User, $this>
+     */
     public function contributors(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'content_contributors', 'content_id', 'user_id');
+        // Las tablas intermedias de contenidos tienen borrado lógico, y una
+        // fila borrada es un colaborador quitado: sin este filtro seguiría
+        // contando como colaborador y podría seguir editando.
+        return $this->belongsToMany(User::class, 'content_contributors', 'content_id', 'user_id')
+            ->wherePivotNull('deleted_at');
+    }
+
+    /**
+     * ¿Es colaborador (y no se le ha quitado)?
+     */
+    public function hasContributor(User $user): bool
+    {
+        return $this->contributors()->whereKey($user->id)->exists();
     }
 
     /**
@@ -412,7 +435,8 @@ class Content extends BaseModel
      */
     public function technologies(): BelongsToMany
     {
-        return $this->belongsToMany(Technology::class, 'content_technologies', 'content_id', 'technology_id');
+        return $this->belongsToMany(Technology::class, 'content_technologies', 'content_id', 'technology_id')
+            ->wherePivotNull('deleted_at');
     }
 
     /**
@@ -457,8 +481,8 @@ class Content extends BaseModel
         $categoriesId = Category::select('categories.id')
             ->leftJoin('platform_categories', 'platform_categories.category_id', '=', 'categories.id')
             ->leftJoin('content_categories', 'content_categories.platform_category_id', '=', 'platform_categories.id')
-            // ->leftJoin('contents', 'contents.platform_id', '=','content_categories.content_id')
             ->where('content_categories.content_id', $this->id)
+            ->whereNull('content_categories.deleted_at')
             ->where('platform_categories.platform_id', $platformId ?? $this->platform_id)
             ->groupBy('categories.id')
             ->whereNull('categories.parent_id')
@@ -486,8 +510,8 @@ class Content extends BaseModel
         $categoriesId = Category::select('categories.id')
             ->leftJoin('platform_categories', 'platform_categories.category_id', '=', 'categories.id')
             ->leftJoin('content_categories', 'content_categories.platform_category_id', '=', 'platform_categories.id')
-            // ->leftJoin('contents', 'contents.platform_id', '=','content_categories.content_id')
             ->where('content_categories.content_id', $this->id)
+            ->whereNull('content_categories.deleted_at')
             ->where('platform_categories.platform_id', $platformId ?? $this->platform_id)
             ->groupBy('categories.id')
             ->whereNotNull('categories.parent_id')
@@ -536,8 +560,8 @@ class Content extends BaseModel
             ->leftJoin('platform_tags', 'platform_tags.tag_id', '=',
                 'tags.id')
             ->leftJoin('content_tags', 'content_tags.platform_tag_id', '=', 'platform_tags.id')
-            // ->leftJoin('contents', 'contents.platform_id', '=', 'content_categories.content_id')
             ->where('content_tags.content_id', $this->id)
+            ->whereNull('content_tags.deleted_at')
             ->where('platform_tags.platform_id', $platformId ?? $this->platform_id)
             ->groupBy('tags.id')
             ->get();
@@ -558,7 +582,8 @@ class Content extends BaseModel
      */
     public function tagsPlatform(): BelongsToMany
     {
-        return $this->belongsToMany(PlatformTag::class, 'content_tags', 'content_id', 'platform_tag_id');
+        return $this->belongsToMany(PlatformTag::class, 'content_tags', 'content_id', 'platform_tag_id')
+            ->wherePivotNull('deleted_at');
     }
 
     /**
@@ -610,173 +635,110 @@ class Content extends BaseModel
     }
 
     /**
-     * Almacena los contribuidores del contenido, previamente borrará los
-     * existentes si los hubiera.
+     * Deja como colaboradores exactamente estos usuarios.
      *
-     * @param  array  $contributors  Es un array con los ids de los usuarios.
-     * @return void
+     * Los que sobran se quitan (su fila queda borrada: es una baja manual, que
+     * el colaborador automático respeta) y los que vuelven se recuperan. Sólo
+     * se toca la relación, nunca a los usuarios: antes, con una lista vacía,
+     * `contributors()->delete()` borraba los usuarios colaboradores. El autor no
+     * es colaborador de lo suyo.
+     *
+     * @param  array<int|string|null>  $contributors  Ids de los usuarios.
      */
-    public function saveContributors(array $contributors)
+    public function saveContributors(array $contributors): void
     {
-        $contributors = array_unique(array_filter($contributors));
+        $service = app(ContentContributorService::class);
+        $wanted = array_values(array_unique(array_map('intval', array_filter($contributors))));
 
-        if (isset($contributors[auth()->id()])) {
-            unset($contributors[auth()->id()]);
-        }
-
-        if (! $contributors || ! count($contributors)) {
-            $this->contributors()->delete();
-
-            return;
-        }
-
-        $contributorsToDelete = $this->contributors()->pluck('user_id')->diff($contributors);
-
-        $contributorsToDelete->each(function ($contributor) {
-            ContentContributor::where('user_id', $contributor)
-                ->where('content_id', $this->id)
-                ->delete();
-        });
-
-        $contributorsStored = $this->contributors()
-            ->whereIn('user_id', $contributors)
-            ->pluck('user_id')
-            ->toArray();
-
-        foreach ($contributors as $contributor) {
-            if (in_array($contributor, $contributorsStored)) {
-                continue;
+        foreach ($this->contributors()->get() as $current) {
+            if (! in_array((int) $current->id, $wanted, true)) {
+                $service->remove($this, $current);
             }
+        }
 
-            $this->contributorsJoin()->create([
-                'user_id' => $contributor,
-                'content_id' => $this->id,
-            ]);
+        foreach (User::query()->whereIn('id', $wanted)->get() as $user) {
+            $service->add($this, $user);
         }
     }
 
     /**
-     * Almacena las etiquetas asociadas al contenido.
+     * Deja como etiquetas del contenido exactamente estas.
      *
-     * @param  array  $tags  Es un array con los ids de las etiquetas.
+     * Recibe ids de `tags`; lo que se guarda en `content_tags` es la etiqueta
+     * **de la plataforma** (`platform_tags`), que se crea si la plataforma aún
+     * no la tenía. Las que sobran se quitan (fila borrada) y las que vuelven se
+     * recuperan. Antes se comparaban ids de `tags` con ids de `platform_tags` y
+     * se quitaban etiquetas que seguían marcadas.
+     *
+     * @param  array<int|string|null>  $tags  Ids de `tags`.
      */
     public function saveTags(array $tags): void
     {
+        $tagIds = array_values(array_unique(array_map('intval', array_filter($tags))));
+        $platformTagIds = [];
 
-        // # Limpio etiquetas vacías y duplicadas.
-        $tags = array_unique(array_filter($tags));
-
-        $platformTags = $this->platform->tags()
-            ->whereIn('tag_id', $tags)
-            ->pluck('tag_id')
-            ->toArray();
-
-        // # Almacena las etiquetas que aún no están asociadas a la plataforma.
-        $platformTagsDiff = array_diff($tags, $platformTags);
-
-        // # Creamos las etiquetas que no estén asociadas a la plataforma.
-        foreach ($platformTagsDiff as $platformTag) {
-            $this->platform->tags()->create([
-                'tag_id' => $platformTag,
-            ]);
+        foreach ($tagIds as $tagId) {
+            $platformTagIds[] = (int) PlatformTag::query()->firstOrCreate([
+                'platform_id' => $this->platform_id,
+                'tag_id' => $tagId,
+            ])->id;
         }
 
-        // # Etiquetas ya asociadas al contenido
-        $contentTags = $this->tagsJoin()
-            ->pluck('platform_tag_id')
-            ->toArray();
+        ContentTag::query()
+            ->where('content_id', $this->id)
+            ->whereNotIn('platform_tag_id', $platformTagIds)
+            ->delete();
 
-        // # Borramos las etiquetas que no estén en el array, ya no forma parte del contenido.
-        foreach ($contentTags as $contentTag) {
-            if (! in_array($contentTag, $tags)) {
-                ContentTag::where('content_id', $this->id)
-                    ->where('platform_tag_id', $contentTag)
-                    ->delete();
+        foreach ($platformTagIds as $platformTagId) {
+            $row = ContentTag::withTrashed()->firstOrNew(['content_id' => $this->id, 'platform_tag_id' => $platformTagId]);
+
+            if ($row->trashed()) {
+                $row->restore();
+            } elseif (! $row->exists) {
+                $row->save();
             }
         }
-
-        // # Vuelvo a buscar las etiquetas asociadas al contenido, ya que puede haber cambiado
-        $platformTags = PlatformTag::select(['id', 'tag_id'])
-            ->whereIn('tag_id', $tags)
-            ->where('platform_id', $this->platform_id)
-            ->get();
-
-        // # Cada etiqueta que no esté asociada al contenido, la creamos.
-        foreach ($tags as $tag) {
-            if (in_array($tag, $contentTags)) {
-                continue;
-            }
-
-            $platformTag = $platformTags->where('tag_id', $tag)->first();
-
-            if (! $platformTag) {
-                continue;
-            }
-
-            $this->tagsJoin()->updateOrCreate([
-                'content_id' => $this->id,
-                'platform_tag_id' => $platformTag->id,
-            ]);
-        }
-
     }
 
     /**
-     * Almacena las categorías del contenido, previamente borrará los
-     * existentes si los hubiera.
+     * Deja como categorías y subcategorías del contenido exactamente estas.
      *
-     * @param  array  $categories  Es un array con los ids de las categorías.
-     * @return void
+     * Recibe ids de `categories`; lo que se guarda en `content_categories` es la
+     * categoría **de la plataforma** (`platform_categories`): las que la
+     * plataforma no tiene se ignoran. Las que sobran se quitan (fila borrada) y
+     * las que vuelven se recuperan. Con `$mainCategoryId`, ésa queda como
+     * principal (`is_main`) y las demás no.
+     *
+     * @param  array<int|string|null>  $categories  Ids de `categories`.
+     * @param  array<int|string|null>  $subcategories  Ids de `categories`.
      */
-    public function saveCategories(array $categories, array $subcategories = [])
+    public function saveCategories(array $categories, array $subcategories = [], ?int $mainCategoryId = null): void
     {
-        // # Limpio categorías vacías y duplicadas.
-        $categories = array_unique(array_filter($categories));
-        $subcategories = array_unique(array_filter($subcategories));
+        $categoryIds = array_values(array_unique(array_map('intval', array_filter(array_merge($categories, $subcategories)))));
 
-        $allCategories = array_merge($categories, $subcategories);
-
-        // # Categorías ya asociadas al contenido
-        $contentCategories = $this->categoriesJoin()
-            ->pluck('platform_category_id')
-            ->toArray();
-
-        // dd($allCategories, $contentCategories);
-
-        // # Borramos las categorías que no estén en el array, ya no forma parte del contenido.
-        foreach ($contentCategories as $contentCategory) {
-            if (! in_array($contentCategory, $allCategories)) {
-
-                ContentCategory::where('content_id', $this->id)
-                    ->where('platform_category_id', $contentCategory)
-                    ->delete();
-            }
-        }
-
-        // # Vuelvo a buscar las categorías asociadas al contenido, ya que puede haber cambiado
-        $platformCategories = PlatformCategory::select(['id', 'category_id'])
-            ->whereIn('category_id', $allCategories)
+        $platformCategories = PlatformCategory::query()
             ->where('platform_id', $this->platform_id)
-            ->get();
+            ->whereIn('category_id', $categoryIds)
+            ->pluck('category_id', 'id');
 
-        // # Cada categoría que no esté asociada al contenido, la creamos en la tabla de join.
-        foreach ($allCategories as $category) {
-            if (in_array($category, $contentCategories)) {
-                continue;
+        ContentCategory::query()
+            ->where('content_id', $this->id)
+            ->whereNotIn('platform_category_id', $platformCategories->keys()->all())
+            ->delete();
+
+        foreach ($platformCategories as $platformCategoryId => $categoryId) {
+            $row = ContentCategory::withTrashed()->firstOrNew(['content_id' => $this->id, 'platform_category_id' => $platformCategoryId]);
+
+            if ($row->trashed()) {
+                $row->restore();
             }
 
-            $platformCategory = $platformCategories->where('category_id', $category)->first();
-
-            if (! $platformCategory) {
-                continue;
+            if ($mainCategoryId !== null) {
+                $row->is_main = (int) $categoryId === $mainCategoryId;
             }
 
-            $this->categoriesJoin()->updateOrCreate([
-                'content_id' => $this->id,
-                'platform_category_id' => $platformCategory->id,
-            ]);
+            $row->save();
         }
-
     }
 
     /**

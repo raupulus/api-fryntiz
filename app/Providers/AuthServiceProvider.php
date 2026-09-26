@@ -9,6 +9,7 @@ use App\Models\AirFlight\AirFlightRoute;
 use App\Models\ApiToken;
 use App\Models\Category;
 use App\Models\Content\Content;
+use App\Models\Content\ContentPage;
 use App\Models\CV\Curriculum;
 use App\Models\CV\CurriculumAvailableRepositoryType;
 use App\Models\Email;
@@ -49,6 +50,7 @@ use App\Policies\AirFlightPolicy;
 use App\Policies\AirFlightRoutePolicy;
 use App\Policies\ApiTokenPolicy;
 use App\Policies\CategoryPolicy;
+use App\Policies\ContentPagePolicy;
 use App\Policies\ContentPolicy;
 use App\Policies\CurriculumPolicy;
 use App\Policies\EmailPolicy;
@@ -98,6 +100,7 @@ class AuthServiceProvider extends ServiceProvider
         ApiToken::class => ApiTokenPolicy::class,
         Category::class => CategoryPolicy::class,
         Content::class => ContentPolicy::class,
+        ContentPage::class => ContentPagePolicy::class,
         Curriculum::class => CurriculumPolicy::class,
         Email::class => EmailPolicy::class,
         Gallery::class => GalleryPolicy::class,

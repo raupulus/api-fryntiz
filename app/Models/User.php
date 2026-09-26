@@ -202,7 +202,10 @@ class User extends Authenticatable implements FilamentUser
      */
     public function contributedContents(): BelongsToMany
     {
-        return $this->belongsToMany(Content::class, 'content_contributors', 'user_id', 'content_id');
+        // Las filas borradas son colaboradores quitados (ver
+        // `ContentContributorService`): no cuentan.
+        return $this->belongsToMany(Content::class, 'content_contributors', 'user_id', 'content_id')
+            ->wherePivotNull('deleted_at');
     }
 
     /**
@@ -265,7 +268,20 @@ class User extends Authenticatable implements FilamentUser
     public function platforms(): BelongsToMany
     {
         return $this->belongsToMany(Platform::class, 'platform_user')
+            ->withPivot('auto_contributor')
             ->withTimestamps();
+    }
+
+    /**
+     * Las filas de `platform_user` del usuario, con su colaborador automático.
+     * Es lo que edita la ficha del usuario (un repetidor: plataforma e
+     * interruptor).
+     *
+     * @return HasMany<PlatformUser, $this>
+     */
+    public function platformAssignments(): HasMany
+    {
+        return $this->hasMany(PlatformUser::class, 'user_id', 'id');
     }
 
     /**

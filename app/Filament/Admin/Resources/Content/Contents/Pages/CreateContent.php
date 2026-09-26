@@ -6,6 +6,7 @@ namespace App\Filament\Admin\Resources\Content\Contents\Pages;
 
 use App\Filament\Admin\Resources\Content\Contents\ContentResource;
 use App\Filament\Concerns\HasImageFileUpload;
+use App\Models\User;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateContent extends CreateRecord
@@ -22,6 +23,14 @@ class CreateContent extends CreateRecord
      */
     protected function mutateFormDataBeforeCreate(array $data): array
     {
+        // Un Editor es el autor de lo que crea: el campo le sale bloqueado y,
+        // por si llegara otra cosa, aquí se fija (F5).
+        $user = auth()->user();
+
+        if ($user instanceof User && ! $user->isAdmin()) {
+            $data['author_id'] = $user->id;
+        }
+
         return $this->resolveImageUpload($data, 'image_id', 'contents', webpOriginal: true);
     }
 }

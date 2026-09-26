@@ -10,6 +10,7 @@ Módulo de gestión multi-sitio que permite organizar contenidos por plataforma 
 | `app/Models/Platform.php` | `platforms` | Plataforma principal |
 | `app/Models/PlatformCategory.php` | `platform_categories` | Pivot plataforma ↔ categoría |
 | `app/Models/PlatformTag.php` | `platform_tags` | Pivot plataforma ↔ tag |
+| `app/Models/PlatformUser.php` | `platform_user` | Plataformas asignadas a un Editor: dónde puede crear contenidos. `auto_contributor` (bool, por defecto `false`): entra como colaborador en todos los contenidos de la plataforma (ver [content.md → Permisos](content.md#permisos)) |
 
 ### Controladores
 | Archivo | Versión | Descripción |
@@ -64,6 +65,7 @@ Módulo de gestión multi-sitio que permite organizar contenidos por plataforma 
 - `Platform` → `HasMany` → `PlatformCategory` (vía `platform_id`)
 - `Platform` → `HasMany` → `PlatformTag` (vía `platform_id`)
 - `Platform` → `HasMany` → `Newsletter` (vía `platform_id`)
+- `User` → `BelongsToMany` → `Platform` (`User::platforms()`, pivote `platform_user` con `auto_contributor`; `User::platformAssignments()` da las filas como `PlatformUser`)
 
 ## Rutas API V2
 
@@ -87,4 +89,4 @@ php artisan debug:seed-platform --count=3
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-08-19
+> Creado: 2026-05-25 · Última revisión: 2026-09-26

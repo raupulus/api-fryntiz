@@ -500,6 +500,27 @@ siempre imágenes generadas aquí y se enseñan.
 
 ---
 
+### D35 · Las plataformas de un Editor dicen dónde crea, no qué edita
+
+Un Editor edita los contenidos que escribe y aquellos donde es colaborador, en cualquier
+plataforma. Las plataformas que tiene asignadas sólo deciden **dónde puede crear**. Para que
+entre en todo lo de una plataforma está el interruptor «Colaborador automático», que lo hace
+colaborador de cada contenido, uno a uno.
+
+**Por qué.** Si la plataforma diese acceso a todo lo que hay en ella, no se podría quitar a
+nadie de un contenido concreto sin quitarle la plataforma entera, y tampoco se podría dejar
+a alguien colaborar en un contenido suelto de otra plataforma. Con colaboradores por
+contenido las dos cosas son una fila.
+
+**Quitar a un colaborador es borrar (lógicamente) su fila**, no hacerla desaparecer: esa fila
+es la marca de «quitado a mano», y el colaborador automático no lo vuelve a meter. Por eso
+todas las relaciones con pivote de `Content` filtran las filas borradas.
+
+*Fijado por `ContentPolicyTest` (matriz de permisos) y `ContentContributorsTest`. Decidido en
+la DUDA-1 y la DUDA-2 del plan de contenidos del 2026-09-24.*
+
+---
+
 ## Dependencias
 
 ### D7 · Las dependencias se mantienen al día, incluidos los majors

@@ -187,7 +187,7 @@ php artisan filament:upgrade
 | 1 | SuperAdmin | Acceso total (bypass de `Gate::before`), panel Admin |
 | 2 | Admin | Administración operativa, panel Admin. Alcanza los recursos de todos los usuarios **menos los de un SuperAdmin**, y sin bypass: cada policy lo contempla |
 | 3 | User | Usuario normal, panel Tenant. Sólo lo suyo |
-| 4 | Editor | Panel Admin sin el bypass de SuperAdmin; sus permisos los deciden las Policies. Sólo lo suyo, salvo el contenido de sus plataformas |
+| 4 | Editor | Panel Admin sin el bypass de SuperAdmin; sus permisos los deciden las Policies. Sólo lo suyo. En contenidos: los que escribe y aquellos donde es colaborador; sus plataformas (`platform_user`, en la ficha del usuario) sólo dicen dónde puede crear. Detalle en [content.md → Permisos](content.md#permisos) |
 
 ### Métodos de rol en User
 
@@ -415,4 +415,4 @@ Si se pierde la contraseña del administrador, se restablece por consola en el s
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-07
+> Creado: 2026-05-25 · Última revisión: 2026-09-26

@@ -6,6 +6,7 @@ namespace App\Filament\Admin\Resources;
 
 use App\Enums\UserRoleEnum;
 use App\Filament\Components\ImageCropperUpload;
+use App\Models\Platform;
 use App\Models\User;
 use App\Policies\UserPolicy;
 use BackedEnum;
@@ -19,6 +20,7 @@ use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -183,13 +185,31 @@ class UserResource extends Resource
                         ->helperText('Desactivar corta el acceso y anula todos los tokens del usuario, incluidos los de sus dispositivos, sin borrar nada.'),
                 ])->columnSpanFull(),
 
-            Section::make('Plataformas que puede editar')
-                ->description('Sólo aplica al rol Editor: limita el contenido que puede tocar. Un administrador llega a todas y no necesita marcar ninguna.')
+            // Filas de `platform_user` (F5 del plan de contenidos). Antes era
+            // un selector que pedía la columna `name`, que en `platforms` no
+            // existe (es `title`): daba error al abrir la ficha de un Editor.
+            Section::make('Plataformas')
+                ->description('Sólo para el rol Editor. En sus plataformas puede crear contenidos (y es su autor); en el resto, sólo edita donde le hagan colaborador. Con «Colaborador automático» entra en todos los contenidos de esa plataforma, los que ya hay y los nuevos, salvo donde se le quite a mano. Un administrador llega a todo y no necesita ninguna.')
                 ->schema([
-                    Select::make('platforms')
-                        ->relationship('platforms', 'name')
-                        ->multiple()->preload()->searchable()
-                        ->hiddenLabel(),
+                    Repeater::make('platformAssignments')
+                        ->relationship()
+                        ->hiddenLabel()
+                        ->schema([
+                            Select::make('platform_id')
+                                ->label('Plataforma')
+                                ->options(fn (): array => Platform::query()->orderBy('title')->pluck('title', 'id')->all())
+                                ->required()
+                                ->distinct()
+                                ->searchable(),
+                            Toggle::make('auto_contributor')
+                                ->label('Colaborador automático')
+                                ->helperText('Entra como colaborador en todos los contenidos de esta plataforma.')
+                                ->inline(false),
+                        ])
+                        ->columns(2)
+                        ->defaultItems(0)
+                        ->addActionLabel('Añadir plataforma')
+                        ->reorderable(false),
                 ])
                 ->visible(fn ($get) => (int) $get('role_id') === UserRoleEnum::Editor->value)
                 ->columnSpanFull(),
