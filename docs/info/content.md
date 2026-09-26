@@ -273,8 +273,10 @@ por cada acción, incluido el colaborador quitado) y
   y Galerías (vincular y desvincular con `update`). Las tres se ocultan a quien
   no puede ver el contenido.
 - **Rutas del editor:** `can:update,content` (ver «Guardar una página»).
-- La pantalla de páginas (F8) y la vista previa (F7) del plan de contenidos
-  usarán la misma política cuando existan.
+- **Secciones de la ficha y vista previa:** cada sección pide `update` (la
+  vista previa, `view`); un contenido ajeno da 404, como la ficha, porque la
+  consulta del listado ya no lo encuentra. La pantalla propia de páginas (F8)
+  usará la misma política.
 
 ### Colaboradores
 
@@ -830,6 +832,110 @@ se queda en enlace, que es válido) y la imagen, 422 con el motivo. Fijado por
 `tests/Feature/Filament/EditorJsTest.php`, que prueba las ocho URL que no debe
 tocar, en las dos rutas, y comprueba que **no sale ninguna petición**.
 
+## La ficha en el panel, por secciones
+
+Fase F7 del plan de contenidos del 2026-09-24 (E2–E7, G3 y C7 de la
+auditoría). Antes era un formulario largo con pestañas y, al final, otro bloque
+de pestañas con las relaciones: las páginas, lo más usado, quedaban abajo del
+todo, y no había dónde editar el SEO ni las categorías y etiquetas.
+
+### Secciones (`ContentResource::getRecordSubNavigation()`, pestañas arriba)
+
+| Sección | Página | Ruta |
+|---|---|---|
+| Datos | `EditContent` | `/admin/content/contents/{id}/edit` |
+| Páginas | `ManageContentPages` (la tabla de `PagesRelationManager`) | `…/{id}/pages` |
+| SEO | `EditContentSeo` | `…/{id}/seo` |
+| Categorías y etiquetas | `EditContentTaxonomies` | `…/{id}/taxonomies` |
+| Relacionados | `ManageContentRelations` (galerías, colaboradores y contenidos relacionados) | `…/{id}/relations` |
+| Visibilidad | `EditContentVisibility` | `…/{id}/visibility` |
+| Vista previa | `PreviewContent` (desde la cabecera de cada sección y desde el listado) | `…/{id}/preview` |
+
+- Todas son páginas del mismo registro; lo común está en el rasgo
+  `Pages/Concerns/ContentSectionPage` (título con la sección, «Vista previa»
+  en la cabecera, cada sección sólo con sus relaciones).
+- Las de formulario llevan «Guardar cambios» arriba y abajo fijo al
+  desplazarse (`$formActionsAreSticky`).
+- «Páginas» y «Relacionados» reutilizan los gestores de relación de F5 tal
+  cual, con su autorización. «Páginas» se sustituye por la pantalla propia en
+  F8.
+- En el móvil la subnavegación es un desplegable; el listado enseña título y
+  estado, y las acciones de cada fila van en un menú «⋮» (tocar la fila abre la
+  ficha). En la tabla de páginas, «Editar» queda a la vista y lo demás en el
+  menú.
+
+### Datos
+
+Título, slug, plataforma, autor, estado (con la programación de F2), tipo,
+extracto, imagen principal y, plegado, «Vídeo y enlaces» (`metadata`). Es
+también el formulario de crear.
+
+**Slug único dentro de su plataforma**, como el índice de la base
+(`contents_platform_id_slug_unique`). El formulario lo pedía único entre todas
+las plataformas. Un contenido de la papelera también lo ocupa, y el mensaje lo
+dice: «Ese slug lo tiene «X», que está en la papelera: restáuralo, elimínalo
+definitivamente o elige otro slug».
+
+### SEO (`content_seo`)
+
+Descripción, palabras clave, indexación (`robots`), «volver a pasar»
+(`revisit_after`), alcance (`distribution`), título al compartir (`og_title`),
+tipo (`og_type`), tarjeta de X (`twitter_card`), usuario del autor en X
+(`twitter_creator`), imagen para redes y su texto alternativo.
+
+- Contadores de la descripción (160) y del título al compartir (60): se ponen
+  en naranja al pasarse, pero no impiden guardar.
+- La imagen se recorta a 1200 × 630 (`ImageCropperUpload::socialCard()`) y se
+  guarda en WebP, como las demás de los contenidos.
+- Un contenido sin SEO empieza con los valores de la base, salvo el tipo, que
+  es «artículo». Se guarda con `ContentSeoService::upsert()`; las columnas del
+  contenido no se tocan.
+
+### Categorías y etiquetas
+
+Las de la plataforma del contenido (`platform_categories`,
+`platform_tags`): categorías, categoría principal (`is_main`), subcategorías
+de las categorías elegidas, etiquetas y tecnologías. Se puede crear una
+categoría, subcategoría o etiqueta sin salir: si ya existe una con ese nombre
+o slug (son únicos en toda la base) se reutiliza, y se añade a la plataforma.
+Se guarda con `saveCategories()` y `saveTags()` (F5); sin categoría principal
+se pasa `0` para que ninguna quede marcada.
+
+### Visibilidad
+
+«Activo», «Destacado» y la fecha de publicación (sólo lectura); dónde se
+enseña (portada, menú, pie, barra lateral, buscador, archivo, RSS, sitemap y
+sitemap de noticias); comentarios, comentarios anónimos y derechos de autor.
+Cada uno con una línea de ayuda. «Derechos de autor» tiene tres estados
+(comprobados, con material ajeno, o sin marcar = sin comprobar): un
+interruptor convertía el «sin comprobar» de la base en «no» al guardar. La API
+los enviará todos (F9).
+
+### Papelera
+
+- Listado: filtro «Papelera» (sin la papelera, todos o sólo la papelera),
+  «Restaurar» y «Eliminar definitivamente», también en masa, cada uno
+  autorizado contenido a contenido. Eliminar definitivamente es sólo del
+  SuperAdmin (`ContentPolicy::forceDelete()`), y marca sus ficheros para la
+  limpieza de F6.
+- Las fichas abren también un contenido de la papelera
+  (`getRecordRouteBindingEloquentQuery()` sin el filtro de borrados), para
+  restaurarlo desde su cabecera.
+- Páginas: el mismo filtro en su tabla. «Eliminar» usa `safeDelete()` (las de
+  detrás suben un puesto); «Restaurar» la devuelve al final para no chocar con
+  el orden de las demás; «Eliminar definitivamente» es sólo del SuperAdmin
+  (`ContentPagePolicy::forceDelete()`).
+
+### Vista previa (`PreviewContent`)
+
+Todas las páginas seguidas, en orden, con el HTML que sirve la API
+(`content_pages.content`), también de un borrador. Estilos básicos en
+`panel.css` (sección «Contenidos · vista previa», clases `cp-preview*`),
+partiendo de la vista previa de `main`: valen para las clases `r-*` de
+Editor.js y para el HTML de Markdown y HTML, en claro y en oscuro. No es el
+diseño de ninguna web. Enseña el HTML guardado **tal cual**, sin volver a
+limpiarlo (D37).
+
 ## Borradores, bloqueo, historial y ficheros sin usar
 
 Fase F6 del plan de contenidos del 2026-09-24 (D1, P4, D4, G5 y C2 de la
@@ -971,4 +1077,4 @@ para escribir a mano el `gallery_id`). Implementado por completo:
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-26
+> Creado: 2026-05-25 · Última revisión: 2026-09-27

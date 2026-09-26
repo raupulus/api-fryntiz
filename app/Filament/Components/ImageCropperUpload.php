@@ -99,6 +99,19 @@ class ImageCropperUpload extends FileUpload
             ->imageResizeTargetHeight('900');
     }
 
+    /**
+     * Imagen para redes sociales: 1200 × 630, el tamaño de las tarjetas de
+     * Open Graph y X.
+     */
+    public function socialCard(): static
+    {
+        return $this
+            ->imageEditorAspectRatios(['1200:630'])
+            ->imageResizeMode('cover')
+            ->imageResizeTargetWidth('1200')
+            ->imageResizeTargetHeight('630');
+    }
+
     public function logo(): static
     {
         return $this

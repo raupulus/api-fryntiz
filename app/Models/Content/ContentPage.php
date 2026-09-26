@@ -161,6 +161,8 @@ class ContentPage extends BaseModel
 
     /**
      * Relación con el contenido al que pertenece la página.
+     *
+     * @return BelongsTo<Content, $this>
      */
     public function contentModel(): BelongsTo
     {
@@ -196,7 +198,8 @@ class ContentPage extends BaseModel
      */
     public function safeDelete(): bool
     {
-        $this->contentModel?->pages()
+        self::query()
+            ->where('content_id', $this->content_id)
             ->where('order', '>', $this->order)
             ->get()
             ->each(function (ContentPage $page): void {

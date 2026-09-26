@@ -542,6 +542,22 @@ contenidos del 2026-09-24.*
 
 ---
 
+### D37 · La vista previa del contenido enseña el HTML guardado tal cual
+
+La vista previa del panel (`PreviewContent`) pinta el `content` de cada página sin volver a
+limpiarlo. La vista previa del modal de páginas, en cambio, sí pasa por `Str::sanitizeHtml()`.
+
+**Por qué.** Lo del modal es lo que se está escribiendo, sin guardar, y todavía no ha pasado
+por nada. Lo guardado ya pasó por las capas de D32: el HTML de los bloques se limpia al
+guardar, el HTML libre es sólo de administradores y el Markdown de un Editor se limpia. Volver
+a limpiarlo en la vista previa quitaría vídeos incrustados e iconos SVG, y dejaría de ser «lo
+que sirve la API», que es para lo que está.
+
+*Fijado por `ContentSectionsTest::the_preview_shows_every_page_in_order_with_the_served_html`.
+C7 de la auditoría de contenidos del 2026-09-24.*
+
+---
+
 ## Dependencias
 
 ### D7 · Las dependencias se mantienen al día, incluidos los majors
@@ -727,4 +743,4 @@ existe— **qué test lo fija**.
 Lo que no va aquí: decisiones que el código ya explica por sí solo, y cosas que simplemente están
 pendientes (eso es `docs/future/`).
 
-> Creado: 2026-09-01 · Última revisión: 2026-09-26
+> Creado: 2026-09-01 · Última revisión: 2026-09-27

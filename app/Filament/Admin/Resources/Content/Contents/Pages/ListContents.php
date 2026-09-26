@@ -19,6 +19,7 @@ class ListContents extends ListRecords
             // CreateAction navega a esa URL: hay que propagar la plataforma
             // filtrada como query string para que el formulario la preseleccione.
             CreateAction::make()
+                ->label('Crear contenido')
                 ->url(fn (): string => ContentResource::getUrl('create', array_filter([
                     'platform_id' => $this->tableFilters['platform_id']['value'] ?? null,
                 ]))),

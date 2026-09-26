@@ -367,3 +367,327 @@
     text-transform: uppercase;
     letter-spacing: 0.03em;
 }
+
+/* ── Contenidos · vista previa (PreviewContent) ─────────────────────────────
+   Estilos básicos, como los de la vista previa de `main`: cada web pone los
+   suyos y nunca se verán igual. Valen para el HTML de Editor.js (clases r-*)
+   y para el de las páginas en Markdown o HTML (etiquetas sueltas). */
+.cp-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.cp-preview__page {
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    background: #ffffff;
+    color: #1f2937;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    overflow-wrap: anywhere;
+}
+
+.dark .cp-preview__page {
+    background: #18181b;
+    color: #e4e4e7;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.cp-preview__page-title {
+    margin: 0 0 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.dark .cp-preview__page-title {
+    border-color: #3f3f46;
+}
+
+.cp-preview__empty {
+    color: #6b7280;
+}
+
+.cp-preview__body {
+    max-width: 52rem;
+    margin: 0 auto;
+    line-height: 1.7;
+}
+
+.cp-preview__body p,
+.cp-preview__body ul,
+.cp-preview__body ol,
+.cp-preview__body table,
+.cp-preview__body pre,
+.cp-preview__body blockquote,
+.cp-preview__body figure {
+    margin: 0 0 1rem;
+}
+
+.cp-preview__body h1,
+.cp-preview__body h2,
+.cp-preview__body h3,
+.cp-preview__body h4,
+.cp-preview__body h5,
+.cp-preview__body h6 {
+    margin: 1.5rem 0 0.5rem;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.cp-preview__body h3 { font-size: 1.375rem; }
+.cp-preview__body h4 { font-size: 1.2rem; }
+.cp-preview__body h5 { font-size: 1.05rem; }
+.cp-preview__body h6 { font-size: 0.95rem; text-transform: uppercase; }
+
+.cp-preview__body a {
+    color: #0369a1;
+    text-decoration: underline;
+}
+
+.dark .cp-preview__body a {
+    color: #38bdf8;
+}
+
+.cp-preview__body ul { list-style: disc; padding-left: 1.5rem; }
+.cp-preview__body ol { list-style: decimal; padding-left: 1.5rem; }
+
+.cp-preview__body img,
+.cp-preview__body iframe {
+    max-width: 100%;
+}
+
+.cp-preview__body svg {
+    width: 1em;
+    height: 1em;
+    fill: currentColor;
+}
+
+.cp-preview__body code {
+    padding: 0.1rem 0.35rem;
+    border-radius: 0.25rem;
+    background: #f3f4f6;
+    font-size: 0.9em;
+}
+
+.dark .cp-preview__body code {
+    background: #27272a;
+}
+
+.cp-preview__body pre {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background: #1f2937;
+    color: #e5e7eb;
+    overflow-x: auto;
+}
+
+.cp-preview__body pre code {
+    padding: 0;
+    background: none;
+}
+
+.cp-preview__body table,
+.cp-preview__body .r-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.cp-preview__body th,
+.cp-preview__body td {
+    padding: 0.4rem 0.6rem;
+    border: 1px solid #d1d5db;
+    text-align: left;
+    vertical-align: top;
+}
+
+.dark .cp-preview__body th,
+.dark .cp-preview__body td {
+    border-color: #3f3f46;
+}
+
+.cp-preview__body th {
+    background: #f3f4f6;
+    font-weight: 600;
+}
+
+.dark .cp-preview__body th {
+    background: #27272a;
+}
+
+/* En la tabla de Editor.js cada celda repite su cabecera, para el móvil. */
+.cp-preview__body .r-table-field-head {
+    display: none;
+}
+
+.cp-preview__body blockquote,
+.cp-preview__body .r-blockquote {
+    padding: 0.75rem 1rem;
+    border-left: 4px solid #0ea5e9;
+    background: #f0f9ff;
+    font-style: italic;
+}
+
+.dark .cp-preview__body blockquote,
+.dark .cp-preview__body .r-blockquote {
+    background: #0c4a6e33;
+}
+
+.cp-preview__body .r-blockquote-icon,
+.cp-preview__body .r-blockquote hr {
+    display: none;
+}
+
+.cp-preview__body .r-blockquote-caption {
+    text-align: right;
+    font-style: normal;
+    font-weight: 600;
+}
+
+.cp-preview__body .r-image-container {
+    margin: 0 0 1rem;
+    text-align: center;
+}
+
+.cp-preview__body .r-image-img {
+    display: inline-block;
+    max-height: 28rem;
+    border-radius: 0.5rem;
+}
+
+.cp-preview__body .r-image-caption,
+.cp-preview__body figcaption {
+    margin-top: 0.35rem;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+.cp-preview__body .r-list-box,
+.cp-preview__body .r-checkbox-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin: 0 0 1rem;
+}
+
+.cp-preview__body .r-list-item,
+.cp-preview__body .r-checkbox-item {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+}
+
+.cp-preview__body .r-list-item-icon,
+.cp-preview__body .r-checkbox-item-icon {
+    flex: none;
+    min-width: 1.25rem;
+    color: #0284c7;
+    font-weight: 700;
+}
+
+.cp-preview__body .r-list-item-content,
+.cp-preview__body .r-checkbox-item-content {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.cp-preview__body .r-list-item-content .r-list-box {
+    margin: 0.35rem 0 0;
+}
+
+.cp-preview__body .r-delimiter-container {
+    margin: 1.5rem 0;
+    text-align: center;
+}
+
+.cp-preview__body .r-delimiter-content::before {
+    content: "* * *";
+    color: #9ca3af;
+    letter-spacing: 0.5rem;
+}
+
+.cp-preview__body .r-alert,
+.cp-preview__body .r-warning-container {
+    margin: 0 0 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    background: #fef3c7;
+    color: #78350f;
+}
+
+.dark .cp-preview__body .r-alert,
+.dark .cp-preview__body .r-warning-container {
+    background: #78350f55;
+    color: #fde68a;
+}
+
+.cp-preview__body .r-web-preview-link {
+    display: block;
+    padding: 0.75rem 1rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    color: inherit;
+    text-decoration: none;
+}
+
+.dark .cp-preview__body .r-web-preview-link {
+    border-color: #3f3f46;
+}
+
+.cp-preview__body .r-web-preview-image {
+    height: 8rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.35rem;
+    background-position: center;
+    background-size: cover;
+}
+
+.cp-preview__body .r-web-preview-title {
+    font-weight: 700;
+}
+
+.cp-preview__body .r-web-preview-anchor {
+    color: #6b7280;
+    font-size: 0.85rem;
+}
+
+.cp-preview__body .r-embed-iframe {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+}
+
+.cp-preview__body .r-codeblock-container {
+    margin: 0 0 1rem;
+    border-radius: 0.5rem;
+    background: #1f2937;
+    color: #e5e7eb;
+    overflow-x: auto;
+}
+
+.cp-preview__body .r-codeblock-header,
+.cp-preview__body .r-codeblock-footer {
+    padding: 0.25rem 0.75rem;
+    background: #111827;
+    font-size: 0.8rem;
+}
+
+.cp-preview__body .r-codeblock-content {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    font-family: ui-monospace, monospace;
+    white-space: pre;
+}
+
+.cp-preview__body .r-codeblock-numbers {
+    color: #6b7280;
+    text-align: right;
+}
+
+.cp-preview__body .r-codeblock {
+    padding: 0;
+    background: none;
+}

@@ -8,6 +8,7 @@ use App\Enums\ContentStatusEnum as Status;
 use App\Enums\UserRoleEnum;
 use App\Filament\Admin\Resources\Content\Contents\Pages\CreateContent;
 use App\Filament\Admin\Resources\Content\Contents\Pages\EditContent;
+use App\Filament\Admin\Resources\Content\Contents\Pages\EditContentVisibility;
 use App\Filament\Admin\Resources\Content\Contents\Pages\ListContents;
 use App\Models\Content\Content;
 use App\Models\Platform;
@@ -121,7 +122,8 @@ class ContentPublicationPanelTest extends TestCase
     {
         $content = Content::factory()->published()->create();
 
-        Livewire::test(EditContent::class, ['record' => $content->getRouteKey()])
+        // «Activo» está en la sección «Visibilidad» (F7).
+        Livewire::test(EditContentVisibility::class, ['record' => $content->getRouteKey()])
             ->fillForm(['is_active' => false])
             ->call('save')
             ->assertHasNoFormErrors();

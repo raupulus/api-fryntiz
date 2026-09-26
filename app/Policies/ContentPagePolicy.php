@@ -47,6 +47,22 @@ class ContentPagePolicy
         return $this->reaches($user, $page);
     }
 
+    /**
+     * Sacarla de la papelera: quien puede editar el contenido.
+     */
+    public function restore(User $user, ContentPage $page): bool
+    {
+        return $this->reaches($user, $page);
+    }
+
+    /**
+     * Eliminarla definitivamente, como un contenido: sólo el SuperAdmin (G3).
+     */
+    public function forceDelete(User $user, ContentPage $page): bool
+    {
+        return $user->isSuperAdmin();
+    }
+
     public function reorder(User $user): bool
     {
         return $this->contents->viewAny($user);
@@ -54,7 +70,8 @@ class ContentPagePolicy
 
     private function reaches(User $user, ContentPage $page): bool
     {
-        $content = $page->contentModel;
+        // Sin carga perezosa: la tabla de páginas pregunta fila a fila.
+        $content = $page->relationLoaded('contentModel') ? $page->contentModel : $page->contentModel()->first();
 
         return $content !== null && $this->contents->update($user, $content);
     }

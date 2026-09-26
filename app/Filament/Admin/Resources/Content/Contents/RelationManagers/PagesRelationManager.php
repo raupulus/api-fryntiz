@@ -21,9 +21,12 @@ use App\Services\Content\ContentPageFormatService;
 use App\Services\Content\ContentPageHistoryService;
 use Closure;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\CodeEditor;
 use Filament\Forms\Components\CodeEditor\Enums\Language;
@@ -42,7 +45,10 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\HtmlString;
@@ -232,19 +238,30 @@ class PagesRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('order')->sortable()->label('Orden'),
                 TextColumn::make('title')->label('Título'),
-                TextColumn::make('slug')->label('Slug')->toggleable(),
+                // En el móvil sobran: se toca la fila para abrir la página (E3).
+                TextColumn::make('slug')->label('Slug')->toggleable()->visibleFrom('md'),
                 TextColumn::make('currentRawType.type')
                     ->label('Formato')
                     ->badge()
                     ->formatStateUsing(fn (?string $state): string => ContentPageFormatEnum::fromRawType((string) $state)?->label() ?? '—')
-                    ->toggleable(),
+                    ->toggleable()
+                    ->visibleFrom('md'),
             ])
-            ->modifyQueryUsing(fn ($query) => $query->with('currentRawType'))
+            // Sin el filtro de la papelera por defecto: lo pone `TrashedFilter`.
+            ->modifyQueryUsing(fn (Builder $query) => $query->with('currentRawType')->withoutGlobalScopes([SoftDeletingScope::class]))
+            ->filters([
+                TrashedFilter::make()
+                    ->label('Papelera')
+                    ->placeholder('Sin la papelera')
+                    ->trueLabel('Todas, también la papelera')
+                    ->falseLabel('Sólo la papelera'),
+            ])
+            ->recordAction('edit')
             ->reorderable('order')
             ->defaultSort('order')
             ->headerActions([
                 CreateAction::make()
-                    ->label('Añadir Página')
+                    ->label('Añadir página')
                     ->using(fn (array $data, Action $action): ContentPage => $this->savePage(
                         new ContentPage(['content_id' => $this->getOwnerRecord()->getKey()]),
                         $data,
@@ -268,8 +285,25 @@ class PagesRelationManager extends RelationManager
 
                         return $data;
                     })
-                    ->using(fn (ContentPage $record, array $data, Action $action): ContentPage => $this->savePage($record, $data, $action)),
-                DeleteAction::make(),
+                    ->using(fn (ContentPage $record, array $data, Action $action): ContentPage => $this->savePage($record, $data, $action))
+                    ->hidden(fn (ContentPage $record): bool => $record->trashed()),
+                // En un menú, para que en el móvil no se salgan (E3).
+                ActionGroup::make([
+                    // A la papelera, y las de detrás suben un puesto (G3).
+                    DeleteAction::make()
+                        ->label('Eliminar')
+                        ->using(fn (ContentPage $record): bool => $record->safeDelete()),
+                    // Vuelve al final, para no chocar con el orden de las demás.
+                    RestoreAction::make()
+                        ->label('Restaurar')
+                        ->using(function (ContentPage $record): bool {
+                            $record->order = (int) ContentPage::query()->where('content_id', $record->content_id)->max('order') + 1;
+                            $record->restore();
+
+                            return true;
+                        }),
+                    ForceDeleteAction::make()->label('Eliminar definitivamente'),
+                ]),
             ]);
     }
 
