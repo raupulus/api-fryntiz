@@ -6,6 +6,7 @@ namespace App\Filament\Admin\Resources\Content\Contents\Pages;
 
 use App\Filament\Admin\Resources\Content\Contents\ContentResource;
 use App\Filament\Admin\Resources\Content\Contents\Pages\Concerns\ContentSectionPage;
+use App\Filament\Admin\Resources\Content\Contents\Pages\Concerns\SavesFromTheHeader;
 use App\Models\Category;
 use App\Models\Content\Content;
 use App\Models\PlatformCategory;
@@ -38,6 +39,7 @@ use Illuminate\Support\Str;
 class EditContentTaxonomies extends EditRecord
 {
     use ContentSectionPage;
+    use SavesFromTheHeader;
 
     protected static string $resource = ContentResource::class;
 

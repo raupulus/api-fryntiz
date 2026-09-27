@@ -6,6 +6,7 @@ namespace App\Filament\Admin\Resources\Content\Contents\Pages;
 
 use App\Filament\Admin\Resources\Content\Contents\ContentResource;
 use App\Filament\Admin\Resources\Content\Contents\Pages\Concerns\ContentSectionPage;
+use App\Filament\Admin\Resources\Content\Contents\Pages\Concerns\SavesFromTheHeader;
 use App\Filament\Components\ImageCropperUpload;
 use App\Filament\Concerns\HasImageFileUpload;
 use App\Models\Content\Content;
@@ -31,6 +32,7 @@ class EditContentSeo extends EditRecord
 {
     use ContentSectionPage;
     use HasImageFileUpload;
+    use SavesFromTheHeader;
 
     /**
      * Donde los buscadores y las redes suelen cortar. Se avisa, no se impide.

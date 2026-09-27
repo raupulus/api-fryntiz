@@ -6,6 +6,7 @@ namespace App\Filament\Admin\Resources\Content\Contents\Pages;
 
 use App\Filament\Admin\Resources\Content\Contents\ContentResource;
 use App\Filament\Admin\Resources\Content\Contents\Pages\Concerns\ContentSectionPage;
+use App\Filament\Admin\Resources\Content\Contents\Pages\Concerns\SavesFromTheHeader;
 use BackedEnum;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Toggle;
@@ -24,6 +25,7 @@ use Filament\Support\Icons\Heroicon;
 class EditContentVisibility extends EditRecord
 {
     use ContentSectionPage;
+    use SavesFromTheHeader;
 
     protected static string $resource = ContentResource::class;
 

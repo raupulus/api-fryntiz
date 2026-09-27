@@ -412,7 +412,7 @@ Cobertura parcial; el resto queda pendiente en la fase 09 del roadmap.
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-14
+> Creado: 2026-08-30 · Última revisión: 2026-09-27
 
 
 ## Imágenes: por qué el uploader no enseña la que ya hay
@@ -498,7 +498,8 @@ disco: funcionaría para los ficheros públicos y dejaría fuera a los privados.
 Recursos afectados (10): `PlatformResource`, `TechnologyResource`,
 `ContentResource`, `HardwareDeviceResource`, `CurriculumResource`,
 `CurriculumAvailableRepositoryTypeResource`, `GalleryResource`,
-`CategoryResource`, `ImagesRelationManager` y `PagesRelationManager`.
+`CategoryResource`, `ImagesRelationManager` y la pantalla de páginas de
+contenidos (`ManageContentPages`, antes `PagesRelationManager`).
 `FileTypeResource` (`icon16`…`icon128`) y las fotos de perfil de usuario no lo
 necesitan: ésos sí son columnas de ruta, no una FK a `files`, y a Filament ya le
 basta con lo suyo.

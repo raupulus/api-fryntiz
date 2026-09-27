@@ -6,6 +6,7 @@ namespace App\Filament\Admin\Resources\Content\Contents\Pages;
 
 use App\Filament\Admin\Resources\Content\Contents\ContentResource;
 use App\Filament\Admin\Resources\Content\Contents\Pages\Concerns\ContentSectionPage;
+use App\Filament\Admin\Resources\Content\Contents\Pages\Concerns\SavesFromTheHeader;
 use App\Filament\Concerns\HasImageFileUpload;
 use BackedEnum;
 use Filament\Actions\DeleteAction;
@@ -22,6 +23,7 @@ class EditContent extends EditRecord
 {
     use ContentSectionPage;
     use HasImageFileUpload;
+    use SavesFromTheHeader;
 
     protected static string $resource = ContentResource::class;
 

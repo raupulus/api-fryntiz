@@ -13,7 +13,7 @@
     "isEntry": true
   },
   "resources/css/filament/admin/panel.css": {
-    "file": "assets/panel-DcPa2jhf.css",
+    "file": "assets/panel-BdhDcXFK.css",
     "name": "panel",
     "names": [
       "panel.css"
@@ -39,8 +39,14 @@
       "_chunk-QTnfLwEv.js"
     ]
   },
+  "resources/js/filament/content-pages.js": {
+    "file": "assets/content-pages-BdUUUrPC.js",
+    "name": "content-pages",
+    "src": "resources/js/filament/content-pages.js",
+    "isEntry": true
+  },
   "resources/js/filament/editorjs.js": {
-    "file": "assets/editorjs-D1P9fvQp.js",
+    "file": "assets/editorjs-DSfu45ww.js",
     "name": "editorjs",
     "src": "resources/js/filament/editorjs.js",
     "isEntry": true,

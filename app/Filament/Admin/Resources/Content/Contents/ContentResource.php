@@ -458,7 +458,6 @@ class ContentResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\PagesRelationManager::class,
             RelationManagers\GalleriesRelationManager::class,
             RelationManagers\ContributorsRelationManager::class,
             RelationManagers\RelatedRelationManager::class,
@@ -471,7 +470,8 @@ class ContentResource extends Resource
             'index' => ListContents::route('/'),
             'create' => CreateContent::route('/create'),
             'edit' => EditContent::route('/{record}/edit'),
-            'pages' => ManageContentPages::route('/{record}/pages'),
+            // `{page}`: el id de la página, o `new` para una nueva (F8).
+            'pages' => ManageContentPages::route('/{record}/pages/{page?}'),
             'seo' => EditContentSeo::route('/{record}/seo'),
             'taxonomies' => EditContentTaxonomies::route('/{record}/taxonomies'),
             'relations' => ManageContentRelations::route('/{record}/relations'),

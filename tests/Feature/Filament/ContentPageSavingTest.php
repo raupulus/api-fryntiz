@@ -6,8 +6,7 @@ namespace Tests\Feature\Filament;
 
 use App\Enums\ContentPageFormatEnum as Format;
 use App\Enums\UserRoleEnum;
-use App\Filament\Admin\Resources\Content\Contents\Pages\EditContent;
-use App\Filament\Admin\Resources\Content\Contents\RelationManagers\PagesRelationManager;
+use App\Filament\Admin\Resources\Content\Contents\Pages\ManageContentPages;
 use App\Filament\Components\EditorJsField;
 use App\Models\Content\Content;
 use App\Models\Content\ContentPage;
@@ -15,6 +14,7 @@ use App\Models\User;
 use App\Services\Content\ContentPageDraftService;
 use App\Services\Content\ContentPageFormatService;
 use App\Services\Content\ContentPageHistoryService;
+use App\Services\Content\ContentPageLockService;
 use Database\Seeders\ContentAvailablePageRawSeeder;
 use Database\Seeders\ContentAvailableTypesSeeder;
 use Database\Seeders\RolesTableSeeder;
@@ -88,8 +88,7 @@ class ContentPageSavingTest extends TestCase
 
     private function edit(ContentPage $page): Testable
     {
-        return Livewire::test(PagesRelationManager::class, ['ownerRecord' => $this->content, 'pageClass' => EditContent::class])
-            ->mountAction(TestAction::make('edit')->table($page));
+        return Livewire::test(ManageContentPages::class, ['record' => $this->content->getRouteKey(), 'page' => $page->id]);
     }
 
     // ── Los tres casos reales de A2 ─────────────────────────────────────────
@@ -106,7 +105,7 @@ class ContentPageSavingTest extends TestCase
             'title' => '',
         ]]]);
 
-        $this->edit($page)->fillForm(['content_json' => $json], 'mountedActionSchema0')->callMountedAction()->assertHasNoErrors();
+        $this->edit($page)->fillForm(['content_json' => $json])->call('save')->assertHasNoErrors();
 
         $this->assertStringContainsString('informe.pdf', (string) $page->refresh()->content);
     }
@@ -119,7 +118,7 @@ class ContentPageSavingTest extends TestCase
 
         $json = $this->editorJs([['id' => 'l1', 'type' => 'linkTool', 'data' => ['link' => 'https://ejemplo.test/bloqueada', 'meta' => []]]]);
 
-        $this->edit($page)->fillForm(['content_json' => $json], 'mountedActionSchema0')->callMountedAction()->assertHasNoErrors();
+        $this->edit($page)->fillForm(['content_json' => $json])->call('save')->assertHasNoErrors();
 
         $this->assertStringContainsString('href="https://ejemplo.test/bloqueada"', (string) $page->refresh()->content);
     }
@@ -139,7 +138,7 @@ class ContentPageSavingTest extends TestCase
             ['id' => 'h1', 'type' => 'header', 'data' => ['text' => 'Título sin nivel']],
         ]);
 
-        $this->edit($page)->fillForm(['content_json' => $json], 'mountedActionSchema0')->callMountedAction()->assertHasNoErrors();
+        $this->edit($page)->fillForm(['content_json' => $json])->call('save')->assertHasNoErrors();
 
         $served = (string) $page->refresh()->content;
         foreach (['Cita sin autor', 'Alerta sin tipo', 'youtube.com/embed/x', 'Aviso sin título', '<h3', 'Título sin nivel'] as $expected) {
@@ -162,13 +161,13 @@ class ContentPageSavingTest extends TestCase
                     ['id' => 'p1', 'type' => 'paragraph', 'data' => ['text' => 'Hola']],
                     ['id' => 'i1', 'type' => 'image', 'data' => ['caption' => 'Sin fichero']],
                 ]),
-            ], 'mountedActionSchema0')
-            ->callMountedAction()
-            ->assertHasErrors(['mountedActions.0.data.content_json']);
+            ])
+            ->call('save')
+            ->assertHasErrors(['data.content_json']);
 
         $this->assertStringContainsString(
             'Bloque 2 (imagen): no tiene fichero. Quítalo o vuelve a subir la imagen.',
-            implode(' ', $component->errors()->get('mountedActions.0.data.content_json')),
+            implode(' ', $component->errors()->get('data.content_json')),
         );
 
         $page->refresh();
@@ -189,8 +188,8 @@ class ContentPageSavingTest extends TestCase
         $this->app->instance(ContentPageHistoryService::class, $history);
 
         $this->edit($page)
-            ->fillForm(['title' => 'Título nuevo', 'content_json' => $this->editorJs([['id' => 'p1', 'type' => 'paragraph', 'data' => ['text' => 'Después']]])], 'mountedActionSchema0')
-            ->callMountedAction()
+            ->fillForm(['title' => 'Título nuevo', 'content_json' => $this->editorJs([['id' => 'p1', 'type' => 'paragraph', 'data' => ['text' => 'Después']]])])
+            ->call('save')
             ->assertNotified('No se ha guardado la página');
 
         $page->refresh();
@@ -206,13 +205,15 @@ class ContentPageSavingTest extends TestCase
 
         $modal = $this->edit($page);
 
-        // Mientras el modal está abierto, se guarda desde otra pestaña.
+        // Con el bloqueo, sólo pasa tras un desbloqueo forzado: un
+        // administrador lo fuerza y guarda mientras la pantalla sigue abierta.
         Carbon::setTestNow(now()->addMinute());
+        app(ContentPageLockService::class)->forceUnlock($page, $user);
         $this->service->savePage($page->refresh(), [], Format::EditorJs, $this->editorJs([['id' => 'p1', 'type' => 'paragraph', 'data' => ['text' => 'Otra pestaña']]]), author: $user);
 
         $modal
-            ->fillForm(['content_json' => $this->editorJs([['id' => 'p1', 'type' => 'paragraph', 'data' => ['text' => 'Lo mío']]])], 'mountedActionSchema0')
-            ->callMountedAction()
+            ->fillForm(['content_json' => $this->editorJs([['id' => 'p1', 'type' => 'paragraph', 'data' => ['text' => 'Lo mío']]])])
+            ->call('save')
             ->assertNotified('No se ha guardado la página');
 
         $this->assertStringContainsString('Otra pestaña', (string) $page->refresh()->content);
@@ -228,8 +229,8 @@ class ContentPageSavingTest extends TestCase
         $page = $this->page($this->editorJs([['id' => 'p1', 'type' => 'paragraph', 'data' => ['text' => 'Antes']]]));
 
         $this->edit($page)
-            ->fillForm(['content_json' => $this->editorJs([['id' => 'p1', 'type' => 'paragraph', 'data' => ['text' => 'Hola <img src=x onerror="alert(1)"> y <b>negrita</b>']]])], 'mountedActionSchema0')
-            ->callMountedAction()
+            ->fillForm(['content_json' => $this->editorJs([['id' => 'p1', 'type' => 'paragraph', 'data' => ['text' => 'Hola <img src=x onerror="alert(1)"> y <b>negrita</b>']]])])
+            ->call('save')
             ->assertHasNoErrors();
 
         $stored = $this->service->sourceContent($page->refresh());
@@ -272,18 +273,20 @@ class ContentPageSavingTest extends TestCase
         $existing = ['id' => 'r1', 'type' => 'raw', 'data' => ['html' => '<section class="x">De un administrador</section>']];
         $page = $this->page($this->editorJs([$existing]));
 
-        // Uno nuevo: no.
-        $this->edit($page)
-            ->fillForm(['content_json' => $this->editorJs([$existing, ['id' => 'r2', 'type' => 'raw', 'data' => ['html' => '<script>x()</script>']]])], 'mountedActionSchema0')
-            ->callMountedAction()
-            ->assertHasErrors(['mountedActions.0.data.content_json']);
+        // Uno nuevo: no. (La misma pantalla para los dos guardados: una
+        // segunda la vería en lectura, porque la primera tiene el bloqueo.)
+        $editor = $this->edit($page);
+        $editor
+            ->fillForm(['content_json' => $this->editorJs([$existing, ['id' => 'r2', 'type' => 'raw', 'data' => ['html' => '<script>x()</script>']]])])
+            ->call('save')
+            ->assertHasErrors(['data.content_json']);
 
         $this->assertStringNotContainsString('x()', $this->service->sourceContent($page->refresh()));
 
         // El que ya estaba, con un párrafo nuevo: sí.
-        $this->edit($page)
-            ->fillForm(['content_json' => $this->editorJs([$existing, ['id' => 'p1', 'type' => 'paragraph', 'data' => ['text' => 'Añadido']]])], 'mountedActionSchema0')
-            ->callMountedAction()
+        $editor
+            ->fillForm(['content_json' => $this->editorJs([$existing, ['id' => 'p1', 'type' => 'paragraph', 'data' => ['text' => 'Añadido']]])])
+            ->call('save')
             ->assertHasNoErrors();
 
         $served = (string) $page->refresh()->content;

@@ -16,7 +16,8 @@ use Illuminate\Support\Facades\Gate;
  *
  * - el título dice la sección y el contenido;
  * - «Vista previa» en la cabecera;
- * - en las que tienen formulario, «Guardar cambios» arriba y fijo abajo (E4);
+ * - en las que tienen formulario, «Guardar cambios» arriba y fijo abajo (E4,
+ *   rasgo `SavesFromTheHeader`);
  * - cada sección enseña sólo las relaciones que le tocan (ninguna, salvo que
  *   la página diga otra cosa).
  */
@@ -51,11 +52,6 @@ trait ContentSectionPage
             ->url(fn (): string => ContentResource::getUrl('preview', ['record' => $this->getRecord()]))
             ->openUrlInNewTab()
             ->visible(fn (): bool => ! $this->contentRecord()->trashed() && Gate::allows('view', $this->contentRecord()));
-    }
-
-    protected function saveOnTopAction(): Action
-    {
-        return $this->getSaveFormAction()->formId('form');
     }
 
     protected function contentRecord(): Content

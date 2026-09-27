@@ -558,6 +558,25 @@ C7 de la auditoría de contenidos del 2026-09-24.*
 
 ---
 
+### D38 · El bloqueo de una página no deja a nadie fuera de su propia página
+
+El bloqueo (P4) es por usuario **y pestaña**. Eso protege de pisarse entre dos pestañas, pero
+tiene dos trampas que se vieron en el navegador, y las dos se resuelven sin debilitarlo:
+
+- **Recargar.** La petición de la página nueva llega al servidor antes que el aviso de la vieja
+  soltando el bloqueo, así que la recarga se veía «abierta en otra pestaña». La pantalla en
+  lectura vuelve a intentar cogerlo a los 3 s y en cada autoguardado, y si está libre pasa a
+  edición releyendo la página.
+- **El navegador se cierra de golpe.** La pestaña muerta no suelta nada y el bloqueo dura dos
+  minutos. Con «Editar aquí» el **mismo usuario** se queda el bloqueo de su otra pestaña; la
+  otra, si seguía viva, pasa a lectura con su borrador. A otro usuario no se le puede quitar
+  así: eso es «Forzar desbloqueo», sólo de administradores.
+
+*Fijado por `ContentPageLockTest::the_same_user_can_take_over_from_another_tab_but_not_from_another_user`
+y `ContentPageEditorTest` (recarga y caída). F8 del plan de contenidos del 2026-09-24.*
+
+---
+
 ## Dependencias
 
 ### D7 · Las dependencias se mantienen al día, incluidos los majors

@@ -467,13 +467,14 @@ posteriores.
   mezcladas), ya borrados. Las versiones están **fijadas** en `package.json`
   (sin `^`): una actualización puede cambiar el formato de los datos, como
   pasó con las listas, y se hace a propósito (ver «Actualizar el editor»).
-- `resources/views/filament/components/editorjs-scripts.blade.php` deja los
-  endpoints en `window.editorJsEndpoints` y carga el paquete con `@vite`. Se
-  inyecta vía `renderHook(PanelsRenderHook::SCRIPTS_AFTER, ..., scopes:
-  EditContent::class)` en `AdminPanelProvider`. No usar `@push` desde la vista
-  del campo: el modal se monta por Livewire tras la carga de la página y el
-  push se descartaría. Si el campo se usa en otra página, añadir esa página a
-  los `scopes` del hook.
+- `resources/views/filament/components/editorjs-scripts.blade.php` carga con
+  `@vite` el paquete del editor y el de la pantalla de páginas
+  (`content-pages.js`). Se inyecta vía `renderHook(PanelsRenderHook::SCRIPTS_AFTER,
+  ..., scopes: ManageContentPages::class)` en `AdminPanelProvider`. No usar
+  `@push` desde la vista del campo: el campo se monta por Livewire y el push
+  se descartaría. Si el campo se usa en otra página, añadir esa página a los
+  `scopes` del hook. (Hasta F8 el ámbito era `EditContent`; al pasar las
+  páginas a su sección en F7 el editor dejó de cargarse allí, y F8 lo corrigió.)
 - **Todo en español**: el diccionario `i18n` cubre la interfaz del núcleo, los
   nombres de bloque, los ajustes y los textos de cada herramienta. El bloque de
   código escribe unos pocos textos directamente en el HTML sin pasar por
@@ -499,12 +500,20 @@ posteriores.
 - Modo oscuro: `panel.css` da la paleta del panel a los menús del editor, la
   cabecera de la tabla, los botones de subir y el desplegable de lenguajes
   (quedaban blanco sobre blanco), y tamaño a los títulos.
-- Fiabilidad del editor en el modal: Alpine llama `init()`/`destroy()`
+- Fiabilidad del editor: Alpine llama `init()`/`destroy()`
   automáticamente (sin `x-init`), el `$watch` del state ignora los cambios
   generados por el propio editor (`lastSaved`) para no re-renderizar mientras
   se escribe, y un listener `focusout` vuelca el último cambio antes de pulsar
-  «Guardar».
-- Integrado en `PagesRelationManager` como el editor del formato Editor.js
+  «Guardar». `window.flushEditorJs()` vuelca todos los editores abiertos a
+  demanda: la pantalla de páginas lo llama antes de guardar (con Ctrl/Cmd+S el
+  foco sigue dentro) y antes de cada autoguardado.
+- **Lectura**: si la pantalla pasa a lectura (bloqueo perdido), avisa con el
+  evento `content-page-read-only` y el editor pasa a solo lectura; al volver a
+  editar, al revés. El campo va con `wire:ignore` y no se enteraría solo.
+- **Subidas con el token vigente** (D3): antes de cada subida se pide el token
+  CSRF a `GET /admin/contents/{content}/editor/csrf-token`; el que se pintó al
+  cargar la página deja de valer si la sesión se renueva mientras se escribe.
+- Integrado en la pantalla de páginas como el editor del formato Editor.js
   (ver «Páginas: un formato por página»), con dos pestañas sobre **el mismo
   contenido**: «Editor visual» y «JSON en crudo».
 
@@ -636,9 +645,9 @@ Detalles que costaron:
 
 `ContentPageFormatService::savePage()` guarda los datos de la página (título,
 slug, orden, imagen) y su contenido **en una sola transacción**: si algo falla,
-no se guarda nada, el modal sigue abierto con lo escrito y una notificación dice
+no se guarda nada, la pantalla sigue con lo escrito y una notificación dice
 por qué. Antes se guardaban por separado y un contenido que fallaba dejaba el
-título cambiado y el contenido viejo. El panel lo usa con `->using()`.
+título cambiado y el contenido viejo.
 
 Antes de escribir nada:
 
@@ -686,24 +695,93 @@ antes de guardar, así que un `onerror` pegado se ejecuta en el navegador de
 quien lo pega (sólo administradores ven esa pestaña). Al guardar se limpia y ya
 no se ejecuta para nadie más.
 
-### El panel (`PagesRelationManager`)
+### La pantalla de páginas (`ManageContentPages`)
 
-- Un aviso arriba dice el formato de la página y tiene los botones «Pasar a …»
-  y, si hay historial, «Recuperar versión anterior». Columna «Formato» en la tabla.
-- **Editor.js**: el de siempre, con «Editor visual» y «JSON en crudo».
-- **Markdown**: `MarkdownEditor` (sin adjuntos: las imágenes van por URL) y
-  una pestaña «Vista previa».
-- **HTML**: `CodeEditor` y «Vista previa». **No** el `RichEditor` de antes: el
-  `RichEditor` pasa el HTML por TipTap al cargar y al guardar, y en las páginas
-  reales se comía entre el 70 y el 80 % del marcado (figuras, pies de foto,
-  clases de las tablas) aunque sólo se cambiase el título. Ojo si se guardó
-  alguna página desde el panel v2 antes de esto: su `content` pudo quedar
-  recortado.
-- Las vistas previas pasan por `Str::sanitizeHtml()`: las ve quien administra
-  el panel y el contenido lo puede escribir un editor.
-- Al guardar una página Markdown o HTML con títulos h1 o h2 sale un aviso (no
-  impide guardar): en la web esos niveles son el título del contenido y el de
-  la página. Markdown y HTML sí los guardan; sólo Editor.js los limita.
+F8 del plan de contenidos del 2026-09-24 (E1, P3, C6, C8, H2, G5, D1, P4, D3,
+G4 y E3 de la auditoría). Sustituye a la ventana flotante del antiguo
+`PagesRelationManager`, que desaparece. Es la sección «Páginas» de la ficha:
+`/admin/content/contents/{id}/pages/{page?}` (`{page}` es el id de la página o
+`new`; sin él, abre la primera).
+
+**Piezas:** `Pages/ManageContentPages.php` (estado, lista, guardar, autoguardado,
+bloqueo, historial e imágenes), el rasgo `Pages/Concerns/ContentPageForm.php`
+(el formulario y el camino de cambio de formato, trasladados tal cual), las
+vistas `filament/admin/content/page-editor|page-history|page-images.blade.php`,
+el componente Alpine `resources/js/filament/content-pages.js` y los estilos
+`cpe-*` de `panel.css`.
+
+- **Lista a la izquierda** (en el móvil, un desplegable arriba):
+  - cambiar de página **guarda antes** si hay cambios (`saveBeforeLeaving()`);
+    si el guardado falla, no se cambia;
+  - se reordena arrastrando (`x-sortable` de Filament): se renumera 1, 2, 3…
+    sin huecos y **sin tocar `updated_at`** (reordenar no es cambiar la
+    página, y quien la tenga abierta no debe encontrarse un conflicto D4);
+  - «Añadir página» abre `/pages/new`: la página se crea al guardar, la
+    última, y la dirección pasa a la suya. Así no queda una página vacía
+    publicada;
+  - «Eliminar página» la manda a la papelera (las de detrás suben un puesto).
+    La papelera de páginas está al pie de la lista, con «Restaurar» (vuelve la
+    última) y «Eliminar definitivamente» (sólo el SuperAdmin).
+- **Barra** (fija arriba en escritorio): formato, estado («Editando», «En
+  lectura»), «Guardado automáticamente hace 10 s», «Cambios sin guardar»,
+  «Guardar» (también Ctrl/Cmd+S), «Historial», «Imágenes» y «Eliminar
+  página». En el móvil las acciones quedan en icono.
+- **Datos de la página** (plegable): título, slug e imagen. El slug vacío sale
+  del título al dejar de escribir («-2», «-3»… si ya existe) y se comprueba al
+  salir del campo: único dentro del contenido, contando la papelera. Si está
+  ocupado: «Ese slug ya lo usa la página «X»» y no se guarda (C6).
+- **Zona de edición**: el aviso de formato y las conversiones de siempre
+  (abajo), Editor.js en una columna de unos 900 px, Markdown y HTML con su
+  vista previa, y «JSON en crudo» sólo para administradores. La vista previa
+  de lo que se está escribiendo pasa por `Str::sanitizeHtml()` (aún no ha
+  pasado por la limpieza de guardar).
+- **Autoguardado** (D1): cada 30 s, al perder el foco la ventana y antes de
+  cada una, volcando Editor.js. Guarda un borrador si cambia algo (F6),
+  renueva el bloqueo y mantiene viva la sesión (D3). Al abrir una página con
+  borrador: «Tienes un borrador de hace N minutos: Recuperar / Descartar», con
+  el aviso si la página cambió después. Recuperar lo guarda en la página y lo
+  que había pasa al historial.
+- **Bloqueo** (P4, F6): al abrir se coge con un token por pestaña.
+  - Si lo tiene otro usuario: en lectura, con «Pepe la está editando desde
+    hace N minutos» y, para administradores, «Forzar desbloqueo».
+  - Si lo tiene otra pestaña del mismo usuario (o una que murió sin soltarlo,
+    por ejemplo al cerrarse el navegador de golpe): en lectura con «Editar
+    aquí», que se lo queda (`ContentPageLockService::takeOver()`); la otra
+    pestaña pasa a lectura en su siguiente autoguardado, con su borrador.
+  - En lectura, la pantalla vuelve a intentar coger el bloqueo a los 3 s de
+    abrirse y en cada autoguardado, y si está libre pasa a edición releyendo
+    la página. Es lo que pasa **al recargar**: la petición de la página nueva
+    llega al servidor antes que el aviso de la vieja soltándolo.
+  - Quien pierde el bloqueo (desbloqueo forzado) pasa a lectura en su
+    siguiente autoguardado, con «Bloqueo perdido» y lo escrito en su borrador.
+  - Al cerrar la pestaña se suelta con `navigator.sendBeacon` a
+    `POST /admin/contents/{content}/pages/{page}/lock/release`.
+- **Aviso al salir** (P3) con cambios sin guardar: al recargar o cerrar
+  (`beforeunload`) y al pulsar cualquier enlace del panel (menú, pestañas de la
+  ficha), con una confirmación propia. Cuentan como cambios lo que aún no ha
+  salido del navegador y lo que sólo está en el borrador.
+- **Sesión caducada** (D3): Livewire 4 no da un 419 aquí, sino que manda al
+  inicio de sesión. La pantalla lo intercepta y avisa: «La sesión ha caducado
+  y no se ha guardado nada. Vuelve a entrar: al abrir esta página se te
+  ofrecerá recuperar tu borrador».
+- **Historial** (G5): modal con fecha, usuario, formato y motivo de cada
+  versión; «Ver» enseña el contenido y «Recuperar» la abre en el editor sin
+  guardar, con el mismo aviso, «Deshacer» y casilla de confirmación que un
+  cambio de formato. Al guardar, lo que había pasa al historial.
+- **Imágenes** (H2): las de los bloques y la portada, con miniatura, medidas,
+  peso, «Bloque 7», los otros sitios donde se usa, título y `alt` editables
+  (sin tocar el fichero), «Recortar» (Cropper.js 2; antes de aplicar avisa de
+  los otros sitios donde cambiará) y «Sustituir». Recortar y sustituir
+  conservan el fichero y sus URLs: los bloques la enseñan cambiada sin
+  tocarlos. Sólo sobre imágenes de esa página.
+- **Límite de Livewire** (G4): `config/livewire.php` sube `payload.max_size`
+  a 8 MB. Lo de antes de un cambio de formato, para «Deshacer», ya no viaja en
+  el formulario: va a la caché del servidor, por pestaña y página (no al
+  borrador, que el autoguardado sobrescribe). El editor del formato que se deja
+  se vacía, así que la página viaja una sola vez.
+- `Filament`: las acciones de la vista se pintan con `<x-filament::actions>`,
+  no con `{{ $this->accion }}`: sólo el componente mira si cada acción es
+  visible, y así se colaban acciones ocultas (eliminar en modo lectura).
 
 Cambiar de formato, paso a paso:
 
@@ -715,19 +793,20 @@ Cambiar de formato, paso a paso:
 3. Para guardar hay que marcar la casilla «Entiendo que la página pasa de
    Editor.js a Markdown…». Al guardar, Markdown es el formato de la página, se
    regenera todo desde él y el Editor.js anterior pasa al historial.
-4. «Recuperar versión anterior» sigue el mismo camino: enseña la última
-   versión del historial, la abre sin guardar, se puede deshacer y hay que
-   confirmar al guardar. Lo que había pasa a su vez al historial.
+4. Recuperar una versión del historial sigue el mismo camino.
 
 Los campos ocultos del formulario (`source_format`, `stored_format`,
-`original_format`, `original_content`, `pending_change`, `backup_id`,
-`opened_at`) son el estado de ese camino, no columnas. `backup_id` viene del
-formulario, así que se comprueba que la versión sea de esa página antes de
-usarla. `opened_at` es la fecha de la página al abrir el modal: si alguien la
-guarda mientras tanto, no se pisa y lo escrito va al borrador (ver D4 abajo).
+`original_format`, `pending_change`, `backup_id`) son el estado de ese camino,
+no columnas. `backup_id` viene del formulario, así que se comprueba que la
+versión sea de esa página antes de usarla. La fecha de la página al abrirla
+(`openedAt`, propiedad del componente) se manda al guardar: si alguien la ha
+guardado mientras tanto, no se pisa y lo escrito va al borrador (D4).
 
-El modal no coge el bloqueo (eso llega con la pantalla propia de F8), pero sí
-lo respeta: si alguien tiene la página bloqueada, no guarda y dice quién.
+Fijado por `ContentPageEditorTest` (lista, slug, autoguardado, borradores,
+bloqueo, imágenes, 300 KB), `ContentPageFormatsTest` y `ContentPageSavingTest`
+(formatos y guardado, trasladados del modal), y probado en Chrome con dos
+usuarios, matando el navegador y borrando el fichero de sesión a mitad de
+edición.
 
 ### API
 
@@ -844,7 +923,7 @@ todo, y no había dónde editar el SEO ni las categorías y etiquetas.
 | Sección | Página | Ruta |
 |---|---|---|
 | Datos | `EditContent` | `/admin/content/contents/{id}/edit` |
-| Páginas | `ManageContentPages` (la tabla de `PagesRelationManager`) | `…/{id}/pages` |
+| Páginas | `ManageContentPages` (la pantalla propia de F8, ver «La pantalla de páginas») | `…/{id}/pages/{page?}` |
 | SEO | `EditContentSeo` | `…/{id}/seo` |
 | Categorías y etiquetas | `EditContentTaxonomies` | `…/{id}/taxonomies` |
 | Relacionados | `ManageContentRelations` (galerías, colaboradores y contenidos relacionados) | `…/{id}/relations` |
@@ -856,9 +935,9 @@ todo, y no había dónde editar el SEO ni las categorías y etiquetas.
   en la cabecera, cada sección sólo con sus relaciones).
 - Las de formulario llevan «Guardar cambios» arriba y abajo fijo al
   desplazarse (`$formActionsAreSticky`).
-- «Páginas» y «Relacionados» reutilizan los gestores de relación de F5 tal
-  cual, con su autorización. «Páginas» se sustituye por la pantalla propia en
-  F8.
+- «Relacionados» reutiliza los gestores de relación de F5 tal cual, con su
+  autorización. «Páginas» es la pantalla propia de F8 (ver «La pantalla de
+  páginas»).
 - En el móvil la subnavegación es un desplegable; el listado enseña título y
   estado, y las acciones de cada fila van en un menú «⋮» (tocar la fila abre la
   ficha). En la tabla de páginas, «Editar» queda a la vista y lo demás en el
@@ -939,7 +1018,8 @@ limpiarlo (D37).
 ## Borradores, bloqueo, historial y ficheros sin usar
 
 Fase F6 del plan de contenidos del 2026-09-24 (D1, P4, D4, G5 y C2 de la
-auditoría). Es el servidor: la pantalla que lo usa llega en F8.
+auditoría). Es el servidor; la pantalla que lo usa es la de F8 (ver «La
+pantalla de páginas»).
 
 ### Historial (`ContentPageHistoryService`, tabla `content_page_versions`)
 
@@ -995,7 +1075,7 @@ Dentro de la misma transacción, con la fila de la página leída con
    después, no guarda: `ContentPageConflictException` («Esta página se ha
    modificado mientras la editabas. Tu versión está a salvo en el borrador;
    recarga para ver la otra»). Quien llama guarda lo escrito en el borrador;
-   el modal de páginas ya lo hace. Con el bloqueo, sólo pasa tras un
+   la pantalla de páginas ya lo hace. Con el bloqueo, sólo pasa tras un
    desbloqueo forzado. La fecha va al segundo, como `updated_at`.
 3. Guarda, deja lo anterior en el historial y borra el borrador de quien
    guarda.
@@ -1033,7 +1113,7 @@ Tareas diarias (hora de Madrid): `content:prune-drafts-and-versions` a las
 
 Fijado por `ContentPageDraftTest`, `ContentPageLockTest`,
 `ContentPageHistoryTest`, `ContentFileUsageTest` (con ficheros de verdad en el
-disco) y `ContentPageSavingTest` (conflicto en el modal).
+disco) y `ContentPageSavingTest` (conflicto en la pantalla de páginas).
 
 ## Galerías
 

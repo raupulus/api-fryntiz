@@ -48,7 +48,7 @@ class EditorJsAssetsTest extends TestCase
     }
 
     #[Test]
-    public function the_content_edit_page_loads_the_bundle_and_the_endpoints(): void
+    public function the_pages_screen_loads_the_bundle_and_the_endpoints(): void
     {
         (new RolesTableSeeder)->run();
         (new ContentAvailableStatusSeeder)->run();
@@ -56,10 +56,19 @@ class EditorJsAssetsTest extends TestCase
         (new ContentAvailablePageRawSeeder)->run();
 
         $this->actingAs(User::factory()->create(['role_id' => 1, 'is_active' => true]));
+        $content = Content::factory()->create();
 
-        $this->get(ContentResource::getUrl('edit', ['record' => Content::factory()->create()], panel: 'admin'))
+        // El editor está en la pantalla de páginas (F8), y sólo ahí se carga.
+        $this->get(ContentResource::getUrl('edit', ['record' => $content], panel: 'admin'))
+            ->assertSuccessful()
+            ->assertDontSee('build/assets/editorjs-', escape: false);
+
+        $this->get(ContentResource::getUrl('pages', ['record' => $content, 'page' => 'new'], panel: 'admin'))
             ->assertSuccessful()
             ->assertSee('build/assets/editorjs-', escape: false)
+            ->assertSee('build/assets/content-pages-', escape: false)
+            // El campo pide el token vigente antes de cada subida (D3).
+            ->assertSee('csrfUrl', escape: false)
             // Las rutas de subida ya no van en una variable global: cada campo
             // lleva las de su contenido (`EditorJsField::getEndpoints()`).
             ->assertDontSee('window.editorJsEndpoints', escape: false)

@@ -23,6 +23,10 @@ export default defineConfig({
                 // Alpine). Lo carga el render hook de las páginas que tienen
                 // el editor, no todo el panel.
                 'resources/js/filament/editorjs.js',
+                // La pantalla de páginas de un contenido (autoguardado, aviso al
+                // salir, recorte de imágenes). Va con Editor.js en el mismo
+                // render hook.
+                'resources/js/filament/content-pages.js',
             ],
             refresh: true,
         }),

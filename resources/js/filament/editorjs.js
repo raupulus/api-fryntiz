@@ -139,6 +139,23 @@ function buildTools(endpoints, allowRaw, notify) {
  * imagen…) y aquí se enseña.
  */
 function createUploader(endpoints, notify) {
+    // El token vigente, justo antes de cada subida (D3): el que se pintó al
+    // cargar la página deja de valer si la sesión se renueva mientras se
+    // escribe. Si no se puede pedir, se usa el de la página.
+    const freshToken = async () => {
+        if (! endpoints.csrfUrl) {
+            return endpoints.csrf;
+        }
+
+        try {
+            const response = await fetch(endpoints.csrfUrl, { credentials: 'same-origin', headers: { Accept: 'application/json' } });
+
+            return response.ok ? (await response.json()).token ?? endpoints.csrf : endpoints.csrf;
+        } catch (e) {
+            return endpoints.csrf;
+        }
+    };
+
     const send = async (url, init) => {
         let response;
 
@@ -146,7 +163,7 @@ function createUploader(endpoints, notify) {
             response = await fetch(url, {
                 ...init,
                 credentials: 'same-origin',
-                headers: { 'X-CSRF-TOKEN': endpoints.csrf, Accept: 'application/json', ...(init.headers ?? {}) },
+                headers: { 'X-CSRF-TOKEN': await freshToken(), Accept: 'application/json', ...(init.headers ?? {}) },
             });
         } catch (e) {
             notify('No se ha podido conectar con el servidor.');
@@ -245,6 +262,15 @@ function stripEditorMarks(value) {
     return value;
 }
 
+/**
+ * Los editores abiertos, para volcar su contenido a Livewire a demanda: la
+ * pantalla de páginas lo hace antes de guardar (Ctrl/Cmd+S no quita el foco
+ * del editor) y antes de cada autoguardado.
+ */
+const activeFields = new Set();
+
+window.flushEditorJs = () => Promise.all([...activeFields].map((field) => field.flush()));
+
 function editorJsField({ state, placeholder, readOnly, allowRaw = false, endpoints = {} }) {
     return {
         editor: null,
@@ -258,6 +284,16 @@ function editorJsField({ state, placeholder, readOnly, allowRaw = false, endpoin
         init() {
             this.lastSaved = this.normalize(this.state);
             this.initEditor();
+            activeFields.add(this);
+
+            // La pantalla de páginas pasa a lectura si se pierde el bloqueo
+            // (y vuelve con «Editar aquí» o al forzar el desbloqueo).
+            this.onReadOnly = (event) => this.editor?.isReady.then(() => {
+                if (this.editor.readOnly.isEnabled !== Boolean(event.detail.readOnly)) {
+                    this.editor.readOnly.toggle(Boolean(event.detail.readOnly));
+                }
+            });
+            window.addEventListener('content-page-read-only', this.onReadOnly);
 
             // Cambios externos al state (p. ej. al abrir el modal de edición).
             this.$watch('state', (value) => {
@@ -312,7 +348,8 @@ function editorJsField({ state, placeholder, readOnly, allowRaw = false, endpoin
 
         // Vuelca el contenido actual del editor al state entangled de Livewire.
         async flush() {
-            if (! this.editor) {
+            // En lectura no hay nada que volcar (y Editor.js no deja guardar).
+            if (! this.editor || this.editor.readOnly?.isEnabled) {
                 return;
             }
 
@@ -366,6 +403,8 @@ function editorJsField({ state, placeholder, readOnly, allowRaw = false, endpoin
         },
 
         destroy() {
+            activeFields.delete(this);
+            window.removeEventListener('content-page-read-only', this.onReadOnly);
             this.observer?.disconnect();
             this.observer = null;
 

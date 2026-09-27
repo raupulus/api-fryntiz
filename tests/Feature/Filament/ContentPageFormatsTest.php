@@ -6,8 +6,7 @@ namespace Tests\Feature\Filament;
 
 use App\Enums\ContentPageFormatEnum as Format;
 use App\Enums\UserRoleEnum;
-use App\Filament\Admin\Resources\Content\Contents\Pages\EditContent;
-use App\Filament\Admin\Resources\Content\Contents\RelationManagers\PagesRelationManager;
+use App\Filament\Admin\Resources\Content\Contents\Pages\ManageContentPages;
 use App\Models\Content\Content;
 use App\Models\Content\ContentPage;
 use App\Models\User;
@@ -86,11 +85,11 @@ class ContentPageFormatsTest extends TestCase
         return $page->refresh();
     }
 
-    private function manager(): Testable
+    private function manager(ContentPage|string|null $page = null): Testable
     {
-        return Livewire::test(PagesRelationManager::class, [
-            'ownerRecord' => $this->content,
-            'pageClass' => EditContent::class,
+        return Livewire::test(ManageContentPages::class, [
+            'record' => $this->content->getRouteKey(),
+            'page' => $page instanceof ContentPage ? $page->id : $page,
         ]);
     }
 
@@ -104,13 +103,12 @@ class ContentPageFormatsTest extends TestCase
     {
         $page = $this->editorJsPage();
 
-        $this->manager()
-            ->mountAction(TestAction::make('edit')->table($page))
+        $this->manager($page)
             ->assertSchemaStateSet([
                 'source_format' => 'editorjs',
                 'stored_format' => 'editorjs',
                 'content_json' => $this->pretty($this->editorJs('Texto original')),
-            ], 'mountedActionSchema0');
+            ]);
     }
 
     #[Test]
@@ -119,8 +117,7 @@ class ContentPageFormatsTest extends TestCase
         $page = $this->editorJsPage();
         $before = $page->content;
 
-        $this->manager()
-            ->mountAction(TestAction::make('edit')->table($page))
+        $this->manager($page)
             ->callAction($this->convertTo(Format::Markdown))
             ->assertHasNoErrors()
             ->assertSchemaStateSet([
@@ -128,7 +125,7 @@ class ContentPageFormatsTest extends TestCase
                 'content_markdown' => "Texto original\n",
                 'pending_change' => 'convert',
                 'original_format' => 'editorjs',
-            ], 'mountedActionSchema0');
+            ]);
 
         $page->refresh();
         $this->assertSame(Format::EditorJs, $this->service->sourceFormat($page));
@@ -140,11 +137,10 @@ class ContentPageFormatsTest extends TestCase
     {
         $page = $this->editorJsPage();
 
-        $this->manager()
-            ->mountAction(TestAction::make('edit')->table($page))
+        $this->manager($page)
             ->callAction($this->convertTo(Format::Markdown))
-            ->callMountedAction()
-            ->assertHasErrors(['mountedActions.0.data.confirm_format_change' => 'accepted']);
+            ->call('save')
+            ->assertHasErrors(['data.confirm_format_change' => 'accepted']);
 
         $this->assertSame(Format::EditorJs, $this->service->sourceFormat($page->refresh()));
     }
@@ -154,11 +150,10 @@ class ContentPageFormatsTest extends TestCase
     {
         $page = $this->editorJsPage();
 
-        $this->manager()
-            ->mountAction(TestAction::make('edit')->table($page))
+        $this->manager($page)
             ->callAction($this->convertTo(Format::Markdown))
-            ->fillForm(['content_markdown' => "Texto original\n\nY algo más", 'confirm_format_change' => true], 'mountedActionSchema0')
-            ->callMountedAction()
+            ->fillForm(['content_markdown' => "Texto original\n\nY algo más", 'confirm_format_change' => true])
+            ->call('save')
             ->assertHasNoErrors();
 
         $page->refresh();
@@ -172,15 +167,14 @@ class ContentPageFormatsTest extends TestCase
     {
         $page = $this->editorJsPage();
 
-        $this->manager()
-            ->mountAction(TestAction::make('edit')->table($page))
+        $this->manager($page)
             ->callAction($this->convertTo(Format::Html))
             ->callAction(TestAction::make('undoFormatChange')->schemaComponent('format'))
             ->assertSchemaStateSet([
                 'source_format' => 'editorjs',
                 'content_json' => $this->pretty($this->editorJs('Texto original')),
                 'pending_change' => null,
-            ], 'mountedActionSchema0');
+            ]);
     }
 
     #[Test]
@@ -188,17 +182,18 @@ class ContentPageFormatsTest extends TestCase
     {
         $page = $this->editorJsPage();
         $this->service->save($page, Format::Markdown, 'Versión en Markdown');
+        $version = $this->service->latestBackup($page->refresh());
 
-        $this->manager()
-            ->mountAction(TestAction::make('edit')->table($page->refresh()))
-            ->callAction(TestAction::make('restoreBackup')->schemaComponent('format'))
+        // Desde el historial: se abre sin guardar, como un cambio de formato.
+        $this->manager($page)
+            ->call('loadVersion', $version?->id)
             ->assertSchemaStateSet([
                 'source_format' => 'editorjs',
-                'content_json' => $this->editorJs('Texto original'),
+                'content_json' => $this->pretty($this->editorJs('Texto original')),
                 'pending_change' => 'restore',
-            ], 'mountedActionSchema0')
-            ->fillForm(['confirm_format_change' => true], 'mountedActionSchema0')
-            ->callMountedAction()
+            ])
+            ->fillForm(['confirm_format_change' => true])
+            ->call('save')
             ->assertHasNoErrors();
 
         $page->refresh();
@@ -214,10 +209,9 @@ class ContentPageFormatsTest extends TestCase
         $page = $this->editorJsPage();
         $this->service->save($page, Format::Markdown, 'Texto');
 
-        $this->manager()
-            ->mountAction(TestAction::make('edit')->table($page->refresh()))
-            ->fillForm(['content_markdown' => "## Sección\n\nTexto"], 'mountedActionSchema0')
-            ->callMountedAction()
+        $this->manager($page->refresh())
+            ->fillForm(['content_markdown' => "## Sección\n\nTexto"])
+            ->call('save')
             ->assertHasNoErrors()
             ->assertNotified('La página tiene 1 título h1 o h2');
 
@@ -230,10 +224,9 @@ class ContentPageFormatsTest extends TestCase
         $page = $this->editorJsPage();
         $this->service->save($page, Format::Markdown, 'Texto');
 
-        $this->manager()
-            ->mountAction(TestAction::make('edit')->table($page->refresh()))
-            ->fillForm(['content_markdown' => "### Sección\n\nTexto"], 'mountedActionSchema0')
-            ->callMountedAction()
+        $this->manager($page->refresh())
+            ->fillForm(['content_markdown' => "### Sección\n\nTexto"])
+            ->call('save')
             ->assertHasNoErrors()
             ->assertNotNotified('La página tiene 1 título h1 o h2');
     }
@@ -241,11 +234,10 @@ class ContentPageFormatsTest extends TestCase
     #[Test]
     public function a_new_page_starts_in_editorjs_and_saves_its_html(): void
     {
-        $this->manager()
-            ->mountAction(TestAction::make('create')->table())
-            ->assertSchemaStateSet(['source_format' => 'editorjs'], 'mountedActionSchema0')
-            ->fillForm(['title' => 'Nueva', 'order' => 2, 'content_json' => $this->editorJs('Recién escrita')], 'mountedActionSchema0')
-            ->callMountedAction()
+        $this->manager('new')
+            ->assertSchemaStateSet(['source_format' => 'editorjs'])
+            ->fillForm(['title' => 'Nueva', 'content_json' => $this->editorJs('Recién escrita')])
+            ->call('save')
             ->assertHasNoErrors();
 
         $page = ContentPage::query()->where('title', 'Nueva')->firstOrFail();

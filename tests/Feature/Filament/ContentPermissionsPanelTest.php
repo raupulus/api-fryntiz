@@ -6,11 +6,12 @@ namespace Tests\Feature\Filament;
 
 use App\Enums\ContentStatusEnum as Status;
 use App\Enums\UserRoleEnum;
+use App\Filament\Admin\Resources\Content\Contents\ContentResource;
 use App\Filament\Admin\Resources\Content\Contents\Pages\CreateContent;
 use App\Filament\Admin\Resources\Content\Contents\Pages\EditContent;
 use App\Filament\Admin\Resources\Content\Contents\Pages\ListContents;
+use App\Filament\Admin\Resources\Content\Contents\Pages\ManageContentPages;
 use App\Filament\Admin\Resources\Content\Contents\RelationManagers\ContributorsRelationManager;
-use App\Filament\Admin\Resources\Content\Contents\RelationManagers\PagesRelationManager;
 use App\Filament\Admin\Resources\Content\Contents\RelationManagers\RelatedRelationManager;
 use App\Filament\Admin\Resources\UserResource\Pages\EditUser;
 use App\Models\Content\Content;
@@ -225,22 +226,22 @@ class ContentPermissionsPanelTest extends TestCase
     public function the_pages_follow_the_content(): void
     {
         $page = ContentPage::query()->create(['content_id' => $this->content->id, 'title' => 'Página', 'slug' => 'pagina', 'order' => 1]);
-        $manager = fn () => Livewire::test(PagesRelationManager::class, ['ownerRecord' => $this->content, 'pageClass' => EditContent::class]);
+        $url = ContentResource::getUrl('pages', ['record' => $this->content, 'page' => $page->id]);
 
         $this->actingAs($this->contributor);
-        $manager()
-            ->assertActionVisible(TestAction::make('edit')->table($page))
-            ->assertActionVisible(TestAction::make('delete')->table($page));
+        Livewire::test(ManageContentPages::class, ['record' => $this->content->getRouteKey(), 'page' => $page->id])
+            ->assertSet('readOnly', false)
+            ->assertActionVisible('deletePage');
+        // Otra «pestaña» del mismo usuario: abre, pero en lectura.
+        $this->get($url)->assertOk()->assertSee('Ya la tienes abierta en otra pestaña');
 
         $this->actingAs($this->outsider);
-        $manager()
-            ->assertActionHidden(TestAction::make('edit')->table($page))
-            ->assertActionHidden(TestAction::make('delete')->table($page));
+        $this->get($url)->assertNotFound();
 
         // Quitado de colaborador, deja de poder tocar las páginas.
         app(ContentContributorService::class)->remove($this->content, $this->contributor);
         $this->actingAs($this->contributor);
-        $manager()->assertActionHidden(TestAction::make('edit')->table($page));
+        $this->get($url)->assertNotFound();
     }
 
     #[Test]

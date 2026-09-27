@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Admin\ContentPageEditorController;
 use App\Http\Controllers\Admin\EditorJsController;
 use App\Http\Controllers\Admin\YouTubeSearchController;
 use App\Http\Controllers\FileController;
@@ -100,6 +101,19 @@ Route::middleware(['auth', 'can:access-editorjs', 'can:update,content', 'throttl
         Route::post('/files', [EditorJsController::class, 'upload'])->name('files.store');
         Route::post('/files/by-url', [EditorJsController::class, 'uploadByUrl'])->name('files.by-url');
         Route::get('/url-metadata', [EditorJsController::class, 'urlMetadata'])->name('url-metadata');
+    });
+
+/*
+| La pantalla de páginas (F8 del plan de contenidos): el token CSRF vigente
+| antes de cada subida y soltar el bloqueo al cerrar la pestaña. Sin el límite
+| del editor: no suben nada ni salen a la red.
+*/
+Route::middleware(['auth', 'can:access-editorjs', 'can:update,content'])
+    ->prefix('admin/contents/{content}')
+    ->name('admin.contents.')
+    ->group(function () {
+        Route::get('/editor/csrf-token', [ContentPageEditorController::class, 'csrfToken'])->name('editor.csrf-token');
+        Route::post('/pages/{page}/lock/release', [ContentPageEditorController::class, 'releaseLock'])->name('pages.lock.release');
     });
 
 /*

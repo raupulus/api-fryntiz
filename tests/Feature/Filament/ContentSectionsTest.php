@@ -12,7 +12,6 @@ use App\Filament\Admin\Resources\Content\Contents\Pages\EditContentTaxonomies;
 use App\Filament\Admin\Resources\Content\Contents\Pages\EditContentVisibility;
 use App\Filament\Admin\Resources\Content\Contents\Pages\ListContents;
 use App\Filament\Admin\Resources\Content\Contents\Pages\ManageContentPages;
-use App\Filament\Admin\Resources\Content\Contents\RelationManagers\PagesRelationManager;
 use App\Models\Category;
 use App\Models\Content\Content;
 use App\Models\Content\ContentCategory;
@@ -238,16 +237,17 @@ class ContentSectionsTest extends TestCase
     {
         $first = ContentPage::query()->create(['content_id' => $this->content->id, 'title' => 'Uno', 'slug' => 'uno', 'order' => 1]);
         $second = ContentPage::query()->create(['content_id' => $this->content->id, 'title' => 'Dos', 'slug' => 'dos', 'order' => 2]);
-        $manager = fn () => Livewire::test(PagesRelationManager::class, ['ownerRecord' => $this->content, 'pageClass' => ManageContentPages::class]);
 
-        $manager()->callAction(TestAction::make('delete')->table($first));
+        Livewire::test(ManageContentPages::class, ['record' => $this->content->getRouteKey(), 'page' => $first->id])
+            ->callAction('deletePage')
+            ->assertRedirect(ContentResource::getUrl('pages', ['record' => $this->content, 'page' => $second->id]));
+
         $this->assertSoftDeleted($first);
         $this->assertSame(1, $second->refresh()->order, 'Las de detrás suben un puesto.');
 
-        $manager()
-            ->filterTable('trashed', false)
-            ->assertActionHidden(TestAction::make('forceDelete')->table($first))
-            ->callAction(TestAction::make('restore')->table($first));
+        Livewire::test(ManageContentPages::class, ['record' => $this->content->getRouteKey(), 'page' => $second->id])
+            ->assertActionHidden(TestAction::make('forceDeletePage')->arguments(['page' => $first->id]))
+            ->callAction(TestAction::make('restorePage')->arguments(['page' => $first->id]));
 
         $this->assertNotSoftDeleted($first);
         $this->assertSame(2, $first->refresh()->order);

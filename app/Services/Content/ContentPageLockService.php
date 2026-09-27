@@ -61,6 +61,33 @@ class ContentPageLockService
     }
 
     /**
+     * «Editar aquí»: el mismo usuario se queda el bloqueo que tiene en otra
+     * pestaña. Es lo que pasa tras cerrarse el navegador de golpe: la pestaña
+     * muerta no suelta el bloqueo y, sin esto, uno se vería en lectura con su
+     * propia página hasta que caducase. La otra pestaña, si sigue viva, pasa a
+     * lectura en su siguiente renovación, con su borrador.
+     *
+     * No sirve para quitárselo a otro usuario (eso es `forceUnlock()`).
+     */
+    public function takeOver(ContentPage $page, User $user, string $token): ContentPageLockState
+    {
+        return DB::transaction(function () use ($page, $user, $token): ContentPageLockState {
+            $state = $this->stateOf($this->row($page, forUpdate: true), $user, $token);
+
+            if ($state->status !== ContentPageLockState::OTHER_TAB) {
+                return $state;
+            }
+
+            DB::table('content_pages')->where('id', $page->id)->update([
+                'lock_token' => $token,
+                'locked_at' => now(),
+            ]);
+
+            return ContentPageLockState::mine($state->since);
+        });
+    }
+
+    /**
      * Renueva el bloqueo de esta pestaña.
      *
      * @return bool false = bloqueo perdido: caducó y lo cogió otro, o un

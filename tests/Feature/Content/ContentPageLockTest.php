@@ -142,6 +142,20 @@ class ContentPageLockTest extends TestCase
     }
 
     #[Test]
+    public function the_same_user_can_take_over_from_another_tab_but_not_from_another_user(): void
+    {
+        // Una pestaña que murió sin soltarlo (navegador cerrado de golpe).
+        $this->locks->acquire($this->page, $this->ana, 'pestaña-muerta');
+
+        $this->assertSame(State::MINE, $this->locks->takeOver($this->page, $this->ana, 'pestaña-nueva')->status);
+        $this->assertFalse($this->locks->renew($this->page, $this->ana, 'pestaña-muerta'), 'La otra pestaña pasa a lectura.');
+        $this->assertTrue($this->locks->renew($this->page, $this->ana, 'pestaña-nueva'));
+
+        $this->assertSame(State::OTHER_USER, $this->locks->takeOver($this->page, $this->bruno, 'pestaña-bruno')->status);
+        $this->assertTrue($this->locks->renew($this->page, $this->ana, 'pestaña-nueva'), 'Bruno no se lo queda.');
+    }
+
+    #[Test]
     public function releasing_frees_it_at_once_and_only_the_holder_can(): void
     {
         $this->locks->acquire($this->page, $this->ana, 'pestaña-ana');

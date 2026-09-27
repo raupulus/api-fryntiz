@@ -7,7 +7,7 @@ namespace App\Providers\Filament;
 use App\Filament\Admin\Pages\Dashboard;
 use App\Filament\Admin\Pages\Login;
 use App\Filament\Admin\Pages\Profile;
-use App\Filament\Admin\Resources\Content\Contents\Pages\EditContent;
+use App\Filament\Admin\Resources\Content\Contents\Pages\ManageContentPages;
 use App\Http\Middleware\NoIndex;
 use App\Models\Platform;
 use App\Support\FilamentPanelCss;
@@ -108,13 +108,15 @@ class AdminPanelProvider extends PanelProvider
                 PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,
                 fn (): string => view('filament.components.recaptcha-login-script')->render(),
             )
-            // Editor.js debe cargarse con la página: los modales (EditorJsField
-            // en el RelationManager de páginas) se montan por Livewire y un
-            // @push desde su vista no llegaría a inyectarse en el layout.
+            // Editor.js y la pantalla de páginas se cargan con la página: los
+            // campos se montan por Livewire y un @push desde su vista no
+            // llegaría a inyectarse en el layout. (Hasta F8 el ámbito era
+            // `EditContent`, y al pasar la tabla de páginas a su sección en F7
+            // el editor dejó de cargarse allí.)
             ->renderHook(
                 PanelsRenderHook::SCRIPTS_AFTER,
                 fn (): string => view('filament.components.editorjs-scripts')->render(),
-                scopes: EditContent::class,
+                scopes: ManageContentPages::class,
             )
             ->defaultThemeMode(ThemeMode::Dark)
             ->font('Figtree')

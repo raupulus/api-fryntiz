@@ -85,6 +85,8 @@ class EditorJsField extends Field
             'byUrl' => route('admin.contents.editor.files.by-url', $content),
             'urlMetadata' => route('admin.contents.editor.url-metadata', $content),
             'csrf' => csrf_token(),
+            // El vigente, antes de cada subida (D3).
+            'csrfUrl' => route('admin.contents.editor.csrf-token', $content),
         ];
     }
 
