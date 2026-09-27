@@ -510,9 +510,15 @@ posteriores.
   menús en Chrome: 109 textos de interfaz, ninguno en inglés.
 - **Títulos del 3 al 6** (3 por defecto): el h1 es el título del contenido y
   el h2 el de la página.
-- **Atajos**: resaltar `Cmd/Ctrl+Shift+M`, aviso `Cmd/Ctrl+Shift+W`, cita
-  `Cmd/Ctrl+Shift+O` y código en línea `Cmd/Ctrl+Shift+C` (en `main`, código
-  en línea compartía atajo con resaltar).
+- **Sin atajos de teclado propios** (sólo los de Editor.js: negrita, cursiva,
+  enlace, deshacer). Los cuatro de `main` chocaban con el navegador:
+  `Cmd/Ctrl+Mayús+W` (aviso) cierra la ventana en Chrome y Firefox sin que la
+  página pueda impedirlo, `+O` abre los marcadores, `+M` cambia de perfil o
+  abre el modo adaptable y `+C` el inspector; y no queda ninguna
+  `Cmd/Ctrl+Mayús+letra` libre. Los bloques se insertan escribiendo `/` en una
+  línea vacía y filtrando por el nombre (`/cita`, `/aviso`); resaltar y código
+  en línea (texto de ancho fijo dentro de un párrafo), desde la barra que sale
+  al seleccionar texto (DUDA-7, decisión D43).
 - **Bloque de código**: `@calumk/editorjs-codecup`, sucesor de
   `@calumk/editorjs-codeflask` (el de `main`, retirado de npm). Guarda
   `{code, language, showlinenumbers, showCopyButton}`, compatible con lo que

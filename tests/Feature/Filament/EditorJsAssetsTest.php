@@ -110,6 +110,21 @@ class EditorJsAssetsTest extends TestCase
         }
     }
 
+    /**
+     * Toda `Cmd/Ctrl+Mayús+letra` la usa ya el navegador o sus herramientas
+     * de desarrollo, y la de «aviso» que venía de `main` (+W) cerraba la
+     * ventana sin que la página pudiera impedirlo (DUDA-7, D43). Las
+     * herramientas no llevan atajo propio: los bloques van con «/» y resaltar
+     * y código en línea, con la barra de la selección.
+     */
+    #[Test]
+    public function the_editor_tools_have_no_keyboard_shortcuts_of_their_own(): void
+    {
+        $source = (string) file_get_contents(base_path(self::ENTRY));
+
+        $this->assertDoesNotMatchRegularExpression('/\bshortcut\s*:/', $source);
+    }
+
     #[Test]
     public function the_old_loose_files_are_gone(): void
     {

@@ -64,7 +64,6 @@ function buildTools(endpoints, allowRaw, notify) {
         quote: {
             class: Quote,
             inlineToolbar: true,
-            shortcut: 'CMD+SHIFT+O',
             config: {
                 quotePlaceholder: 'Texto de la cita',
                 captionPlaceholder: 'Autor de la cita',
@@ -73,7 +72,6 @@ function buildTools(endpoints, allowRaw, notify) {
         warning: {
             class: Warning,
             inlineToolbar: true,
-            shortcut: 'CMD+SHIFT+W',
             config: {
                 titlePlaceholder: 'Título del aviso',
                 messagePlaceholder: 'Mensaje',
@@ -123,8 +121,13 @@ function buildTools(endpoints, allowRaw, notify) {
             },
         } : {}),
 
-        marker: { class: Marker, shortcut: 'CMD+SHIFT+M' },
-        inlineCode: { class: InlineCode, shortcut: 'CMD+SHIFT+C' },
+        // Sin atajos de teclado propios (DUDA-7): toda Cmd/Ctrl+Mayús+letra la
+        // usa ya el navegador o sus herramientas de desarrollo, y la de «aviso»
+        // que venía de `main` (+W) cerraba la ventana sin que la página pudiera
+        // impedirlo. Los bloques, con «/»; resaltar y código en línea, desde la
+        // barra que sale al seleccionar texto.
+        marker: { class: Marker },
+        inlineCode: { class: InlineCode },
 
         textVariant: TextVariantTune,
     };

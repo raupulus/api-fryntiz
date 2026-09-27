@@ -659,6 +659,29 @@ F9 del plan de contenidos del 2026-09-24.*
 
 ---
 
+### D43 · El editor de páginas no tiene atajos de teclado propios
+
+Los cuatro que venían de `main` chocaban con el navegador: `Cmd/Ctrl+Mayús+W` (aviso) **cierra la
+ventana** en Chrome y en Firefox, y la página no puede impedirlo (en Firefox la tecla es
+`reserved`; en Chrome, cerrar ventana es un comando reservado); `+O` (cita) abre los marcadores,
+`+M` (resaltar) cambia de perfil en Chrome y abre el modo adaptable en Firefox, y `+C` (código en
+línea) abre el inspector. No queda ninguna `Cmd/Ctrl+Mayús+letra` que no use Chrome, Firefox o sus
+herramientas de desarrollo, y las combinaciones con `Alt` son `AltGr` en los teclados europeos de
+Windows y Linux (`Ctrl+Alt+E` es «€»).
+
+Así que las herramientas no llevan atajo: los bloques se insertan escribiendo `/` en una línea vacía
+y filtrando por su nombre (`/cita`, `/aviso`), y resaltar y código en línea se aplican desde la
+barra que aparece al seleccionar texto. Quedan los de Editor.js (negrita, cursiva, enlace).
+
+Antes de añadir un atajo, se comprueba contra las listas de Chrome, Firefox (incluidas sus
+herramientas de desarrollo) y Safari, y contra el sistema (macOS y los métodos de entrada de Linux,
+`Ctrl+Mayús+U`).
+
+*Fijado por `EditorJsAssetsTest::the_editor_tools_have_no_keyboard_shortcuts_of_their_own`. DUDA-7 del
+plan de contenidos del 2026-09-24.*
+
+---
+
 ## Dependencias
 
 ### D7 · Las dependencias se mantienen al día, incluidos los majors
