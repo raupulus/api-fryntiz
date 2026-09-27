@@ -8,7 +8,7 @@ Listado completo de los comandos Artisan personalizados del proyecto, agrupados 
 > `aemet:adverse-events`, `aemet:contamination`, `aemet:predictions` y `keycounter:maintenance`
 > sin que ninguno existiera, y ése era el motivo de fondo de que los datos de AEMET
 > llevaran años sin actualizarse: artisan no encuentra el comando, la tarea «termina»
-> y no se queja nadie. `tests/Feature/Consola/SchedulerTest.php` comprueba ahora que
+> y no se queja nadie. `tests/Feature/Console/SchedulerTest.php` comprueba ahora que
 > todo lo programado —y todo botón del panel de AEMET— apunte a un comando que existe.
 
 ---
@@ -509,4 +509,4 @@ worker de cola, sí.
 
 ---
 
-> Creado: 2026-05-26 · Última revisión: 2026-09-26
+> Creado: 2026-05-26 · Última revisión: 2026-09-27

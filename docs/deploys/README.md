@@ -10,7 +10,7 @@ está **cómo se despliega**. Si un documento de `docs/info` acaba explicando un
 | Fichero | Qué es |
 |---|---|
 | [`deploy-vps.md`](deploy-vps.md) | Guía completa del VPS: Docker o bare-metal, verificación, copias de seguridad, vuelta atrás y endurecimiento |
-| [`energia-v2.md`](energia-v2.md) | Esquema unificado de energía. Empieza por la **reparación del despliegue del 13/09/2026**; debajo, el checklist del despliegue inicial. Corta el contrato de la Pico y vacía tablas, así que el orden importa |
+| [`contenidos-editor.md`](contenidos-editor.md) | Editor de contenidos y API de contenidos (plan del 2026-09-24): requisitos (Imagick con HEIC), migraciones, cachés, tareas programadas, comprobación y la consulta del dominio de las imágenes |
 | [`websockets-reverb.md`](websockets-reverb.md) | Servidor de WebSockets: paquete, variables, demonio, certificado y cortafuegos |
 | [`vhosts/`](vhosts/) | **Todos** los sitios virtuales, uno por servidor |
 
@@ -59,4 +59,4 @@ dependen de qué fichero se copió (auditoría AR-D01).
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-13
+> Creado: 2026-08-30 · Última revisión: 2026-09-27

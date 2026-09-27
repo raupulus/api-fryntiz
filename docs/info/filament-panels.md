@@ -240,7 +240,7 @@ if (TokenAbilities::deviceRequest($user)) {
 return $esSuyo || $user->isAdmin();
 ```
 
-Fijado por `PanelAuthorizationTest::el_token_de_un_cacharro_no_hereda_los_permisos_de_administrador`.
+Fijado por `PanelAuthorizationTest::a_devices_token_does_not_inherit_admin_permissions`.
 
 ### Policies base reutilizables
 

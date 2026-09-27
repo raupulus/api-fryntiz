@@ -15,7 +15,6 @@ Sistema de gestión de contenidos multi-plataforma y multi-tipo. Soporta artícu
 | `app/Models/Content/ContentAvailablePageRaw.php` | `content_available_page_raw` | Tipos de raw disponibles |
 | `app/Models/Content/ContentAvailableType.php` | `content_available_types` | Tipos de contenido disponibles |
 | `app/Models/Content/ContentAvailableStatus.php` | — | Estados disponibles |
-| `app/Models/Content/ContentAvailableCategory.php` | — | Categorías disponibles |
 | `app/Models/Content/ContentCategory.php` | `content_categories` | Pivot contenido ↔ categoría |
 | `app/Models/Content/ContentTag.php` | `content_tags` | Pivot contenido ↔ tag |
 | `app/Models/Content/ContentTechnology.php` | `content_technologies` | Pivot contenido ↔ tecnología |
@@ -337,6 +336,13 @@ Contrato completo en [`api/v2/content.md`](api/v2/content.md).
 `highlights` es una ruta, así que el slug `highlights` está reservado:
 `ContentResource` (panel) no deja ponérselo a un contenido
 (`ContentApiService::RESERVED_SLUGS`).
+
+## Despliegue
+
+Lo que hay que hacer en el servidor el día que se suba el editor y la API de
+contenidos (Imagick con HEIC, migraciones, cachés, tareas programadas,
+comprobación y la consulta del dominio de las imágenes) está en
+[`docs/deploys/contenidos-editor.md`](../deploys/contenidos-editor.md).
 
 ## Comando de debug
 

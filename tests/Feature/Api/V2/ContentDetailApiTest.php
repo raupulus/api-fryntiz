@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api\V2;
 
+use App\Models\Content\ContentAvailablePageRaw;
+use App\Models\Content\ContentPage;
+use App\Models\Content\ContentPageRaw;
 use App\Services\Content\ContentApiService;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
@@ -218,6 +222,29 @@ class ContentDetailApiTest extends ApiTestCase
 
         $draft = $this->published(['status_id' => 1, 'slug' => 'borrador']);
         $this->getJson($this->contentUrl($draft, '/seo'))->assertNotFound();
+    }
+
+    #[Test]
+    public function an_old_page_without_its_other_formats_is_converted_once_and_kept_in_the_cache(): void
+    {
+        // Como las de la v1: sólo el JSON de Editor.js y el HTML servido, sin
+        // las versiones en Markdown que guarda el panel desde F4.
+        $content = $this->published(['slug' => 'antigua']);
+        $page = ContentPage::query()->create(['content_id' => $content->id, 'title' => 'Antigua', 'slug' => 'antigua', 'order' => 1, 'content' => '<p>Hola</p>']);
+        ContentPageRaw::query()->create([
+            'content_page_id' => $page->id,
+            'available_page_raw_id' => ContentAvailablePageRaw::query()->where('type', 'json')->value('id'),
+            'content' => (string) json_encode(['blocks' => [['id' => 'p', 'type' => 'paragraph', 'data' => ['text' => 'Hola <b>mundo</b>']]]]),
+        ]);
+        $page->refresh();
+        $key = sprintf('content-page-format:%d:%d:markdown', $page->id, $page->updated_at?->getTimestamp());
+
+        $this->getJson($this->contentUrl($content, '/pages/1?format=markdown'))->assertOk()->assertJsonPath('data.body', "Hola **mundo**\n");
+        $this->assertSame("Hola **mundo**\n", Cache::get($key), 'La conversión se guarda (sustituye al comando de F4).');
+
+        // La segunda vez sale de la caché, sin convertir.
+        Cache::put($key, 'desde la caché', now()->addHour());
+        $this->getJson($this->contentUrl($content, '/pages/1?format=markdown'))->assertJsonPath('data.body', 'desde la caché');
     }
 
     // ── Relacionados ────────────────────────────────────────────────────────

@@ -32,7 +32,7 @@ que esperan una imagen, donde recibir otra cosa es un error de todos modos.
 El parámetro va el último de la firma para que ninguna llamada existente cambie de comportamiento:
 todas quedan validadas por defecto sin tocarlas.
 
-**Hay un test que lo fija** (`FileUploadTest::test_acepta_un_tipo_arbitrario_cuando_la_validacion_esta_desactivada`).
+**Hay un test que lo fija** (`FileUploadTest::test_accepts_an_arbitrary_type_when_validation_is_disabled`).
 Si se cae porque alguien ha "endurecido" el modelo, lo que se ha roto es el editor.
 
 ### D2 · `file_types` NO es fuente de validación, nunca
@@ -601,6 +601,61 @@ visitas de más en las páginas.
 
 *Fijado por `ContentApiCacheTest` (matriz de caducidad y visitas). F9 del plan de contenidos del
 2026-09-24.*
+
+---
+
+### D40 · Las imágenes de los contenidos se guardan en WebP, sin el original
+
+Las fotos que se suben a un contenido (editor, portadas del contenido y de sus páginas, imagen
+social) no se guardan tal cual: pasan a WebP a calidad 85, giradas según su orientación, sin
+metadatos y a 2560 px como mucho (`File::addFile(..., webpOriginal: true)`). No se conserva el
+original.
+
+- Las fotos del móvil llegan a 5–10 MB con el GPS dentro; una web no necesita más que la copia de
+  2560 px, que ocupa una décima parte.
+- HEIC, HEIF y AVIF, que un navegador no siempre pinta, salen servibles desde el primer momento.
+- Los GIF se quedan como están (perderían la animación), y el resto de módulos sigue con su
+  formato hasta que se decida para cada uno (`docs/future/`).
+
+*Fijado por `EditorJsTest::a_phone_photo_is_stored_as_webp_rotated_and_without_its_metadata`,
+`EditorJsTest::a_heic_photo_becomes_webp` y
+`ContentSectionsTest::the_seo_section_saves_its_fields_and_the_social_image_as_webp`. DUDA-6 y F4
+del plan de contenidos del 2026-09-24.*
+
+---
+
+### D41 · Borradores en el servidor, e historial de 50 versiones y 30 días
+
+- **Borradores en la base de datos**, uno por usuario y página, y no en el navegador: se recuperan
+  desde otro equipo o tras perder la sesión, y cada uno es sólo de quien lo escribió. Los de más
+  de 30 días sin tocar se borran.
+- **Historial** con lo que había antes de cada cambio real del contenido (la huella no cuenta el
+  `time` de Editor.js ni la indentación): **50 versiones por página y 30 días**. Es un colchón
+  para deshacer, no un archivo: con más, la tabla crecería con cada autoguardado que se convierta
+  en guardado, y nadie recupera versiones de hace meses.
+
+*Fijado por `ContentPageDraftTest` (entre ellos `drafts_older_than_thirty_days_are_pruned`) y
+`ContentPageHistoryTest::sixty_different_saves_leave_the_fifty_most_recent` y
+`::versions_older_than_thirty_days_are_pruned_by_the_daily_task`. F6 del plan de contenidos del
+2026-09-24.*
+
+---
+
+### D42 · Las páginas antiguas se convierten al pedirlas, sin comando de conversión
+
+Las páginas de la v1 sólo tienen su JSON de Editor.js y el HTML servido; no sus versiones en
+Markdown. La auditoría (su F4) proponía un comando que las convirtiera todas de una vez;
+siguiendo el criterio de G1 (nada de comandos para una sola vez), se convierten **la primera vez
+que alguien las pide en otro formato** y la conversión se guarda en la caché una semana, ligada a
+la fecha de la página (`content-page-format:{id}:{updated_at}:{formato}`):
+
+- no hay que acordarse de lanzar nada al desplegar;
+- una página que se vuelve a guardar desde el panel ya guarda sus versiones y deja de necesitarlo;
+- si la conversión mejora, las páginas antiguas lo notan al caducar la caché, sin volver a
+  convertir la base.
+
+*Fijado por `ContentDetailApiTest::an_old_page_without_its_other_formats_is_converted_once_and_kept_in_the_cache`.
+F9 del plan de contenidos del 2026-09-24.*
 
 ---
 
