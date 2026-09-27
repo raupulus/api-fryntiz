@@ -35,8 +35,7 @@ class PlatformService
      */
     public function getBySlug(string $slug): ?Platform
     {
-        return Platform::with(['tags', 'categories', 'image'])
-            ->where('slug', $slug)
-            ->first();
+        // Sin relaciones: cada ruta carga lo suyo, y la ficha va a la caché.
+        return Platform::query()->where('slug', $slug)->first();
     }
 }

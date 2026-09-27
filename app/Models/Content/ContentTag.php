@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace App\Models\Content;
 
 use App\Models\BaseModels\BaseModel;
+use App\Models\Concerns\TouchesContent;
+use App\Models\PlatformTag;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
@@ -35,6 +38,7 @@ class ContentTag extends BaseModel
 {
     use HasFactory;
     use SoftDeletes;
+    use TouchesContent;
 
     protected $table = 'content_tags';
 
@@ -42,4 +46,14 @@ class ContentTag extends BaseModel
         'content_id',
         'platform_tag_id',
     ];
+
+    /**
+     * La etiqueta de la plataforma que enlaza esta fila.
+     *
+     * @return BelongsTo<PlatformTag, $this>
+     */
+    public function platformTag(): BelongsTo
+    {
+        return $this->belongsTo(PlatformTag::class, 'platform_tag_id');
+    }
 }

@@ -663,6 +663,9 @@ class ManageContentPages extends Page
                 ContentPage::query()->whereKey($id)->toBase()->update(['order' => $position + 1]);
             }
         });
+
+        // Sin eventos: la API tiene que enterarse del nuevo orden.
+        Content::markChanged($this->ownerContent()->getKey());
     }
 
     public function deletePageAction(): Action

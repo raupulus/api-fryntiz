@@ -577,6 +577,33 @@ y `ContentPageEditorTest` (recarga y caída). F8 del plan de contenidos del 2026
 
 ---
 
+### D39 · La caché de la API caduca con un contador global, y las visitas se cuentan con `defer()`
+
+**Caché.** El plan ligaba la clave de cada respuesta al `updated_at` del contenido (y los listados
+al último `updated_at` de la plataforma). Se usa en su lugar un contador en la caché,
+`ApiCacheVersion`, que sube con cualquier cambio en lo que la API enseña:
+
+- `updated_at` va al segundo: dos cambios en el mismo segundo dejaban una respuesta vieja
+  guardada.
+- Mucho de lo que se enseña no es del contenido (el título de un relacionado, el nombre de una
+  categoría, la plataforma, el autor): con `updated_at` habría que tocar todos los contenidos
+  afectados; con el contador basta subirlo.
+- Los listados no necesitan una consulta de `max(updated_at)` para montar su clave.
+
+A cambio, cualquier edición invalida todas las respuestas guardadas, no sólo las del contenido.
+Con el volumen de ediciones de estas webs (unas pocas al día) no importa. El `updated_at` del
+contenido se sigue poniendo al día al cambiar sus partes, porque es un dato del contrato.
+
+**Visitas.** Se cuentan con `defer()` y no con `dispatchAfterResponse()`: las dos corren después
+de responder y sin cola, pero la segunda se queda registrada en la aplicación y, cuando ésta
+atiende más de una petición (los tests, Octane), la repite en cada una. Los tests contaban
+visitas de más en las páginas.
+
+*Fijado por `ContentApiCacheTest` (matriz de caducidad y visitas). F9 del plan de contenidos del
+2026-09-24.*
+
+---
+
 ## Dependencias
 
 ### D7 · Las dependencias se mantienen al día, incluidos los majors

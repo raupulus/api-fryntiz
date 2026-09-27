@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Models\BaseModels\BaseModel;
+use App\Models\Content\Content;
 use App\Traits\HasGenericImages;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -90,6 +91,18 @@ use function strlen;
 class File extends BaseModel
 {
     use HasGenericImages;
+
+    /**
+     * Cambiar un fichero (textos, recorte, sustitución) cambia lo que la API
+     * sirve de los contenidos que lo usan (F9).
+     */
+    protected static function booted(): void
+    {
+        $touch = static fn (File $file) => Content::markChanged(Content::idsUsingFile((int) $file->id));
+
+        static::updated($touch);
+        static::deleting($touch);
+    }
 
     public static $thumbnailsSizeWidth = [
         'micro' => 50,
@@ -1062,10 +1075,11 @@ class File extends BaseModel
 
         // Una sola consulta. Antes era un `first()` por cada tamaño hacia
         // abajo: hasta cinco consultas para pintar una miniatura, y esto se
-        // llama una vez por fila en cualquier listado con imágenes.
-        $miniaturas = $this->thumbnails()
+        // llama una vez por fila en cualquier listado con imágenes. Y ninguna
+        // si ya vienen cargadas (`with('image.thumbnails')`): la API pide
+        // cuatro tamaños por imagen.
+        $miniaturas = ($this->relationLoaded('thumbnails') ? $this->thumbnails : $this->thumbnails()->get())
             ->whereIn('key', $candidatas)
-            ->get()
             ->keyBy('key');
 
         foreach ($candidatas as $candidata) {

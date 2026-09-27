@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Models\BaseModels\BaseModel;
+use App\Models\Concerns\BumpsApiCache;
 use Illuminate\Support\Carbon;
 
 /**
@@ -35,6 +36,8 @@ use Illuminate\Support\Carbon;
  */
 class Tag extends BaseModel
 {
+    use BumpsApiCache;
+
     protected $table = 'tags';
 
     protected $fillable = ['name', 'slug', 'description', 'icon', 'color'];

@@ -63,6 +63,18 @@ class Gallery extends BaseModel
 {
     use HasFactory;
 
+    /**
+     * Cambiar una galería cambia lo que la API sirve de los contenidos que la
+     * enseñan (F9).
+     */
+    protected static function booted(): void
+    {
+        $touch = static fn (Gallery $gallery) => Content::markChanged(Content::idsUsingGalleries([$gallery->id]));
+
+        static::saved($touch);
+        static::deleting($touch);
+    }
+
     protected $table = 'galleries';
 
     /**

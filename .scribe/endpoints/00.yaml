@@ -146,7 +146,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - 'keycounter:write'
+          - 'smartplant:read'
         type: 'string[]'
         enumValues:
           - 'hardware:read'
@@ -182,7 +182,7 @@ endpoints:
         name: expires_at
         description: 'Must be a valid date. Must be a date after <code>now</code>.'
         required: false
-        example: '2052-10-11'
+        example: '2052-10-20'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -191,9 +191,9 @@ endpoints:
     cleanBodyParameters:
       device_id: 16
       abilities:
-        - 'keycounter:write'
+        - 'smartplant:read'
       name: 'n'
-      expires_at: '2052-10-11'
+      expires_at: '2052-10-20'
     fileParameters: []
     responses: []
     responseFields: []
@@ -392,7 +392,7 @@ endpoints:
         name: privacity
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -437,7 +437,7 @@ endpoints:
       email: zbailey@example.net
       subject: i
       message: 'y'
-      privacity: false
+      privacity: true
       contactme: false
       attributes:
         - v
@@ -783,7 +783,7 @@ endpoints:
         status: 200
         content: '{"success":true,"message":"Operaci\u00f3n exitosa","data":[{"id":4,"name":"Desde Chipiona","title":"Desde Chipiona","slug":"desde-chipiona","domain":null,"description":"Web de meteorolog\u00eda, turismo e informaci\u00f3n sobre la ciudad de Chipiona","image":null,"created_at":"2023-08-04T22:12:41.000000Z"},{"id":2,"name":"La Gu\u00eda Linux","title":"La Gu\u00eda Linux","slug":"laguialinux","domain":"laguialinux.com","description":"Web sobre tecnolog\u00eda, GNU\/Linux y software libre","image":{"url":"http:\/\/api.raupulus.dev\/file\/get\/platform\/70\/KkagiCXwbt9WFNBqTehg2XVEbCdeQXpvNgq55IhW.png","width":840,"height":840,"type":"image\/png","alt":"La Gu\u00eda Linux","thumbnails":{"micro":"http:\/\/api.raupulus.dev\/file\/thumbnail\/get\/platform\/311\/KkagiCXwbt9WFNBqTehg2XVEbCdeQXpvNgq55IhW.webp","small":"http:\/\/api.raupulus.dev\/file\/thumbnail\/get\/platform\/312\/KkagiCXwbt9WFNBqTehg2XVEbCdeQXpvNgq55IhW.webp","medium":"http:\/\/api.raupulus.dev\/file\/thumbnail\/get\/platform\/313\/KkagiCXwbt9WFNBqTehg2XVEbCdeQXpvNgq55IhW.webp","large":"http:\/\/api.raupulus.dev\/file\/thumbnail\/get\/platform\/314\/KkagiCXwbt9WFNBqTehg2XVEbCdeQXpvNgq55IhW.webp"}},"created_at":"2023-01-31T15:51:31.000000Z"},{"id":3,"name":"Porfolio","title":"Porfolio","slug":"portfolio","domain":"raupulus.dev","description":"Portfolio Personal con mis proyectos","image":{"url":"http:\/\/api.raupulus.dev\/file\/get\/platform\/69\/yi4p843Sb4pdZoy1BXHDwSSoNlTB7W3FYi8dqZaQ.png","width":4266,"height":4266,"type":"image\/png","alt":"Porfolio","thumbnails":{"micro":"http:\/\/api.raupulus.dev\/file\/thumbnail\/get\/platform\/306\/yi4p843Sb4pdZoy1BXHDwSSoNlTB7W3FYi8dqZaQ.webp","small":"http:\/\/api.raupulus.dev\/file\/thumbnail\/get\/platform\/307\/yi4p843Sb4pdZoy1BXHDwSSoNlTB7W3FYi8dqZaQ.webp","medium":"http:\/\/api.raupulus.dev\/file\/thumbnail\/get\/platform\/308\/yi4p843Sb4pdZoy1BXHDwSSoNlTB7W3FYi8dqZaQ.webp","large":"http:\/\/api.raupulus.dev\/file\/thumbnail\/get\/platform\/310\/yi4p843Sb4pdZoy1BXHDwSSoNlTB7W3FYi8dqZaQ.webp"}},"created_at":"2023-08-04T22:00:05.000000Z"}],"meta":{"total":3,"per_page":25,"current_page":1,"last_page":1,"from":1,"to":3}}'
         headers:
-          cache-control: 'no-cache, private'
+          cache-control: 'max-age=60, public'
           content-type: application/json
           x-ratelimit-limit: '300'
           x-ratelimit-remaining: '299'
@@ -810,7 +810,9 @@ endpoints:
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: ''
+      title: |-
+        La ficha completa de la plataforma (P7): la de la v1, que el frontend
+        usa como primera carga y para los metadatos del SSR. Sin los `*_token`.
       description: ''
       authenticated: false
       deprecated: false
@@ -921,21 +923,15 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'api/v2/platforms/{platform_slug}/contents'
+    uri: 'api/v2/platforms/{platform_slug}/tags'
     metadata:
       custom: []
       groupName: Endpoints
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Contenidos publicados de una plataforma.'
-      description: |-
-        Sustituye a `/{platform}/featured` y `/{platform}/content/type/{t}`, que
-        eran dos rutas para dos filtros de la misma colección.
-
-          ?featured=1        sólo destacados
-          ?type=tutorial     por slug del tipo de contenido
-          ?sort=-published_at
+      title: 'Etiquetas de una plataforma, con cuántos contenidos publicados las usan.'
+      description: ''
       authenticated: false
       deprecated: false
     headers:
@@ -986,6 +982,131 @@ endpoints:
     custom: []
     httpMethods:
       - GET
+    uri: 'api/v2/platforms/{platform_slug}/contents'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Contenidos publicados de una plataforma.'
+      description: |-
+        ?featured=1              sólo destacados
+          ?type=project            por slug del tipo de contenido
+          ?category= ?tag= ?technology=   por slug
+          ?q=texto                 en el título o el extracto, sin distinguir mayúsculas
+          ?sort=-published_at      y los demás de `CollectionQuery`
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      platform_slug:
+        custom: []
+        name: platform_slug
+        description: 'The slug of the platform.'
+        required: true
+        example: 4
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      platform_slug: 4
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 404
+        content: '{"success":false,"message":"Plataforma no encontrada"}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-ratelimit-limit: '300'
+          x-ratelimit-remaining: '295'
+          content-language: en
+          vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v2/platforms/{platform_slug}/contents/highlights'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Destacados, últimos y tendencia, agrupados por tipo.'
+      description: |-
+        ?type=featured|latest|trend|all   (por defecto all)
+          ?limit=6                          por tipo, de 1 a 24
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      platform_slug:
+        custom: []
+        name: platform_slug
+        description: 'The slug of the platform.'
+        required: true
+        example: 4
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      platform_slug: 4
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 404
+        content: '{"success":false,"message":"Plataforma no encontrada"}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-ratelimit-limit: '300'
+          x-ratelimit-remaining: '294'
+          content-language: en
+          vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
     uri: 'api/v2/platforms/{platform_slug}/contents/{slug}'
     metadata:
       custom: []
@@ -993,8 +1114,15 @@ endpoints:
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Un contenido publicado.'
-      description: ''
+      title: |-
+        El detalle de un contenido: sus datos, el índice de páginas sin texto y
+        la primera página. Con `?include=` lo que se pida (`all`, todo).
+      description: |-
+        Cada petición suma una visita, también si se responde desde la caché o
+        con 304: se cuenta después de enviar la respuesta, en el mismo proceso,
+        sin depender de la cola (H1). Con `defer()` y no con
+        `dispatchAfterResponse()`: ésa se queda registrada en la aplicación y,
+        si atiende más de una petición (tests, Octane), la repite en cada una.
       authenticated: false
       deprecated: false
     headers:
@@ -1028,19 +1156,58 @@ endpoints:
       slug: architecto
     queryParameters: []
     cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
+    bodyParameters:
+      format:
+        custom: []
+        name: format
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues:
+          - editorjs
+          - markdown
+          - html
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      from:
+        custom: []
+        name: from
+        description: 'Must be at least 1.'
+        required: false
+        example: 22
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      limit:
+        custom: []
+        name: limit
+        description: 'Must be at least 1. Must not be greater than 100.'
+        required: false
+        example: 7
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      format: architecto
+      from: 22
+      limit: 7
     fileParameters: []
     responses:
       -
         custom: []
-        status: 404
-        content: '{"success":false,"message":"Contenido no encontrado"}'
+        status: 422
+        content: '{"success":false,"message":"The given data was invalid.","errors":{"format":["El formato tiene que ser editorjs, markdown o html."]}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '295'
+          x-ratelimit-remaining: '293'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -1064,7 +1231,7 @@ endpoints:
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Páginas de un contenido publicado.'
+      title: 'Las páginas con su texto. `?from=` (número de página) y `?limit=`.'
       description: ''
       authenticated: false
       deprecated: false
@@ -1099,19 +1266,180 @@ endpoints:
       content_slug: architecto
     queryParameters: []
     cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
+    bodyParameters:
+      format:
+        custom: []
+        name: format
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues:
+          - editorjs
+          - markdown
+          - html
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      from:
+        custom: []
+        name: from
+        description: 'Must be at least 1.'
+        required: false
+        example: 22
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      limit:
+        custom: []
+        name: limit
+        description: 'Must be at least 1. Must not be greater than 100.'
+        required: false
+        example: 7
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      format: architecto
+      from: 22
+      limit: 7
     fileParameters: []
     responses:
       -
         custom: []
-        status: 404
-        content: '{"success":false,"message":"Contenido no encontrado"}'
+        status: 422
+        content: '{"success":false,"message":"The given data was invalid.","errors":{"format":["El formato tiene que ser editorjs, markdown o html."]}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '294'
+          x-ratelimit-remaining: '292'
+          content-language: en
+          vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v2/platforms/{platform_slug}/contents/{content_slug}/pages/slug/{pageSlug}'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Una página, por su slug.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      platform_slug:
+        custom: []
+        name: platform_slug
+        description: 'The slug of the platform.'
+        required: true
+        example: 4
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      content_slug:
+        custom: []
+        name: content_slug
+        description: 'The slug of the content.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      pageSlug:
+        custom: []
+        name: pageSlug
+        description: ''
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      platform_slug: 4
+      content_slug: architecto
+      pageSlug: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      format:
+        custom: []
+        name: format
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues:
+          - editorjs
+          - markdown
+          - html
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      from:
+        custom: []
+        name: from
+        description: 'Must be at least 1.'
+        required: false
+        example: 22
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      limit:
+        custom: []
+        name: limit
+        description: 'Must be at least 1. Must not be greater than 100.'
+        required: false
+        example: 7
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      format: architecto
+      from: 22
+      limit: 7
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 422
+        content: '{"success":false,"message":"The given data was invalid.","errors":{"format":["El formato tiene que ser editorjs, markdown o html."]}}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-ratelimit-limit: '300'
+          x-ratelimit-remaining: '291'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -1135,7 +1463,7 @@ endpoints:
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Una página concreta, por su orden dentro del contenido.'
+      title: 'Una página, por su número.'
       description: ''
       authenticated: false
       deprecated: false
@@ -1182,19 +1510,58 @@ endpoints:
       order: '564'
     queryParameters: []
     cleanQueryParameters: []
-    bodyParameters: []
-    cleanBodyParameters: []
+    bodyParameters:
+      format:
+        custom: []
+        name: format
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues:
+          - editorjs
+          - markdown
+          - html
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      from:
+        custom: []
+        name: from
+        description: 'Must be at least 1.'
+        required: false
+        example: 22
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      limit:
+        custom: []
+        name: limit
+        description: 'Must be at least 1. Must not be greater than 100.'
+        required: false
+        example: 7
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      format: architecto
+      from: 22
+      limit: 7
     fileParameters: []
     responses:
       -
         custom: []
-        status: 404
-        content: '{"success":false,"message":"Contenido no encontrado"}'
+        status: 422
+        content: '{"success":false,"message":"The given data was invalid.","errors":{"format":["El formato tiene que ser editorjs, markdown o html."]}}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '293'
+          x-ratelimit-remaining: '290'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -1218,7 +1585,7 @@ endpoints:
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Contenidos relacionados, también publicados.'
+      title: 'Relacionados: los elegidos a mano primero. `?limit=` de 1 a 20.'
       description: ''
       authenticated: false
       deprecated: false
@@ -1265,7 +1632,220 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '292'
+          x-ratelimit-remaining: '289'
+          content-language: en
+          vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v2/platforms/{platform_slug}/contents/{content_slug}/seo'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      platform_slug:
+        custom: []
+        name: platform_slug
+        description: 'The slug of the platform.'
+        required: true
+        example: 4
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      content_slug:
+        custom: []
+        name: content_slug
+        description: 'The slug of the content.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      platform_slug: 4
+      content_slug: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 404
+        content: '{"success":false,"message":"Contenido no encontrado"}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-ratelimit-limit: '300'
+          x-ratelimit-remaining: '288'
+          content-language: en
+          vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v2/platforms/{platform_slug}/contents/{content_slug}/galleries'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      platform_slug:
+        custom: []
+        name: platform_slug
+        description: 'The slug of the platform.'
+        required: true
+        example: 4
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      content_slug:
+        custom: []
+        name: content_slug
+        description: 'The slug of the content.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      platform_slug: 4
+      content_slug: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 404
+        content: '{"success":false,"message":"Contenido no encontrado"}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-ratelimit-limit: '300'
+          x-ratelimit-remaining: '287'
+          content-language: en
+          vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v2/platforms/{platform_slug}/contents/{content_slug}/files'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      platform_slug:
+        custom: []
+        name: platform_slug
+        description: 'The slug of the platform.'
+        required: true
+        example: 4
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      content_slug:
+        custom: []
+        name: content_slug
+        description: 'The slug of the content.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      platform_slug: 4
+      content_slug: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 404
+        content: '{"success":false,"message":"Contenido no encontrado"}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          x-ratelimit-limit: '300'
+          x-ratelimit-remaining: '286'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -2115,9 +2695,9 @@ endpoints:
       read_at:
         custom: []
         name: read_at
-        description: 'Must be a valid date. Must be a date after or equal to <code>2000-01-01</code>. Must be a date before or equal to <code>2026-09-17 14:24:30</code>.'
+        description: 'Must be a valid date. Must be a date after or equal to <code>2000-01-01</code>. Must be a date before or equal to <code>2026-09-27 06:11:06</code>.'
         required: false
-        example: '2022-10-12'
+        example: '2022-10-21'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2137,7 +2717,7 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       duration: 22
-      read_at: '2022-10-12'
+      read_at: '2022-10-21'
       energy: []
     fileParameters: []
     responses: []
@@ -2696,7 +3276,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-17 13:24:30'
+        example: '2026-09-27 05:11:06'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2707,7 +3287,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-17 13:24:30'
+        example: '2026-09-27 05:11:06'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2782,8 +3362,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-09-17 13:24:30'
-      end_at: '2026-09-17 13:24:30'
+      start_at: '2026-09-27 05:11:06'
+      end_at: '2026-09-27 05:11:06'
       duration: 16
       pulsations: 39
       pulsations_special_keys: 84
@@ -2858,7 +3438,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-17 13:24:30'
+        example: '2026-09-27 05:11:06'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2869,7 +3449,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-17 13:24:30'
+        example: '2026-09-27 05:11:06'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2955,8 +3535,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-09-17 13:24:30'
-      end_at: '2026-09-17 13:24:30'
+      start_at: '2026-09-27 05:11:06'
+      end_at: '2026-09-27 05:11:06'
       duration: 16
       clicks_left: 39
       clicks_right: 84
@@ -3214,7 +3794,7 @@ endpoints:
         name: full_water_tank
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -3251,7 +3831,7 @@ endpoints:
       humidity: 4326.41688
       soil_humidity: 17
       soil_humidity_raw: 16
-      full_water_tank: false
+      full_water_tank: true
       waterpump_enabled: false
       vaporizer_enabled: false
     fileParameters: []
@@ -3292,7 +3872,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - light
+          - humidity
         type: 'string[]'
         enumValues:
           - temperature
@@ -3321,7 +3901,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - light
+        - humidity
       location_type: indoor
     fileParameters: []
     responses:
@@ -3385,7 +3965,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - air_quality
+          - light
         type: 'string[]'
         enumValues:
           - temperature
@@ -3401,7 +3981,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - air_quality
+        - light
     fileParameters: []
     responses:
       -
@@ -3779,13 +4359,13 @@ endpoints:
     responses:
       -
         custom: []
-        status: 200
-        content: '{"success":true,"message":"Operaci\u00f3n exitosa","data":[],"meta":{"total":0,"per_page":25,"current_page":1,"last_page":1,"from":null,"to":null}}'
+        status: 500
+        content: '{"success":false,"message":"Internal server error"}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '287'
+          x-ratelimit-remaining: '281'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -3846,7 +4426,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '286'
+          x-ratelimit-remaining: '280'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -3905,7 +4485,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '285'
+          x-ratelimit-remaining: '279'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff

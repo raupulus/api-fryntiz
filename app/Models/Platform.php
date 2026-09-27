@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Http\Resources\V2\Content\ContentFeaturedResource;
 use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseModel;
+use App\Models\Concerns\BumpsApiCache;
 use App\Models\Content\Content;
+use App\Support\ApiCacheVersion;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -16,7 +17,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 
 /**
  * Class Platform
@@ -89,6 +89,7 @@ use Illuminate\Support\Facades\DB;
  */
 class Platform extends BaseModel
 {
+    use BumpsApiCache;
     use HasFactory, ImageTrait;
     use SoftDeletes;
 
@@ -101,23 +102,6 @@ class Platform extends BaseModel
         'youtube_presentation_video_id', 'twitter', 'twitter_token', 'mastodon', 'mastodon_token', 'twitch', 'tiktok',
         'instagram',
     ];
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        // Evento "saved": Se dispara después de ser guardado por primera vez y tras actualizarse
-        static::saved(function ($model) {
-            // $model->cleanAllCache(); // Es mejor hacerlo en store/update para tener la asociación de categorías
-            // \Log::info('El modelo Platform ha disparado saved:', ['modelo' => $model]);
-        });
-
-        // Evento "updated": Solo se dispara cuando el modelo es actualizado
-        static::updated(function ($model) {
-            // $model->cleanAllCache();
-            // \Log::info('El modelo Platform ha disparado updated:', ['modelo' => $model]);
-        });
-    }
 
     /**
      * Asocia con el usuario al que pertenece la plataforma.
@@ -194,173 +178,15 @@ class Platform extends BaseModel
     }
 
     /**
-     * Limpia y renueva el caché para las categorías asociadas a la plataforma.
-     */
-    public function cleanApiCategoryCache(): void
-    {
-        Cache::forget('api-categories-'.$this->slug);
-        $this->getApiCategories();
-    }
-
-    /**
-     * Limpia y renueva el caché para los contenidos destacados asociados a la plataforma.
-     */
-    public function cleanContentFeaturedCache(): void
-    {
-        Cache::forget('api-content-featured-'.$this->slug);
-        $this->getContentFeatured();
-    }
-
-    /**
-     * Limpia y renueva el caché para los últimos contenidos asociados a la plataforma.
-     */
-    public function cleanContentLatestCache(): void
-    {
-        Cache::forget('api-content-latest-'.$this->slug);
-        $this->getContentLatest();
-    }
-
-    /**
-     * Limpia y renueva el caché para los últimos contenidos en tendencia por visitas.
-     */
-    public function cleanContentTrendCache(): void
-    {
-        Cache::forget('api-content-trend-'.$this->slug);
-        $this->getContentTrend();
-    }
-
-    /**
-     * Limpia y renueva aquello que se haya cacheado para la plataforma, útil para recomponer datos después
-     * de crear o actualizar una.
-     */
-    public function cleanAllCache(): void
-    {
-        $this->cleanApiCategoryCache();
-        $this->cleanContentFeaturedCache();
-        $this->cleanContentLatestCache();
-        $this->cleanContentTrendCache();
-    }
-
-    public function getContentTrendByType(string $type, int $limit = 6): Collection
-    {
-        $fields = ['contents.id', 'contents.type_id', 'contents.image_id', 'contents.platform_id', 'contents.title', 'contents.slug', 'contents.excerpt', 'contents.published_at', 'contents.updated_at'];
-
-        // Fecha de hace 3 días
-        $threeDaysAgo = now()->subDays(3)->format('Y-m-d');
-
-        return $this->contentsActive()
-            ->select($fields)
-            // ->addSelect(DB::raw('content_available_types.name as type'))
-            ->addSelect(DB::raw('COALESCE(SUM(content_daily_views.views), 0) as total_views'))
-            ->leftJoin('content_daily_views', function ($join) use ($threeDaysAgo) {
-                $join->on('contents.id', '=', 'content_daily_views.content_id')
-                    ->where('content_daily_views.date', '>=', $threeDaysAgo);
-            })
-            ->whereHas('type', function ($query) use ($type) {
-                $query->where('slug', $type);
-            })
-            ->groupBy('contents.id', 'contents.image_id', 'contents.platform_id', 'contents.title', 'contents.slug', 'contents.excerpt', 'contents.published_at', 'contents.updated_at')
-            ->orderByDesc('total_views')
-            ->orderByDesc('contents.updated_at')
-            ->limit($limit)
-            ->get();
-    }
-
-    /**
-     * Devuelve el contenido destacado formateado para consumirla a través de api.
-     */
-    public function getContentTrend(): array
-    {
-        return Cache::remember('api-content-trend-'.$this->slug, 60 * 60, function () {
-            $posts = $this->getContentTrendByType('blog');
-            $news = $this->getContentTrendByType('news');
-            $guides = $this->getContentTrendByType('guide');
-
-            return [
-                'blog' => ContentFeaturedResource::collection($posts),
-                'news' => ContentFeaturedResource::collection($news),
-                'guides' => ContentFeaturedResource::collection($guides),
-            ];
-        });
-    }
-
-    public function getContentFeaturedByType(string $type, int $limit = 6): Collection
-    {
-        $fields = ['contents.id', 'contents.type_id', 'contents.image_id', 'contents.platform_id', 'contents.title', 'contents.slug', 'contents.excerpt', 'contents.published_at', 'contents.updated_at'];
-
-        return $this->contentsActive()
-            ->select($fields)
-            ->whereHas('type', function ($query) use ($type) {
-                $query->where('slug', $type);
-            })
-            ->whereIn('contents.is_featured', [true])
-            // ->orderByDesc('contents.is_featured')
-            ->orderByDesc('contents.updated_at')
-            ->limit($limit)
-            ->get();
-    }
-
-    /**
-     * Devuelve el contenido destacado formateado para consumirla a través de api.
-     */
-    public function getContentFeatured(): array
-    {
-        return Cache::rememberForever('api-content-featured-'.$this->slug, function () {
-            $posts = $this->getContentFeaturedByType('blog');
-            $news = $this->getContentFeaturedByType('news');
-            $guides = $this->getContentFeaturedByType('guide');
-
-            return [
-                'blog' => ContentFeaturedResource::collection($posts),
-                'news' => ContentFeaturedResource::collection($news),
-                'guides' => ContentFeaturedResource::collection($guides),
-            ];
-        });
-    }
-
-    /**
-     * Devuelve el último contenido
-     */
-    public function getContentLatestByType(string $type, int $limit = 6): Collection
-    {
-        $fields = ['contents.id', 'contents.type_id', 'contents.image_id', 'contents.platform_id', 'contents.title', 'contents.slug', 'contents.excerpt', 'contents.published_at', 'contents.updated_at'];
-
-        return $this->contentsActive()
-            ->select($fields)
-            ->whereHas('type', function ($query) use ($type) {
-                $query->where('slug', $type);
-            })
-            ->whereNotIn('contents.is_featured', [true])
-            ->orderByDesc('contents.updated_at')
-            ->limit($limit)
-            ->get();
-    }
-
-    /**
-     * Devuelve el contenido destacado formateado para consumirla a través de api.
-     */
-    public function getContentLatest(): array
-    {
-        return Cache::rememberForever('api-content-latest-'.$this->slug, function () {
-            $posts = $this->getContentLatestByType('blog');
-            $news = $this->getContentLatestByType('news');
-            $guides = $this->getContentLatestByType('guide');
-
-            return [
-                'blog' => ContentFeaturedResource::collection($posts),
-                'news' => ContentFeaturedResource::collection($news),
-                'guides' => ContentFeaturedResource::collection($guides),
-            ];
-        });
-    }
-
-    /**
      * Devuelve todas las categorías formateadas para consumirla a través de api.
-     * Estas categorías se cachean automáticamente al editarlas.
+     *
+     * En caché con la versión de `ApiCacheVersion`: antes era para siempre y
+     * sólo se renovaba al guardar una categoría, no al añadirla a la
+     * plataforma (F9).
      */
     public function getApiCategories(): Collection
     {
-        return Cache::rememberForever('api-categories-'.$this->slug, function () {
+        return Cache::remember('api-categories-'.$this->id.'-'.ApiCacheVersion::current(), now()->addDay(), function () {
             $categories = $this->categories()
                 ->select('categories.id', 'categories.parent_id', 'categories.slug', 'categories.name', 'categories.description', 'categories.icon', 'categories.color', 'categories.image_id')
                 ->where('parent_id', null)

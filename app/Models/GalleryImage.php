@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Models\BaseModels\BaseModel;
+use App\Models\Content\Content;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -41,6 +42,18 @@ use Illuminate\Support\Carbon;
 class GalleryImage extends BaseModel
 {
     use HasFactory;
+
+    /**
+     * Añadir, quitar o reordenar fotos cambia lo que la API sirve de los
+     * contenidos que enseñan la galería (F9).
+     */
+    protected static function booted(): void
+    {
+        $touch = static fn (GalleryImage $image) => Content::markChanged(Content::idsUsingGalleries(array_filter([$image->gallery_id])));
+
+        static::saved($touch);
+        static::deleted($touch);
+    }
 
     protected $table = 'gallery_images';
 

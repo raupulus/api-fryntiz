@@ -18,6 +18,7 @@ use App\Models\File;
 use App\Models\User;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use InvalidArgumentException;
@@ -88,6 +89,30 @@ class ContentPageFormatService
     }
 
     /**
+     * El formato de la página sin leer ningún texto: para el índice de páginas
+     * de la API, que no manda el contenido (F4/P5 de la auditoría).
+     *
+     * Necesita `currentRawType`, `raws` sin su contenido (con `availableType`)
+     * y el atributo `has_html` (`content` no vacío), que pone la consulta del
+     * índice. Mismo criterio que `sourceFormat()`.
+     */
+    public function sourceFormatFromType(ContentPage $page): ContentPageFormatEnum
+    {
+        $marked = $page->currentRawType?->type;
+        $format = $marked !== null ? ContentPageFormatEnum::fromRawType($marked) : null;
+
+        if ($format !== null) {
+            return $format;
+        }
+
+        if ($page->raws->contains(fn (ContentPageRaw $raw): bool => $raw->availableType?->type === ContentPageFormatEnum::EditorJs->rawType())) {
+            return ContentPageFormatEnum::EditorJs;
+        }
+
+        return $page->getAttribute('has_html') ? ContentPageFormatEnum::Html : ContentPageFormatEnum::EditorJs;
+    }
+
+    /**
      * Contenido de la fuente, tal y como se edita.
      */
     public function sourceContent(ContentPage $page): string
@@ -106,7 +131,7 @@ class ContentPageFormatService
      * Contenido de la página en el formato pedido (lo que sirve la API).
      *
      * Si falta la versión derivada (páginas guardadas antes de esto) se
-     * convierte al vuelo desde la fuente, sin guardarla.
+     * convierte al vuelo desde la fuente y se guarda en caché, no en la base.
      */
     public function contentIn(ContentPage $page, ContentPageFormatEnum $format): string
     {
@@ -128,7 +153,18 @@ class ContentPageFormatService
 
         $content = $this->sourceContent($page);
 
-        return $content === '' ? '' : $this->converter->convert($content, $source, $format)->content;
+        if ($content === '') {
+            return '';
+        }
+
+        // Una página guardada antes del editor multiformato no tiene sus
+        // derivadas: se convierte una vez y se guarda en caché, ligada a la
+        // fecha de la página, en vez de convertir en cada petición (F4/F9).
+        return Cache::remember(
+            sprintf('content-page-format:%d:%s:%s', $page->id, $page->updated_at?->getTimestamp() ?? 0, $format->value),
+            now()->addWeek(),
+            fn (): string => $this->converter->convert($content, $source, $format)->content,
+        );
     }
 
     /**

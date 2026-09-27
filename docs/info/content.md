@@ -32,13 +32,13 @@ Sistema de gestión de contenidos multi-plataforma y multi-tipo. Soporta artícu
 ### Controladores
 | Archivo | Versión | Descripción |
 |---------|---------|-------------|
-| `app/Http/Controllers/Api/Content/V2/ContentController.php` | API V2 | show, pages, related |
+| `app/Http/Controllers/Api/Content/V2/ContentController.php` | API V2 | index (filtros), highlights, show (detalle con `include`), pages, page, pageBySlug, related, seo, galleries, files |
 | `app/Http/Controllers/Content/*.php` | Web | Controladores frontend (12 archivos) |
 
 ### Servicios
 | Archivo | Descripción |
 |---------|-------------|
-| `app/Services/Content/ContentService.php` | Lógica: getBySlug, getRelated, getFeaturedForPlatform |
+| `app/Services/Content/ContentApiService.php` | Lo que sirve la API: detalle en caché con `include`, índice de páginas sin texto, partes, relacionados (elegidos primero), destacados/últimos/tendencia |
 | `app/Services/Content/ContentSeoService.php` | Lógica SEO del contenido |
 | `app/Services/Content/ContentFormatConverter.php` | Conversión de páginas entre Editor.js, Markdown y HTML, y el HTML que se sirve |
 | `app/Services/Content/ContentPageFormatService.php` | Fuente única de cada página: guardar, regenerar derivados; al guardar, historial, bloqueo, fecha de apertura, borrador y ficheros sin usar |
@@ -51,9 +51,18 @@ Sistema de gestión de contenidos multi-plataforma y multi-tipo. Soporta artícu
 ### Resources API V2
 | Archivo | Descripción |
 |---------|-------------|
-| `app/Http/Resources/V2/Content/ContentResource.php` | Resource contenido completo |
-| `app/Http/Resources/V2/Content/ContentPageResource.php` | Resource páginas |
-| `app/Http/Resources/V2/Content/ContentRelatedResource.php` | Resource contenido relacionado (ligero) |
+| `app/Http/Resources/V2/Content/ContentResource.php` | El contenido: tipo y estado compactos, imagen, SEO básico, plataforma, visibilidad, comentarios, copyright, páginas y visitas |
+| `app/Http/Resources/V2/Content/ContentPageResource.php` | Una página con su texto en el formato pedido |
+| `app/Http/Resources/V2/Content/ContentPageIndexResource.php` | Una página en el índice del detalle, sin texto |
+| `app/Http/Resources/V2/Content/ContentRelatedResource.php` | Contenido compacto (relacionados, destacados, páginas de la plataforma) |
+| `app/Http/Resources/V2/Content/ContentSeoResource.php` | SEO completo |
+| `app/Http/Resources/V2/Content/ContentMetadataResource.php` | Enlaces externos (web, repositorios, redes, vídeo) |
+| `app/Http/Resources/V2/Content/ContentGalleryResource.php` | Galería con portada y fotos en orden |
+| `app/Http/Resources/V2/Content/ContentFileResource.php` | Fichero en uso, con enlace de descarga |
+| `app/Http/Resources/V2/Content/ContentContributorResource.php` | Colaborador: nombre, apodo y foto |
+
+Ninguno usa `whenLoaded()`: qué parte va en la respuesta lo decide `include`,
+y `ContentApiService` carga exactamente eso (D9).
 
 ### Enums
 | Archivo | Descripción |
@@ -140,8 +149,8 @@ puede publicar, ver «Permisos») y el cron.
 
 **Cron:** `content:publish` cada 5 minutos, `withoutOverlapping`. Recorre los
 programados vencidos de uno en uno con `publish()` (no un `update` masivo), así
-que pasan por las reglas y saltan los eventos del modelo, que regeneran la
-caché de la plataforma.
+que pasan por las reglas y saltan los eventos del modelo, que invalidan las
+respuestas guardadas de la API.
 
 **Panel:** el estado se elige de una lista con los nombres del enum; si el
 contenido está publicado, el selector queda bloqueado y explica cómo retirarlo.
@@ -314,11 +323,20 @@ Contrato completo en [`api/v2/content.md`](api/v2/content.md).
 
 | Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
-| GET | `/api/v2/platforms/{platform:slug}/contents` | No | Contenidos publicados y activos de una plataforma |
-| GET | `/api/v2/platforms/{platform:slug}/contents/{content:slug}` | No | Un contenido publicado |
-| GET | `/api/v2/platforms/{platform:slug}/contents/{content:slug}/pages` | No | Páginas de un contenido; `?format=editorjs\|markdown\|html` |
-| GET | `/api/v2/platforms/{platform:slug}/contents/{content:slug}/pages/{order}` | No | Una página por su orden (numérico); `?format=` igual |
-| GET | `/api/v2/platforms/{platform:slug}/contents/{content:slug}/related` | No | Contenido relacionado |
+| GET | `/api/v2/platforms/{platform:slug}/contents` | No | Publicados y activos; `?featured=1`, `?type=`, `?category=`, `?tag=`, `?technology=`, `?q=` |
+| GET | `/api/v2/platforms/{platform:slug}/contents/highlights` | No | Destacados, últimos y tendencia (3 días) por tipo; `?type=featured\|latest\|trend\|all`, `?limit=` |
+| GET | `/api/v2/platforms/{platform:slug}/contents/{content:slug}` | No | Detalle: datos, índice de páginas sin texto y primera página; `?include=…\|all`, `?format=` |
+| GET | `/api/v2/platforms/{platform:slug}/contents/{content:slug}/pages` | No | Páginas con su texto; `?format=`, `?from=`, `?limit=` |
+| GET | `/api/v2/platforms/{platform:slug}/contents/{content:slug}/pages/{order}` | No | Una página por su número (numérico); `?format=` |
+| GET | `/api/v2/platforms/{platform:slug}/contents/{content:slug}/pages/slug/{pageSlug}` | No | Una página por su slug; `?format=` |
+| GET | `/api/v2/platforms/{platform:slug}/contents/{content:slug}/related` | No | Relacionados: elegidos a mano primero; `?limit=` |
+| GET | `/api/v2/platforms/{platform:slug}/contents/{content:slug}/seo` | No | SEO completo |
+| GET | `/api/v2/platforms/{platform:slug}/contents/{content:slug}/galleries` | No | Galerías con sus fotos |
+| GET | `/api/v2/platforms/{platform:slug}/contents/{content:slug}/files` | No | Ficheros en uso |
+
+`highlights` es una ruta, así que el slug `highlights` está reservado:
+`ContentResource` (panel) no deja ponérselo a un contenido
+(`ContentApiService::RESERVED_SLUGS`).
 
 ## Comando de debug
 
@@ -333,9 +351,12 @@ php artisan debug:seed-content --count=10
 
 - Modelo `ContentDailyView` (`content_daily_views`): vistas diarias por contenido.
 - Relaciones: `Content::dailyViews()` (hasMany) y `ContentDailyView::content()` (belongsTo).
-- Al consultar un contenido por API v2 (`ContentController::show`) se despacha
-  `ProcessContentViewJob` que hace upsert de la vista del día. No se registran
-  vistas en `pages()` ni `related()`.
+- Cada petición del detalle por API v2 (`ContentController::show`) suma una
+  visita del día (upsert de `ProcessContentViewJob`), también si se responde
+  desde la caché o con `304`. Se ejecuta con `defer()`, después de enviar la
+  respuesta y en el mismo proceso: no depende de que haya un trabajador de la
+  cola (antes se encolaba y, sin trabajador, no se contaba). No suman las
+  páginas, las partes ni los relacionados (D39).
 - La FK `content_daily_views.content_id` tiene `onDelete('cascade')`: al hacer
   `forceDelete` de un contenido se eliminan sus vistas; el soft delete las conserva.
 
@@ -814,6 +835,40 @@ edición.
 página y dicen cuál en `format` (y la fuente en `source_format`); con
 `?format=editorjs|markdown|html` se pide otro. Contrato en
 [`api/v2/content.md`](api/v2/content.md).
+
+Una página antigua sin su versión en el formato pedido se convierte una vez y
+se guarda en la caché, ligada a la fecha de la página
+(`content-page-format:{id}:{updated_at}:{formato}`, una semana): sustituye al
+comando de conversión que planteaba la F4.
+
+**Qué sirve la API y cuándo se renueva (F9).** Todo lo de
+`ContentApiService` y `PlatformApiService` va a la caché del servidor con la
+clave ligada a `App\Support\ApiCacheVersion` (un contador en la caché, D39) y
+a la hora. El contador sube:
+
+- al guardar, borrar o restaurar un contenido o cualquiera de sus partes con
+  modelo: páginas, SEO, metadatos, ficheros (`content_files`), categorías,
+  etiquetas y colaboradores (`App\Models\Concerns\TouchesContent`, que además
+  pone al día el `updated_at` del contenido con una consulta, sin cargarlo);
+- al escribir en bloque, sin eventos, con `Content::markChanged()` explícito:
+  vincular o desvincular relacionados y galerías, guardar categorías,
+  etiquetas y tecnologías, reordenar páginas, quitar un colaborador y el
+  repaso de ficheros en uso (`ContentFileUsageService::refresh()`);
+- al cambiar un fichero (textos, recorte, sustitución), una galería o sus
+  fotos, a los contenidos que los usan (`File`, `Gallery` y `GalleryImage`
+  en su `booted()`);
+- al guardar lo que se enseña sin ser del contenido: plataformas,
+  categorías, etiquetas, tecnologías, sus pivotes de plataforma, datos y
+  redes del autor (`App\Models\Concerns\BumpsApiCache`) y el nombre, apodo o
+  foto de un usuario.
+
+`ContentApiCacheTest` tiene una matriz con cada una de esas ediciones (las del
+panel, por el panel) y falla si alguna no cambia la huella del detalle.
+
+Consultas por ruta, fijadas en `ContentDetailApiTest`: el detalle sin caché
+17 (31 con `include=all`), desde la caché 1; páginas 5, relacionados 7,
+destacados 8 (con cualquier número de tipos), ficha de plataforma 8. El
+detalle nunca lee el texto de las páginas salvo el de la primera.
 
 ### Las herramientas, y las que se habían perdido
 

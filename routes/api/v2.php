@@ -106,18 +106,28 @@ Route::prefix('newsletter/subscriptions')->middleware('throttle:api-auth')->grou
 });
 
 // ── Contenido y plataformas ──────────────────────────────────────────────────
-Route::prefix('platforms')->group(function () {
+// Todo público. Cada respuesta lleva huella (`ETag`) y `Cache-Control:
+// public, max-age=60`; con `If-None-Match` igual responde 304 sin cuerpo (P6).
+// Sin la cabecera, siempre la respuesta completa.
+Route::prefix('platforms')->middleware('cache.headers:public;max_age=60;etag')->group(function () {
     Route::get('/', [PlatformController::class, 'index'])->name('api.v2.platforms.index');
     Route::get('/{platform:slug}', [PlatformController::class, 'show'])->name('api.v2.platforms.show');
     Route::get('/{platform:slug}/categories', [PlatformController::class, 'categories'])->name('api.v2.platforms.categories');
+    Route::get('/{platform:slug}/tags', [PlatformController::class, 'tags'])->name('api.v2.platforms.tags');
 
     // `featured` y `content/type/{t}` eran rutas propias; ahora son filtros de
     // la colección de contenidos: ?featured=1 y ?type=…
     Route::get('/{platform:slug}/contents', [ContentController::class, 'index'])->name('api.v2.platforms.contents.index');
+    // Antes que `{content:slug}`: `highlights` está reservado como slug.
+    Route::get('/{platform:slug}/contents/highlights', [ContentController::class, 'highlights'])->name('api.v2.platforms.contents.highlights');
     Route::get('/{platform:slug}/contents/{content:slug}', [ContentController::class, 'show'])->name('api.v2.platforms.contents.show');
     Route::get('/{platform:slug}/contents/{content:slug}/pages', [ContentController::class, 'pages'])->name('api.v2.platforms.contents.pages');
+    Route::get('/{platform:slug}/contents/{content:slug}/pages/slug/{pageSlug}', [ContentController::class, 'pageBySlug'])->name('api.v2.platforms.contents.page-by-slug');
     Route::get('/{platform:slug}/contents/{content:slug}/pages/{order}', [ContentController::class, 'page'])->whereNumber('order')->name('api.v2.platforms.contents.page');
     Route::get('/{platform:slug}/contents/{content:slug}/related', [ContentController::class, 'related'])->name('api.v2.platforms.contents.related');
+    Route::get('/{platform:slug}/contents/{content:slug}/seo', [ContentController::class, 'seo'])->name('api.v2.platforms.contents.seo');
+    Route::get('/{platform:slug}/contents/{content:slug}/galleries', [ContentController::class, 'galleries'])->name('api.v2.platforms.contents.galleries');
+    Route::get('/{platform:slug}/contents/{content:slug}/files', [ContentController::class, 'files'])->name('api.v2.platforms.contents.files');
 });
 
 /*

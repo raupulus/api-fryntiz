@@ -19,6 +19,7 @@ use App\Models\Technology;
 use App\Models\User;
 use App\Services\Content\ContentContributorService;
 use App\Services\Content\ContentFileUsageService;
+use App\Support\ApiCacheVersion;
 use App\Traits\HasGalleries;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
@@ -29,6 +30,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
 use function url;
@@ -213,20 +215,79 @@ class Content extends BaseModel
         // se puede restaurar.
         static::forceDeleting(fn (Content $model) => app(ContentFileUsageService::class)->markAllOf($model->id));
 
-        // Evento "saved": Se dispara después de ser guardado por primera vez y tras actualizarse
-        static::saved(function (Content $model) {
-            // La plataforma se carga aparte, sola. La que cuelga del contenido
-            // puede venir de una carga de varios (la tabla del panel, el cron
-            // de publicar) y, con la carga perezosa bloqueada fuera de
-            // producción, regenerar su caché reventaba al publicar dos a la vez.
-            $model->platform()->first()?->cleanAllCache();
-        });
+        // Antes, al guardar, se recalculaban en caché los destacados, últimos
+        // y tendencia de la plataforma, que no leía nadie, y sus categorías,
+        // que no dependen de los contenidos. La API tiene ahora su propia
+        // caché, que cualquier cambio invalida (F9).
+        static::saved(fn () => ApiCacheVersion::bump());
+        static::deleted(fn () => ApiCacheVersion::bump());
+        static::restored(fn () => ApiCacheVersion::bump());
+    }
 
-        // Evento "updated": Solo se dispara cuando el modelo es actualizado
-        static::updated(function ($model) {
-            // $model->cleanAllCache();
-            // \Log::info('El modelo Platform ha disparado updated:', ['modelo' => $model]);
-        });
+    /**
+     * «Toca» estos contenidos: cambia su `updated_at` (la versión que ven las
+     * webs) y la de la caché de la API. Lo usan sus partes al cambiar
+     * (`TouchesContent`) y lo que se vincula sin pasar por un modelo
+     * (tecnologías, relacionados, galerías).
+     *
+     * Con una consulta y sin eventos: no aplica otra vez las reglas de
+     * publicación ni carga nada.
+     *
+     * @param  int|string|list<int|string|null>|null  $ids
+     */
+    public static function markChanged(int|string|array|null $ids): void
+    {
+        $ids = array_values(array_unique(array_filter(array_map('intval', (array) $ids))));
+
+        if ($ids === []) {
+            return;
+        }
+
+        DB::table('contents')->whereIn('id', $ids)->update(['updated_at' => now()]);
+        ApiCacheVersion::bump();
+    }
+
+    /**
+     * Contenidos que usan un fichero: subido a ellos, de portada (suya, de una
+     * página o de su SEO) o en una de sus galerías.
+     *
+     * @return list<int>
+     */
+    public static function idsUsingFile(int $fileId): array
+    {
+        $galleries = DB::table('gallery_images')->where('image_id', $fileId)->pluck('gallery_id')
+            ->merge(DB::table('galleries')->where('image_id', $fileId)->pluck('id'));
+
+        return DB::table('content_files')->where('file_id', $fileId)->pluck('content_id')
+            ->merge(DB::table('contents')->where('image_id', $fileId)->pluck('id'))
+            ->merge(DB::table('content_seo')->where('image_id', $fileId)->pluck('content_id'))
+            ->merge(DB::table('content_pages')->where('image_id', $fileId)->pluck('content_id'))
+            ->merge(self::idsUsingGalleries($galleries->all()))
+            ->filter()
+            ->map(fn ($id): int => (int) $id)
+            ->unique()
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Contenidos que enseñan alguna de estas galerías.
+     *
+     * @param  list<int|string>  $galleryIds
+     * @return list<int>
+     */
+    public static function idsUsingGalleries(array $galleryIds): array
+    {
+        if ($galleryIds === []) {
+            return [];
+        }
+
+        return DB::table('galleryables')
+            ->whereIn('gallery_id', $galleryIds)
+            ->where('galleryable_type', (new self)->getMorphClass())
+            ->pluck('galleryable_id')
+            ->map(fn ($id): int => (int) $id)
+            ->all();
     }
 
     /**

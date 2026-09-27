@@ -74,7 +74,9 @@ class GalleriesRelationManager extends RelationManager
                             ->get()
                             ->mapWithKeys(fn (Gallery $gallery): array => [$gallery->id => self::galleryLabel($gallery)])
                             ->all()))
-                    ->recordTitle(fn (Gallery $record): string => self::galleryLabel($record)),
+                    ->recordTitle(fn (Gallery $record): string => self::galleryLabel($record))
+                    // El pivote se escribe sin eventos: la API tiene que enterarse.
+                    ->after(fn () => Content::markChanged($this->getOwnerRecord()->getKey())),
             ])
             ->recordActions([
                 Action::make('viewImages')
@@ -93,7 +95,8 @@ class GalleriesRelationManager extends RelationManager
                     ->color('gray')
                     ->url(fn (Gallery $record): string => EditGallery::getUrl(['record' => $record])),
                 DetachAction::make()
-                    ->authorize(fn (): bool => Gate::allows('update', $this->getOwnerRecord())),
+                    ->authorize(fn (): bool => Gate::allows('update', $this->getOwnerRecord()))
+                    ->after(fn () => Content::markChanged($this->getOwnerRecord()->getKey())),
             ]);
     }
 

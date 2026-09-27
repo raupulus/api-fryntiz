@@ -153,6 +153,15 @@ class EditContentTaxonomies extends EditRecord
     }
 
     /**
+     * Categorías, etiquetas y tecnologías se guardan en bloque, sin eventos:
+     * la API tiene que enterarse (F9).
+     */
+    protected function afterSave(): void
+    {
+        Content::markChanged($this->getRecord()->getKey());
+    }
+
+    /**
      * Categorías (sin padre) de la plataforma.
      *
      * @return array<int, string>

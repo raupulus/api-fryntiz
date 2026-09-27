@@ -8,6 +8,7 @@ use App\Http\Api\CollectionQuery;
 use App\Http\Controllers\Api\V2\BaseApiController;
 use App\Http\Resources\V2\PlatformResource;
 use App\Models\Platform;
+use App\Services\Platform\PlatformApiService;
 use App\Services\Platform\PlatformService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -21,7 +22,10 @@ use Illuminate\Http\Request;
  */
 class PlatformController extends BaseApiController
 {
-    public function __construct(private readonly PlatformService $service) {}
+    public function __construct(
+        private readonly PlatformService $service,
+        private readonly PlatformApiService $api,
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -38,7 +42,11 @@ class PlatformController extends BaseApiController
         );
     }
 
-    public function show(string $slug): JsonResponse
+    /**
+     * La ficha completa de la plataforma (P7): la de la v1, que el frontend
+     * usa como primera carga y para los metadatos del SSR. Sin los `*_token`.
+     */
+    public function show(Request $request, string $slug): JsonResponse
     {
         $platform = $this->service->getBySlug($slug);
 
@@ -46,7 +54,21 @@ class PlatformController extends BaseApiController
             return $this->notFoundResponse('Plataforma no encontrada');
         }
 
-        return $this->successResponse(new PlatformResource($platform));
+        return $this->successResponse($this->api->detail($platform, $request));
+    }
+
+    /**
+     * Etiquetas de una plataforma, con cuántos contenidos publicados las usan.
+     */
+    public function tags(string $slug): JsonResponse
+    {
+        $platform = $this->service->getBySlug($slug);
+
+        if (! $platform) {
+            return $this->notFoundResponse('Plataforma no encontrada');
+        }
+
+        return $this->successResponse($this->api->tags($platform));
     }
 
     /**

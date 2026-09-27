@@ -52,11 +52,14 @@ class RelatedRelationManager extends RelationManager
                     ->authorize(fn (): bool => Gate::allows('update', $this->getOwnerRecord()))
                     ->recordSelect(fn (Select $select): Select => $select
                         ->searchPrompt('Escribe al menos dos letras del título')
-                        ->getSearchResultsUsing(fn (string $search): array => $this->candidates($search))),
+                        ->getSearchResultsUsing(fn (string $search): array => $this->candidates($search)))
+                    // El pivote se escribe sin eventos: la API tiene que enterarse.
+                    ->after(fn () => Content::markChanged($this->getOwnerRecord()->getKey())),
             ])
             ->recordActions([
                 DetachAction::make()
-                    ->authorize(fn (): bool => Gate::allows('update', $this->getOwnerRecord())),
+                    ->authorize(fn (): bool => Gate::allows('update', $this->getOwnerRecord()))
+                    ->after(fn () => Content::markChanged($this->getOwnerRecord()->getKey())),
             ]);
     }
 

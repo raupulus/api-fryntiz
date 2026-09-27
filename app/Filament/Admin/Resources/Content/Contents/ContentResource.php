@@ -21,6 +21,7 @@ use App\Models\Content\Content;
 use App\Models\Platform;
 use App\Models\User;
 use App\Policies\ContentPolicy;
+use App\Services\Content\ContentApiService;
 use BackedEnum;
 use Closure;
 use Filament\Actions\Action;
@@ -324,6 +325,13 @@ class ContentResource extends Resource
             $platformId = filled($platformId) ? (int) $platformId : $record?->platform_id;
 
             if (blank($value) || $platformId === null) {
+                return;
+            }
+
+            // `…/contents/highlights` es una ruta de la API (F9).
+            if (in_array((string) $value, ContentApiService::RESERVED_SLUGS, true)) {
+                $fail('Ese slug no se puede usar: es una dirección de la API. Elige otro.');
+
                 return;
             }
 

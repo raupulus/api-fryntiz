@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseModel;
+use App\Models\Concerns\BumpsApiCache;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
@@ -44,6 +45,7 @@ use Illuminate\Support\Carbon;
  */
 class Technology extends BaseModel
 {
+    use BumpsApiCache;
     use ImageTrait;
 
     protected $table = 'technologies';

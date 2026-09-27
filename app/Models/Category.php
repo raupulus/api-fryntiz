@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseModel;
+use App\Models\Concerns\BumpsApiCache;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -57,26 +58,12 @@ use Illuminate\Support\Carbon;
  */
 class Category extends BaseModel
 {
+    use BumpsApiCache;
     use ImageTrait;
 
     protected $table = 'categories';
 
     protected $fillable = ['name', 'slug', 'description', 'parent_id', 'image_id', 'icon', 'color', 'priority'];
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        // Evento "saved": Se dispara después de ser guardado por primera vez y tras actualizarse
-        static::saved(function ($model) {
-
-            // # Actualiza el caché de categorías para todas las plataformas
-            $platforms = Platform::all();
-            foreach ($platforms as $platform) {
-                $platform->cleanAllCache();
-            }
-        });
-    }
 
     /**
      * Devuelve la categoría padre si la tuviera.

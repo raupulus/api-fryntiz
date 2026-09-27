@@ -114,25 +114,45 @@
                                 <a href="#endpoints-GETapi-v2-platforms">GET api/v2/platforms</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-platforms--slug-">
-                                <a href="#endpoints-GETapi-v2-platforms--slug-">GET api/v2/platforms/{slug}</a>
+                                <a href="#endpoints-GETapi-v2-platforms--slug-">La ficha completa de la plataforma (P7): la de la v1, que el frontend
+usa como primera carga y para los metadatos del SSR. Sin los `*_token`.</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-platforms--platform_slug--categories">
                                 <a href="#endpoints-GETapi-v2-platforms--platform_slug--categories">Categorías disponibles en una plataforma.</a>
                             </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-platforms--platform_slug--tags">
+                                <a href="#endpoints-GETapi-v2-platforms--platform_slug--tags">Etiquetas de una plataforma, con cuántos contenidos publicados las usan.</a>
+                            </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-platforms--platform_slug--contents">
                                 <a href="#endpoints-GETapi-v2-platforms--platform_slug--contents">Contenidos publicados de una plataforma.</a>
                             </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-platforms--platform_slug--contents-highlights">
+                                <a href="#endpoints-GETapi-v2-platforms--platform_slug--contents-highlights">Destacados, últimos y tendencia, agrupados por tipo.</a>
+                            </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-platforms--platform_slug--contents--slug-">
-                                <a href="#endpoints-GETapi-v2-platforms--platform_slug--contents--slug-">Un contenido publicado.</a>
+                                <a href="#endpoints-GETapi-v2-platforms--platform_slug--contents--slug-">El detalle de un contenido: sus datos, el índice de páginas sin texto y
+la primera página. Con `?include=` lo que se pida (`all`, todo).</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-platforms--platform_slug--contents--content_slug--pages">
-                                <a href="#endpoints-GETapi-v2-platforms--platform_slug--contents--content_slug--pages">Páginas de un contenido publicado.</a>
+                                <a href="#endpoints-GETapi-v2-platforms--platform_slug--contents--content_slug--pages">Las páginas con su texto. `?from=` (número de página) y `?limit=`.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-platforms--platform_slug--contents--content_slug--pages-slug--pageSlug-">
+                                <a href="#endpoints-GETapi-v2-platforms--platform_slug--contents--content_slug--pages-slug--pageSlug-">Una página, por su slug.</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-platforms--platform_slug--contents--content_slug--pages--order-">
-                                <a href="#endpoints-GETapi-v2-platforms--platform_slug--contents--content_slug--pages--order-">Una página concreta, por su orden dentro del contenido.</a>
+                                <a href="#endpoints-GETapi-v2-platforms--platform_slug--contents--content_slug--pages--order-">Una página, por su número.</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-platforms--platform_slug--contents--content_slug--related">
-                                <a href="#endpoints-GETapi-v2-platforms--platform_slug--contents--content_slug--related">Contenidos relacionados, también publicados.</a>
+                                <a href="#endpoints-GETapi-v2-platforms--platform_slug--contents--content_slug--related">Relacionados: los elegidos a mano primero. `?limit=` de 1 a 20.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-platforms--platform_slug--contents--content_slug--seo">
+                                <a href="#endpoints-GETapi-v2-platforms--platform_slug--contents--content_slug--seo">GET api/v2/platforms/{platform_slug}/contents/{content_slug}/seo</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-platforms--platform_slug--contents--content_slug--galleries">
+                                <a href="#endpoints-GETapi-v2-platforms--platform_slug--contents--content_slug--galleries">GET api/v2/platforms/{platform_slug}/contents/{content_slug}/galleries</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-platforms--platform_slug--contents--content_slug--files">
+                                <a href="#endpoints-GETapi-v2-platforms--platform_slug--contents--content_slug--files">GET api/v2/platforms/{platform_slug}/contents/{content_slug}/files</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-airflight-aircrafts">
                                 <a href="#endpoints-GETapi-v2-airflight-aircrafts">Aviones detectados.</a>
@@ -272,7 +292,7 @@
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: September 17, 2026</li>
+        <li>Last updated: September 27, 2026</li>
     </ul>
 </div>
 
@@ -598,10 +618,10 @@ añade <code>device:{id}</code>. No emite nunca el comodín ni la ability de ses
     --data "{
     \"device_id\": 16,
     \"abilities\": [
-        \"keycounter:write\"
+        \"smartplant:read\"
     ],
     \"name\": \"n\",
-    \"expires_at\": \"2052-10-11\"
+    \"expires_at\": \"2052-10-20\"
 }"
 </code></pre></div>
 
@@ -619,10 +639,10 @@ const headers = {
 let body = {
     "device_id": 16,
     "abilities": [
-        "keycounter:write"
+        "smartplant:read"
     ],
     "name": "n",
-    "expires_at": "2052-10-11"
+    "expires_at": "2052-10-20"
 };
 
 fetch(url, {
@@ -754,10 +774,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="expires_at"                data-endpoint="POSTapi-v2-auth-tokens-devices"
-               value="2052-10-11"
+               value="2052-10-20"
                data-component="body">
     <br>
-<p>Must be a valid date. Must be a date after <code>now</code>. Example: <code>2052-10-11</code></p>
+<p>Must be a valid date. Must be a date after <code>now</code>. Example: <code>2052-10-20</code></p>
         </div>
         </form>
 
@@ -1150,7 +1170,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"email\": \"zbailey@example.net\",
     \"subject\": \"i\",
     \"message\": \"y\",
-    \"privacity\": false,
+    \"privacity\": true,
     \"contactme\": false,
     \"attributes\": [
         \"v\"
@@ -1175,7 +1195,7 @@ let body = {
     "email": "zbailey@example.net",
     "subject": "i",
     "message": "y",
-    "privacity": false,
+    "privacity": true,
     "contactme": false,
     "attributes": [
         "v"
@@ -1333,7 +1353,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>contactme</code></b>&nbsp;&nbsp;
@@ -2245,7 +2265,7 @@ fetch(url, {
             <summary style="cursor: pointer;">
                 <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
             </summary>
-            <pre><code class="language-http">cache-control: no-cache, private
+            <pre><code class="language-http">cache-control: max-age=60, public
 content-type: application/json
 x-ratelimit-limit: 300
 x-ratelimit-remaining: 299
@@ -2400,7 +2420,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                         </form>
 
-                    <h2 id="endpoints-GETapi-v2-platforms--slug-">GET api/v2/platforms/{slug}</h2>
+                    <h2 id="endpoints-GETapi-v2-platforms--slug-">La ficha completa de la plataforma (P7): la de la v1, que el frontend
+usa como primera carga y para los metadatos del SSR. Sin los `*_token`.</h2>
 
 <p>
 </p>
@@ -2696,16 +2717,164 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                     </form>
 
+                    <h2 id="endpoints-GETapi-v2-platforms--platform_slug--tags">Etiquetas de una plataforma, con cuántos contenidos publicados las usan.</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-v2-platforms--platform_slug--tags">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "https://api.raupulus.dev/api/v2/platforms/4/tags" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "https://api.raupulus.dev/api/v2/platforms/4/tags"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v2-platforms--platform_slug--tags">
+            <blockquote>
+            <p>Example response (404):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+x-ratelimit-limit: 300
+x-ratelimit-remaining: 296
+content-language: en
+vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Plataforma no encontrada&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v2-platforms--platform_slug--tags" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v2-platforms--platform_slug--tags"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v2-platforms--platform_slug--tags"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v2-platforms--platform_slug--tags" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v2-platforms--platform_slug--tags">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v2-platforms--platform_slug--tags" data-method="GET"
+      data-path="api/v2/platforms/{platform_slug}/tags"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-platforms--platform_slug--tags', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v2-platforms--platform_slug--tags"
+                    onclick="tryItOut('GETapi-v2-platforms--platform_slug--tags');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v2-platforms--platform_slug--tags"
+                    onclick="cancelTryOut('GETapi-v2-platforms--platform_slug--tags');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v2-platforms--platform_slug--tags"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v2/platforms/{platform_slug}/tags</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v2-platforms--platform_slug--tags"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v2-platforms--platform_slug--tags"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>platform_slug</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="platform_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--tags"
+               value="4"
+               data-component="url">
+    <br>
+<p>The slug of the platform. Example: <code>4</code></p>
+            </div>
+                    </form>
+
                     <h2 id="endpoints-GETapi-v2-platforms--platform_slug--contents">Contenidos publicados de una plataforma.</h2>
 
 <p>
 </p>
 
-<p>Sustituye a <code>/{platform}/featured</code> y <code>/{platform}/content/type/{t}</code>, que
-eran dos rutas para dos filtros de la misma colección.</p>
-<p>?featured=1        sólo destacados
-?type=tutorial     por slug del tipo de contenido
-?sort=-published_at</p>
+<p>?featured=1              sólo destacados
+?type=project            por slug del tipo de contenido
+?category= ?tag= ?technology=   por slug
+?q=texto                 en el título o el extracto, sin distinguir mayúsculas
+?sort=-published_at      y los demás de <code>CollectionQuery</code></p>
 
 <span id="example-requests-GETapi-v2-platforms--platform_slug--contents">
 <blockquote>Example request:</blockquote>
@@ -2747,7 +2916,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 296
+x-ratelimit-remaining: 295
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -2848,27 +3017,28 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                     </form>
 
-                    <h2 id="endpoints-GETapi-v2-platforms--platform_slug--contents--slug-">Un contenido publicado.</h2>
+                    <h2 id="endpoints-GETapi-v2-platforms--platform_slug--contents-highlights">Destacados, últimos y tendencia, agrupados por tipo.</h2>
 
 <p>
 </p>
 
+<p>?type=featured|latest|trend|all   (por defecto all)
+?limit=6                          por tipo, de 1 a 24</p>
 
-
-<span id="example-requests-GETapi-v2-platforms--platform_slug--contents--slug-">
+<span id="example-requests-GETapi-v2-platforms--platform_slug--contents-highlights">
 <blockquote>Example request:</blockquote>
 
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://api.raupulus.dev/api/v2/platforms/4/contents/architecto" \
+    --get "https://api.raupulus.dev/api/v2/platforms/4/contents/highlights" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://api.raupulus.dev/api/v2/platforms/4/contents/architecto"
+    "https://api.raupulus.dev/api/v2/platforms/4/contents/highlights"
 );
 
 const headers = {
@@ -2884,7 +3054,7 @@ fetch(url, {
 
 </span>
 
-<span id="example-responses-GETapi-v2-platforms--platform_slug--contents--slug-">
+<span id="example-responses-GETapi-v2-platforms--platform_slug--contents-highlights">
             <blockquote>
             <p>Example response (404):</p>
         </blockquote>
@@ -2895,7 +3065,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 295
+x-ratelimit-remaining: 294
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -2906,7 +3076,177 @@ permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), m
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: false,
-    &quot;message&quot;: &quot;Contenido no encontrado&quot;
+    &quot;message&quot;: &quot;Plataforma no encontrada&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v2-platforms--platform_slug--contents-highlights" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v2-platforms--platform_slug--contents-highlights"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v2-platforms--platform_slug--contents-highlights"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v2-platforms--platform_slug--contents-highlights" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v2-platforms--platform_slug--contents-highlights">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v2-platforms--platform_slug--contents-highlights" data-method="GET"
+      data-path="api/v2/platforms/{platform_slug}/contents/highlights"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-platforms--platform_slug--contents-highlights', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v2-platforms--platform_slug--contents-highlights"
+                    onclick="tryItOut('GETapi-v2-platforms--platform_slug--contents-highlights');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v2-platforms--platform_slug--contents-highlights"
+                    onclick="cancelTryOut('GETapi-v2-platforms--platform_slug--contents-highlights');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v2-platforms--platform_slug--contents-highlights"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v2/platforms/{platform_slug}/contents/highlights</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v2-platforms--platform_slug--contents-highlights"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v2-platforms--platform_slug--contents-highlights"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>platform_slug</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="platform_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--contents-highlights"
+               value="4"
+               data-component="url">
+    <br>
+<p>The slug of the platform. Example: <code>4</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="endpoints-GETapi-v2-platforms--platform_slug--contents--slug-">El detalle de un contenido: sus datos, el índice de páginas sin texto y
+la primera página. Con `?include=` lo que se pida (`all`, todo).</h2>
+
+<p>
+</p>
+
+<p>Cada petición suma una visita, también si se responde desde la caché o
+con 304: se cuenta después de enviar la respuesta, en el mismo proceso,
+sin depender de la cola (H1). Con <code>defer()</code> y no con
+<code>dispatchAfterResponse()</code>: ésa se queda registrada en la aplicación y,
+si atiende más de una petición (tests, Octane), la repite en cada una.</p>
+
+<span id="example-requests-GETapi-v2-platforms--platform_slug--contents--slug-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "https://api.raupulus.dev/api/v2/platforms/4/contents/architecto" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"format\": \"architecto\",
+    \"from\": 22,
+    \"limit\": 7
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "https://api.raupulus.dev/api/v2/platforms/4/contents/architecto"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "format": "architecto",
+    "from": 22,
+    "limit": 7
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v2-platforms--platform_slug--contents--slug-">
+            <blockquote>
+            <p>Example response (422):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+x-ratelimit-limit: 300
+x-ratelimit-remaining: 293
+content-language: en
+vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;The given data was invalid.&quot;,
+    &quot;errors&quot;: {
+        &quot;format&quot;: [
+            &quot;El formato tiene que ser editorjs, markdown o html.&quot;
+        ]
+    }
 }</code>
  </pre>
     </span>
@@ -3006,9 +3346,48 @@ You can check the Dev Tools console for debugging information.</code></pre>
     <br>
 <p>The slug of the content. Example: <code>architecto</code></p>
             </div>
-                    </form>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>format</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="format"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--slug-"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+Must be one of:
+<ul style="list-style-type: square;"><li><code>editorjs</code></li> <li><code>markdown</code></li> <li><code>html</code></li></ul>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>from</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="from"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--slug-"
+               value="22"
+               data-component="body">
+    <br>
+<p>Must be at least 1. Example: <code>22</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>limit</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="limit"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--slug-"
+               value="7"
+               data-component="body">
+    <br>
+<p>Must be at least 1. Must not be greater than 100. Example: <code>7</code></p>
+        </div>
+        </form>
 
-                    <h2 id="endpoints-GETapi-v2-platforms--platform_slug--contents--content_slug--pages">Páginas de un contenido publicado.</h2>
+                    <h2 id="endpoints-GETapi-v2-platforms--platform_slug--contents--content_slug--pages">Las páginas con su texto. `?from=` (número de página) y `?limit=`.</h2>
 
 <p>
 </p>
@@ -3023,7 +3402,13 @@ You can check the Dev Tools console for debugging information.</code></pre>
     <pre><code class="language-bash">curl --request GET \
     --get "https://api.raupulus.dev/api/v2/platforms/4/contents/architecto/pages" \
     --header "Content-Type: application/json" \
-    --header "Accept: application/json"</code></pre></div>
+    --header "Accept: application/json" \
+    --data "{
+    \"format\": \"architecto\",
+    \"from\": 22,
+    \"limit\": 7
+}"
+</code></pre></div>
 
 
 <div class="javascript-example">
@@ -3036,17 +3421,23 @@ const headers = {
     "Accept": "application/json",
 };
 
+let body = {
+    "format": "architecto",
+    "from": 22,
+    "limit": 7
+};
 
 fetch(url, {
     method: "GET",
     headers,
+    body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre></div>
 
 </span>
 
 <span id="example-responses-GETapi-v2-platforms--platform_slug--contents--content_slug--pages">
             <blockquote>
-            <p>Example response (404):</p>
+            <p>Example response (422):</p>
         </blockquote>
                 <details class="annotation">
             <summary style="cursor: pointer;">
@@ -3055,7 +3446,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 294
+x-ratelimit-remaining: 292
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -3066,7 +3457,12 @@ permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), m
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: false,
-    &quot;message&quot;: &quot;Contenido no encontrado&quot;
+    &quot;message&quot;: &quot;The given data was invalid.&quot;,
+    &quot;errors&quot;: {
+        &quot;format&quot;: [
+            &quot;El formato tiene que ser editorjs, markdown o html.&quot;
+        ]
+    }
 }</code>
  </pre>
     </span>
@@ -3166,9 +3562,276 @@ You can check the Dev Tools console for debugging information.</code></pre>
     <br>
 <p>The slug of the content. Example: <code>architecto</code></p>
             </div>
-                    </form>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>format</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="format"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--pages"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+Must be one of:
+<ul style="list-style-type: square;"><li><code>editorjs</code></li> <li><code>markdown</code></li> <li><code>html</code></li></ul>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>from</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="from"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--pages"
+               value="22"
+               data-component="body">
+    <br>
+<p>Must be at least 1. Example: <code>22</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>limit</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="limit"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--pages"
+               value="7"
+               data-component="body">
+    <br>
+<p>Must be at least 1. Must not be greater than 100. Example: <code>7</code></p>
+        </div>
+        </form>
 
-                    <h2 id="endpoints-GETapi-v2-platforms--platform_slug--contents--content_slug--pages--order-">Una página concreta, por su orden dentro del contenido.</h2>
+                    <h2 id="endpoints-GETapi-v2-platforms--platform_slug--contents--content_slug--pages-slug--pageSlug-">Una página, por su slug.</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-v2-platforms--platform_slug--contents--content_slug--pages-slug--pageSlug-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "https://api.raupulus.dev/api/v2/platforms/4/contents/architecto/pages/slug/architecto" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"format\": \"architecto\",
+    \"from\": 22,
+    \"limit\": 7
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "https://api.raupulus.dev/api/v2/platforms/4/contents/architecto/pages/slug/architecto"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "format": "architecto",
+    "from": 22,
+    "limit": 7
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v2-platforms--platform_slug--contents--content_slug--pages-slug--pageSlug-">
+            <blockquote>
+            <p>Example response (422):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+x-ratelimit-limit: 300
+x-ratelimit-remaining: 291
+content-language: en
+vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;The given data was invalid.&quot;,
+    &quot;errors&quot;: {
+        &quot;format&quot;: [
+            &quot;El formato tiene que ser editorjs, markdown o html.&quot;
+        ]
+    }
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v2-platforms--platform_slug--contents--content_slug--pages-slug--pageSlug-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v2-platforms--platform_slug--contents--content_slug--pages-slug--pageSlug-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v2-platforms--platform_slug--contents--content_slug--pages-slug--pageSlug-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v2-platforms--platform_slug--contents--content_slug--pages-slug--pageSlug-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v2-platforms--platform_slug--contents--content_slug--pages-slug--pageSlug-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v2-platforms--platform_slug--contents--content_slug--pages-slug--pageSlug-" data-method="GET"
+      data-path="api/v2/platforms/{platform_slug}/contents/{content_slug}/pages/slug/{pageSlug}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-platforms--platform_slug--contents--content_slug--pages-slug--pageSlug-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v2-platforms--platform_slug--contents--content_slug--pages-slug--pageSlug-"
+                    onclick="tryItOut('GETapi-v2-platforms--platform_slug--contents--content_slug--pages-slug--pageSlug-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v2-platforms--platform_slug--contents--content_slug--pages-slug--pageSlug-"
+                    onclick="cancelTryOut('GETapi-v2-platforms--platform_slug--contents--content_slug--pages-slug--pageSlug-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v2-platforms--platform_slug--contents--content_slug--pages-slug--pageSlug-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v2/platforms/{platform_slug}/contents/{content_slug}/pages/slug/{pageSlug}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--pages-slug--pageSlug-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--pages-slug--pageSlug-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>platform_slug</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="platform_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--pages-slug--pageSlug-"
+               value="4"
+               data-component="url">
+    <br>
+<p>The slug of the platform. Example: <code>4</code></p>
+            </div>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>content_slug</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="content_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--pages-slug--pageSlug-"
+               value="architecto"
+               data-component="url">
+    <br>
+<p>The slug of the content. Example: <code>architecto</code></p>
+            </div>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>pageSlug</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="pageSlug"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--pages-slug--pageSlug-"
+               value="architecto"
+               data-component="url">
+    <br>
+<p>Example: <code>architecto</code></p>
+            </div>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>format</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="format"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--pages-slug--pageSlug-"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+Must be one of:
+<ul style="list-style-type: square;"><li><code>editorjs</code></li> <li><code>markdown</code></li> <li><code>html</code></li></ul>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>from</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="from"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--pages-slug--pageSlug-"
+               value="22"
+               data-component="body">
+    <br>
+<p>Must be at least 1. Example: <code>22</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>limit</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="limit"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--pages-slug--pageSlug-"
+               value="7"
+               data-component="body">
+    <br>
+<p>Must be at least 1. Must not be greater than 100. Example: <code>7</code></p>
+        </div>
+        </form>
+
+                    <h2 id="endpoints-GETapi-v2-platforms--platform_slug--contents--content_slug--pages--order-">Una página, por su número.</h2>
 
 <p>
 </p>
@@ -3183,7 +3846,13 @@ You can check the Dev Tools console for debugging information.</code></pre>
     <pre><code class="language-bash">curl --request GET \
     --get "https://api.raupulus.dev/api/v2/platforms/4/contents/architecto/pages/564" \
     --header "Content-Type: application/json" \
-    --header "Accept: application/json"</code></pre></div>
+    --header "Accept: application/json" \
+    --data "{
+    \"format\": \"architecto\",
+    \"from\": 22,
+    \"limit\": 7
+}"
+</code></pre></div>
 
 
 <div class="javascript-example">
@@ -3196,17 +3865,23 @@ const headers = {
     "Accept": "application/json",
 };
 
+let body = {
+    "format": "architecto",
+    "from": 22,
+    "limit": 7
+};
 
 fetch(url, {
     method: "GET",
     headers,
+    body: JSON.stringify(body),
 }).then(response =&gt; response.json());</code></pre></div>
 
 </span>
 
 <span id="example-responses-GETapi-v2-platforms--platform_slug--contents--content_slug--pages--order-">
             <blockquote>
-            <p>Example response (404):</p>
+            <p>Example response (422):</p>
         </blockquote>
                 <details class="annotation">
             <summary style="cursor: pointer;">
@@ -3215,7 +3890,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 293
+x-ratelimit-remaining: 290
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -3226,7 +3901,12 @@ permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), m
 
 <code class="language-json" style="max-height: 300px;">{
     &quot;success&quot;: false,
-    &quot;message&quot;: &quot;Contenido no encontrado&quot;
+    &quot;message&quot;: &quot;The given data was invalid.&quot;,
+    &quot;errors&quot;: {
+        &quot;format&quot;: [
+            &quot;El formato tiene que ser editorjs, markdown o html.&quot;
+        ]
+    }
 }</code>
  </pre>
     </span>
@@ -3338,9 +4018,48 @@ You can check the Dev Tools console for debugging information.</code></pre>
     <br>
 <p>Example: <code>564</code></p>
             </div>
-                    </form>
+                            <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>format</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="format"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--pages--order-"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+Must be one of:
+<ul style="list-style-type: square;"><li><code>editorjs</code></li> <li><code>markdown</code></li> <li><code>html</code></li></ul>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>from</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="from"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--pages--order-"
+               value="22"
+               data-component="body">
+    <br>
+<p>Must be at least 1. Example: <code>22</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>limit</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="limit"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--pages--order-"
+               value="7"
+               data-component="body">
+    <br>
+<p>Must be at least 1. Must not be greater than 100. Example: <code>7</code></p>
+        </div>
+        </form>
 
-                    <h2 id="endpoints-GETapi-v2-platforms--platform_slug--contents--content_slug--related">Contenidos relacionados, también publicados.</h2>
+                    <h2 id="endpoints-GETapi-v2-platforms--platform_slug--contents--content_slug--related">Relacionados: los elegidos a mano primero. `?limit=` de 1 a 20.</h2>
 
 <p>
 </p>
@@ -3387,7 +4106,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 292
+x-ratelimit-remaining: 289
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -3493,6 +4212,486 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="content_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--related"
+               value="architecto"
+               data-component="url">
+    <br>
+<p>The slug of the content. Example: <code>architecto</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="endpoints-GETapi-v2-platforms--platform_slug--contents--content_slug--seo">GET api/v2/platforms/{platform_slug}/contents/{content_slug}/seo</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-v2-platforms--platform_slug--contents--content_slug--seo">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "https://api.raupulus.dev/api/v2/platforms/4/contents/architecto/seo" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "https://api.raupulus.dev/api/v2/platforms/4/contents/architecto/seo"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v2-platforms--platform_slug--contents--content_slug--seo">
+            <blockquote>
+            <p>Example response (404):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+x-ratelimit-limit: 300
+x-ratelimit-remaining: 288
+content-language: en
+vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Contenido no encontrado&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v2-platforms--platform_slug--contents--content_slug--seo" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v2-platforms--platform_slug--contents--content_slug--seo"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v2-platforms--platform_slug--contents--content_slug--seo"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v2-platforms--platform_slug--contents--content_slug--seo" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v2-platforms--platform_slug--contents--content_slug--seo">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v2-platforms--platform_slug--contents--content_slug--seo" data-method="GET"
+      data-path="api/v2/platforms/{platform_slug}/contents/{content_slug}/seo"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-platforms--platform_slug--contents--content_slug--seo', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v2-platforms--platform_slug--contents--content_slug--seo"
+                    onclick="tryItOut('GETapi-v2-platforms--platform_slug--contents--content_slug--seo');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v2-platforms--platform_slug--contents--content_slug--seo"
+                    onclick="cancelTryOut('GETapi-v2-platforms--platform_slug--contents--content_slug--seo');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v2-platforms--platform_slug--contents--content_slug--seo"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v2/platforms/{platform_slug}/contents/{content_slug}/seo</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--seo"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--seo"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>platform_slug</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="platform_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--seo"
+               value="4"
+               data-component="url">
+    <br>
+<p>The slug of the platform. Example: <code>4</code></p>
+            </div>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>content_slug</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="content_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--seo"
+               value="architecto"
+               data-component="url">
+    <br>
+<p>The slug of the content. Example: <code>architecto</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="endpoints-GETapi-v2-platforms--platform_slug--contents--content_slug--galleries">GET api/v2/platforms/{platform_slug}/contents/{content_slug}/galleries</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-v2-platforms--platform_slug--contents--content_slug--galleries">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "https://api.raupulus.dev/api/v2/platforms/4/contents/architecto/galleries" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "https://api.raupulus.dev/api/v2/platforms/4/contents/architecto/galleries"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v2-platforms--platform_slug--contents--content_slug--galleries">
+            <blockquote>
+            <p>Example response (404):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+x-ratelimit-limit: 300
+x-ratelimit-remaining: 287
+content-language: en
+vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Contenido no encontrado&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v2-platforms--platform_slug--contents--content_slug--galleries" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v2-platforms--platform_slug--contents--content_slug--galleries"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v2-platforms--platform_slug--contents--content_slug--galleries"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v2-platforms--platform_slug--contents--content_slug--galleries" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v2-platforms--platform_slug--contents--content_slug--galleries">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v2-platforms--platform_slug--contents--content_slug--galleries" data-method="GET"
+      data-path="api/v2/platforms/{platform_slug}/contents/{content_slug}/galleries"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-platforms--platform_slug--contents--content_slug--galleries', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v2-platforms--platform_slug--contents--content_slug--galleries"
+                    onclick="tryItOut('GETapi-v2-platforms--platform_slug--contents--content_slug--galleries');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v2-platforms--platform_slug--contents--content_slug--galleries"
+                    onclick="cancelTryOut('GETapi-v2-platforms--platform_slug--contents--content_slug--galleries');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v2-platforms--platform_slug--contents--content_slug--galleries"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v2/platforms/{platform_slug}/contents/{content_slug}/galleries</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--galleries"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--galleries"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>platform_slug</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="platform_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--galleries"
+               value="4"
+               data-component="url">
+    <br>
+<p>The slug of the platform. Example: <code>4</code></p>
+            </div>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>content_slug</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="content_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--galleries"
+               value="architecto"
+               data-component="url">
+    <br>
+<p>The slug of the content. Example: <code>architecto</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="endpoints-GETapi-v2-platforms--platform_slug--contents--content_slug--files">GET api/v2/platforms/{platform_slug}/contents/{content_slug}/files</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-v2-platforms--platform_slug--contents--content_slug--files">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "https://api.raupulus.dev/api/v2/platforms/4/contents/architecto/files" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "https://api.raupulus.dev/api/v2/platforms/4/contents/architecto/files"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v2-platforms--platform_slug--contents--content_slug--files">
+            <blockquote>
+            <p>Example response (404):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+x-ratelimit-limit: 300
+x-ratelimit-remaining: 286
+content-language: en
+vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Contenido no encontrado&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v2-platforms--platform_slug--contents--content_slug--files" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v2-platforms--platform_slug--contents--content_slug--files"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v2-platforms--platform_slug--contents--content_slug--files"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v2-platforms--platform_slug--contents--content_slug--files" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v2-platforms--platform_slug--contents--content_slug--files">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v2-platforms--platform_slug--contents--content_slug--files" data-method="GET"
+      data-path="api/v2/platforms/{platform_slug}/contents/{content_slug}/files"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-platforms--platform_slug--contents--content_slug--files', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v2-platforms--platform_slug--contents--content_slug--files"
+                    onclick="tryItOut('GETapi-v2-platforms--platform_slug--contents--content_slug--files');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v2-platforms--platform_slug--contents--content_slug--files"
+                    onclick="cancelTryOut('GETapi-v2-platforms--platform_slug--contents--content_slug--files');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v2-platforms--platform_slug--contents--content_slug--files"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v2/platforms/{platform_slug}/contents/{content_slug}/files</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--files"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--files"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>platform_slug</code></b>&nbsp;&nbsp;
+<small>integer</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="platform_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--files"
+               value="4"
+               data-component="url">
+    <br>
+<p>The slug of the platform. Example: <code>4</code></p>
+            </div>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>content_slug</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="content_slug"                data-endpoint="GETapi-v2-platforms--platform_slug--contents--content_slug--files"
                value="architecto"
                data-component="url">
     <br>
@@ -4818,7 +6017,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"duration\": 22,
-    \"read_at\": \"2022-10-12\",
+    \"read_at\": \"2022-10-21\",
     \"energy\": []
 }"
 </code></pre></div>
@@ -4837,7 +6036,7 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "duration": 22,
-    "read_at": "2022-10-12",
+    "read_at": "2022-10-21",
     "energy": []
 };
 
@@ -4978,10 +6177,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="read_at"                data-endpoint="POSTapi-v2-energy-readings"
-               value="2022-10-12"
+               value="2022-10-21"
                data-component="body">
     <br>
-<p>Must be a valid date. Must be a date after or equal to <code>2000-01-01</code>. Must be a date before or equal to <code>2026-09-17 14:24:30</code>. Example: <code>2022-10-12</code></p>
+<p>Must be a valid date. Must be a date after or equal to <code>2000-01-01</code>. Must be a date before or equal to <code>2026-09-27 06:11:06</code>. Example: <code>2022-10-21</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>energy</code></b>&nbsp;&nbsp;
@@ -6082,8 +7281,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"user_id\": 16,
-    \"start_at\": \"2026-09-17 13:24:30\",
-    \"end_at\": \"2026-09-17 13:24:30\",
+    \"start_at\": \"2026-09-27 05:11:06\",
+    \"end_at\": \"2026-09-27 05:11:06\",
     \"duration\": 16,
     \"pulsations\": 39,
     \"pulsations_special_keys\": 84,
@@ -6107,8 +7306,8 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "user_id": 16,
-    "start_at": "2026-09-17 13:24:30",
-    "end_at": "2026-09-17 13:24:30",
+    "start_at": "2026-09-27 05:11:06",
+    "end_at": "2026-09-27 05:11:06",
     "duration": 16,
     "pulsations": 39,
     "pulsations_special_keys": 84,
@@ -6242,10 +7441,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_at"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="2026-09-17 13:24:30"
+               value="2026-09-27 05:11:06"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-17 13:24:30</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-27 05:11:06</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_at</code></b>&nbsp;&nbsp;
@@ -6254,10 +7453,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_at"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="2026-09-17 13:24:30"
+               value="2026-09-27 05:11:06"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-17 13:24:30</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-27 05:11:06</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
@@ -6352,8 +7551,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"user_id\": 16,
-    \"start_at\": \"2026-09-17 13:24:30\",
-    \"end_at\": \"2026-09-17 13:24:30\",
+    \"start_at\": \"2026-09-27 05:11:06\",
+    \"end_at\": \"2026-09-27 05:11:06\",
     \"duration\": 16,
     \"clicks_left\": 39,
     \"clicks_right\": 84,
@@ -6378,8 +7577,8 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "user_id": 16,
-    "start_at": "2026-09-17 13:24:30",
-    "end_at": "2026-09-17 13:24:30",
+    "start_at": "2026-09-27 05:11:06",
+    "end_at": "2026-09-27 05:11:06",
     "duration": 16,
     "clicks_left": 39,
     "clicks_right": 84,
@@ -6514,10 +7713,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_at"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="2026-09-17 13:24:30"
+               value="2026-09-27 05:11:06"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-17 13:24:30</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-27 05:11:06</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_at</code></b>&nbsp;&nbsp;
@@ -6526,10 +7725,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_at"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="2026-09-17 13:24:30"
+               value="2026-09-27 05:11:06"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-17 13:24:30</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-27 05:11:06</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
@@ -6923,7 +8122,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"humidity\": 4326.41688,
     \"soil_humidity\": 17,
     \"soil_humidity_raw\": 16,
-    \"full_water_tank\": false,
+    \"full_water_tank\": true,
     \"waterpump_enabled\": false,
     \"vaporizer_enabled\": false
 }"
@@ -6949,7 +8148,7 @@ let body = {
     "humidity": 4326.41688,
     "soil_humidity": 17,
     "soil_humidity_raw": 16,
-    "full_water_tank": false,
+    "full_water_tank": true,
     "waterpump_enabled": false,
     "vaporizer_enabled": false
 };
@@ -7177,7 +8376,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>waterpump_enabled</code></b>&nbsp;&nbsp;
@@ -7244,7 +8443,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"sensors\": [
-        \"light\"
+        \"humidity\"
     ],
     \"location_type\": \"indoor\"
 }"
@@ -7263,7 +8462,7 @@ const headers = {
 
 let body = {
     "sensors": [
-        "light"
+        "humidity"
     ],
     "location_type": "indoor"
 };
@@ -7422,7 +8621,7 @@ Must be one of:
     --header "Accept: application/json" \
     --data "{
     \"sensors\": [
-        \"air_quality\"
+        \"light\"
     ]
 }"
 </code></pre></div>
@@ -7440,7 +8639,7 @@ const headers = {
 
 let body = {
     "sensors": [
-        "air_quality"
+        "light"
     ]
 };
 
@@ -8313,7 +9512,7 @@ fetch(url, {
 
 <span id="example-responses-GETapi-v2-curriculum">
             <blockquote>
-            <p>Example response (200):</p>
+            <p>Example response (500):</p>
         </blockquote>
                 <details class="annotation">
             <summary style="cursor: pointer;">
@@ -8322,7 +9521,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 287
+x-ratelimit-remaining: 281
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -8332,17 +9531,8 @@ permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), m
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;success&quot;: true,
-    &quot;message&quot;: &quot;Operaci&oacute;n exitosa&quot;,
-    &quot;data&quot;: [],
-    &quot;meta&quot;: {
-        &quot;total&quot;: 0,
-        &quot;per_page&quot;: 25,
-        &quot;current_page&quot;: 1,
-        &quot;last_page&quot;: 1,
-        &quot;from&quot;: null,
-        &quot;to&quot;: null
-    }
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Internal server error&quot;
 }</code>
  </pre>
     </span>
@@ -8467,7 +9657,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 286
+x-ratelimit-remaining: 280
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -8615,7 +9805,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 285
+x-ratelimit-remaining: 279
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -9786,7 +10976,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"format\": \"architecto\",
     \"note\": \"n\",
     \"priority\": -100,
-    \"is_favorite\": false
+    \"is_favorite\": true
 }"
 </code></pre></div>
 
@@ -9806,7 +10996,7 @@ let body = {
     "format": "architecto",
     "note": "n",
     "priority": -100,
-    "is_favorite": false
+    "is_favorite": true
 };
 
 fetch(url, {
@@ -9974,7 +11164,7 @@ Must be one of:
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
         </form>
 
@@ -10140,7 +11330,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"is_favorite\": false
+    \"is_favorite\": true
 }"
 </code></pre></div>
 
@@ -10156,7 +11346,7 @@ const headers = {
 };
 
 let body = {
-    "is_favorite": false
+    "is_favorite": true
 };
 
 fetch(url, {
@@ -10274,7 +11464,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
         </form>
 

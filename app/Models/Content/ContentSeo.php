@@ -6,6 +6,7 @@ namespace App\Models\Content;
 
 use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseModel;
+use App\Models\Concerns\TouchesContent;
 use App\Models\File;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -65,6 +66,7 @@ class ContentSeo extends BaseModel
 {
     use ImageTrait;
     use SoftDeletes;
+    use TouchesContent;
 
     protected $table = 'content_seo';
 

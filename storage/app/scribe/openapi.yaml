@@ -100,7 +100,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - 'keycounter:write'
+                    - 'smartplant:read'
                   items:
                     type: string
                     enum:
@@ -126,7 +126,7 @@ paths:
                 expires_at:
                   type: string
                   description: 'Must be a valid date. Must be a date after <code>now</code>.'
-                  example: '2052-10-11'
+                  example: '2052-10-20'
                   nullable: true
               required:
                 - device_id
@@ -221,7 +221,7 @@ paths:
                 privacity:
                   type: boolean
                   description: ''
-                  example: false
+                  example: true
                 contactme:
                   type: boolean
                   description: ''
@@ -572,8 +572,8 @@ paths:
       security: []
   '/api/v2/platforms/{slug}':
     get:
-      summary: ''
-      operationId: getApiV2PlatformsSlug
+      summary: "La ficha completa de la plataforma (P7): la de la v1, que el frontend\nusa como primera carga y para los metadatos del SSR. Sin los `*_token`."
+      operationId: laFichaCompletaDeLaPlataformaP7LaDeLaV1QueElFrontendUsaComoPrimeraCargaYParaLosMetadatosDelSSRSinLosToken
       description: ''
       parameters: []
       responses:
@@ -640,11 +640,81 @@ paths:
         required: true
         schema:
           type: integer
+  '/api/v2/platforms/{platform_slug}/tags':
+    get:
+      summary: 'Etiquetas de una plataforma, con cuántos contenidos publicados las usan.'
+      operationId: etiquetasDeUnaPlataformaConCuntosContenidosPublicadosLasUsan
+      description: ''
+      parameters: []
+      responses:
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Plataforma no encontrada'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Plataforma no encontrada'
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: platform_slug
+        description: 'The slug of the platform.'
+        example: 4
+        required: true
+        schema:
+          type: integer
   '/api/v2/platforms/{platform_slug}/contents':
     get:
       summary: 'Contenidos publicados de una plataforma.'
       operationId: contenidosPublicadosDeUnaPlataforma
-      description: "Sustituye a `/{platform}/featured` y `/{platform}/content/type/{t}`, que\neran dos rutas para dos filtros de la misma colección.\n\n  ?featured=1        sólo destacados\n  ?type=tutorial     por slug del tipo de contenido\n  ?sort=-published_at"
+      description: "?featured=1              sólo destacados\n  ?type=project            por slug del tipo de contenido\n  ?category= ?tag= ?technology=   por slug\n  ?q=texto                 en el título o el extracto, sin distinguir mayúsculas\n  ?sort=-published_at      y los demás de `CollectionQuery`"
+      parameters: []
+      responses:
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Plataforma no encontrada'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Plataforma no encontrada'
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: platform_slug
+        description: 'The slug of the platform.'
+        example: 4
+        required: true
+        schema:
+          type: integer
+  '/api/v2/platforms/{platform_slug}/contents/highlights':
+    get:
+      summary: 'Destacados, últimos y tendencia, agrupados por tipo.'
+      operationId: destacadosltimosYTendenciaAgrupadosPorTipo
+      description: "?type=featured|latest|trend|all   (por defecto all)\n  ?limit=6                          por tipo, de 1 a 24"
       parameters: []
       responses:
         404:
@@ -677,12 +747,12 @@ paths:
           type: integer
   '/api/v2/platforms/{platform_slug}/contents/{slug}':
     get:
-      summary: 'Un contenido publicado.'
-      operationId: unContenidoPublicado
-      description: ''
+      summary: "El detalle de un contenido: sus datos, el índice de páginas sin texto y\nla primera página. Con `?include=` lo que se pida (`all`, todo)."
+      operationId: elDetalleDeUnContenidoSusDatosElndiceDePginasSinTextoYLaPrimeraPginaConincludeLoQueSePidaallTodo
+      description: "Cada petición suma una visita, también si se responde desde la caché o\ncon 304: se cuenta después de enviar la respuesta, en el mismo proceso,\nsin depender de la cola (H1). Con `defer()` y no con\n`dispatchAfterResponse()`: ésa se queda registrada en la aplicación y,\nsi atiende más de una petición (tests, Octane), la repite en cada una."
       parameters: []
       responses:
-        404:
+        422:
           description: ''
           content:
             application/json:
@@ -690,16 +760,52 @@ paths:
                 type: object
                 example:
                   success: false
-                  message: 'Contenido no encontrado'
+                  message: 'The given data was invalid.'
+                  errors:
+                    format:
+                      - 'El formato tiene que ser editorjs, markdown o html.'
                 properties:
                   success:
                     type: boolean
                     example: false
                   message:
                     type: string
-                    example: 'Contenido no encontrado'
+                    example: 'The given data was invalid.'
+                  errors:
+                    type: object
+                    properties:
+                      format:
+                        type: array
+                        example:
+                          - 'El formato tiene que ser editorjs, markdown o html.'
+                        items:
+                          type: string
       tags:
         - Endpoints
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                format:
+                  type: string
+                  description: ''
+                  example: architecto
+                  enum:
+                    - editorjs
+                    - markdown
+                    - html
+                  nullable: true
+                from:
+                  type: integer
+                  description: 'Must be at least 1.'
+                  example: 22
+                limit:
+                  type: integer
+                  description: 'Must be at least 1. Must not be greater than 100.'
+                  example: 7
       security: []
     parameters:
       -
@@ -720,12 +826,12 @@ paths:
           type: string
   '/api/v2/platforms/{platform_slug}/contents/{content_slug}/pages':
     get:
-      summary: 'Páginas de un contenido publicado.'
-      operationId: pginasDeUnContenidoPublicado
+      summary: 'Las páginas con su texto. `?from=` (número de página) y `?limit=`.'
+      operationId: lasPginasConSuTextofromnmeroDePginaYlimit
       description: ''
       parameters: []
       responses:
-        404:
+        422:
           description: ''
           content:
             application/json:
@@ -733,16 +839,52 @@ paths:
                 type: object
                 example:
                   success: false
-                  message: 'Contenido no encontrado'
+                  message: 'The given data was invalid.'
+                  errors:
+                    format:
+                      - 'El formato tiene que ser editorjs, markdown o html.'
                 properties:
                   success:
                     type: boolean
                     example: false
                   message:
                     type: string
-                    example: 'Contenido no encontrado'
+                    example: 'The given data was invalid.'
+                  errors:
+                    type: object
+                    properties:
+                      format:
+                        type: array
+                        example:
+                          - 'El formato tiene que ser editorjs, markdown o html.'
+                        items:
+                          type: string
       tags:
         - Endpoints
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                format:
+                  type: string
+                  description: ''
+                  example: architecto
+                  enum:
+                    - editorjs
+                    - markdown
+                    - html
+                  nullable: true
+                from:
+                  type: integer
+                  description: 'Must be at least 1.'
+                  example: 22
+                limit:
+                  type: integer
+                  description: 'Must be at least 1. Must not be greater than 100.'
+                  example: 7
       security: []
     parameters:
       -
@@ -761,14 +903,14 @@ paths:
         required: true
         schema:
           type: string
-  '/api/v2/platforms/{platform_slug}/contents/{content_slug}/pages/{order}':
+  '/api/v2/platforms/{platform_slug}/contents/{content_slug}/pages/slug/{pageSlug}':
     get:
-      summary: 'Una página concreta, por su orden dentro del contenido.'
-      operationId: unaPginaConcretaPorSuOrdenDentroDelContenido
+      summary: 'Una página, por su slug.'
+      operationId: unaPginaPorSuSlug
       description: ''
       parameters: []
       responses:
-        404:
+        422:
           description: ''
           content:
             application/json:
@@ -776,16 +918,139 @@ paths:
                 type: object
                 example:
                   success: false
-                  message: 'Contenido no encontrado'
+                  message: 'The given data was invalid.'
+                  errors:
+                    format:
+                      - 'El formato tiene que ser editorjs, markdown o html.'
                 properties:
                   success:
                     type: boolean
                     example: false
                   message:
                     type: string
-                    example: 'Contenido no encontrado'
+                    example: 'The given data was invalid.'
+                  errors:
+                    type: object
+                    properties:
+                      format:
+                        type: array
+                        example:
+                          - 'El formato tiene que ser editorjs, markdown o html.'
+                        items:
+                          type: string
       tags:
         - Endpoints
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                format:
+                  type: string
+                  description: ''
+                  example: architecto
+                  enum:
+                    - editorjs
+                    - markdown
+                    - html
+                  nullable: true
+                from:
+                  type: integer
+                  description: 'Must be at least 1.'
+                  example: 22
+                limit:
+                  type: integer
+                  description: 'Must be at least 1. Must not be greater than 100.'
+                  example: 7
+      security: []
+    parameters:
+      -
+        in: path
+        name: platform_slug
+        description: 'The slug of the platform.'
+        example: 4
+        required: true
+        schema:
+          type: integer
+      -
+        in: path
+        name: content_slug
+        description: 'The slug of the content.'
+        example: architecto
+        required: true
+        schema:
+          type: string
+      -
+        in: path
+        name: pageSlug
+        description: ''
+        example: architecto
+        required: true
+        schema:
+          type: string
+  '/api/v2/platforms/{platform_slug}/contents/{content_slug}/pages/{order}':
+    get:
+      summary: 'Una página, por su número.'
+      operationId: unaPginaPorSuNmero
+      description: ''
+      parameters: []
+      responses:
+        422:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'The given data was invalid.'
+                  errors:
+                    format:
+                      - 'El formato tiene que ser editorjs, markdown o html.'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'The given data was invalid.'
+                  errors:
+                    type: object
+                    properties:
+                      format:
+                        type: array
+                        example:
+                          - 'El formato tiene que ser editorjs, markdown o html.'
+                        items:
+                          type: string
+      tags:
+        - Endpoints
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                format:
+                  type: string
+                  description: ''
+                  example: architecto
+                  enum:
+                    - editorjs
+                    - markdown
+                    - html
+                  nullable: true
+                from:
+                  type: integer
+                  description: 'Must be at least 1.'
+                  example: 22
+                limit:
+                  type: integer
+                  description: 'Must be at least 1. Must not be greater than 100.'
+                  example: 7
       security: []
     parameters:
       -
@@ -814,8 +1079,137 @@ paths:
           type: string
   '/api/v2/platforms/{platform_slug}/contents/{content_slug}/related':
     get:
-      summary: 'Contenidos relacionados, también publicados.'
-      operationId: contenidosRelacionadosTambinPublicados
+      summary: 'Relacionados: los elegidos a mano primero. `?limit=` de 1 a 20.'
+      operationId: relacionadosLosElegidosAManoPrimerolimitDe1A20
+      description: ''
+      parameters: []
+      responses:
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Contenido no encontrado'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Contenido no encontrado'
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: platform_slug
+        description: 'The slug of the platform.'
+        example: 4
+        required: true
+        schema:
+          type: integer
+      -
+        in: path
+        name: content_slug
+        description: 'The slug of the content.'
+        example: architecto
+        required: true
+        schema:
+          type: string
+  '/api/v2/platforms/{platform_slug}/contents/{content_slug}/seo':
+    get:
+      summary: ''
+      operationId: getApiV2PlatformsPlatform_slugContentsContent_slugSeo
+      description: ''
+      parameters: []
+      responses:
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Contenido no encontrado'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Contenido no encontrado'
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: platform_slug
+        description: 'The slug of the platform.'
+        example: 4
+        required: true
+        schema:
+          type: integer
+      -
+        in: path
+        name: content_slug
+        description: 'The slug of the content.'
+        example: architecto
+        required: true
+        schema:
+          type: string
+  '/api/v2/platforms/{platform_slug}/contents/{content_slug}/galleries':
+    get:
+      summary: ''
+      operationId: getApiV2PlatformsPlatform_slugContentsContent_slugGalleries
+      description: ''
+      parameters: []
+      responses:
+        404:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: 'Contenido no encontrado'
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Contenido no encontrado'
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: platform_slug
+        description: 'The slug of the platform.'
+        example: 4
+        required: true
+        schema:
+          type: integer
+      -
+        in: path
+        name: content_slug
+        description: 'The slug of the content.'
+        example: architecto
+        required: true
+        schema:
+          type: string
+  '/api/v2/platforms/{platform_slug}/contents/{content_slug}/files':
+    get:
+      summary: ''
+      operationId: getApiV2PlatformsPlatform_slugContentsContent_slugFiles
       description: ''
       parameters: []
       responses:
@@ -1244,8 +1638,8 @@ paths:
                   nullable: true
                 read_at:
                   type: string
-                  description: 'Must be a valid date. Must be a date after or equal to <code>2000-01-01</code>. Must be a date before or equal to <code>2026-09-17 14:24:30</code>.'
-                  example: '2022-10-12'
+                  description: 'Must be a valid date. Must be a date after or equal to <code>2000-01-01</code>. Must be a date before or equal to <code>2026-09-27 06:11:06</code>.'
+                  example: '2022-10-21'
                   nullable: true
                 energy:
                   type: object
@@ -1484,11 +1878,11 @@ paths:
                 start_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-17 13:24:30'
+                  example: '2026-09-27 05:11:06'
                 end_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-17 13:24:30'
+                  example: '2026-09-27 05:11:06'
                 duration:
                   type: integer
                   description: ''
@@ -1582,11 +1976,11 @@ paths:
                 start_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-17 13:24:30'
+                  example: '2026-09-27 05:11:06'
                 end_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-17 13:24:30'
+                  example: '2026-09-27 05:11:06'
                 duration:
                   type: integer
                   description: ''
@@ -1784,7 +2178,7 @@ paths:
                 full_water_tank:
                   type: boolean
                   description: ''
-                  example: false
+                  example: true
                   nullable: true
                 waterpump_enabled:
                   type: boolean
@@ -1846,7 +2240,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - light
+                    - humidity
                   items:
                     type: string
                     enum:
@@ -1903,7 +2297,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - air_quality
+                    - light
                   items:
                     type: string
                     enum:
@@ -2104,56 +2498,22 @@ paths:
       description: ''
       parameters: []
       responses:
-        200:
+        500:
           description: ''
           content:
             application/json:
               schema:
                 type: object
                 example:
-                  success: true
-                  message: 'Operación exitosa'
-                  data: []
-                  meta:
-                    total: 0
-                    per_page: 25
-                    current_page: 1
-                    last_page: 1
-                    from: null
-                    to: null
+                  success: false
+                  message: 'Internal server error'
                 properties:
                   success:
                     type: boolean
-                    example: true
+                    example: false
                   message:
                     type: string
-                    example: 'Operación exitosa'
-                  data:
-                    type: array
-                    example: []
-                  meta:
-                    type: object
-                    properties:
-                      total:
-                        type: integer
-                        example: 0
-                      per_page:
-                        type: integer
-                        example: 25
-                      current_page:
-                        type: integer
-                        example: 1
-                      last_page:
-                        type: integer
-                        example: 1
-                      from:
-                        type: string
-                        example: null
-                        nullable: true
-                      to:
-                        type: string
-                        example: null
-                        nullable: true
+                    example: 'Internal server error'
       tags:
         - Endpoints
       security: []
@@ -2435,7 +2795,7 @@ paths:
                 is_favorite:
                   type: boolean
                   description: ''
-                  example: false
+                  example: true
                   nullable: true
               required:
                 - content
@@ -2578,7 +2938,7 @@ paths:
                 is_favorite:
                   type: boolean
                   description: ''
-                  example: false
+                  example: true
                   nullable: true
       security: []
     parameters:

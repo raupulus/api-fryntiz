@@ -363,7 +363,7 @@ endpoints:
         name: is_favorite
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -374,7 +374,7 @@ endpoints:
       format: architecto
       note: 'n'
       priority: -100
-      is_favorite: false
+      is_favorite: true
     fileParameters: []
     responses: []
     responseFields: []
@@ -477,14 +477,14 @@ endpoints:
         name: is_favorite
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      is_favorite: false
+      is_favorite: true
     fileParameters: []
     responses: []
     responseFields: []

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\Content;
 
+use App\Models\Content\Content;
 use App\Models\Content\ContentFile;
 use App\Models\File;
 use Illuminate\Support\Facades\DB;
@@ -47,17 +48,22 @@ class ContentFileUsageService
 
         $used = $this->usedFileIds($contentId);
 
-        ContentFile::query()
+        $changed = ContentFile::query()
             ->where('content_id', $contentId)
             ->whereNotNull('unused_since')
             ->whereIn('file_id', $used)
             ->update(['unused_since' => null]);
 
-        ContentFile::query()
+        $changed += ContentFile::query()
             ->where('content_id', $contentId)
             ->whereNull('unused_since')
             ->whereNotIn('file_id', $used)
             ->update(['unused_since' => now()]);
+
+        // En bloque, sin eventos: la API enseña sólo los ficheros en uso.
+        if ($changed > 0) {
+            Content::markChanged($contentId);
+        }
     }
 
     /**

@@ -10,7 +10,7 @@
     ],
     "info": {
         "name": "Api Raupulus API Documentation",
-        "_postman_id": "797d3a21-74ea-4f5c-b0df-ba58ceb75654",
+        "_postman_id": "6137e7a8-8c3a-4d5e-92e5-c5bb6f60c2dc",
         "description": "",
         "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json"
     },
@@ -140,7 +140,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"device_id\":16,\"abilities\":[\"keycounter:write\"],\"name\":\"n\",\"expires_at\":\"2052-10-11\"}"
+                            "raw": "{\"device_id\":16,\"abilities\":[\"smartplant:read\"],\"name\":\"n\",\"expires_at\":\"2052-10-20\"}"
                         },
                         "description": "Va por `DeviceTokenService`, que es la fuente \u00fanica: comprueba que las\nabilities est\u00e1n en el cat\u00e1logo, que el dispositivo es del usuario, y\na\u00f1ade `device:{id}`. No emite nunca el comod\u00edn ni la ability de sesi\u00f3n.",
                         "auth": {
@@ -303,7 +303,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"name\":\"b\",\"email\":\"zbailey@example.net\",\"subject\":\"i\",\"message\":\"y\",\"privacity\":false,\"contactme\":false,\"attributes\":[\"v\"],\"g-recaptcha-response\":\"architecto\"}"
+                            "raw": "{\"name\":\"b\",\"email\":\"zbailey@example.net\",\"subject\":\"i\",\"message\":\"y\",\"privacity\":true,\"contactme\":false,\"attributes\":[\"v\"],\"g-recaptcha-response\":\"architecto\"}"
                         },
                         "description": "",
                         "auth": {
@@ -581,7 +581,7 @@
                             "header": [
                                 {
                                     "key": "cache-control",
-                                    "value": "no-cache, private"
+                                    "value": "max-age=60, public"
                                 },
                                 {
                                     "key": "content-type",
@@ -627,7 +627,7 @@
                     ]
                 },
                 {
-                    "name": "GET api\/v2\/platforms\/{slug}",
+                    "name": "La ficha completa de la plataforma (P7): la de la v1, que el frontend\nusa como primera carga y para los metadatos del SSR. Sin los `*_token`.",
                     "request": {
                         "url": {
                             "host": "{{baseUrl}}",
@@ -795,13 +795,13 @@
                     ]
                 },
                 {
-                    "name": "Contenidos publicados de una plataforma.",
+                    "name": "Etiquetas de una plataforma, con cu\u00e1ntos contenidos publicados las usan.",
                     "request": {
                         "url": {
                             "host": "{{baseUrl}}",
-                            "path": "api\/v2\/platforms\/:platform_slug\/contents",
+                            "path": "api\/v2\/platforms\/:platform_slug\/tags",
                             "query": [],
-                            "raw": "{{baseUrl}}\/api\/v2\/platforms\/:platform_slug\/contents",
+                            "raw": "{{baseUrl}}\/api\/v2\/platforms\/:platform_slug\/tags",
                             "variable": [
                                 {
                                     "id": "platform_slug",
@@ -823,7 +823,7 @@
                             }
                         ],
                         "body": null,
-                        "description": "Sustituye a `\/{platform}\/featured` y `\/{platform}\/content\/type\/{t}`, que\neran dos rutas para dos filtros de la misma colecci\u00f3n.\n\n  ?featured=1        s\u00f3lo destacados\n  ?type=tutorial     por slug del tipo de contenido\n  ?sort=-published_at",
+                        "description": "",
                         "auth": {
                             "type": "noauth"
                         }
@@ -879,25 +879,19 @@
                     ]
                 },
                 {
-                    "name": "Un contenido publicado.",
+                    "name": "Contenidos publicados de una plataforma.",
                     "request": {
                         "url": {
                             "host": "{{baseUrl}}",
-                            "path": "api\/v2\/platforms\/:platform_slug\/contents\/:slug",
+                            "path": "api\/v2\/platforms\/:platform_slug\/contents",
                             "query": [],
-                            "raw": "{{baseUrl}}\/api\/v2\/platforms\/:platform_slug\/contents\/:slug",
+                            "raw": "{{baseUrl}}\/api\/v2\/platforms\/:platform_slug\/contents",
                             "variable": [
                                 {
                                     "id": "platform_slug",
                                     "key": "platform_slug",
                                     "value": 4,
                                     "description": "The slug of the platform."
-                                },
-                                {
-                                    "id": "slug",
-                                    "key": "slug",
-                                    "value": "architecto",
-                                    "description": "The slug of the content."
                                 }
                             ]
                         },
@@ -913,7 +907,7 @@
                             }
                         ],
                         "body": null,
-                        "description": "",
+                        "description": "?featured=1              s\u00f3lo destacados\n  ?type=project            por slug del tipo de contenido\n  ?category= ?tag= ?technology=   por slug\n  ?q=texto                 en el t\u00edtulo o el extracto, sin distinguir may\u00fasculas\n  ?sort=-published_at      y los dem\u00e1s de `CollectionQuery`",
                         "auth": {
                             "type": "noauth"
                         }
@@ -963,31 +957,25 @@
                                 }
                             ],
                             "code": 404,
-                            "body": "{\"success\":false,\"message\":\"Contenido no encontrado\"}",
+                            "body": "{\"success\":false,\"message\":\"Plataforma no encontrada\"}",
                             "name": ""
                         }
                     ]
                 },
                 {
-                    "name": "P\u00e1ginas de un contenido publicado.",
+                    "name": "Destacados, \u00faltimos y tendencia, agrupados por tipo.",
                     "request": {
                         "url": {
                             "host": "{{baseUrl}}",
-                            "path": "api\/v2\/platforms\/:platform_slug\/contents\/:content_slug\/pages",
+                            "path": "api\/v2\/platforms\/:platform_slug\/contents\/highlights",
                             "query": [],
-                            "raw": "{{baseUrl}}\/api\/v2\/platforms\/:platform_slug\/contents\/:content_slug\/pages",
+                            "raw": "{{baseUrl}}\/api\/v2\/platforms\/:platform_slug\/contents\/highlights",
                             "variable": [
                                 {
                                     "id": "platform_slug",
                                     "key": "platform_slug",
                                     "value": 4,
                                     "description": "The slug of the platform."
-                                },
-                                {
-                                    "id": "content_slug",
-                                    "key": "content_slug",
-                                    "value": "architecto",
-                                    "description": "The slug of the content."
                                 }
                             ]
                         },
@@ -1003,7 +991,7 @@
                             }
                         ],
                         "body": null,
-                        "description": "",
+                        "description": "?type=featured|latest|trend|all   (por defecto all)\n  ?limit=6                          por tipo, de 1 a 24",
                         "auth": {
                             "type": "noauth"
                         }
@@ -1053,19 +1041,19 @@
                                 }
                             ],
                             "code": 404,
-                            "body": "{\"success\":false,\"message\":\"Contenido no encontrado\"}",
+                            "body": "{\"success\":false,\"message\":\"Plataforma no encontrada\"}",
                             "name": ""
                         }
                     ]
                 },
                 {
-                    "name": "Una p\u00e1gina concreta, por su orden dentro del contenido.",
+                    "name": "El detalle de un contenido: sus datos, el \u00edndice de p\u00e1ginas sin texto y\nla primera p\u00e1gina. Con `?include=` lo que se pida (`all`, todo).",
                     "request": {
                         "url": {
                             "host": "{{baseUrl}}",
-                            "path": "api\/v2\/platforms\/:platform_slug\/contents\/:content_slug\/pages\/:order",
+                            "path": "api\/v2\/platforms\/:platform_slug\/contents\/:slug",
                             "query": [],
-                            "raw": "{{baseUrl}}\/api\/v2\/platforms\/:platform_slug\/contents\/:content_slug\/pages\/:order",
+                            "raw": "{{baseUrl}}\/api\/v2\/platforms\/:platform_slug\/contents\/:slug",
                             "variable": [
                                 {
                                     "id": "platform_slug",
@@ -1074,16 +1062,10 @@
                                     "description": "The slug of the platform."
                                 },
                                 {
-                                    "id": "content_slug",
-                                    "key": "content_slug",
+                                    "id": "slug",
+                                    "key": "slug",
                                     "value": "architecto",
                                     "description": "The slug of the content."
-                                },
-                                {
-                                    "id": "order",
-                                    "key": "order",
-                                    "value": "564",
-                                    "description": ""
                                 }
                             ]
                         },
@@ -1098,8 +1080,11 @@
                                 "value": "application\/json"
                             }
                         ],
-                        "body": null,
-                        "description": "",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"format\":\"architecto\",\"from\":22,\"limit\":7}"
+                        },
+                        "description": "Cada petici\u00f3n suma una visita, tambi\u00e9n si se responde desde la cach\u00e9 o\ncon 304: se cuenta despu\u00e9s de enviar la respuesta, en el mismo proceso,\nsin depender de la cola (H1). Con `defer()` y no con\n`dispatchAfterResponse()`: \u00e9sa se queda registrada en la aplicaci\u00f3n y,\nsi atiende m\u00e1s de una petici\u00f3n (tests, Octane), la repite en cada una.",
                         "auth": {
                             "type": "noauth"
                         }
@@ -1148,14 +1133,305 @@
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
-                            "code": 404,
-                            "body": "{\"success\":false,\"message\":\"Contenido no encontrado\"}",
+                            "code": 422,
+                            "body": "{\"success\":false,\"message\":\"The given data was invalid.\",\"errors\":{\"format\":[\"El formato tiene que ser editorjs, markdown o html.\"]}}",
                             "name": ""
                         }
                     ]
                 },
                 {
-                    "name": "Contenidos relacionados, tambi\u00e9n publicados.",
+                    "name": "Las p\u00e1ginas con su texto. `?from=` (n\u00famero de p\u00e1gina) y `?limit=`.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v2\/platforms\/:platform_slug\/contents\/:content_slug\/pages",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v2\/platforms\/:platform_slug\/contents\/:content_slug\/pages",
+                            "variable": [
+                                {
+                                    "id": "platform_slug",
+                                    "key": "platform_slug",
+                                    "value": 4,
+                                    "description": "The slug of the platform."
+                                },
+                                {
+                                    "id": "content_slug",
+                                    "key": "content_slug",
+                                    "value": "architecto",
+                                    "description": "The slug of the content."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"format\":\"architecto\",\"from\":22,\"limit\":7}"
+                        },
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "300"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "292"
+                                },
+                                {
+                                    "key": "content-language",
+                                    "value": "en"
+                                },
+                                {
+                                    "key": "vary",
+                                    "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                }
+                            ],
+                            "code": 422,
+                            "body": "{\"success\":false,\"message\":\"The given data was invalid.\",\"errors\":{\"format\":[\"El formato tiene que ser editorjs, markdown o html.\"]}}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Una p\u00e1gina, por su slug.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v2\/platforms\/:platform_slug\/contents\/:content_slug\/pages\/slug\/:pageSlug",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v2\/platforms\/:platform_slug\/contents\/:content_slug\/pages\/slug\/:pageSlug",
+                            "variable": [
+                                {
+                                    "id": "platform_slug",
+                                    "key": "platform_slug",
+                                    "value": 4,
+                                    "description": "The slug of the platform."
+                                },
+                                {
+                                    "id": "content_slug",
+                                    "key": "content_slug",
+                                    "value": "architecto",
+                                    "description": "The slug of the content."
+                                },
+                                {
+                                    "id": "pageSlug",
+                                    "key": "pageSlug",
+                                    "value": "architecto",
+                                    "description": ""
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"format\":\"architecto\",\"from\":22,\"limit\":7}"
+                        },
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "300"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "291"
+                                },
+                                {
+                                    "key": "content-language",
+                                    "value": "en"
+                                },
+                                {
+                                    "key": "vary",
+                                    "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                }
+                            ],
+                            "code": 422,
+                            "body": "{\"success\":false,\"message\":\"The given data was invalid.\",\"errors\":{\"format\":[\"El formato tiene que ser editorjs, markdown o html.\"]}}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Una p\u00e1gina, por su n\u00famero.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v2\/platforms\/:platform_slug\/contents\/:content_slug\/pages\/:order",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v2\/platforms\/:platform_slug\/contents\/:content_slug\/pages\/:order",
+                            "variable": [
+                                {
+                                    "id": "platform_slug",
+                                    "key": "platform_slug",
+                                    "value": 4,
+                                    "description": "The slug of the platform."
+                                },
+                                {
+                                    "id": "content_slug",
+                                    "key": "content_slug",
+                                    "value": "architecto",
+                                    "description": "The slug of the content."
+                                },
+                                {
+                                    "id": "order",
+                                    "key": "order",
+                                    "value": "564",
+                                    "description": ""
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\"format\":\"architecto\",\"from\":22,\"limit\":7}"
+                        },
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "300"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "290"
+                                },
+                                {
+                                    "key": "content-language",
+                                    "value": "en"
+                                },
+                                {
+                                    "key": "vary",
+                                    "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                }
+                            ],
+                            "code": 422,
+                            "body": "{\"success\":false,\"message\":\"The given data was invalid.\",\"errors\":{\"format\":[\"El formato tiene que ser editorjs, markdown o html.\"]}}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Relacionados: los elegidos a mano primero. `?limit=` de 1 a 20.",
                     "request": {
                         "url": {
                             "host": "{{baseUrl}}",
@@ -1211,7 +1487,277 @@
                                 },
                                 {
                                     "key": "x-ratelimit-remaining",
-                                    "value": "292"
+                                    "value": "289"
+                                },
+                                {
+                                    "key": "content-language",
+                                    "value": "en"
+                                },
+                                {
+                                    "key": "vary",
+                                    "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                }
+                            ],
+                            "code": 404,
+                            "body": "{\"success\":false,\"message\":\"Contenido no encontrado\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "GET api\/v2\/platforms\/{platform_slug}\/contents\/{content_slug}\/seo",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v2\/platforms\/:platform_slug\/contents\/:content_slug\/seo",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v2\/platforms\/:platform_slug\/contents\/:content_slug\/seo",
+                            "variable": [
+                                {
+                                    "id": "platform_slug",
+                                    "key": "platform_slug",
+                                    "value": 4,
+                                    "description": "The slug of the platform."
+                                },
+                                {
+                                    "id": "content_slug",
+                                    "key": "content_slug",
+                                    "value": "architecto",
+                                    "description": "The slug of the content."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "300"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "288"
+                                },
+                                {
+                                    "key": "content-language",
+                                    "value": "en"
+                                },
+                                {
+                                    "key": "vary",
+                                    "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                }
+                            ],
+                            "code": 404,
+                            "body": "{\"success\":false,\"message\":\"Contenido no encontrado\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "GET api\/v2\/platforms\/{platform_slug}\/contents\/{content_slug}\/galleries",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v2\/platforms\/:platform_slug\/contents\/:content_slug\/galleries",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v2\/platforms\/:platform_slug\/contents\/:content_slug\/galleries",
+                            "variable": [
+                                {
+                                    "id": "platform_slug",
+                                    "key": "platform_slug",
+                                    "value": 4,
+                                    "description": "The slug of the platform."
+                                },
+                                {
+                                    "id": "content_slug",
+                                    "key": "content_slug",
+                                    "value": "architecto",
+                                    "description": "The slug of the content."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "300"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "287"
+                                },
+                                {
+                                    "key": "content-language",
+                                    "value": "en"
+                                },
+                                {
+                                    "key": "vary",
+                                    "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                }
+                            ],
+                            "code": 404,
+                            "body": "{\"success\":false,\"message\":\"Contenido no encontrado\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "GET api\/v2\/platforms\/{platform_slug}\/contents\/{content_slug}\/files",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v2\/platforms\/:platform_slug\/contents\/:content_slug\/files",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v2\/platforms\/:platform_slug\/contents\/:content_slug\/files",
+                            "variable": [
+                                {
+                                    "id": "platform_slug",
+                                    "key": "platform_slug",
+                                    "value": 4,
+                                    "description": "The slug of the platform."
+                                },
+                                {
+                                    "id": "content_slug",
+                                    "key": "content_slug",
+                                    "value": "architecto",
+                                    "description": "The slug of the content."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "x-ratelimit-limit",
+                                    "value": "300"
+                                },
+                                {
+                                    "key": "x-ratelimit-remaining",
+                                    "value": "286"
                                 },
                                 {
                                     "key": "content-language",
@@ -1532,7 +2078,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"hardware_device_id\":16,\"duration\":22,\"read_at\":\"2022-10-12\",\"energy\":[]}"
+                            "raw": "{\"hardware_device_id\":16,\"duration\":22,\"read_at\":\"2022-10-21\",\"energy\":[]}"
                         },
                         "description": "Requiere ability `energy:write`. Procesa subsistemas de generador, bater\u00eda y consumos.",
                         "auth": {
@@ -1964,7 +2510,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"hardware_device_id\":16,\"user_id\":16,\"start_at\":\"2026-09-17 13:24:30\",\"end_at\":\"2026-09-17 13:24:30\",\"duration\":16,\"pulsations\":39,\"pulsations_special_keys\":84,\"pulsation_average\":12,\"score\":77,\"weekday\":5}"
+                            "raw": "{\"hardware_device_id\":16,\"user_id\":16,\"start_at\":\"2026-09-27 05:11:06\",\"end_at\":\"2026-09-27 05:11:06\",\"duration\":16,\"pulsations\":39,\"pulsations_special_keys\":84,\"pulsation_average\":12,\"score\":77,\"weekday\":5}"
                         },
                         "description": "",
                         "auth": {
@@ -1995,7 +2541,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"hardware_device_id\":16,\"user_id\":16,\"start_at\":\"2026-09-17 13:24:30\",\"end_at\":\"2026-09-17 13:24:30\",\"duration\":16,\"clicks_left\":39,\"clicks_right\":84,\"clicks_middle\":12,\"total_clicks\":77,\"clicks_average\":8,\"weekday\":1}"
+                            "raw": "{\"hardware_device_id\":16,\"user_id\":16,\"start_at\":\"2026-09-27 05:11:06\",\"end_at\":\"2026-09-27 05:11:06\",\"duration\":16,\"clicks_left\":39,\"clicks_right\":84,\"clicks_middle\":12,\"total_clicks\":77,\"clicks_average\":8,\"weekday\":1}"
                         },
                         "description": "",
                         "auth": {
@@ -2186,7 +2732,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"plant_id\":4326.41688,\"hardware_device_id\":4326.41688,\"uv\":16,\"pressure\":4326.41688,\"temperature\":4326.41688,\"humidity\":4326.41688,\"soil_humidity\":17,\"soil_humidity_raw\":16,\"full_water_tank\":false,\"waterpump_enabled\":false,\"vaporizer_enabled\":false}"
+                            "raw": "{\"plant_id\":4326.41688,\"hardware_device_id\":4326.41688,\"uv\":16,\"pressure\":4326.41688,\"temperature\":4326.41688,\"humidity\":4326.41688,\"soil_humidity\":17,\"soil_humidity_raw\":16,\"full_water_tank\":true,\"waterpump_enabled\":false,\"vaporizer_enabled\":false}"
                         },
                         "description": "",
                         "auth": {
@@ -2217,7 +2763,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"sensors\":[\"light\"],\"location_type\":\"indoor\"}"
+                            "raw": "{\"sensors\":[\"humidity\"],\"location_type\":\"indoor\"}"
                         },
                         "description": "?zone=chipiona\n  ?location_type=indoor|outdoor",
                         "auth": {
@@ -2296,7 +2842,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"sensors\":[\"air_quality\"]}"
+                            "raw": "{\"sensors\":[\"light\"]}"
                         },
                         "description": "",
                         "auth": {
@@ -2652,7 +3198,7 @@
                                 },
                                 {
                                     "key": "x-ratelimit-remaining",
-                                    "value": "287"
+                                    "value": "281"
                                 },
                                 {
                                     "key": "content-language",
@@ -2679,8 +3225,8 @@
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
                                 }
                             ],
-                            "code": 200,
-                            "body": "{\"success\":true,\"message\":\"Operaci\\u00f3n exitosa\",\"data\":[],\"meta\":{\"total\":0,\"per_page\":25,\"current_page\":1,\"last_page\":1,\"from\":null,\"to\":null}}",
+                            "code": 500,
+                            "body": "{\"success\":false,\"message\":\"Internal server error\"}",
                             "name": ""
                         }
                     ]
@@ -2736,7 +3282,7 @@
                                 },
                                 {
                                     "key": "x-ratelimit-remaining",
-                                    "value": "286"
+                                    "value": "280"
                                 },
                                 {
                                     "key": "content-language",
@@ -2820,7 +3366,7 @@
                                 },
                                 {
                                     "key": "x-ratelimit-remaining",
-                                    "value": "285"
+                                    "value": "279"
                                 },
                                 {
                                     "key": "content-language",
@@ -3435,7 +3981,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"content\":\"architecto\",\"format\":\"architecto\",\"note\":\"n\",\"priority\":-100,\"is_favorite\":false}"
+                            "raw": "{\"content\":\"architecto\",\"format\":\"architecto\",\"note\":\"n\",\"priority\":-100,\"is_favorite\":true}"
                         },
                         "description": "",
                         "auth": {
@@ -3513,7 +4059,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"is_favorite\":false}"
+                            "raw": "{\"is_favorite\":true}"
                         },
                         "description": "",
                         "auth": {

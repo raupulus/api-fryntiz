@@ -225,13 +225,19 @@ Contrato completo: [`newsletter.md`](newsletter.md).
 Contrato completo: [`content.md`](content.md).
 
 - `GET /api/v2/platforms`: catálogo de plataformas. **No filtra por estado**: devuelve todas las que hay.
-- `GET /api/v2/platforms/{platform:slug}`: detalle de plataforma.
+- `GET /api/v2/platforms/{platform:slug}`: ficha completa (redes, autor, tecnologías, recuentos, páginas).
 - `GET /api/v2/platforms/{platform:slug}/categories`: categorías de la plataforma.
-- `GET /api/v2/platforms/{platform:slug}/contents`: listado de contenidos.
-- `GET /api/v2/platforms/{platform:slug}/contents/{content:slug}`: contenido completo con SEO y autor.
-- `GET /api/v2/platforms/{platform:slug}/contents/{content:slug}/pages`: páginas del contenido.
-- `GET /api/v2/platforms/{platform:slug}/contents/{content:slug}/pages/{order}`: página concreta.
-- `GET /api/v2/platforms/{platform:slug}/contents/{content:slug}/related`: contenidos relacionados.
+- `GET /api/v2/platforms/{platform:slug}/tags`: etiquetas con su número de contenidos publicados.
+- `GET /api/v2/platforms/{platform:slug}/contents`: listado de contenidos (`featured`, `type`, `category`, `tag`, `technology`, `q`).
+- `GET /api/v2/platforms/{platform:slug}/contents/highlights`: destacados, últimos y tendencia por tipo.
+- `GET /api/v2/platforms/{platform:slug}/contents/{content:slug}`: detalle ligero (índice de páginas y primera página) y `?include=`.
+- `GET /api/v2/platforms/{platform:slug}/contents/{content:slug}/pages`: páginas con su texto (`from`, `limit`).
+- `GET /api/v2/platforms/{platform:slug}/contents/{content:slug}/pages/{order}`: una página por su número.
+- `GET /api/v2/platforms/{platform:slug}/contents/{content:slug}/pages/slug/{pageSlug}`: una página por su slug.
+- `GET /api/v2/platforms/{platform:slug}/contents/{content:slug}/related`: relacionados, elegidos a mano primero.
+- `GET /api/v2/platforms/{platform:slug}/contents/{content:slug}/seo|galleries|files`: cada parte por separado.
+
+Todas llevan `ETag` y responden `304` con `If-None-Match`.
 
 ## Currículum (`Api\Cv\V2\CurriculumController`)
 
@@ -292,4 +298,4 @@ No es un módulo de `api/v2` ni usa su envelope: vive en `/mcp/api-raupulus`
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-17
+> Creado: 2026-08-30 · Última revisión: 2026-09-27

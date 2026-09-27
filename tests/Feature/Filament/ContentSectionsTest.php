@@ -193,6 +193,17 @@ class ContentSectionsTest extends TestCase
     }
 
     #[Test]
+    public function a_content_cannot_take_a_slug_that_is_an_api_route(): void
+    {
+        // `…/contents/highlights` son los destacados de la API (F9).
+        Livewire::test(CreateContent::class)
+            ->fillForm(['title' => 'Highlights', 'slug' => 'highlights', 'platform_id' => $this->platform->id, 'type_id' => (int) $this->content->type_id, 'status_id' => 1])
+            ->call('create')
+            ->assertHasFormErrors(['slug'])
+            ->assertSee('Ese slug no se puede usar: es una dirección de la API.');
+    }
+
+    #[Test]
     public function a_slug_is_unique_per_platform_and_says_who_has_it_in_the_trash(): void
     {
         $trashed = Content::factory()->create(['platform_id' => $this->platform->id, 'slug' => 'ocupado', 'title' => 'El de la papelera']);

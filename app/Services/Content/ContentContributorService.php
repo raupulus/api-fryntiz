@@ -45,6 +45,9 @@ class ContentContributorService
             ->where('content_id', $content->id)
             ->where('user_id', $user->id)
             ->delete();
+
+        // Borrado en bloque, sin eventos: la API deja de enseñarlo aquí.
+        Content::markChanged($content->id);
     }
 
     /**

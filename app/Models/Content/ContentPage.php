@@ -6,6 +6,7 @@ namespace App\Models\Content;
 
 use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseModel;
+use App\Models\Concerns\TouchesContent;
 use App\Models\File;
 use App\Models\User;
 use App\Services\Content\ContentFileUsageService;
@@ -70,6 +71,7 @@ class ContentPage extends BaseModel
     use HasGalleries;
     use ImageTrait;
     use SoftDeletes;
+    use TouchesContent;
 
     protected $table = 'content_pages';
 

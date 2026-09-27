@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models\Content;
 
 use App\Models\BaseModels\BaseModel;
+use App\Models\Concerns\TouchesContent;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
@@ -36,6 +37,7 @@ class ContentFile extends BaseModel
 {
     use HasFactory;
     use SoftDeletes;
+    use TouchesContent;
 
     protected $table = 'content_files';
 

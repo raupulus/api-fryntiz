@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Enums\UserRoleEnum;
 use App\Http\Traits\ImageTrait;
 use App\Models\Content\Content;
+use App\Support\ApiCacheVersion;
 use Carbon\Carbon;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -24,6 +25,7 @@ use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -104,6 +106,19 @@ class User extends Authenticatable implements FilamentUser
     use Notifiable;
     use SoftDeletes;
     use TwoFactorAuthenticatable;
+
+    /**
+     * Su nombre, apodo y foto salen en la API (autor de una plataforma,
+     * colaborador de un contenido): si cambian, la caché deja de valer (F9).
+     */
+    protected static function booted(): void
+    {
+        static::saved(static function (User $user): void {
+            if ($user->wasChanged(['name', 'surname', 'nickname', 'profile_photo_path'])) {
+                ApiCacheVersion::bump();
+            }
+        });
+    }
 
     /**
      * The attributes that are mass assignable.
@@ -236,22 +251,24 @@ class User extends Authenticatable implements FilamentUser
         return $this->name.' '.$this->surname;
     }
 
+    /**
+     * La foto de perfil (disco público, `profile-photos/`), o null si no tiene.
+     * Antes `urlAvatar()` hacía `asset($this->image)`, un atributo que el
+     * usuario no tiene: con foto, devolvía la raíz de la web.
+     */
+    public function photoUrl(): ?string
+    {
+        return filled($this->profile_photo_path) ? Storage::disk('public')->url((string) $this->profile_photo_path) : null;
+    }
+
     public function urlAvatarIcon(): string
     {
-        if ($this->profile_photo_path) {
-            return asset($this->image);
-        }
-
-        return asset('images/avatar-icon.png');
+        return $this->photoUrl() ?? asset('images/avatar-icon.png');
     }
 
     public function urlAvatar(): string
     {
-        if ($this->profile_photo_path) {
-            return asset($this->image);
-        }
-
-        return asset('images/avatar.png');
+        return $this->photoUrl() ?? asset('images/avatar.png');
     }
 
     public function getProfilePhotoUrlAttribute(): string
@@ -552,17 +569,24 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
-     * Devuelve información básica sobre el usuario.
+     * Lo público del usuario como autor (ficha de plataforma de la API).
+     *
+     * Necesita `details` y `socials.socialNetwork`. La profesión y la web
+     * salían escritas a mano («Developer», «raupulus.dev») en vez de leerse de
+     * `user_details`; ahora salen de ahí (null si no se han rellenado).
+     *
+     * @return array<string, mixed>
      */
     public function basicInfo(): array
     {
         return [
             'name' => $this->fullName,
             'nick' => $this->nickname,
+            'image' => $this->photoUrl(),
             'url_image_micro' => $this->urlImageMicro,
             'url_image_small' => $this->urlImageSmall,
-            'profession' => 'Developer', // Tablas user_details
-            'web' => 'raupulus.dev', // Tabla user_details
+            'profession' => $this->details?->profession,
+            'web' => $this->details?->web,
             'social_networks' => $this->socials->map(function ($ele) {
                 $sn = $ele->socialNetwork;
 
@@ -572,18 +596,13 @@ class User extends Authenticatable implements FilamentUser
                     'color' => $sn->color,
                     'nick' => $ele->nick,
                     'url' => $ele->url,
-                    // La URL estaba escrita a mano contra `http://localhost:8000`,
-                    // así que en producción todos los perfiles apuntaban a una
-                    // imagen de la máquina de desarrollo de nadie. `asset()`
-                    // resuelve contra `APP_URL`. `social_networks.image` guarda
-                    // la ruta de la imagen propia de cada red; si está vacía, se
-                    // cae a la genérica.
+                    // `social_networks.image` guarda la ruta de la imagen propia
+                    // de cada red; si está vacía, se cae a la genérica.
                     'url_image' => $sn->image
                         ? asset($sn->image)
                         : asset('images/default/small.jpg'),
                 ];
-            }),
-
+            })->values()->all(),
         ];
     }
 }

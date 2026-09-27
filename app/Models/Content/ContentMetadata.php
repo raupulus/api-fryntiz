@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models\Content;
 
 use App\Models\BaseModels\BaseModel;
+use App\Models\Concerns\TouchesContent;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 
@@ -52,6 +53,7 @@ use Illuminate\Support\Carbon;
 class ContentMetadata extends BaseModel
 {
     use SoftDeletes;
+    use TouchesContent;
 
     protected $table = 'content_metadata';
 

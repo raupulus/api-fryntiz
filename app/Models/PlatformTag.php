@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Models\BaseModels\BaseModel;
+use App\Models\Concerns\BumpsApiCache;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
 
@@ -31,6 +32,8 @@ use Illuminate\Support\Carbon;
  */
 class PlatformTag extends BaseModel
 {
+    use BumpsApiCache;
+
     protected $fillable = [
         'platform_id',
         'tag_id',
