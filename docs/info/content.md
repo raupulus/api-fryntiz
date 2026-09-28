@@ -337,13 +337,6 @@ Contrato completo en [`api/v2/content.md`](api/v2/content.md).
 `ContentResource` (panel) no deja ponérselo a un contenido
 (`ContentApiService::RESERVED_SLUGS`).
 
-## Despliegue
-
-Lo que hay que hacer en el servidor el día que se suba el editor y la API de
-contenidos (Imagick con HEIC, migraciones, cachés, tareas programadas,
-comprobación y la consulta del dominio de las imágenes) está en
-[`docs/deploys/contenidos-editor.md`](../deploys/contenidos-editor.md).
-
 ## Comando de debug
 
 ```bash

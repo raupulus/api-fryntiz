@@ -15,9 +15,12 @@ RUN apk add --no-cache \
     && docker-php-ext-install pdo pdo_pgsql pgsql gd intl mbstring xml opcache pcntl bcmath \
     && rm -rf /var/cache/apk/*
 
-RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
-    && pecl install redis \
-    && docker-php-ext-enable redis \
+# Imagick es obligatoria (`ext-imagick` en composer.json); `imagemagick-heic`
+# para abrir las fotos HEIC del móvil.
+RUN apk add --no-cache imagemagick imagemagick-heic \
+    && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS imagemagick-dev \
+    && pecl install redis imagick \
+    && docker-php-ext-enable redis imagick \
     && apk del .build-deps
 
 COPY docker/app/php.ini /usr/local/etc/php/conf.d/custom.ini

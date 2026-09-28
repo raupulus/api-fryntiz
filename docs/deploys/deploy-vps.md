@@ -189,7 +189,12 @@ sudo apt update
 sudo apt install -y \
     php8.4-fpm php8.4-cli php8.4-pgsql php8.4-redis php8.4-mbstring \
     php8.4-xml php8.4-zip php8.4-curl php8.4-gd php8.4-bcmath php8.4-intl \
+    php8.4-imagick libheif1 \
     postgresql-16 redis-server nginx supervisor unzip git
+
+# Imagick es obligatoria (`ext-imagick` en composer.json): convierte las imágenes
+# de los contenidos, y con libheif abre las fotos HEIC del móvil. Comprobarlo:
+php -r 'var_dump(Imagick::queryFormats("HEI*"));'   # tiene que listar HEIC y HEIF
 
 curl -sS https://getcomposer.org/installer | php
 sudo mv composer.phar /usr/local/bin/composer
@@ -486,4 +491,4 @@ Estrategia mínima:
 - [WebSockets en VPS](../info/websockets.md)
 - [Configuración de autenticación](../info/auth.md)
 
-> Creado: 2026-05-26 · Última revisión: 2026-09-05
+> Creado: 2026-05-26 · Última revisión: 2026-09-28

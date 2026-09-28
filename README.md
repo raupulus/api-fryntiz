@@ -93,7 +93,10 @@ docs/info/                # Documentación técnica de cada módulo
 
 ## Requisitos
 
-- **PHP** >= 8.4
+- **PHP** >= 8.4, con la extensión **Imagick** (`ext-imagick`, requerida en
+  `composer.json`): las imágenes de los contenidos se convierten con ella, y
+  las fotos HEIC/HEIF y AVIF sólo se pueden abrir con Imagick compilado con
+  `libheif` (se comprueba con `php -r 'var_dump(Imagick::queryFormats("HEI*"));'`)
 - **Base de datos:** PostgreSQL >= 17 (**siempre PostgreSQL**, tanto en desarrollo, testing y producción)
 - **Caché y Colas:** opcional. Las plantillas de `.env` vienen con
   `CACHE_STORE=file`, `SESSION_DRIVER=file` y `QUEUE_CONNECTION=database`, que
@@ -331,4 +334,4 @@ Este proyecto está licenciado bajo **GNU General Public License v3.0** — ver 
 
 ---
 
-> Última revisión de este documento: 2026-08-26
+> Última revisión de este documento: 2026-09-28
