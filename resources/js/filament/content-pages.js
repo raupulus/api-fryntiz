@@ -130,18 +130,37 @@ function contentPageEditor({ autosaveMs, releaseUrl, lockToken }) {
             await this.$wire.save();
         },
 
-        // Cambiar de página guarda antes; si no se puede, no se cambia.
+        // Cambiar de página guarda antes; si no se puede, no se cambia. Sin
+        // cambios también se pasa por el servidor, que suelta el bloqueo: el
+        // aviso de `pagehide` llega después de pintar la otra página, y su
+        // lista marcaría ésta como abierta en otra pestaña.
         async go(url) {
             if (this.unsaved) {
                 await this.flush();
+            }
 
-                if ((await this.$wire.saveBeforeLeaving()) !== true) {
-                    return;
-                }
+            if ((await this.$wire.saveBeforeLeaving()) !== true) {
+                return;
             }
 
             this.leaving = true;
             window.location.href = url;
+        },
+
+        // Reordenar con el teclado (flechas sobre el asa), igual que arrastrando.
+        async move(id, delta) {
+            const ids = [...this.$root.querySelectorAll('.cpe-list__items [x-sortable-item]')]
+                .map((item) => Number(item.getAttribute('x-sortable-item')));
+            const from = ids.indexOf(id);
+            const to = from + delta;
+
+            if (from < 0 || to < 0 || to >= ids.length) {
+                return;
+            }
+
+            [ids[from], ids[to]] = [ids[to], ids[from]];
+            await this.$wire.reorderPages(ids);
+            this.$nextTick(() => this.$root.querySelector(`[x-sortable-item="${id}"] .cpe-list__handle`)?.focus());
         },
 
         guardLink(event) {

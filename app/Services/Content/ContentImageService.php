@@ -7,10 +7,12 @@ namespace App\Services\Content;
 use App\Enums\ContentPageFormatEnum;
 use App\Exceptions\ContentUploadException;
 use App\Models\Content\Content;
+use App\Models\Content\ContentFile;
 use App\Models\Content\ContentPage;
 use App\Models\Content\ContentPageRaw;
 use App\Models\Content\ContentSeo;
 use App\Models\File;
+use App\Models\FileThumbnail;
 use App\Models\Gallery;
 use App\Models\GalleryImage;
 use Illuminate\Database\Eloquent\Collection;
@@ -39,6 +41,10 @@ class ContentImageService
     /**
      * Las imágenes de una página: las de sus bloques, en orden, y su portada.
      *
+     * Sólo las del contenido (`content_files`): desde aquí se recortan y se
+     * sustituyen, y un id en el JSON o una URL pegada a mano no pueden servir
+     * para tocar un fichero de otro contenido o de otro módulo.
+     *
      * @return Collection<int, File>
      */
     public function pageImages(ContentPage $page): Collection
@@ -46,12 +52,20 @@ class ContentImageService
         $ids = [];
 
         foreach ($this->blocks($page) as $block) {
-            $fileId = (int) ($block['data']['file']['file_id'] ?? 0);
+            $fileId = ($block['type'] ?? null) === 'image' ? $this->blockFileId($block) : null;
 
-            if (($block['type'] ?? null) === 'image' && $fileId > 0) {
+            if ($fileId !== null) {
                 $ids[] = $fileId;
             }
         }
+
+        $owned = ContentFile::query()
+            ->where('content_id', $page->content_id)
+            ->whereIn('file_id', array_unique($ids))
+            ->pluck('file_id')
+            ->map(fn ($id): int => (int) $id)
+            ->all();
+        $ids = array_values(array_filter($ids, fn (int $id): bool => in_array($id, $owned, true)));
 
         if ($page->image_id !== null) {
             $ids[] = (int) $page->image_id;
@@ -64,9 +78,44 @@ class ContentImageService
     }
 
     /**
+     * El fichero de un bloque: su `file_id` o, si no lo trae (una página en
+     * Markdown o HTML, una URL pegada a mano), el id de su URL
+     * (`/file/get|download|resize/{módulo}/{id}` o la de una de sus
+     * miniaturas, `/file/thumbnail/get/{módulo}/{id de la miniatura}`).
+     *
+     * @param  array<string, mixed>  $block
+     */
+    public function blockFileId(array $block): ?int
+    {
+        $file = $block['data']['file'] ?? null;
+
+        if (! is_array($file)) {
+            return null;
+        }
+
+        if ((int) ($file['file_id'] ?? 0) > 0) {
+            return (int) $file['file_id'];
+        }
+
+        $url = (string) ($file['url'] ?? '');
+
+        if (preg_match('!/file/(?:get|download|resize)/[A-Za-z0-9_-]+/([0-9]+)(?:[/?#]|$)!', $url, $m) === 1) {
+            return (int) $m[1];
+        }
+
+        if (preg_match('!/file/thumbnail/get/[A-Za-z0-9_-]+/([0-9]+)(?:[/?#]|$)!', $url, $m) === 1) {
+            $fileId = FileThumbnail::query()->whereKey((int) $m[1])->value('file_id');
+
+            return $fileId === null ? null : (int) $fileId;
+        }
+
+        return null;
+    }
+
+    /**
      * Los sitios donde se usa un fichero: páginas (por su `file_id` en el JSON
-     * de Editor.js), portadas de páginas y de contenidos, imagen SEO y
-     * galerías.
+     * de Editor.js o por su URL o la de sus miniaturas, en cualquiera de sus
+     * formatos), portadas de páginas y de contenidos, imagen SEO y galerías.
      *
      * @return list<array{type: string, label: string, id: int}>
      */
@@ -74,8 +123,15 @@ class ContentImageService
     {
         $usages = [];
 
+        $patterns = ['"file_id"\s*:\s*"?'.$file->id.'([^0-9]|$)', 'file\\\\?/(get|download|resize)\\\\?/[A-Za-z0-9_-]+\\\\?/'.$file->id.'([^0-9]|$)'];
+        $thumbnails = $file->thumbnails()->pluck('id')->map(fn ($id): int => (int) $id)->all();
+
+        if ($thumbnails !== []) {
+            $patterns[] = 'file\\\\?/thumbnail\\\\?/get\\\\?/[A-Za-z0-9_-]+\\\\?/('.implode('|', $thumbnails).')([^0-9]|$)';
+        }
+
         $pageIds = ContentPageRaw::query()
-            ->whereRaw('content ~ ?', ['"file_id"\s*:\s*'.$file->id.'([^0-9]|$)'])
+            ->whereRaw('content ~ ?', [implode('|', $patterns)])
             ->pluck('content_page_id')
             ->unique();
 

@@ -138,6 +138,38 @@ class ContentPageLockService
     }
 
     /**
+     * Las páginas de una lista que tiene abiertas otra persona u otra pestaña
+     * del mismo usuario, con quién: para marcarlas en la lista sin abrirlas.
+     * Con una consulta para los nombres, no una por página.
+     *
+     * @param  iterable<ContentPage>  $pages  Con `locked_by_user_id`, `locked_at` y `lock_token`.
+     * @return array<int, string> id de la página => quién la tiene
+     */
+    public function lockedByOthers(iterable $pages, User $user, string $token): array
+    {
+        $holders = [];
+
+        foreach ($pages as $page) {
+            $state = $this->stateOf((object) [
+                'locked_by_user_id' => $page->locked_by_user_id,
+                'locked_since' => null,
+                'locked_at' => $page->locked_at,
+                'lock_token' => $page->lock_token,
+            ], $user, $token, withName: false);
+
+            if (! $state->canEdit()) {
+                $holders[(int) $page->id] = (int) $page->locked_by_user_id;
+            }
+        }
+
+        $names = User::query()->whereIn('id', array_unique($holders))->pluck('name', 'id');
+
+        return array_map(fn (int $holderId): string => $holderId === $user->id
+            ? 'Abierta en otra pestaña tuya'
+            : 'La está editando '.(filled($names[$holderId] ?? null) ? $names[$holderId] : 'otra persona'), $holders);
+    }
+
+    /**
      * Guardar sólo si nadie más tiene el bloqueo: otro usuario, u otra pestaña
      * del mismo. Sin token (el modal de la ficha, que no bloquea) también se
      * rechaza si alguien lo tiene.
@@ -153,7 +185,7 @@ class ContentPageLockService
         }
     }
 
-    private function stateOf(?stdClass $row, ?User $user, ?string $token): ContentPageLockState
+    private function stateOf(?stdClass $row, ?User $user, ?string $token, bool $withName = true): ContentPageLockState
     {
         if ($row === null || $row->locked_by_user_id === null || $row->locked_at === null
             || Carbon::parse($row->locked_at)->lt($this->expiredBefore())) {
@@ -169,7 +201,7 @@ class ContentPageLockService
                 : ContentPageLockState::otherTab($holderId, $since);
         }
 
-        $name = User::query()->whereKey($holderId)->value('name');
+        $name = $withName ? User::query()->whereKey($holderId)->value('name') : null;
 
         return ContentPageLockState::otherUser($holderId, is_string($name) && $name !== '' ? $name : 'Otra persona', $since);
     }

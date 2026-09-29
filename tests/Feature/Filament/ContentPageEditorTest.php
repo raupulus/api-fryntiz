@@ -20,6 +20,7 @@ use App\Services\Content\ContentFileService;
 use App\Services\Content\ContentPageDraftService;
 use App\Services\Content\ContentPageFormatService;
 use App\Services\Content\ContentPageLockService;
+use App\Support\ApiCacheVersion;
 use Database\Seeders\ContentAvailablePageRawSeeder;
 use Database\Seeders\ContentAvailableTypesSeeder;
 use Database\Seeders\RolesTableSeeder;
@@ -162,6 +163,45 @@ class ContentPageEditorTest extends TestCase
     }
 
     #[Test]
+    public function deleting_a_page_moves_up_the_ones_behind_without_a_conflict_for_whoever_edits_them(): void
+    {
+        $third = $this->page('Tercera', 'tercera', 3);
+        $before = $third->updated_at;
+
+        // Pepe tiene abierta la tercera cuando el admin borra la segunda.
+        $this->actingAs($this->editor);
+        $pepe = $this->open($third);
+        Carbon::setTestNow(now()->addMinute());
+        $version = ApiCacheVersion::current();
+
+        $this->second->safeDelete();
+
+        $this->assertSame([1, 2], [$this->first->refresh()->order, $third->refresh()->order]);
+        $this->assertEquals($before, $third->updated_at, 'Subir de puesto no es cambiar la página (D4).');
+        $this->assertSame($version + 1, ApiCacheVersion::current(), 'La caché de la API se invalida una vez, no una por página.');
+
+        $pepe->fillForm(['content_json' => $this->editorJs('Escrito mientras tanto')])->call('save')->assertHasNoErrors();
+        $this->assertStringContainsString('Escrito mientras tanto', (string) $third->refresh()->content);
+    }
+
+    #[Test]
+    public function the_list_marks_the_pages_with_a_draft_and_the_ones_someone_else_has_open(): void
+    {
+        $third = $this->page('Tercera', 'tercera', 3);
+        $drafts = app(ContentPageDraftService::class);
+        $drafts->save($this->admin, $this->content, $this->second, Format::EditorJs, $this->editorJs('Borrador de la segunda'), 'Segunda', 'segunda');
+        $drafts->save($this->admin, $this->content, $this->first, Format::EditorJs, $this->editorJs('Borrador de la abierta'), 'Primera', 'primera');
+        app(ContentPageLockService::class)->acquire($third, $this->editor, 'pestaña-de-pepe');
+
+        $screen = $this->open($this->first)->assertSee('La está editando Pepe', false);
+        $marks = $screen->instance()->getPagesMarks($screen->instance()->getPagesList());
+
+        // La abierta no se marca: su borrador ya lo dice la barra.
+        $this->assertSame([$this->second->id => true], $marks['drafts']);
+        $this->assertSame([$third->id => 'La está editando Pepe'], $marks['locked']);
+    }
+
+    #[Test]
     public function a_new_page_is_created_at_the_end_when_saved(): void
     {
         $this->open('new')
@@ -215,6 +255,38 @@ class ContentPageEditorTest extends TestCase
         $this->assertStringContainsString('Sin guardar', (string) ContentPageDraft::query()->value('content'));
         $this->assertStringContainsString('Texto de Primera', (string) $this->first->refresh()->content, 'El autoguardado no guarda la página.');
         $this->assertTrue($this->first->locked_at?->gt($lockedAt));
+    }
+
+    #[Test]
+    public function a_page_with_a_cover_is_not_unsaved_after_an_autosave_without_changes(): void
+    {
+        // El campo de subida guarda la portada como `[uuid => id]`, y se leía
+        // como «sin portada»: toda página con portada salía cambiada.
+        $cover = File::addFile(UploadedFile::fake()->image('portada.jpg', 800, 450), 'content-pages', webpOriginal: true);
+        $this->first->update(['image_id' => $cover->id]);
+
+        $this->open($this->first->refresh())
+            ->call('autosave')
+            ->assertSet('hasUnsavedChanges', false)
+            ->call('saveBeforeLeaving')
+            ->assertReturned(true);
+
+        $this->assertSame(0, ContentPageDraft::query()->count());
+        $this->assertSame(0, ContentPageVersion::query()->count());
+    }
+
+    #[Test]
+    public function a_cover_id_from_the_browser_that_is_not_the_page_s_own_is_ignored(): void
+    {
+        $foreign = File::addFile(UploadedFile::fake()->image('ajena.jpg', 400, 300), 'cv');
+
+        $this->open($this->first)
+            ->set('data.image_id', ['x' => $foreign->id])
+            ->call('autosave')
+            ->call('save');
+
+        $this->assertNull($this->first->refresh()->image_id);
+        $this->assertNull(ContentPageDraft::query()->value('image_id'));
     }
 
     #[Test]
@@ -330,6 +402,32 @@ class ContentPageEditorTest extends TestCase
         $this->post(route('admin.contents.pages.lock.release', [$this->content, $this->first]), ['token' => 'mi-pestaña'])->assertNoContent();
 
         $this->assertSame('free', $locks->state($this->first, $this->editor)->status);
+    }
+
+    // ── Historial (G5) ──────────────────────────────────────────────────────
+
+    #[Test]
+    public function an_editor_cannot_restore_a_version_in_html_and_an_administrator_can(): void
+    {
+        $this->pages->savePage($this->first, [], Format::Html, '<p>En HTML</p>', null, $this->admin);
+        Carbon::setTestNow(now()->addMinute());
+        $this->pages->savePage($this->first->refresh(), [], Format::Markdown, 'En **Markdown**', Reason::FormatChange, $this->admin);
+        $html = ContentPageVersion::query()->get()->firstOrFail(fn (ContentPageVersion $version): bool => $version->format === Format::Html);
+
+        $this->actingAs($this->editor);
+        $this->open($this->first->refresh())
+            ->mountAction('history')
+            ->assertMountedActionModalSee('Sólo un administrador')
+            ->call('loadVersion', $html->id)
+            ->assertNotified('No puedes recuperar esta versión')
+            ->assertSet('data.source_format', Format::Markdown->value)
+            ->assertSet('hasUnsavedChanges', false);
+
+        $this->actingAs($this->admin);
+        app(ContentPageLockService::class)->forceUnlock($this->first, $this->admin);
+        $this->open($this->first)
+            ->call('loadVersion', $html->id)
+            ->assertSet('data.source_format', Format::Html->value);
     }
 
     // ── Imágenes (H2) ───────────────────────────────────────────────────────

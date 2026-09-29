@@ -171,4 +171,41 @@ class ContentImageServiceTest extends TestCase
         $this->assertSame(1, $usages->where('type', 'gallery')->count());
         $this->assertSame(['page-cover'], collect($this->images->usages($cover))->pluck('type')->all());
     }
+
+    #[Test]
+    public function an_image_is_found_by_its_url_in_a_markdown_page_and_in_where_else_it_is_used(): void
+    {
+        $data = $this->uploadPhoto(800, 600);
+        $file = File::query()->findOrFail($data['file_id']);
+        $thumbnail = $file->thumbnails()->firstOrFail();
+        $formats = app(ContentPageFormatService::class);
+
+        // Escritas a mano: sin `file_id`, sólo la URL del fichero o de una
+        // de sus miniaturas.
+        $byUrl = ContentPage::create(['content_id' => $this->content->id, 'title' => 'En Markdown', 'slug' => 'en-markdown', 'order' => 1]);
+        $formats->save($byUrl, ContentPageFormatEnum::Markdown, "Texto\n\n![Foto]({$data['url']})");
+        $byThumbnail = ContentPage::create(['content_id' => $this->content->id, 'title' => 'Con miniatura', 'slug' => 'con-miniatura', 'order' => 2]);
+        $formats->save($byThumbnail, ContentPageFormatEnum::Markdown, "Texto\n\n![Foto]({$thumbnail->url})");
+
+        $this->assertSame([$file->id], $this->images->pageImages($byUrl->refresh())->pluck('id')->all());
+        $this->assertSame([$file->id], $this->images->pageImages($byThumbnail->refresh())->pluck('id')->all());
+
+        $pages = collect($this->images->usages($file))->where('type', 'page')->pluck('id')->sort()->values()->all();
+        $this->assertSame([$byUrl->id, $byThumbnail->id], $pages);
+    }
+
+    #[Test]
+    public function a_file_of_another_content_in_a_block_is_not_an_image_of_the_page(): void
+    {
+        // Desde «Imágenes» se recorta y se sustituye: un id en el JSON no
+        // puede servir para tocar un fichero ajeno.
+        $foreign = app(ContentFileService::class)->store(Content::factory()->create(), UploadedFile::fake()->image('ajena.jpg', 400, 300));
+        $own = $this->uploadPhoto(800, 600);
+
+        $page = $this->pageWith($foreign);
+        $this->assertSame([], $this->images->pageImages($page)->pluck('id')->all());
+
+        $page = $this->pageWith($own, 2);
+        $this->assertSame([$own['file_id']], $this->images->pageImages($page)->pluck('id')->all());
+    }
 }

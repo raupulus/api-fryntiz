@@ -251,6 +251,12 @@ class ContentResource extends Resource
                     ->url(fn (Content $record): string => self::getUrl('preview', ['record' => $record]), true)
                     ->visible(fn (Content $record): bool => ! $record->trashed() && Gate::allows('view', $record))
                     ->label('Vista previa'),
+                // Al texto de un clic, sin pasar por la ficha.
+                Action::make('pages')
+                    ->icon('heroicon-o-document-duplicate')
+                    ->url(fn (Content $record): string => self::getUrl('pages', ['record' => $record]))
+                    ->visible(fn (Content $record): bool => ! $record->trashed() && Gate::allows('update', $record))
+                    ->label('Páginas'),
                 EditAction::make(),
                 DeleteAction::make()->label('Eliminar'),
                 RestoreAction::make()->label('Restaurar'),

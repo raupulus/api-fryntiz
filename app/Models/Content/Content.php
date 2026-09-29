@@ -88,14 +88,12 @@ use function url;
  * @property-read mixed $categories
  * @property-read mixed $subcategories
  * @property-read mixed $tags
- * @property-read mixed $url
  * @property-read string $url_image
  * @property-read string $url_image_large
  * @property-read string $url_image_medium
  * @property-read string $url_image_micro
  * @property-read string $url_image_normal
  * @property-read string $url_image_small
- * @property-read mixed $url_preview
  * @property-read File|null $image
  * @property-read ContentMetadata|null $metadata
  * @property-read Collection<int, ContentPage> $pages
@@ -586,16 +584,7 @@ class Content extends BaseModel
             ->whereNotNull('categories.parent_id')
             ->pluck('categories.id');
 
-        // Falla al obtener las categorías, el leftJoin de platform_categories duplica las categorías
-
-        /*
-        dd($categoriesId, Category::whereIn('categories.id', $categoriesId)
-            ->where('platform_categories.platform_id', $this->platform_id)
-            ->leftJoin('platform_categories', 'platform_categories.category_id', '=', 'categories.id')
-            ->leftJoin('content_categories', 'content_categories.platform_category_id', '=', 'platform_categories.id')
-            ->pluck('categories.id'));
-        */
-
+        // Ojo: el leftJoin de platform_categories duplica las categorías.
         return Category::whereIn('categories.id', $categoriesId)
             ->where('platform_categories.platform_id', $this->platform_id)
             ->leftJoin('platform_categories', 'platform_categories.category_id', '=', 'categories.id')
@@ -663,44 +652,6 @@ class Content extends BaseModel
     public function platform(): BelongsTo
     {
         return $this->belongsTo(Platform::class, 'platform_id', 'id');
-    }
-
-    /**
-     * Devuelve la url para la previsualización del contenido
-     * editándose, basándose en el útimo guardado.
-     * Útil para previsualizar borradores principalmente.
-     * TODO: Por implementar una vez se llegue a esta parte.
-     */
-    public function getUrlPreviewAttribute()
-    {
-        return url('TEMPORAL/URL/PAGINA/TMP/'.$this->slug);
-    }
-
-    /**
-     * Devuelve la url para ver un contenido publicado.
-     * Los administradores, propietario y colaboradores también pueden ver
-     * borradores.
-     * TODO: Por implementar una vez se llegue a esta parte.
-     */
-    public function getUrlAttribute()
-    {
-        return url('TEMPORAL/URL/PAGINA/'.$this->slug);
-    }
-
-    /**
-     * Añade una nueva página al contenido.
-     */
-    public function addPage(): ContentPage
-    {
-        $lastPageOrder = $this->pages()->max('order');
-        $this->touch();
-
-        return ContentPage::create([
-            'content_id' => $this->id,
-            'title' => uniqid(),
-            'slug' => uniqid(),
-            'order' => ++$lastPageOrder,
-        ]);
     }
 
     /**

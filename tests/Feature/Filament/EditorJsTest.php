@@ -342,6 +342,27 @@ class EditorJsTest extends TestCase
     }
 
     #[Test]
+    public function a_public_host_is_only_reached_through_the_web_ports(): void
+    {
+        // Con otro puerto, el servidor serviría para averiguar qué puertos
+        // tiene abiertos otra máquina.
+        $this->asAuthor();
+        $this->withFakeDns();
+        // Una respuesta nueva cada vez: el cuerpo se lee como flujo y se agota.
+        Http::fake(fn () => Http::response('<html><head><title>Vale</title></head></html>'));
+
+        foreach (['http://ejemplo.test:22/', 'http://ejemplo.test:3306/', 'https://ejemplo.test:8443/'] as $url) {
+            $this->getJson(route('admin.contents.editor.url-metadata', ['content' => $this->content, 'url' => $url]))->assertJsonPath('success', 0);
+        }
+
+        Http::assertNothingSent();
+
+        foreach (['http://ejemplo.test:80/', 'https://ejemplo.test:443/', 'https://ejemplo.test/'] as $url) {
+            $this->getJson(route('admin.contents.editor.url-metadata', ['content' => $this->content, 'url' => $url]))->assertJsonPath('meta.title', 'Vale');
+        }
+    }
+
+    #[Test]
     public function it_reads_the_title_and_description_of_a_page(): void
     {
         $this->asAuthor();
@@ -358,6 +379,31 @@ class EditorJsTest extends TestCase
             ->assertJsonPath('meta.title', 'Una página')
             ->assertJsonPath('meta.description', 'Lo que cuenta')
             ->assertJsonPath('meta.image.url', 'https://ejemplo.test/foto.jpg');
+    }
+
+    #[Test]
+    public function without_the_usual_tags_it_reads_the_ones_for_social_networks(): void
+    {
+        $this->asAuthor();
+        $this->withFakeDns();
+
+        Http::fake([
+            'ejemplo.test/pagina' => Http::response(
+                '<html><head><meta property="og:title" content="Título social">'
+                .'<meta property="og:description" content="Sólo para las redes">'
+                .'<meta name="twitter:image" content="https://ejemplo.test/tarjeta.jpg"></head></html>',
+            ),
+            'ejemplo.test/otra' => Http::response('<html><head><meta name="twitter:description" content="La de Twitter"></head></html>'),
+        ]);
+
+        $this->getJson(route('admin.contents.editor.url-metadata', ['content' => $this->content, 'url' => 'https://ejemplo.test/pagina']))
+            ->assertOk()
+            ->assertJsonPath('meta.title', 'Título social')
+            ->assertJsonPath('meta.description', 'Sólo para las redes')
+            ->assertJsonPath('meta.image.url', 'https://ejemplo.test/tarjeta.jpg');
+
+        $this->getJson(route('admin.contents.editor.url-metadata', ['content' => $this->content, 'url' => 'https://ejemplo.test/otra']))
+            ->assertJsonPath('meta.description', 'La de Twitter');
     }
 
     #[Test]

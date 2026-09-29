@@ -83,9 +83,12 @@ class EditorJsController extends Controller
         return response()->json([
             'success' => 1,
             'meta' => [
-                'title' => $this->extractTitle($html),
-                'description' => $this->extractMeta($html, 'description'),
-                'image' => ['url' => $this->extractMeta($html, 'og:image')],
+                'title' => $this->extractTitle($html) ?: $this->extractMeta($html, 'og:title'),
+                // Muchas webs sólo la ponen para las redes sociales.
+                'description' => $this->extractMeta($html, 'description')
+                    ?: $this->extractMeta($html, 'og:description')
+                    ?: $this->extractMeta($html, 'twitter:description'),
+                'image' => ['url' => $this->extractMeta($html, 'og:image') ?: $this->extractMeta($html, 'twitter:image')],
             ],
         ]);
     }

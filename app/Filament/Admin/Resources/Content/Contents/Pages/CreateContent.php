@@ -33,4 +33,13 @@ class CreateContent extends CreateRecord
 
         return $this->resolveImageUpload($data, 'image_id', 'contents', webpOriginal: true);
     }
+
+    /**
+     * Lo siguiente tras crear un contenido es escribirlo: a «Páginas», con
+     * la primera página nueva abierta, en vez de a la ficha.
+     */
+    protected function getRedirectUrl(): string
+    {
+        return ContentResource::getUrl('pages', ['record' => $this->getRecord()]);
+    }
 }

@@ -927,7 +927,8 @@ class File extends BaseModel
                 // (datos de la web y autoría) más la orientación, heredando lo
                 // que se decida para el original. Sigue pendiente porque no es
                 // una línea: GD no escribe EXIF y la librería no expone API
-                // para ello, haría falta Imagick (no instalado) o una
+                // para ello, haría falta codificar con Imagick (hoy sólo abre
+                // las HEIC y AVIF; el resto va con GD) o una
                 // dependencia tipo lsolesen/pel; y estas miniaturas se guardan
                 // en WebP, donde los metadatos van en un chunk XMP con soporte
                 // pobre en PHP. Análisis y opciones en

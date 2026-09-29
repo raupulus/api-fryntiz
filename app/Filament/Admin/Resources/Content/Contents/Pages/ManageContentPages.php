@@ -35,6 +35,7 @@ use Filament\Support\Icons\Heroicon;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
@@ -299,6 +300,9 @@ class ManageContentPages extends Page
             return $this->refuse($e->getMessage());
         } catch (ValidationException $e) {
             return $this->refuse(implode(' ', Arr::flatten($e->errors())));
+        } catch (UniqueConstraintViolationException) {
+            // Otra página ha cogido el mismo slug entre comprobarlo y guardar.
+            return $this->refuse('Ese slug ya lo usa otra página del contenido.');
         } catch (InvalidArgumentException|RuntimeException $e) {
             return $this->refuse($e->getMessage());
         }
@@ -370,7 +374,25 @@ class ManageContentPages extends Page
             $attributes['slug'] = $this->freeSlug(Str::slug((string) ($attributes['title'] ?? '')));
         }
 
+        $attributes['image_id'] = $this->ownCover($attributes['image_id'] ?? null);
+
         return $this->resolveImageUpload($attributes, 'image_id', 'content-pages', webpOriginal: true);
+    }
+
+    /**
+     * La portada es una imagen subida aquí, ninguna o la que ya tenía. Un id
+     * cualquiera llegado del navegador se descarta: desde «Imágenes» se
+     * recorta la portada, y serviría para tocar un fichero ajeno.
+     */
+    private function ownCover(mixed $value): mixed
+    {
+        $first = is_array($value) ? (reset($value) ?: null) : $value;
+
+        if ($first instanceof UploadedFile || blank($first)) {
+            return $value;
+        }
+
+        return $this->coverId($this->currentPage()?->image_id);
     }
 
     /**
@@ -434,7 +456,9 @@ class ManageContentPages extends Page
         $data = $this->data ?? [];
         $format = ContentPageFormatEnum::tryFrom((string) ($data['source_format'] ?? '')) ?? ContentPageFormatEnum::EditorJs;
         $content = (string) ($data[$format->formField()] ?? '');
-        $imageId = $data['image_id'] ?? null;
+        // Como al guardar (`ownCover()`): sólo la portada que ya tenía.
+        $imageId = $this->coverId($data['image_id'] ?? null);
+        $imageId = $imageId !== null && $imageId === $this->coverId($this->currentPage()?->image_id) ? $imageId : null;
 
         if (trim($content) === '' && $this->currentPage() === null && blank($data['title'] ?? null)) {
             return null;
@@ -448,7 +472,7 @@ class ManageContentPages extends Page
             $content,
             filled($data['title'] ?? null) ? (string) $data['title'] : null,
             filled($data['slug'] ?? null) ? (string) $data['slug'] : null,
-            is_numeric($imageId) ? (int) $imageId : null,
+            $imageId,
             $this->openedAt !== null ? Carbon::parse($this->openedAt) : null,
         );
     }
@@ -467,10 +491,9 @@ class ManageContentPages extends Page
             return trim($content) !== '' || filled($data['title'] ?? null);
         }
 
-        $imageId = $data['image_id'] ?? null;
         $page->unsetRelation('raws')->unsetRelation('currentRawType');
 
-        return ContentPageDraftService::hash($format, $content, $data['title'] ?? null, $data['slug'] ?? null, is_numeric($imageId) ? (int) $imageId : null)
+        return ContentPageDraftService::hash($format, $content, $data['title'] ?? null, $data['slug'] ?? null, $this->coverId($data['image_id'] ?? null))
             !== ContentPageDraftService::hash(
                 $this->formatService()->sourceFormat($page),
                 $this->formatService()->sourceContent($page),
@@ -478,6 +501,19 @@ class ManageContentPages extends Page
                 $page->slug,
                 $page->image_id !== null ? (int) $page->image_id : null,
             );
+    }
+
+    /**
+     * El id de la portada en el estado del formulario. El campo de subida lo
+     * guarda como `[uuid => id]`: antes se leía como «sin portada», y toda
+     * página con portada salía distinta de lo guardado (borrador y «Cambios
+     * sin guardar» sin haber tocado nada).
+     */
+    private function coverId(mixed $value): ?int
+    {
+        $value = is_array($value) ? (reset($value) ?: null) : $value;
+
+        return is_numeric($value) ? (int) $value : null;
     }
 
     /**
@@ -626,7 +662,34 @@ class ManageContentPages extends Page
      */
     public function getPagesList(): Collection
     {
-        return $this->pagesQuery()->get(['id', 'title', 'order', 'content_id']);
+        return $this->pagesQuery()->get(['id', 'title', 'order', 'content_id', 'locked_by_user_id', 'locked_at', 'lock_token']);
+    }
+
+    /**
+     * Lo que se marca en la lista sin abrir cada página: las que tienen un
+     * borrador tuyo (la abierta no, que ya lo dice la barra) y las que tiene
+     * otra persona u otra pestaña tuya. `new` es el borrador de una página
+     * nueva.
+     *
+     * @param  Collection<int, ContentPage>  $pages
+     * @return array{drafts: array<int|string, bool>, locked: array<int, string>}
+     */
+    public function getPagesMarks(Collection $pages): array
+    {
+        $drafts = ContentPageDraft::query()
+            ->where('user_id', $this->user()->id)
+            ->where('content_id', $this->ownerContent()->id)
+            ->pluck('content_page_id')
+            ->map(fn ($id): int|string => $id === null ? 'new' : (int) $id)
+            ->reject(fn (int|string $id): bool => $id === ($this->pageId ?? 'new'))
+            ->flip()
+            ->map(fn (): bool => true)
+            ->all();
+
+        return [
+            'drafts' => $drafts,
+            'locked' => $this->locks()->lockedByOthers($pages->reject(fn (ContentPage $page): bool => $page->id === $this->pageId), $this->user(), $this->lockToken),
+        ];
     }
 
     /**
@@ -758,6 +821,8 @@ class ManageContentPages extends Page
             ->modalDescription('Lo que tenía la página antes de cada cambio: las 50 últimas versiones, 30 días como mucho.')
             ->modalContent(fn () => view('filament.admin.content.page-history', [
                 'versions' => $this->currentPage() !== null ? app(ContentPageHistoryService::class)->all($this->currentPage()) : collect(),
+                // Una versión en HTML sólo la puede guardar un administrador.
+                'canRestoreHtml' => $this->isAdmin(),
             ]))
             ->modalSubmitAction(false)
             ->modalCancelActionLabel('Cerrar')
@@ -767,12 +832,24 @@ class ManageContentPages extends Page
     /**
      * «Recuperar» una versión: se abre en el editor sin guardar, con el mismo
      * aviso y la misma confirmación que un cambio de formato (G5).
+     *
+     * Si quien la recupera no podría guardarla (un Editor con una versión en
+     * HTML o con bloques de HTML libre que la página ya no tiene), no se
+     * carga: antes se cargaba y el guardado fallaba después.
      */
     public function loadVersion(int $versionId): void
     {
         $version = $this->versionFor($versionId);
 
         if ($version === null || $this->readOnly) {
+            return;
+        }
+
+        $problems = $this->isAdmin() ? [] : $this->formatService()->problems($this->currentPage(), $version->format, $version->content, $this->user());
+
+        if ($problems !== []) {
+            Notification::make()->warning()->title('No puedes recuperar esta versión')->body(implode(' ', $problems).' Pídeselo a un administrador.')->send();
+
             return;
         }
 
@@ -865,10 +942,12 @@ class ManageContentPages extends Page
             return [];
         }
 
-        foreach ($blocks as $index => $block) {
-            $fileId = (int) ($block['data']['file']['file_id'] ?? 0);
+        $images = app(ContentImageService::class);
 
-            if ($fileId > 0) {
+        foreach ($blocks as $index => $block) {
+            $fileId = $images->blockFileId($block);
+
+            if ($fileId !== null) {
                 $numbers[$fileId][] = $index + 1;
             }
         }

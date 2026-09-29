@@ -17,7 +17,9 @@ use Throwable;
  * metadatos de media nube y `http://127.0.0.1:9200` el Elasticsearch de al
  * lado. Por eso:
  *
- *  - sólo `http` y `https`, nada de `file://`, `gopher://` ni `dict://`;
+ *  - sólo `http` y `https`, nada de `file://`, `gopher://` ni `dict://`, y
+ *    sólo por sus puertos (80 y 443): con cualquier otro, el servidor serviría
+ *    para averiguar qué puertos tiene abiertos otra máquina;
  *  - el host se resuelve y ninguna de sus IPs puede ser privada, de bucle ni de
  *    enlace local (`interna.midominio.com` puede apuntar a 10.0.0.5);
  *  - la conexión va a la IP comprobada, no a lo que resuelva el DNS un momento
@@ -99,8 +101,9 @@ class PublicUrlFetcher
         }
 
         $host = $parts['host'] ?? '';
+        $port = (int) ($parts['port'] ?? ($scheme === 'https' ? 443 : 80));
 
-        if ($host === '') {
+        if ($host === '' || ! in_array($port, [80, 443], true)) {
             return null;
         }
 
@@ -120,7 +123,7 @@ class PublicUrlFetcher
 
         return [
             'host' => $host,
-            'port' => (int) ($parts['port'] ?? ($scheme === 'https' ? 443 : 80)),
+            'port' => $port,
             // curl quiere las IPv6 entre corchetes.
             'ip' => str_contains($ips[0], ':') ? '['.$ips[0].']' : $ips[0],
         ];

@@ -43,7 +43,6 @@
 | [api/v2/](api/v2/) | Contratos de la API V2 | Un archivo por módulo (auth, contact, newsletter, content, airflight, hardware, keycounter, smart-plant, weather-station, cv) con el contrato HTTP completo: rutas, auth, parámetros y forma exacta de la respuesta. Pensado para copiarse a otro proyecto. AEMET no tiene archivo aquí: no expone endpoints propios, es solo consumo interno (ver `apis/aemet.md`) |
 | [COMPONENTS.md](COMPONENTS.md) | Componentes UI Reutilizables | Catálogo de componentes Blade (<x-button>, <x-input>...) |
 | [DESIGN.md](DESIGN.md) | Sistema de Diseño Visual | Identidad Raupulus Slate / Obsidian Flux y tokens Tailwind CSS v4 |
-| [content_builder.md](content_builder.md) | Constructor de Contenido | Constructor modular de bloques (Filament Builder + Blade) |
 | [_MODULE_TEMPLATE.md](_MODULE_TEMPLATE.md) | Plantilla Oficial de Módulos | Plantilla guía para documentar nuevos módulos en 7 apartados |
 | [../deploys/README.md](../deploys/README.md) | Despliegue | Guías de puesta en marcha y sitios virtuales del servidor web |
 | [../deploys/deploy-vps.md](../deploys/deploy-vps.md) | Despliegue en VPS | Guía paso a paso Docker / bare-metal |
@@ -93,4 +92,4 @@ Comprobados contra el código el 2026-08-30.
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-19
+> Creado: 2026-05-25 · Última revisión: 2026-09-29

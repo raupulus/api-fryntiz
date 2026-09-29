@@ -154,7 +154,7 @@ class ContentPageDraftService
 
         $this->pages->savePage(
             $page,
-            array_filter(['title' => $draft->title, 'slug' => $draft->slug, 'image_id' => $draft->image_id], fn ($value): bool => $value !== null),
+            array_filter(['title' => $draft->title, 'slug' => $this->freeSlug($content, $page, $draft->slug), 'image_id' => $draft->image_id], fn ($value): bool => $value !== null),
             $draft->format,
             $draft->content,
             ContentPageVersionReasonEnum::DraftRestore,
@@ -167,6 +167,32 @@ class ContentPageDraftService
         $draft->delete();
 
         return $page;
+    }
+
+    /**
+     * El slug del borrador no se comprobó al escribirlo: si ya lo tiene otra
+     * página del contenido (también en la papelera), uno libre con «-2»,
+     * «-3»… como al guardar. El slug es único en la base de datos.
+     */
+    private function freeSlug(Content $content, ContentPage $page, ?string $slug): ?string
+    {
+        if (blank($slug)) {
+            return null;
+        }
+
+        $taken = fn (string $candidate): bool => ContentPage::withTrashed()
+            ->where('content_id', $content->id)
+            ->where('slug', $candidate)
+            ->when($page->exists, fn ($query) => $query->whereKeyNot($page->id))
+            ->exists();
+
+        $candidate = $slug;
+
+        for ($i = 2; $taken($candidate); $i++) {
+            $candidate = "{$slug}-{$i}";
+        }
+
+        return $candidate;
     }
 
     /**

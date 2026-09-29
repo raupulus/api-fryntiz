@@ -193,6 +193,22 @@ class ContentSectionsTest extends TestCase
     }
 
     #[Test]
+    public function creating_a_content_goes_straight_to_its_pages_and_the_list_has_a_shortcut_to_them(): void
+    {
+        $created = Livewire::test(CreateContent::class)
+            ->fillForm(['title' => 'Recién creado', 'slug' => 'recien-creado', 'platform_id' => $this->platform->id, 'type_id' => (int) $this->content->type_id, 'status_id' => 1])
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $new = Content::query()->where('slug', 'recien-creado')->sole();
+        $created->assertRedirect(ContentResource::getUrl('pages', ['record' => $new]));
+
+        Livewire::test(ListContents::class)
+            ->assertActionVisible(TestAction::make('pages')->table($this->content))
+            ->assertActionHasUrl(TestAction::make('pages')->table($this->content), ContentResource::getUrl('pages', ['record' => $this->content]));
+    }
+
+    #[Test]
     public function a_content_cannot_take_a_slug_that_is_an_api_route(): void
     {
         // `…/contents/highlights` son los destacados de la API (F9).

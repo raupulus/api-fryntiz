@@ -739,9 +739,9 @@
     background: #18181b;
 }
 
+/* En el móvil la lista es un desplegable; la papelera se queda debajo. */
 .cpe-list__items,
-.cpe-list__add,
-.cpe-trash {
+.cpe-list__add {
     display: none;
 }
 
@@ -762,10 +762,6 @@
     .cpe-list__add {
         display: flex;
     }
-
-    .cpe-trash {
-        display: block;
-    }
 }
 
 .cpe-list__item {
@@ -782,8 +778,16 @@
 .cpe-list__handle {
     display: flex;
     padding: 0.4rem 0.2rem;
+    border: 0;
+    border-radius: 0.25rem;
+    background: none;
     color: #9ca3af;
     cursor: grab;
+}
+
+.cpe-list__handle:focus-visible {
+    outline: 2px solid #0ea5e9;
+    outline-offset: 1px;
 }
 
 .cpe-list__icon {
@@ -821,6 +825,35 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+/* Marcas de la lista: borrador tuyo y página en uso por otro. */
+.cpe-list__flag {
+    flex: none;
+    margin-left: auto;
+    padding: 0 0.4rem;
+    border-radius: 9999px;
+    background: rgba(245, 158, 11, 0.15);
+    color: #b45309;
+    font-size: 0.7rem;
+    font-weight: 600;
+    line-height: 1.4rem;
+}
+
+.dark .cpe-list__flag {
+    color: #fbbf24;
+}
+
+.cpe-list__lock {
+    display: flex;
+    flex: none;
+    align-items: center;
+    margin-left: auto;
+    color: #d97706;
+}
+
+.cpe-list__flag + .cpe-list__lock {
+    margin-left: 0;
 }
 
 .cpe-list__add {
@@ -1012,6 +1045,7 @@
 }
 
 .cpe-history__reason,
+.cpe-history__locked,
 .cpe-history__empty {
     color: #6b7280;
     font-size: 0.9rem;
@@ -1121,6 +1155,7 @@
 }
 
 .cpe-images__replace {
+    position: relative;
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
@@ -1135,6 +1170,17 @@
     border-color: #3f3f46;
 }
 
+/* Oculto a la vista pero no al teclado: se llega con el tabulador. */
 .cpe-images__replace input {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+.cpe-images__replace:focus-within {
+    outline: 2px solid #0ea5e9;
+    outline-offset: 1px;
 }

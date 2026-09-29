@@ -41,14 +41,6 @@ class YoutubeVideoField extends Field
     }
 
     /**
-     * @deprecated Las peticiones ahora se gestionan en el backend. Ya no es necesario pasar la clave de API al componente.
-     */
-    public function apiKey(string|Closure|null $apiKey): static
-    {
-        return $this;
-    }
-
-    /**
      * Mapa [platform_id => youtube_channel_id] para resolver el canal según
      * la plataforma seleccionada.
      */

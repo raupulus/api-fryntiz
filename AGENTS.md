@@ -610,7 +610,6 @@ parte de la tarea, no un extra.**
 | `api/v2/README.md` | Índice del mapa de rutas y contratos de nuestra API V2 |
 | `COMPONENTS.md` | Catálogo de componentes Blade UI reutilizables |
 | `DESIGN.md` | Sistema de diseño visual y tokens Tailwind CSS v4 |
-| `content_builder.md` | Constructor modular de contenido (Filament Builder + Blade) |
 | `_MODULE_TEMPLATE.md` | Plantilla oficial para documentar nuevos módulos |
 | `../deploys/deploy-vps.md` | Despliegue en VPS |
 
@@ -701,4 +700,4 @@ Resumen para no tener que releerlo todo. **El detalle está en los archivos, no 
 
 ---
 
-> Última revisión: 2026-09-24
+> Última revisión: 2026-09-29

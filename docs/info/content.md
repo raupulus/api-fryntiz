@@ -179,6 +179,13 @@ derivadas en Editor.js y Markdown. Hasta F6 del plan de contenidos, las filas
 con `deleted_at` eran las copias de antes de un cambio de formato; ahora lo
 anterior va al historial (`content_page_versions`) y ya no se crean.
 
+Índices (migración del 2026-09-29): el slug de una página es único dentro de
+su contenido, también en la papelera (`content_pages_content_id_slug_unique`,
+lo mismo que pide el formulario); `(content_id, order)` para listar las
+páginas; y en `content_page_raw`, `content_page_id` y un único parcial
+`(content_page_id, available_page_raw_id) WHERE deleted_at IS NULL`: un formato
+por página. Antes esta tabla no tenía más índice que la clave primaria.
+
 ## Campos del modelo ContentSeo
 
 | Campo | Tipo | Descripción |
@@ -254,7 +261,8 @@ dicen **dónde puede crear**, no qué puede editar (D35).
 | Programar | Cualquier fecha futura | Cualquier fecha futura | Con al menos 7 días de margen | No |
 
 - **Crear:** un Admin, en cualquier plataforma; un Editor, sólo si tiene alguna
-  plataforma asignada, sólo en ésas y siempre como autor (`createIn()`).
+  plataforma asignada, sólo en ésas y siempre como autor (`createIn()`). Al
+  crearlo se va directo a «Páginas», con una página nueva abierta.
 - **Borrar definitivamente:** sólo el SuperAdmin.
 - Un contenido sin plataforma sólo lo alcanzan los administradores y su autor.
 - Las páginas siguen al contenido: `ContentPagePolicy` delega en `update` de
@@ -737,17 +745,28 @@ el componente Alpine `resources/js/filament/content-pages.js` y los estilos
 `cpe-*` de `panel.css`.
 
 - **Lista a la izquierda** (en el móvil, un desplegable arriba):
-  - cambiar de página **guarda antes** si hay cambios (`saveBeforeLeaving()`);
-    si el guardado falla, no se cambia;
-  - se reordena arrastrando (`x-sortable` de Filament): se renumera 1, 2, 3…
-    sin huecos y **sin tocar `updated_at`** (reordenar no es cambiar la
-    página, y quien la tenga abierta no debe encontrarse un conflicto D4);
+  - cambiar de página pasa siempre por `saveBeforeLeaving()`: **guarda antes**
+    si hay cambios (si el guardado falla, no se cambia) y suelta el bloqueo.
+    Sin esto último, el aviso de `pagehide` llegaba después de pintar la otra
+    página y su lista marcaba ésta como abierta en otra pestaña;
+  - se reordena arrastrando (`x-sortable` de Filament) o con el teclado (foco
+    en el asa y flechas arriba y abajo): se renumera 1, 2, 3… sin huecos y
+    **sin tocar `updated_at`** (reordenar no es cambiar la página, y quien la
+    tenga abierta no debe encontrarse un conflicto D4);
+  - marca las páginas con un borrador tuyo («Borrador»; la abierta no, que ya
+    lo dice la barra) y, con un candado, las que tiene otra persona u otra
+    pestaña tuya, con quién al pasar por encima
+    (`ContentPageLockService::lockedByOthers()`, una consulta para toda la
+    lista). En el móvil, en el desplegable: «· borrador», «· en uso»;
   - «Añadir página» abre `/pages/new`: la página se crea al guardar, la
     última, y la dirección pasa a la suya. Así no queda una página vacía
     publicada;
-  - «Eliminar página» la manda a la papelera (las de detrás suben un puesto).
-    La papelera de páginas está al pie de la lista, con «Restaurar» (vuelve la
-    última) y «Eliminar definitivamente» (sólo el SuperAdmin).
+  - «Eliminar página» la manda a la papelera (las de detrás suben un puesto,
+    en bloque y también sin tocar su `updated_at`: antes se guardaban una a
+    una y quien tuviera abierta una de ellas no podía guardar). La papelera de
+    páginas está al pie de la lista (en el móvil, debajo del desplegable), con
+    «Restaurar» (vuelve la última) y «Eliminar definitivamente» (sólo el
+    SuperAdmin).
 - **Barra** (fija arriba en escritorio): formato, estado («Editando», «En
   lectura»), «Guardado automáticamente hace 10 s», «Cambios sin guardar»,
   «Guardar» (también Ctrl/Cmd+S), «Historial», «Imágenes» y «Eliminar
@@ -767,6 +786,13 @@ el componente Alpine `resources/js/filament/content-pages.js` y los estilos
   borrador: «Tienes un borrador de hace N minutos: Recuperar / Descartar», con
   el aviso si la página cambió después. Recuperar lo guarda en la página y lo
   que había pasa al historial.
+  Sólo cuenta como cambio lo que cambia de verdad. Editor.js reescribe el JSON
+  al cargarlo (listas al formato nuevo, `tunes` vacíos, pie de foto `null` →
+  `""`, `[]` → `{}`), así que el campo compara con lo que él mismo pintó al
+  abrir y, si es igual, deja lo cargado tal cual. Y la portada se lee del
+  estado del campo de subida (`[uuid => id]`). Antes, las 19 páginas de la v1
+  daban «Cambios sin guardar» sin tocarlas y se guardaban solas, con una
+  versión idéntica en el historial, al cambiar de página.
 - **Bloqueo** (P4, F6): al abrir se coge con un token por pestaña.
   - Si lo tiene otro usuario: en lectura, con «Pepe la está editando desde
     hace N minutos» y, para administradores, «Forzar desbloqueo».
@@ -793,13 +819,22 @@ el componente Alpine `resources/js/filament/content-pages.js` y los estilos
 - **Historial** (G5): modal con fecha, usuario, formato y motivo de cada
   versión; «Ver» enseña el contenido y «Recuperar» la abre en el editor sin
   guardar, con el mismo aviso, «Deshacer» y casilla de confirmación que un
-  cambio de formato. Al guardar, lo que había pasa al historial.
+  cambio de formato. Al guardar, lo que había pasa al historial. Un Editor no
+  ve «Recuperar» en las versiones en HTML («Sólo un administrador») y no carga
+  ninguna que luego no podría guardar (`problems()`): antes la cargaba y el
+  guardado fallaba.
 - **Imágenes** (H2): las de los bloques y la portada, con miniatura, medidas,
   peso, «Bloque 7», los otros sitios donde se usa, título y `alt` editables
   (sin tocar el fichero), «Recortar» (Cropper.js 2; antes de aplicar avisa de
   los otros sitios donde cambiará) y «Sustituir». Recortar y sustituir
   conservan el fichero y sus URLs: los bloques la enseñan cambiada sin
-  tocarlos. Sólo sobre imágenes de esa página.
+  tocarlos. Sólo sobre imágenes de esa página y **de ese contenido**
+  (`content_files`) o su portada: un id en el JSON o una URL pegada a mano no
+  sirven para tocar un fichero ajeno, y la portada sólo puede ser una subida
+  ahí o la que ya tenía (`ownCover()`, también en el borrador). Una imagen se
+  reconoce por su `file_id` o, sin él (Markdown, HTML, URL pegada a mano), por
+  su URL o la de una de sus miniaturas (`ContentImageService::blockFileId()`),
+  y «También en» busca las dos cosas en todos los formatos guardados.
 - **Límite de Livewire** (G4): `config/livewire.php` sube `payload.max_size`
   a 8 MB. Lo de antes de un cambio de formato, para «Deshacer», ya no viaja en
   el formulario: va a la caché del servidor, por pestaña y página (no al
@@ -893,7 +928,7 @@ se cayeran. Están en `App\Http\Controllers\Admin\EditorJsController` y
 |---|---|
 | `POST /admin/contents/{content}/editor/files` | Sube una imagen o un adjunto (`ContentFileService::store()`) |
 | `POST /admin/contents/{content}/editor/files/by-url` | Descarga una imagen pegada por URL y la guarda igual (C5) |
-| `GET /admin/contents/{content}/editor/url-metadata` | Título, descripción e imagen de una página externa, para la tarjeta de `linkTool` |
+| `GET /admin/contents/{content}/editor/url-metadata` | Título, descripción e imagen de una página externa, para la tarjeta de `linkTool`. Si faltan las normales (`<title>`, `description`), usa las de redes sociales (`og:title`, `og:description`, `twitter:description`, `twitter:image`) |
 
 Llevan `auth`, el gate **`access-editorjs`** (Admin, SuperAdmin o Editor, con la
 cuenta activa), la política **`update` sobre ese contenido** y el límite
@@ -957,7 +992,10 @@ dirección que elige quien escribe, o sea SSRF si se deja abierto:
 `http://127.0.0.1:9200` el Elasticsearch de al lado. `App\Services\Http\PublicUrlFetcher`
 lleva cinco cierres, y si se toca hay que mantenerlos:
 
-1. sólo `http` y `https` —nada de `file://`, `gopher://` ni `dict://`;
+1. sólo `http` y `https` —nada de `file://`, `gopher://` ni `dict://`— y sólo
+   por los puertos 80 y 443: con cualquier otro, el VPS serviría para averiguar
+   qué puertos tiene abiertos otra máquina (un enlace con otro puerto se queda
+   sin tarjeta, que es válido);
 2. el host se **resuelve** y ninguna de sus IPs puede ser privada, de bucle ni
    de enlace local (`interna.midominio.com` puede apuntar a 10.0.0.5);
 3. la conexión va **a la IP comprobada** (`CURLOPT_RESOLVE`), no a lo que
@@ -1000,7 +1038,7 @@ todo, y no había dónde editar el SEO ni las categorías y etiquetas.
   páginas»).
 - En el móvil la subnavegación es un desplegable; el listado enseña título y
   estado, y las acciones de cada fila van en un menú «⋮» (tocar la fila abre la
-  ficha). En la tabla de páginas, «Editar» queda a la vista y lo demás en el
+  ficha). En ese menú, «Páginas» lleva al texto sin pasar por la ficha. En la tabla de páginas, «Editar» queda a la vista y lo demás en el
   menú.
 
 ### Datos
@@ -1217,4 +1255,4 @@ para escribir a mano el `gallery_id`). Implementado por completo:
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-27
+> Creado: 2026-05-25 · Última revisión: 2026-09-29

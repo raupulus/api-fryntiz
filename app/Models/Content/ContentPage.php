@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class ContentPage
@@ -197,19 +198,23 @@ class ContentPage extends BaseModel
      * del disco (también la portada) mientras la página se quedaba en la
      * papelera. Se limpian al eliminarla definitivamente (C2,
      * `ContentFileUsageService`).
+     *
+     * Las de detrás se renumeran en bloque y sin eventos, como al reordenar:
+     * sin tocar su `updated_at`, porque quien tenga una abierta no debe
+     * encontrarse un conflicto al guardar (D4). Antes se guardaban una a una
+     * y lo daban. El `delete()` ya avisa a la API del cambio.
      */
     public function safeDelete(): bool
     {
-        self::query()
-            ->where('content_id', $this->content_id)
-            ->where('order', '>', $this->order)
-            ->get()
-            ->each(function (ContentPage $page): void {
-                $page->order--;
-                $page->save();
-            });
+        return DB::transaction(function (): bool {
+            self::query()
+                ->where('content_id', $this->content_id)
+                ->where('order', '>', $this->order)
+                ->toBase()
+                ->decrement('order');
 
-        return (bool) $this->delete();
+            return (bool) $this->delete();
+        });
     }
 
     /**

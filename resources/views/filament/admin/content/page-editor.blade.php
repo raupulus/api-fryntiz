@@ -6,6 +6,7 @@
 --}}
 @php
     $pages = $this->getPagesList();
+    $marks = $this->getPagesMarks($pages);
     $trashed = $this->getTrashedPages();
     $format = \App\Enums\ContentPageFormatEnum::tryFrom((string) ($data['source_format'] ?? '')) ?? \App\Enums\ContentPageFormatEnum::EditorJs;
     $newUrl = $this->pageUrl(null);
@@ -20,9 +21,9 @@
             {{-- En el móvil, un desplegable. --}}
             <select class="cpe-list__select" aria-label="Página" x-on:change="go($event.target.value)">
                 @foreach ($pages as $item)
-                    <option value="{{ $this->pageUrl($item) }}" @selected($item->id === $pageId)>{{ $loop->iteration }}. {{ $item->title }}</option>
+                    <option value="{{ $this->pageUrl($item) }}" @selected($item->id === $pageId)>{{ $loop->iteration }}. {{ $item->title }}{{ isset($marks['drafts'][$item->id]) ? ' · borrador' : '' }}{{ isset($marks['locked'][$item->id]) ? ' · en uso' : '' }}</option>
                 @endforeach
-                <option value="{{ $newUrl }}" @selected($pageId === null)>+ Añadir página</option>
+                <option value="{{ $newUrl }}" @selected($pageId === null)>+ Añadir página{{ isset($marks['drafts']['new']) ? ' · borrador' : '' }}</option>
             </select>
 
             <ol
@@ -37,9 +38,18 @@
                         x-sortable-item="{{ $item->id }}"
                         @class(['cpe-list__item', 'is-current' => $item->id === $pageId])
                     >
-                        <span x-sortable-handle class="cpe-list__handle" title="Arrastra para reordenar">
+                        {{-- Con el teclado: foco en el asa y flechas arriba y abajo. --}}
+                        <button
+                            type="button"
+                            x-sortable-handle
+                            class="cpe-list__handle"
+                            title="Arrastra para reordenar (o flechas arriba y abajo)"
+                            aria-label="Mover «{{ $item->title }}» con las flechas arriba y abajo"
+                            x-on:keydown.arrow-up.prevent="move({{ $item->id }}, -1)"
+                            x-on:keydown.arrow-down.prevent="move({{ $item->id }}, 1)"
+                        >
                             <x-filament::icon icon="heroicon-m-bars-2" class="cpe-list__icon" />
-                        </span>
+                        </button>
                         <a
                             href="{{ $this->pageUrl($item) }}"
                             data-page-link
@@ -48,6 +58,14 @@
                         >
                             <span class="cpe-list__order">{{ $loop->iteration }}</span>
                             <span class="cpe-list__title">{{ $item->title }}</span>
+                            @isset($marks['drafts'][$item->id])
+                                <span class="cpe-list__flag" title="Tienes un borrador sin guardar de esta página">Borrador</span>
+                            @endisset
+                            @isset($marks['locked'][$item->id])
+                                <span class="cpe-list__lock" title="{{ $marks['locked'][$item->id] }}" aria-label="{{ $marks['locked'][$item->id] }}">
+                                    <x-filament::icon icon="heroicon-m-lock-closed" class="cpe-list__icon" />
+                                </span>
+                            @endisset
                         </a>
                     </li>
                 @endforeach
@@ -62,6 +80,9 @@
             @if ($pageId !== null)
                 <a href="{{ $newUrl }}" data-page-link x-on:click.prevent="go(@js($newUrl))" class="cpe-list__add">
                     <x-filament::icon icon="heroicon-m-plus" class="cpe-list__icon" /> Añadir página
+                    @isset($marks['drafts']['new'])
+                        <span class="cpe-list__flag" title="Tienes un borrador de una página nueva">Borrador</span>
+                    @endisset
                 </a>
             @endif
 

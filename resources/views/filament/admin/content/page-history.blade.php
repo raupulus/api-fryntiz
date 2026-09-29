@@ -11,7 +11,11 @@
                 </div>
                 <div class="cpe-history__actions">
                     <x-filament::link tag="button" x-on:click="open = ! open" x-text="open ? 'Ocultar' : 'Ver'">Ver</x-filament::link>
-                    <x-filament::button size="sm" color="warning" wire:click="loadVersion({{ $version->id }})">Recuperar</x-filament::button>
+                    @if (($canRestoreHtml ?? false) || $version->format !== \App\Enums\ContentPageFormatEnum::Html)
+                        <x-filament::button size="sm" color="warning" wire:click="loadVersion({{ $version->id }})">Recuperar</x-filament::button>
+                    @else
+                        <span class="cpe-history__locked">Sólo un administrador</span>
+                    @endif
                 </div>
             </div>
             <pre class="cpe-history__content" x-show="open" x-cloak>{{ $version->content }}</pre>

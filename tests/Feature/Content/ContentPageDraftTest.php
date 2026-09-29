@@ -19,6 +19,7 @@ use Database\Seeders\ContentAvailablePageRawSeeder;
 use Database\Seeders\ContentAvailableTypesSeeder;
 use Database\Seeders\RolesTableSeeder;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
 use PHPUnit\Framework\Attributes\Test;
@@ -173,6 +174,30 @@ class ContentPageDraftTest extends TestCase
         $this->assertSame(2, $page->order);
         $this->assertSame(Format::Markdown, $this->pages->sourceFormat($page));
         $this->assertSame(0, ContentPageDraft::query()->count());
+    }
+
+    #[Test]
+    public function a_draft_with_a_slug_taken_by_another_page_is_restored_with_a_free_one(): void
+    {
+        // El slug de un borrador no se comprueba al escribirlo, y en la base
+        // de datos es único dentro del contenido (también en la papelera).
+        $trashed = ContentPage::query()->create(['content_id' => $this->content->id, 'title' => 'Borrada', 'slug' => 'pagina-2', 'order' => 2]);
+        $trashed->delete();
+        $draft = $this->drafts->save($this->author, $this->content, null, Format::Markdown, "Otra página\n", 'Página', 'pagina');
+
+        $page = $this->drafts->restore($draft, $this->author);
+
+        $this->assertSame('pagina-3', $page->slug);
+    }
+
+    #[Test]
+    public function the_slug_of_a_page_is_unique_within_its_content_in_the_database(): void
+    {
+        ContentPage::query()->create(['content_id' => Content::factory()->create()->id, 'title' => 'En otro', 'slug' => 'pagina', 'order' => 1]);
+
+        $this->expectException(UniqueConstraintViolationException::class);
+
+        ContentPage::query()->create(['content_id' => $this->content->id, 'title' => 'Repetida', 'slug' => 'pagina', 'order' => 2]);
     }
 
     #[Test]

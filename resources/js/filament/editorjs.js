@@ -284,9 +284,19 @@ function editorJsField({ state, placeholder, readOnly, allowRaw = false, endpoin
         // propios (onChange) de cambios externos (carga del registro).
         lastSaved: null,
 
+        // Lo que se cargó y cómo lo serializa Editor.js nada más pintarlo.
+        // Editor.js reescribe el JSON al cargarlo (listas al formato nuevo,
+        // `tunes` vacíos, pies de foto null → ""): sin esto, una página que
+        // nadie ha tocado daba «Cambios sin guardar» en el primer volcado y se
+        // guardaba sola al cambiar de página.
+        original: null,
+        baseline: null,
+        baselineReady: null,
+
         init() {
             this.lastSaved = this.normalize(this.state);
             this.initEditor();
+            this.baselineReady = this.captureBaseline(this.lastSaved);
             activeFields.add(this);
 
             // La pantalla de páginas pasa a lectura si se pierde el bloqueo
@@ -308,16 +318,35 @@ function editorJsField({ state, placeholder, readOnly, allowRaw = false, endpoin
 
                 this.lastSaved = normalized;
 
-                this.editor.isReady.then(() => {
+                this.baselineReady = this.editor.isReady.then(async () => {
                     const parsed = this.parse(normalized);
 
                     if (parsed.blocks.length > 0) {
-                        this.editor.render(parsed);
+                        await this.editor.render(parsed);
                     } else {
-                        this.editor.clear();
+                        await this.editor.clear();
                     }
+
+                    await this.captureBaseline(normalized);
                 });
             });
+        },
+
+        async captureBaseline(loaded) {
+            try {
+                await this.editor.isReady;
+                this.baseline = this.withoutTime(await this.serialize());
+                this.original = loaded;
+            } catch (e) {
+                this.baseline = null;
+            }
+        },
+
+        // `time` cambia en cada `save()` de Editor.js sin que cambie nada.
+        withoutTime(json) {
+            const { time, ...rest } = JSON.parse(json);
+
+            return JSON.stringify(rest);
         },
 
         normalize(value) {
@@ -357,10 +386,18 @@ function editorJsField({ state, placeholder, readOnly, allowRaw = false, endpoin
             }
 
             try {
-                const json = await this.serialize();
+                await this.baselineReady;
 
-                this.lastSaved = json;
-                this.state = json;
+                const json = await this.serialize();
+                // Igual que al cargar: se deja lo cargado, tal cual.
+                const next = this.baseline !== null && this.withoutTime(json) === this.baseline ? this.original : json;
+
+                if (next === this.normalize(this.state)) {
+                    return;
+                }
+
+                this.lastSaved = next;
+                this.state = next;
             } catch (e) {
                 console.error('EditorJS: error al volcar el contenido', e);
             }
