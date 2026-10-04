@@ -198,7 +198,9 @@ class HardwareDeviceResource extends Resource
                     ->schema([
                         Select::make('user_id')
                             ->relationship('user', 'name')
-                            ->label('Usuario'),
+                            ->default(fn (): ?int => auth()->id())
+                            ->label('Usuario')
+                            ->helperText('Por defecto, quien crea el dispositivo. Sin usuario no se pueden emitir tokens.'),
                         Select::make('hardware_type_id')
                             ->relationship('type', 'name')
                             ->label('Tipo de hardware'),

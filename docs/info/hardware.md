@@ -59,7 +59,7 @@ consumos, con sus resúmenes diarios e históricos— está en
 | Campo | Tipo | Descripción |
 |-------|------|-------------|
 | `id` | bigint | PK |
-| `user_id` | int | FK → `users.id` — propietario |
+| `user_id` | int | FK → `users.id` — propietario. En el panel Admin, al crear, se rellena por defecto con quien lo crea (sin propietario no se pueden emitir tokens IoT) |
 | `hardware_type_id` | int | FK → `hardware_types.id` — tipo de dispositivo |
 | `name` | string | Nombre técnico |
 | `slug` | string | Identificador amigable único para URLs públicas (ej. `raspberry-pi-5`) |
