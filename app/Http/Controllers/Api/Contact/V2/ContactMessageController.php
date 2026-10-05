@@ -6,8 +6,8 @@ namespace App\Http\Controllers\Api\Contact\V2;
 
 use App\Http\Controllers\Api\V2\BaseApiController;
 use App\Http\Requests\Api\Contact\V2\ContactSendRequest;
+use App\Services\CaptchaVerifierService;
 use App\Services\Contact\ContactService;
-use App\Services\RecaptchaService;
 use App\Support\Http\ClientIp;
 use Illuminate\Http\JsonResponse;
 
@@ -25,20 +25,19 @@ class ContactMessageController extends BaseApiController
 {
     public function __construct(
         private readonly ContactService $contactService,
-        private readonly RecaptchaService $recaptchaService,
+        private readonly CaptchaVerifierService $captchaVerifier,
     ) {}
 
     public function store(ContactSendRequest $request): JsonResponse
     {
         // La IP que interesa aquí es la del visitante, no la del proxy: es la
-        // que Google usa para valorar el riesgo, y la que se guarda con el
-        // mensaje. Cae a la IP de conexión si no hay proxy delante.
+        // que Google o Cloudflare usan para valorar el riesgo, y la que se
+        // guarda con el mensaje. Cae a la IP de conexión si no hay proxy delante.
         $ipOrigen = ClientIp::public($request) ?? $request->ip();
 
-        $captcha = $this->recaptchaService->verify(
-            $request->validated('g-recaptcha-response'),
-            $ipOrigen,
-        );
+        // El token puede ser de Turnstile o de reCAPTCHA; el verificador mira
+        // cuál ha llegado y lo valida contra su proveedor.
+        $captcha = $this->captchaVerifier->verify($request->validated(), $ipOrigen);
 
         // Un captcha inválido con claves configuradas sí se rechaza de plano:
         // ahí no hay duda posible y no interesa guardar la basura.

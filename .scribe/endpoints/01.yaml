@@ -363,7 +363,7 @@ endpoints:
         name: is_favorite
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -374,7 +374,7 @@ endpoints:
       format: architecto
       note: 'n'
       priority: -100
-      is_favorite: true
+      is_favorite: false
     fileParameters: []
     responses: []
     responseFields: []
@@ -631,7 +631,7 @@ endpoints:
         name: status
         description: ''
         required: true
-        example: out_of_paper
+        example: failed
         type: string
         enumValues:
           - completed
@@ -663,7 +663,7 @@ endpoints:
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      status: out_of_paper
+      status: failed
       error_message: b
     fileParameters: []
     responses: []

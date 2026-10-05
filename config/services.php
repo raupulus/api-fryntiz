@@ -41,4 +41,12 @@ return [
      * credenciales de Google.
      */
 
+    /*
+     * Cloudflare Turnstile: alternativa a reCAPTCHA v3 en los formularios
+     * públicos. Sin `secret_key` no se comprueba nada con este proveedor.
+     */
+    'turnstile' => [
+        'secret_key' => env('TURNSTILE_SECRET_KEY'),
+    ],
+
 ];

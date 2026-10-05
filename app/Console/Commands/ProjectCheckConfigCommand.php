@@ -21,9 +21,9 @@ use Throwable;
  *  · `FRONTEND_URLS` vacío → la API responde perfectamente y el navegador
  *    bloquea todas las respuestas. Desde el servidor parece que funciona;
  *    desde las ocho webs no funciona nada. Es el más caro de diagnosticar.
- *  · `RECAPTCHA_SECRET_KEY` vacío → los formularios públicos salen sin
- *    protección, y es deliberado que sea así en desarrollo. `config/google.php`
- *    ya avisa en un comentario de que dejarlo vacío en el servidor «equivale a
+ *  · `RECAPTCHA_SECRET_KEY` y `TURNSTILE_SECRET_KEY` vacías → los formularios
+ *    públicos salen sin protección, y es deliberado que sea así en desarrollo.
+ *    `config/google.php` ya avisa en un comentario de que dejarlo vacío en el servidor «equivale a
  *    publicar los formularios sin protección, sin un solo error en los logs».
  *  · `TRUSTED_PROXIES` mal puesto → todos los límites por IP pasan a ser un
  *    cupo global compartido por todos los visitantes.
@@ -148,13 +148,20 @@ class ProjectCheckConfigCommand extends Command
             return;
         }
 
-        if (blank(config('google.recaptcha.secret_key'))) {
+        // Con una sola clave basta para que el formulario de contacto exija
+        // captcha; la de reCAPTCHA protege además el login de los paneles.
+        if (blank(config('google.recaptcha.secret_key')) && blank(config('services.turnstile.secret_key'))) {
             $this->recordFailure(
-                'RECAPTCHA_SECRET_KEY vacía en producción',
+                'RECAPTCHA_SECRET_KEY y TURNSTILE_SECRET_KEY vacías en producción',
                 'La verificación se desactiva sola y los formularios públicos —contacto, newsletter y '.
                 'el login de los paneles— quedan sin protección, sin un solo error en los logs.'
             );
 
+            return;
+        }
+
+        // Sin reCAPTCHA, lo que queda sin protección es el login de los paneles.
+        if (blank(config('google.recaptcha.secret_key'))) {
             return;
         }
 

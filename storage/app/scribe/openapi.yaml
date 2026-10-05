@@ -100,7 +100,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - 'smartplant:read'
+                    - 'printers:read'
                   items:
                     type: string
                     enum:
@@ -126,7 +126,7 @@ paths:
                 expires_at:
                   type: string
                   description: 'Must be a valid date. Must be a date after <code>now</code>.'
-                  example: '2052-10-20'
+                  example: '2052-10-28'
                   nullable: true
               required:
                 - device_id
@@ -225,7 +225,7 @@ paths:
                 contactme:
                   type: boolean
                   description: ''
-                  example: false
+                  example: true
                 attributes:
                   type: array
                   description: 'Must not be greater than 255 characters.'
@@ -235,6 +235,21 @@ paths:
                     type: string
                     nullable: true
                 g-recaptcha-response:
+                  type: string
+                  description: ''
+                  example: architecto
+                  nullable: true
+                recaptcha_token:
+                  type: string
+                  description: ''
+                  example: architecto
+                  nullable: true
+                cf-turnstile-response:
+                  type: string
+                  description: ''
+                  example: architecto
+                  nullable: true
+                turnstile_token:
                   type: string
                   description: ''
                   example: architecto
@@ -1638,8 +1653,8 @@ paths:
                   nullable: true
                 read_at:
                   type: string
-                  description: 'Must be a valid date. Must be a date after or equal to <code>2000-01-01</code>. Must be a date before or equal to <code>2026-09-27 06:11:06</code>.'
-                  example: '2022-10-21'
+                  description: 'Must be a valid date. Must be a date after or equal to <code>2000-01-01</code>. Must be a date before or equal to <code>2026-10-05 13:16:05</code>.'
+                  example: '2022-10-29'
                   nullable: true
                 energy:
                   type: object
@@ -1878,11 +1893,11 @@ paths:
                 start_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-27 05:11:06'
+                  example: '2026-10-05 12:16:05'
                 end_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-27 05:11:06'
+                  example: '2026-10-05 12:16:05'
                 duration:
                   type: integer
                   description: ''
@@ -1976,11 +1991,11 @@ paths:
                 start_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-27 05:11:06'
+                  example: '2026-10-05 12:16:05'
                 end_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-09-27 05:11:06'
+                  example: '2026-10-05 12:16:05'
                 duration:
                   type: integer
                   description: ''
@@ -2178,7 +2193,7 @@ paths:
                 full_water_tank:
                   type: boolean
                   description: ''
-                  example: true
+                  example: false
                   nullable: true
                 waterpump_enabled:
                   type: boolean
@@ -2240,7 +2255,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - humidity
+                    - lightning
                   items:
                     type: string
                     enum:
@@ -2255,7 +2270,7 @@ paths:
                 location_type:
                   type: string
                   description: ''
-                  example: indoor
+                  example: outdoor
                   enum:
                     - indoor
                     - outdoor
@@ -2297,7 +2312,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - light
+                    - wind
                   items:
                     type: string
                     enum:
@@ -2795,7 +2810,7 @@ paths:
                 is_favorite:
                   type: boolean
                   description: ''
-                  example: true
+                  example: false
                   nullable: true
               required:
                 - content
@@ -3000,7 +3015,7 @@ paths:
                 status:
                   type: string
                   description: ''
-                  example: out_of_paper
+                  example: failed
                   enum:
                     - completed
                     - failed

@@ -54,7 +54,22 @@ mano desde el panel.
 | `contactme` | boolean | opcional (`sometimes`) — consentimiento para que le respondan |
 | `attributes` | array | opcional (`sometimes`), máx. 20 claves. Campos libres que añada cada web (teléfono, empresa…) |
 | `attributes.*` | string\|null | máx. 255 cada valor |
-| `g-recaptcha-response` | string | `required` **solo si** hay clave reCAPTCHA configurada en el servidor (`google.recaptcha.secret_key`, que sale de `RECAPTCHA_SECRET_KEY`); si no hay clave configurada, es `nullable` |
+| `g-recaptcha-response` | string | Token de Google reCAPTCHA v3. Ver «Captcha» abajo |
+| `recaptcha_token` | string | Alias de `g-recaptcha-response` |
+| `cf-turnstile-response` | string | Token de Cloudflare Turnstile (el campo que inyecta su widget) |
+| `turnstile_token` | string | Alias de `cf-turnstile-response` |
+
+**Captcha.** El formulario puede mandar el token de **Turnstile** o el de
+**reCAPTCHA v3**, en cualquiera de sus dos nombres, y se verifica contra su
+proveedor. Si llegan los dos, manda Turnstile.
+
+  - Con **algún** proveedor configurado en el servidor (`RECAPTCHA_SECRET_KEY` o
+    `TURNSTILE_SECRET_KEY`) hace falta al menos un token; si falta, `422` con el
+    error colgando de `g-recaptcha-response` («Falta la verificación de seguridad.»).
+  - Con **ninguna** clave configurada (desarrollo, tests) no se comprueba nada y
+    ningún token es obligatorio.
+  - Un token de un proveedor sin clave en el servidor no sirve de atajo mientras
+    el otro esté configurado: se rechaza.
 
 - **Respuesta 201** (siempre el mismo mensaje, se reenvíe o no):
 
@@ -78,19 +93,22 @@ mano desde el panel.
     minutos, o mismo asunto+mensaje+IP en las últimas `contact.deduplication.hours_per_content`
     horas) se guarda igualmente pero con `priority = 0` (no se reenvía, queda
     el rastro del intento).
-  - Si hay clave reCAPTCHA configurada y la verificación falla (`success !== true`
-    en la respuesta de Google), la petición se corta ahí: es el único caso que
-    da un error distinto de 422 por validación (ver abajo).
+  - Si hay captcha configurado y la verificación falla (`success !== true` en la
+    respuesta de Google o de Cloudflare, o puntuación de reCAPTCHA por debajo de
+    `RECAPTCHA_MIN_SCORE`), la petición se corta ahí (ver abajo). Si el proveedor
+    no responde (red caída o 5xx) se deja pasar, ver D10 en
+    [`decisiones-tecnicas.md`](../../decisiones-tecnicas.md).
+  - Turnstile no da puntuación: el mensaje se guarda con `captcha_score` nulo.
   - `subject` y `message` se sanean (se les quita HTML y caracteres de
     control) antes de guardarse.
 
 - **Errores**:
   - `422` validación de los campos del body (formato estándar `errors`).
-  - `422` con mensaje `"Verificacion de seguridad fallida"` si hay reCAPTCHA
-    configurado y el token no verifica contra Google (esto **no** guarda el
-    mensaje: se corta antes).
+  - `422` con mensaje `"Verificacion de seguridad fallida"` si hay captcha
+    configurado y el token no verifica contra su proveedor (esto **no** guarda
+    el mensaje: se corta antes).
   - `429` al superar el límite de 5/hora por IP.
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-06
+> Creado: 2026-08-30 · Última revisión: 2026-10-05

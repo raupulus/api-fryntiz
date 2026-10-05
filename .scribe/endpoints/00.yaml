@@ -146,7 +146,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - 'smartplant:read'
+          - 'printers:read'
         type: 'string[]'
         enumValues:
           - 'hardware:read'
@@ -182,7 +182,7 @@ endpoints:
         name: expires_at
         description: 'Must be a valid date. Must be a date after <code>now</code>.'
         required: false
-        example: '2052-10-20'
+        example: '2052-10-28'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -191,9 +191,9 @@ endpoints:
     cleanBodyParameters:
       device_id: 16
       abilities:
-        - 'smartplant:read'
+        - 'printers:read'
       name: 'n'
-      expires_at: '2052-10-20'
+      expires_at: '2052-10-28'
     fileParameters: []
     responses: []
     responseFields: []
@@ -403,7 +403,7 @@ endpoints:
         name: contactme
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -432,16 +432,52 @@ endpoints:
         exampleWasSpecified: false
         nullable: true
         deprecated: false
+      recaptcha_token:
+        custom: []
+        name: recaptcha_token
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      cf-turnstile-response:
+        custom: []
+        name: cf-turnstile-response
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      turnstile_token:
+        custom: []
+        name: turnstile_token
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
     cleanBodyParameters:
       name: b
       email: zbailey@example.net
       subject: i
       message: 'y'
       privacity: true
-      contactme: false
+      contactme: true
       attributes:
         - v
       g-recaptcha-response: architecto
+      recaptcha_token: architecto
+      cf-turnstile-response: architecto
+      turnstile_token: architecto
     fileParameters: []
     responses: []
     responseFields: []
@@ -2695,9 +2731,9 @@ endpoints:
       read_at:
         custom: []
         name: read_at
-        description: 'Must be a valid date. Must be a date after or equal to <code>2000-01-01</code>. Must be a date before or equal to <code>2026-09-27 06:11:06</code>.'
+        description: 'Must be a valid date. Must be a date after or equal to <code>2000-01-01</code>. Must be a date before or equal to <code>2026-10-05 13:16:05</code>.'
         required: false
-        example: '2022-10-21'
+        example: '2022-10-29'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2717,7 +2753,7 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       duration: 22
-      read_at: '2022-10-21'
+      read_at: '2022-10-29'
       energy: []
     fileParameters: []
     responses: []
@@ -3276,7 +3312,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-27 05:11:06'
+        example: '2026-10-05 12:16:05'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3287,7 +3323,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-27 05:11:06'
+        example: '2026-10-05 12:16:05'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3362,8 +3398,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-09-27 05:11:06'
-      end_at: '2026-09-27 05:11:06'
+      start_at: '2026-10-05 12:16:05'
+      end_at: '2026-10-05 12:16:05'
       duration: 16
       pulsations: 39
       pulsations_special_keys: 84
@@ -3438,7 +3474,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-27 05:11:06'
+        example: '2026-10-05 12:16:05'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3449,7 +3485,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-09-27 05:11:06'
+        example: '2026-10-05 12:16:05'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3535,8 +3571,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-09-27 05:11:06'
-      end_at: '2026-09-27 05:11:06'
+      start_at: '2026-10-05 12:16:05'
+      end_at: '2026-10-05 12:16:05'
       duration: 16
       clicks_left: 39
       clicks_right: 84
@@ -3794,7 +3830,7 @@ endpoints:
         name: full_water_tank
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -3831,7 +3867,7 @@ endpoints:
       humidity: 4326.41688
       soil_humidity: 17
       soil_humidity_raw: 16
-      full_water_tank: true
+      full_water_tank: false
       waterpump_enabled: false
       vaporizer_enabled: false
     fileParameters: []
@@ -3872,7 +3908,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - humidity
+          - lightning
         type: 'string[]'
         enumValues:
           - temperature
@@ -3891,7 +3927,7 @@ endpoints:
         name: location_type
         description: ''
         required: false
-        example: indoor
+        example: outdoor
         type: string
         enumValues:
           - indoor
@@ -3901,8 +3937,8 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - humidity
-      location_type: indoor
+        - lightning
+      location_type: outdoor
     fileParameters: []
     responses:
       -
@@ -3965,7 +4001,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - light
+          - wind
         type: 'string[]'
         enumValues:
           - temperature
@@ -3981,7 +4017,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - light
+        - wind
     fileParameters: []
     responses:
       -

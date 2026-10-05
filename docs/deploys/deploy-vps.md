@@ -74,7 +74,7 @@ Variables imprescindibles a revisar:
 | `SESSION_SECURE_COOKIE` | **`true`.** Sin esto la cookie del panel y el `XSRF-TOKEN` salen sin el flag `Secure`. |
 | `FRONTEND_URLS` | Los dominios que consumen la API, **con esquema y separados por comas**. Ver el aviso de abajo. |
 | `TRUSTED_PROXIES` | Los rangos del proxy. **Con Cloudflare no basta el valor por defecto** — ver abajo. |
-| `RECAPTCHA_SECRET_KEY` | Obligatoria: si está vacía la verificación se desactiva sola y los formularios públicos quedan sin protección. |
+| `RECAPTCHA_SECRET_KEY` / `TURNSTILE_SECRET_KEY` | Al menos una es obligatoria: con las dos vacías la verificación se desactiva sola y los formularios públicos quedan sin protección. El formulario de contacto acepta el token de cualquiera de los dos proveedores; el login de los paneles usa sólo reCAPTCHA. |
 | `DB_*` | Credenciales coherentes con `docker-compose.prod.yml` |
 | `REDIS_*` | id. |
 | `MAIL_*` | SMTP del proveedor (Mailgun/SES/…). |
@@ -369,7 +369,7 @@ Comprueba:
 | `APP_KEY`, `APP_DEBUG` | Lo evidente. |
 | `FRONTEND_URLS` | Vacía o con comodín + credenciales. |
 | `TRUSTED_PROXIES` | Vacía o en `*`. |
-| `RECAPTCHA_SECRET_KEY` y su umbral | Vacía en producción, o umbral a 0 (que deja pasar a los bots). |
+| `RECAPTCHA_SECRET_KEY`, `TURNSTILE_SECRET_KEY` y el umbral | Las dos claves vacías en producción, o umbral de reCAPTCHA a 0 (que deja pasar a los bots). |
 | `SESSION_SECURE_COOKIE`, `APP_URL`, `API_URL` | Cookies y URL sin HTTPS. |
 | Colas y broadcast | `QUEUE_CONNECTION=sync`, Reverb mal configurado. |
 | **Cobertura de policies del panel** | Que ningún recurso de Filament administre un modelo sin policy. |
@@ -491,4 +491,4 @@ Estrategia mínima:
 - [WebSockets en VPS](../info/websockets.md)
 - [Configuración de autenticación](../info/auth.md)
 
-> Creado: 2026-05-26 · Última revisión: 2026-09-28
+> Creado: 2026-05-26 · Última revisión: 2026-10-05

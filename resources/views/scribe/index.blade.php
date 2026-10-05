@@ -292,7 +292,7 @@ la primera página. Con `?include=` lo que se pida (`all`, todo).</a>
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: September 27, 2026</li>
+        <li>Last updated: October 5, 2026</li>
     </ul>
 </div>
 
@@ -618,10 +618,10 @@ añade <code>device:{id}</code>. No emite nunca el comodín ni la ability de ses
     --data "{
     \"device_id\": 16,
     \"abilities\": [
-        \"smartplant:read\"
+        \"printers:read\"
     ],
     \"name\": \"n\",
-    \"expires_at\": \"2052-10-20\"
+    \"expires_at\": \"2052-10-28\"
 }"
 </code></pre></div>
 
@@ -639,10 +639,10 @@ const headers = {
 let body = {
     "device_id": 16,
     "abilities": [
-        "smartplant:read"
+        "printers:read"
     ],
     "name": "n",
-    "expires_at": "2052-10-20"
+    "expires_at": "2052-10-28"
 };
 
 fetch(url, {
@@ -774,10 +774,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="expires_at"                data-endpoint="POSTapi-v2-auth-tokens-devices"
-               value="2052-10-20"
+               value="2052-10-28"
                data-component="body">
     <br>
-<p>Must be a valid date. Must be a date after <code>now</code>. Example: <code>2052-10-20</code></p>
+<p>Must be a valid date. Must be a date after <code>now</code>. Example: <code>2052-10-28</code></p>
         </div>
         </form>
 
@@ -1171,11 +1171,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"subject\": \"i\",
     \"message\": \"y\",
     \"privacity\": true,
-    \"contactme\": false,
+    \"contactme\": true,
     \"attributes\": [
         \"v\"
     ],
-    \"g-recaptcha-response\": \"architecto\"
+    \"g-recaptcha-response\": \"architecto\",
+    \"recaptcha_token\": \"architecto\",
+    \"cf-turnstile-response\": \"architecto\",
+    \"turnstile_token\": \"architecto\"
 }"
 </code></pre></div>
 
@@ -1196,11 +1199,14 @@ let body = {
     "subject": "i",
     "message": "y",
     "privacity": true,
-    "contactme": false,
+    "contactme": true,
     "attributes": [
         "v"
     ],
-    "g-recaptcha-response": "architecto"
+    "g-recaptcha-response": "architecto",
+    "recaptcha_token": "architecto",
+    "cf-turnstile-response": "architecto",
+    "turnstile_token": "architecto"
 };
 
 fetch(url, {
@@ -1375,7 +1381,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>attributes</code></b>&nbsp;&nbsp;
@@ -1398,6 +1404,42 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="g-recaptcha-response"                data-endpoint="POSTapi-v2-contact-messages"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>recaptcha_token</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="recaptcha_token"                data-endpoint="POSTapi-v2-contact-messages"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>cf-turnstile-response</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="cf-turnstile-response"                data-endpoint="POSTapi-v2-contact-messages"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>turnstile_token</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="turnstile_token"                data-endpoint="POSTapi-v2-contact-messages"
                value="architecto"
                data-component="body">
     <br>
@@ -6017,7 +6059,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"duration\": 22,
-    \"read_at\": \"2022-10-21\",
+    \"read_at\": \"2022-10-29\",
     \"energy\": []
 }"
 </code></pre></div>
@@ -6036,7 +6078,7 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "duration": 22,
-    "read_at": "2022-10-21",
+    "read_at": "2022-10-29",
     "energy": []
 };
 
@@ -6177,10 +6219,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="read_at"                data-endpoint="POSTapi-v2-energy-readings"
-               value="2022-10-21"
+               value="2022-10-29"
                data-component="body">
     <br>
-<p>Must be a valid date. Must be a date after or equal to <code>2000-01-01</code>. Must be a date before or equal to <code>2026-09-27 06:11:06</code>. Example: <code>2022-10-21</code></p>
+<p>Must be a valid date. Must be a date after or equal to <code>2000-01-01</code>. Must be a date before or equal to <code>2026-10-05 13:16:05</code>. Example: <code>2022-10-29</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>energy</code></b>&nbsp;&nbsp;
@@ -7281,8 +7323,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"user_id\": 16,
-    \"start_at\": \"2026-09-27 05:11:06\",
-    \"end_at\": \"2026-09-27 05:11:06\",
+    \"start_at\": \"2026-10-05 12:16:05\",
+    \"end_at\": \"2026-10-05 12:16:05\",
     \"duration\": 16,
     \"pulsations\": 39,
     \"pulsations_special_keys\": 84,
@@ -7306,8 +7348,8 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "user_id": 16,
-    "start_at": "2026-09-27 05:11:06",
-    "end_at": "2026-09-27 05:11:06",
+    "start_at": "2026-10-05 12:16:05",
+    "end_at": "2026-10-05 12:16:05",
     "duration": 16,
     "pulsations": 39,
     "pulsations_special_keys": 84,
@@ -7441,10 +7483,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_at"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="2026-09-27 05:11:06"
+               value="2026-10-05 12:16:05"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-27 05:11:06</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-10-05 12:16:05</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_at</code></b>&nbsp;&nbsp;
@@ -7453,10 +7495,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_at"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="2026-09-27 05:11:06"
+               value="2026-10-05 12:16:05"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-27 05:11:06</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-10-05 12:16:05</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
@@ -7551,8 +7593,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"user_id\": 16,
-    \"start_at\": \"2026-09-27 05:11:06\",
-    \"end_at\": \"2026-09-27 05:11:06\",
+    \"start_at\": \"2026-10-05 12:16:05\",
+    \"end_at\": \"2026-10-05 12:16:05\",
     \"duration\": 16,
     \"clicks_left\": 39,
     \"clicks_right\": 84,
@@ -7577,8 +7619,8 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "user_id": 16,
-    "start_at": "2026-09-27 05:11:06",
-    "end_at": "2026-09-27 05:11:06",
+    "start_at": "2026-10-05 12:16:05",
+    "end_at": "2026-10-05 12:16:05",
     "duration": 16,
     "clicks_left": 39,
     "clicks_right": 84,
@@ -7713,10 +7755,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_at"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="2026-09-27 05:11:06"
+               value="2026-10-05 12:16:05"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-27 05:11:06</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-10-05 12:16:05</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_at</code></b>&nbsp;&nbsp;
@@ -7725,10 +7767,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_at"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="2026-09-27 05:11:06"
+               value="2026-10-05 12:16:05"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-09-27 05:11:06</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-10-05 12:16:05</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
@@ -8122,7 +8164,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"humidity\": 4326.41688,
     \"soil_humidity\": 17,
     \"soil_humidity_raw\": 16,
-    \"full_water_tank\": true,
+    \"full_water_tank\": false,
     \"waterpump_enabled\": false,
     \"vaporizer_enabled\": false
 }"
@@ -8148,7 +8190,7 @@ let body = {
     "humidity": 4326.41688,
     "soil_humidity": 17,
     "soil_humidity_raw": 16,
-    "full_water_tank": true,
+    "full_water_tank": false,
     "waterpump_enabled": false,
     "vaporizer_enabled": false
 };
@@ -8376,7 +8418,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>waterpump_enabled</code></b>&nbsp;&nbsp;
@@ -8443,9 +8485,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"sensors\": [
-        \"humidity\"
+        \"lightning\"
     ],
-    \"location_type\": \"indoor\"
+    \"location_type\": \"outdoor\"
 }"
 </code></pre></div>
 
@@ -8462,9 +8504,9 @@ const headers = {
 
 let body = {
     "sensors": [
-        "humidity"
+        "lightning"
     ],
-    "location_type": "indoor"
+    "location_type": "outdoor"
 };
 
 fetch(url, {
@@ -8594,10 +8636,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="location_type"                data-endpoint="GETapi-v2-weather-stations"
-               value="indoor"
+               value="outdoor"
                data-component="body">
     <br>
-<p>Example: <code>indoor</code></p>
+<p>Example: <code>outdoor</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>indoor</code></li> <li><code>outdoor</code></li></ul>
         </div>
@@ -8621,7 +8663,7 @@ Must be one of:
     --header "Accept: application/json" \
     --data "{
     \"sensors\": [
-        \"light\"
+        \"wind\"
     ]
 }"
 </code></pre></div>
@@ -8639,7 +8681,7 @@ const headers = {
 
 let body = {
     "sensors": [
-        "light"
+        "wind"
     ]
 };
 
@@ -10976,7 +11018,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"format\": \"architecto\",
     \"note\": \"n\",
     \"priority\": -100,
-    \"is_favorite\": true
+    \"is_favorite\": false
 }"
 </code></pre></div>
 
@@ -10996,7 +11038,7 @@ let body = {
     "format": "architecto",
     "note": "n",
     "priority": -100,
-    "is_favorite": true
+    "is_favorite": false
 };
 
 fetch(url, {
@@ -11164,7 +11206,7 @@ Must be one of:
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
         </form>
 
@@ -11748,7 +11790,7 @@ de la ejecución del ticket.</p>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"status\": \"out_of_paper\",
+    \"status\": \"failed\",
     \"error_message\": \"b\"
 }"
 </code></pre></div>
@@ -11765,7 +11807,7 @@ const headers = {
 };
 
 let body = {
-    "status": "out_of_paper",
+    "status": "failed",
     "error_message": "b"
 };
 
@@ -11871,10 +11913,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="status"                data-endpoint="PATCHapi-v2-printers-jobs--job_id--status"
-               value="out_of_paper"
+               value="failed"
                data-component="body">
     <br>
-<p>Example: <code>out_of_paper</code></p>
+<p>Example: <code>failed</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>completed</code></li> <li><code>failed</code></li> <li><code>out_of_paper</code></li></ul>
         </div>

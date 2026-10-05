@@ -37,7 +37,7 @@ Plataforma multi-API desarrollada con Laravel 13 que centraliza módulos IoT (es
 | **CV** | Currículum vitae completo con 16 secciones (experiencia, formación, habilidades, proyectos, repositorios) y descarga del PDF del currículum. |
 | **Newsletter** | Gestión de suscriptores con verificación por email y baja por token. |
 | **Auth** | Autenticación web (Fortify) y API V2 (Sanctum). |
-| **Contact** | Formulario de contacto con validación reCAPTCHA. |
+| **Contact** | Formulario de contacto con validación de captcha (Cloudflare Turnstile o Google reCAPTCHA). |
 | **Platform** | Gestión de plataformas/sitios. |
 | **User** | Gestión de usuarios y perfiles. |
 | **Webhook** | Gestión de webhooks externos (GitLab). |
@@ -172,9 +172,10 @@ cp .env.example.production .env
 # Sin Redis no hay que tocar nada: la plantilla ya viene con caché y sesión en
 # fichero y la cola en base de datos.
 #
-# Rellenar también RECAPTCHA_SITE_KEY y RECAPTCHA_SECRET_KEY: sin ellas los
-# formularios públicos y el login de los paneles se quedan SIN captcha y sin
-# ningún aviso.
+# Rellenar también RECAPTCHA_SITE_KEY y RECAPTCHA_SECRET_KEY (o
+# TURNSTILE_SECRET_KEY para Cloudflare Turnstile en el formulario de contacto):
+# sin ellas los formularios públicos y el login de los paneles se quedan SIN
+# captcha y sin ningún aviso.
 
 # 2. Instalar dependencias optimizadas
 composer install --optimize-autoloader --no-dev

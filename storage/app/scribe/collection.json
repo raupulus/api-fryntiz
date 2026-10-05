@@ -10,7 +10,7 @@
     ],
     "info": {
         "name": "Api Raupulus API Documentation",
-        "_postman_id": "6137e7a8-8c3a-4d5e-92e5-c5bb6f60c2dc",
+        "_postman_id": "1820611b-47b2-4f7b-b138-2ac5dd8c3046",
         "description": "",
         "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json"
     },
@@ -140,7 +140,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"device_id\":16,\"abilities\":[\"smartplant:read\"],\"name\":\"n\",\"expires_at\":\"2052-10-20\"}"
+                            "raw": "{\"device_id\":16,\"abilities\":[\"printers:read\"],\"name\":\"n\",\"expires_at\":\"2052-10-28\"}"
                         },
                         "description": "Va por `DeviceTokenService`, que es la fuente \u00fanica: comprueba que las\nabilities est\u00e1n en el cat\u00e1logo, que el dispositivo es del usuario, y\na\u00f1ade `device:{id}`. No emite nunca el comod\u00edn ni la ability de sesi\u00f3n.",
                         "auth": {
@@ -303,7 +303,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"name\":\"b\",\"email\":\"zbailey@example.net\",\"subject\":\"i\",\"message\":\"y\",\"privacity\":true,\"contactme\":false,\"attributes\":[\"v\"],\"g-recaptcha-response\":\"architecto\"}"
+                            "raw": "{\"name\":\"b\",\"email\":\"zbailey@example.net\",\"subject\":\"i\",\"message\":\"y\",\"privacity\":true,\"contactme\":true,\"attributes\":[\"v\"],\"g-recaptcha-response\":\"architecto\",\"recaptcha_token\":\"architecto\",\"cf-turnstile-response\":\"architecto\",\"turnstile_token\":\"architecto\"}"
                         },
                         "description": "",
                         "auth": {
@@ -2078,7 +2078,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"hardware_device_id\":16,\"duration\":22,\"read_at\":\"2022-10-21\",\"energy\":[]}"
+                            "raw": "{\"hardware_device_id\":16,\"duration\":22,\"read_at\":\"2022-10-29\",\"energy\":[]}"
                         },
                         "description": "Requiere ability `energy:write`. Procesa subsistemas de generador, bater\u00eda y consumos.",
                         "auth": {
@@ -2510,7 +2510,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"hardware_device_id\":16,\"user_id\":16,\"start_at\":\"2026-09-27 05:11:06\",\"end_at\":\"2026-09-27 05:11:06\",\"duration\":16,\"pulsations\":39,\"pulsations_special_keys\":84,\"pulsation_average\":12,\"score\":77,\"weekday\":5}"
+                            "raw": "{\"hardware_device_id\":16,\"user_id\":16,\"start_at\":\"2026-10-05 12:16:05\",\"end_at\":\"2026-10-05 12:16:05\",\"duration\":16,\"pulsations\":39,\"pulsations_special_keys\":84,\"pulsation_average\":12,\"score\":77,\"weekday\":5}"
                         },
                         "description": "",
                         "auth": {
@@ -2541,7 +2541,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"hardware_device_id\":16,\"user_id\":16,\"start_at\":\"2026-09-27 05:11:06\",\"end_at\":\"2026-09-27 05:11:06\",\"duration\":16,\"clicks_left\":39,\"clicks_right\":84,\"clicks_middle\":12,\"total_clicks\":77,\"clicks_average\":8,\"weekday\":1}"
+                            "raw": "{\"hardware_device_id\":16,\"user_id\":16,\"start_at\":\"2026-10-05 12:16:05\",\"end_at\":\"2026-10-05 12:16:05\",\"duration\":16,\"clicks_left\":39,\"clicks_right\":84,\"clicks_middle\":12,\"total_clicks\":77,\"clicks_average\":8,\"weekday\":1}"
                         },
                         "description": "",
                         "auth": {
@@ -2732,7 +2732,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"plant_id\":4326.41688,\"hardware_device_id\":4326.41688,\"uv\":16,\"pressure\":4326.41688,\"temperature\":4326.41688,\"humidity\":4326.41688,\"soil_humidity\":17,\"soil_humidity_raw\":16,\"full_water_tank\":true,\"waterpump_enabled\":false,\"vaporizer_enabled\":false}"
+                            "raw": "{\"plant_id\":4326.41688,\"hardware_device_id\":4326.41688,\"uv\":16,\"pressure\":4326.41688,\"temperature\":4326.41688,\"humidity\":4326.41688,\"soil_humidity\":17,\"soil_humidity_raw\":16,\"full_water_tank\":false,\"waterpump_enabled\":false,\"vaporizer_enabled\":false}"
                         },
                         "description": "",
                         "auth": {
@@ -2763,7 +2763,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"sensors\":[\"humidity\"],\"location_type\":\"indoor\"}"
+                            "raw": "{\"sensors\":[\"lightning\"],\"location_type\":\"outdoor\"}"
                         },
                         "description": "?zone=chipiona\n  ?location_type=indoor|outdoor",
                         "auth": {
@@ -2842,7 +2842,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"sensors\":[\"light\"]}"
+                            "raw": "{\"sensors\":[\"wind\"]}"
                         },
                         "description": "",
                         "auth": {
@@ -3981,7 +3981,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"content\":\"architecto\",\"format\":\"architecto\",\"note\":\"n\",\"priority\":-100,\"is_favorite\":true}"
+                            "raw": "{\"content\":\"architecto\",\"format\":\"architecto\",\"note\":\"n\",\"priority\":-100,\"is_favorite\":false}"
                         },
                         "description": "",
                         "auth": {
@@ -4173,7 +4173,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"status\":\"out_of_paper\",\"error_message\":\"b\"}"
+                            "raw": "{\"status\":\"failed\",\"error_message\":\"b\"}"
                         },
                         "description": "Consumido por el microcontrolador para reportar el \u00e9xito ('completed') o fallo ('failed')\nde la ejecuci\u00f3n del ticket.",
                         "auth": {

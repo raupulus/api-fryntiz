@@ -85,7 +85,7 @@ parece correcto.
 | `APP_DEBUG` en producción | Cada error enseña el stack trace con las rutas del servidor. |
 | `FRONTEND_URLS` | Vacía → CORS no permite ningún origen. La API responde perfectamente y **el navegador** bloquea todas las respuestas. Ni una línea en el log. |
 | `TRUSTED_PROXIES` | Mal puesta → `request()->ip()` devuelve la IP del proxy para todo el mundo y los límites por IP pasan a ser un cupo global compartido. |
-| `RECAPTCHA_SECRET_KEY` y umbral | Vacía → la verificación se desactiva sola y los formularios públicos quedan sin protección. Umbral a 0 → pasa cualquier bot. |
+| `RECAPTCHA_SECRET_KEY`, `TURNSTILE_SECRET_KEY` y umbral | Las dos claves vacías → la verificación se desactiva sola y los formularios públicos quedan sin protección. Umbral a 0 → pasa cualquier bot. |
 | `SESSION_SECURE_COOKIE`, `APP_URL`, `API_URL` | Cookies sin `Secure`; y `API_URL` en `http://` sobre una página HTTPS bloquea las llamadas del cliente por contenido mixto. |
 | Colas y broadcast | `QUEUE_CONNECTION=sync` en producción; Reverb declarado y mal configurado. |
 | **Cobertura de policies del panel** | Que ningún Resource de Filament administre un modelo sin policy. |
@@ -509,4 +509,4 @@ worker de cola, sí.
 
 ---
 
-> Creado: 2026-05-26 · Última revisión: 2026-09-27
+> Creado: 2026-05-26 · Última revisión: 2026-10-05

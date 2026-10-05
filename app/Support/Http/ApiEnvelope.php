@@ -88,7 +88,10 @@ final class ApiEnvelope
         'secret',
         'api_key',
         'g-recaptcha-response',
+        'recaptcha_token',
         'recaptchaToken',
+        'cf-turnstile-response',
+        'turnstile_token',
     ];
 
     /** Lo que se pone en lugar del valor de un campo sensible. */

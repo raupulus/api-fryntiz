@@ -118,6 +118,11 @@ a ráfagas, alguien está provocando el fallo para saltarse la comprobación.
 Hay dos tests que lo fijan (`RecaptchaServiceTest`), precisamente para que la próxima auditoría no lo
 marque como bug y alguien lo "arregle" cerrando el paso.
 
+**Cloudflare Turnstile sigue el mismo criterio** (`TurnstileService`, desde 2026-10-05; el formulario de
+contacto acepta el token de cualquiera de los dos proveedores): excepción de red o 5xx → pasa, con su
+`Log::warning`. Un 4xx **no** pasa: es Cloudflare rechazando nuestra petición, no un fallo suyo. Lo fijan
+los tests de `TurnstileServiceTest`.
+
 *Origen: SEC-05 de la auditoría 2026-09-01.*
 
 ### D1 · El webhook de GitLab está eliminado, no desactivado
@@ -867,4 +872,4 @@ existe— **qué test lo fija**.
 Lo que no va aquí: decisiones que el código ya explica por sí solo, y cosas que simplemente están
 pendientes (eso es `docs/future/`).
 
-> Creado: 2026-09-01 · Última revisión: 2026-09-27
+> Creado: 2026-09-01 · Última revisión: 2026-10-05
