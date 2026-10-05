@@ -54,7 +54,7 @@ mano desde el panel.
 | `contactme` | boolean | opcional (`sometimes`) — consentimiento para que le respondan |
 | `attributes` | array | opcional (`sometimes`), máx. 20 claves. Campos libres que añada cada web (teléfono, empresa…) |
 | `attributes.*` | string\|null | máx. 255 cada valor |
-| `g-recaptcha-response` | string | `required` **solo si** hay clave reCAPTCHA configurada en el servidor (`services.recaptcha.secret_key`); si no hay clave configurada, es `nullable` |
+| `g-recaptcha-response` | string | `required` **solo si** hay clave reCAPTCHA configurada en el servidor (`google.recaptcha.secret_key`, que sale de `RECAPTCHA_SECRET_KEY`); si no hay clave configurada, es `nullable` |
 
 - **Respuesta 201** (siempre el mismo mensaje, se reenvíe o no):
 
