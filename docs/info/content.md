@@ -354,6 +354,34 @@ php artisan debug:seed-content --count=10
 > El comando ya **no crea categorías** (deben existir vía `CategoriesSeeder`) y
 > ahora genera registros en `content_daily_views` (últimos 7 días + hoy).
 
+## Blog de ejemplo del portfolio (solo desarrollo)
+
+Para desarrollar un cliente de la API sin inventar datos, el seeder
+`PortfolioBlogSeeder` crea 20 entradas de tipo «Blog» en la plataforma
+`portfolio`, con el texto en Editor.js (cada una pasa de 500 caracteres) y todo
+lo que un contenido puede tener:
+
+```bash
+php artisan db:seed --class=PortfolioBlogSeeder
+```
+
+| Qué | Cómo queda |
+|---|---|
+| Estados | 17 publicadas, 1 publicada pero **oculta** («Activo» desmarcado), 1 **borrador** y 1 **programada** a unos días vista: la API sólo sirve las 17 primeras |
+| Destacadas | 4 (`is_featured`, y las visibles en portada y barra lateral) |
+| Páginas | De 1 a 2 por entrada, guardadas con `ContentPageFormatService` (HTML servido, Markdown derivado e historial como en el panel) |
+| Bloques | Título, párrafo, lista (con sublistas), numerada, tareas, cita, código, tabla, alerta, separador, tarjeta de enlace, vídeo de YouTube e imagen |
+| Taxonomías | Categorías (una principal), etiquetas y tecnologías que ya existen en la base |
+| Extras | Imagen de portada, SEO, metadatos (repositorios, web, vídeo), ficheros en uso, 5 galerías, colaboradores (usuarios 3 y 5 si existen), 3 relacionados elegidos a mano y 10 días de visitas |
+
+Las imágenes y sus miniaturas son **ficheros que ya hay en la base**: no sube ni
+copia nada. Si no hay ninguno, los bloques de imagen se omiten.
+
+Es idempotente por slug y **no borra nada**: una entrada que ya existe se salta
+(para recrearla, bórrala antes desde el panel). Se niega a correr en
+producción. Los textos viven en `database/seeders/Data/PortfolioBlogPosts.php`.
+Lo comprueba `tests/Feature/Content/PortfolioBlogSeederTest.php`.
+
 ## Estadísticas de vistas (fix_11)
 
 - Modelo `ContentDailyView` (`content_daily_views`): vistas diarias por contenido.
@@ -1255,4 +1283,4 @@ para escribir a mano el `gallery_id`). Implementado por completo:
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-29
+> Creado: 2026-05-25 · Última revisión: 2026-10-07
