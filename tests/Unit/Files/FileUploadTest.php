@@ -298,4 +298,88 @@ class FileUploadTest extends TestCase
 
         $response->assertOk();
     }
+
+    public function test_standard_image_is_converted_to_webp_by_default(): void
+    {
+        $uploaded = UploadedFile::fake()->image('foto.jpg', 800, 600);
+        $file = File::addFile($uploaded, $this->directory);
+
+        $this->assertNotNull($file);
+        $this->assertStringEndsWith('.webp', $file->name);
+        $this->assertSame('image/webp', $file->fileType?->mime);
+        $this->assertFileExists($file->storagePathFile);
+    }
+
+    public function test_caps_the_largest_dimension_on_vertical_images(): void
+    {
+        $file = UploadedFile::fake()->image('vertical.jpg', 1000, 5000);
+        $result = File::addFile($file, $this->directory, has_thumbnails: false);
+
+        $this->assertNotNull($result);
+        $this->assertSame(File::MAX_IMAGE_WIDTH, $result->height);
+        $this->assertSame(512, $result->width);
+    }
+
+    public function test_caps_the_largest_dimension_on_horizontal_images(): void
+    {
+        $file = UploadedFile::fake()->image('horizontal.jpg', 5000, 1000);
+        $result = File::addFile($file, $this->directory, has_thumbnails: false);
+
+        $this->assertNotNull($result);
+        $this->assertSame(File::MAX_IMAGE_WIDTH, $result->width);
+        $this->assertSame(512, $result->height);
+    }
+
+    public function test_image_smaller_than_max_dimension_is_not_enlarged(): void
+    {
+        $file = UploadedFile::fake()->image('pequena.jpg', 800, 600);
+        $result = File::addFile($file, $this->directory, has_thumbnails: false);
+
+        $this->assertNotNull($result);
+        $this->assertSame(800, $result->width);
+        $this->assertSame(600, $result->height);
+    }
+
+    public function test_gif_is_not_converted_to_webp(): void
+    {
+        $file = UploadedFile::fake()->image('animado.gif', 400, 400);
+        $result = File::addFile($file, $this->directory, has_thumbnails: false);
+
+        $this->assertNotNull($result);
+        $this->assertSame('image/gif', $result->fileType?->mime);
+        $this->assertStringEndsWith('.gif', $result->name);
+    }
+
+    public function test_pdf_is_not_converted_to_webp(): void
+    {
+        $file = UploadedFile::fake()->create('documento.pdf', 100, 'application/pdf');
+        $result = File::addFile($file, $this->directory, has_thumbnails: false);
+
+        $this->assertNotNull($result);
+        $this->assertSame('application/pdf', $result->fileType?->mime);
+        $this->assertStringEndsWith('.pdf', $result->name);
+    }
+
+    public function test_accepts_heic_and_heif_mimes_in_safe_mimes(): void
+    {
+        $this->assertContains('image/heic', File::SAFE_MIMES);
+        $this->assertContains('image/heif', File::SAFE_MIMES);
+        $this->assertContains('image/avif', File::SAFE_MIMES);
+    }
+
+    public function test_base64_upload_converts_to_webp_by_default(): void
+    {
+        $image = imagecreatetruecolor(200, 200);
+        ob_start();
+        imagejpeg($image);
+        $data = (string) ob_get_clean();
+        imagedestroy($image);
+
+        $base64 = 'data:image/jpeg;base64,'.base64_encode($data);
+        $file = File::addFileFromBase64($base64, $this->directory, has_thumbnails: false);
+
+        $this->assertNotNull($file);
+        $this->assertSame('image/webp', $file->fileType?->mime);
+        $this->assertStringEndsWith('.webp', $file->name);
+    }
 }

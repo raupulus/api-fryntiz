@@ -140,7 +140,7 @@ class GalleryResource extends Resource
                                 ->asFileRecord()
                                 ->storeFiles(false)
                                 ->maxSize(15360)
-                                ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif', 'image/avif'])
                                 ->label('Imagen de portada')
                                 ->helperText('Opcional: Si la dejas vacía, la primera foto que subas abajo se convertirá automáticamente en la portada.')
                                 ->visible(fn (string $operation): bool => $operation === 'create')
@@ -191,11 +191,11 @@ class GalleryResource extends Resource
                                         })
                                         ->maxFiles(20)
                                         ->maxSize(15360)
-                                        ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
+                                        ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/heic', 'image/heif', 'image/avif'])
                                         ->storeFiles(false)
                                         ->reorderable()
                                         ->label('Fotos de la galería')
-                                        ->helperText('Formatos admitidos: JPG, PNG, WEBP, GIF. Máximo 15 MB por foto y hasta 20 fotos por tanda. La primera foto subida se convertirá automáticamente en la portada.')
+                                        ->helperText('Formatos admitidos: JPG, PNG, WEBP, GIF, HEIC (iPhone), AVIF. Máximo 15 MB por foto y hasta 20 fotos por tanda. La primera foto subida se convertirá automáticamente en la portada.')
                                         ->validationMessages([
                                             'uploaded' => 'No se ha podido subir alguna de las imágenes. Comprueba que pesen menos de 15 MB y tengan un formato admitido.',
                                             'max_files' => 'Puedes subir un máximo de 20 fotos por tanda. Una vez creada la galería, podrás añadir más fotos desde su ficha.',

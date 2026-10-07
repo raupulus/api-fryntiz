@@ -45,7 +45,7 @@ class ImagesRelationManager extends RelationManager
                 ->asFileRecord()
                 ->storeFiles(false)
                 ->maxSize(15360)
-                ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif', 'image/avif'])
                 ->imageEditor()
                 ->imageEditorViewportWidth($gallery->aspect_ratio?->viewportWidth() ?? 16)
                 ->imageEditorViewportHeight($gallery->aspect_ratio?->viewportHeight() ?? 9)
@@ -259,11 +259,11 @@ class ImagesRelationManager extends RelationManager
                     ->imageEditorAspectRatios(fn (): array => $gallery->aspect_ratio?->cropperAspectRatios() ?? ['16:9'])
                     ->maxFiles(20)
                     ->maxSize(15360)
-                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/heic', 'image/heif', 'image/avif'])
                     ->storeFiles(false)
                     ->reorderable()
                     ->label('Seleccionar fotos')
-                    ->helperText('Formatos admitidos: JPG, PNG, WEBP, GIF. Máximo 15 MB por foto y hasta 20 fotos por tanda.')
+                    ->helperText('Formatos admitidos: JPG, PNG, WEBP, GIF, HEIC (iPhone), AVIF. Máximo 15 MB por foto y hasta 20 fotos por tanda.')
                     ->validationMessages([
                         'uploaded' => 'No se ha podido subir alguna de las imágenes. Comprueba que pesen menos de 15 MB y tengan un formato válido.',
                         'max_files' => 'Puedes subir un máximo de 20 fotos por tanda.',

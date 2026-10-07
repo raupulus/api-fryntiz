@@ -57,14 +57,12 @@ Decide si una imagen se **puede reprocesar** (rotar, escalar, generar miniaturas
 
 ## Política de subida
 
-`File::addFile()` recibe `bool $validate = true` como último parámetro.
+`File::addFile()` recibe `bool $validate = true` y `bool $webpOriginal = true` por defecto.
 
-| Valor | Qué hace | Quién lo usa |
+| Parámetro | Valor por defecto | Qué hace |
 |---|---|---|
-| `true` (por defecto) | El MIME real tiene que estar en `File::SAFE_MIMES` y el tamaño por debajo de `File::MAX_FILE_SIZE` (20 MB) | Los campos que esperan una imagen o un documento: avatar, portada de contenido, foto de producto |
-| `false` | Entra cualquier cosa, sin límite de tipo | El editor de contenido y los archivos adjuntos, donde se sube lo que haga falta |
-
-El parámetro va el último de la firma para que ninguna llamada existente cambie de comportamiento.
+| `$validate` | `true` | El MIME real tiene que estar en `File::SAFE_MIMES` y el tamaño por debajo de `File::MAX_FILE_SIZE` (20 MB). Valida soporte Imagick para HEIC/AVIF. |
+| `$webpOriginal` | `true` | Convierte cualquier imagen compatible a WebP original (calidad 85), elimina metadatos EXIF/GPS y acota su lado más grande a 2560 px. |
 
 ⚠️ **`SAFE_MIMES` no sale de la tabla `file_types`, y no debe salir nunca.** `file_types` es un
 catálogo de metadatos (icono, extensión, tipo legible) que se rellena desde el panel con toda clase
@@ -72,32 +70,39 @@ de formatos — impresión 3D, vectores, proyectos de edición, documentos. Es e
 usarla como lista de tipos seguros sería validar el input contra el propio input. Para aceptar un
 tipo nuevo se añade a la constante del modelo, a mano.
 
-El tope de 20 MB es el techo del modelo, no el de la interfaz: cada campo de Filament pone el suyo,
-más estricto (`ImageCropperUpload` está en 4 MB). Una foto de alta calidad entra grande y el cropper
-la deja en un megabyte o menos.
+`SAFE_MIMES` incluye:
+- Imágenes estándar: JPEG, PNG, WebP, BMP.
+- Formatos Apple y modernos: HEIC, HEIF, AVIF (procesados con `Imagick` + `libheif`).
+- Formatos no convertibles respetados: GIF (mantiene animación original) y PDF (documento).
+
+El tope de 20 MB es el techo del modelo, no el de la interfaz: cada campo de Filament pone el suyo
+(`ImageCropperUpload` está configurado en 20 MB).
 
 La validación ocurre **antes de `store()`**: si se comprobara después, el archivo rechazado ya
 estaría escrito en el disco.
 
-## Metadatos de las imágenes
+## Metadatos y dimensiones de las imágenes
 
-Al almacenar una imagen editable, `processStoredImage()` hace tres cosas **en este orden**:
+Al almacenar o convertir una imagen, el motor realiza las siguientes operaciones:
 
-1. **Rota los píxeles de verdad** según la orientación EXIF. Si no, al limpiar los metadatos se iría
-   el flag de orientación y las fotos de móvil quedarían tumbadas para siempre.
-2. **Acota el ancho** a `File::MAX_IMAGE_WIDTH` (2560 px).
-3. **Limpia los metadatos**: `stripMetadata()` vacía el EXIF y quita el perfil ICC, y además se
-   guarda con `strip` en el encoder. Son dos capas para lo mismo, a propósito.
+1. **Giro según orientación real (EXIF)**: Las fotos de móvil se rotan antes de retirar los metadatos para que no queden tumbadas.
+2. **Acotado por su lado más grande a `File::MAX_IMAGE_WIDTH` (2560 px)**: Mediante `scaleDown(2560, 2560)` manteniendo la relación de aspecto exacta, protegiendo imágenes tanto horizontales como verticales y panorámicas.
+3. **Limpieza estricta de metadatos**: `stripMetadata()` vacía el EXIF y quita el perfil ICC, y además se guarda con `strip: true` en el encoder de WebP.
+4. **Conversión a WebP original**: A calidad 85 (fijada en `File::WEBP_QUALITY`), reduciendo drásticamente el espacio en disco sin pérdida visual.
 
-Se aplica a **todas** las imágenes, privadas y públicas: una foto pública con las coordenadas de
-casa dentro es el mismo problema con más gente mirándola.
+## Comando de migración de imágenes (`files:convert-to-webp`)
 
-La limpieza se hace **aunque la librería ya descarte los metadatos por su cuenta** — hoy lo hace el
-driver GD. Esa garantía es un accidente de la implementación, no una decisión del proyecto; el
-motivo completo está en [decisiones-tecnicas.md](decisiones-tecnicas.md) D3.
+Para migrar imágenes antiguas (JPEG, PNG, BMP) que se hubieran subido previamente:
 
-Escribir los metadatos **de plataforma** (autoría, datos de la web) sigue pendiente: ver
-[`docs/future/metadatos-imagenes.md`](../future/metadatos-imagenes.md).
+```bash
+# Simulación sin modificar ficheros ni base de datos
+php artisan files:convert-to-webp --dry-run
+
+# Migración real
+php artisan files:convert-to-webp
+```
+
+El comando convierte el original a WebP, actualiza los registros de la tabla `files`, regenera las miniaturas y migra también las fotos de perfil de usuario (`profile_photo_path`).
 
 ## Redimensionado bajo demanda (`/file/resize`)
 
@@ -302,4 +307,4 @@ privada puede llevar dentro la geolocalización.
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-05
+> Creado: 2026-05-25 · Última revisión: 2026-10-07

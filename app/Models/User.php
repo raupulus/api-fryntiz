@@ -25,7 +25,9 @@ use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Encoders\WebpEncoder;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -113,6 +115,12 @@ class User extends Authenticatable implements FilamentUser
      */
     protected static function booted(): void
     {
+        static::saving(static function (User $user): void {
+            if ($user->isDirty('profile_photo_path') && filled($user->profile_photo_path)) {
+                $user->convertProfilePhotoToWebp();
+            }
+        });
+
         static::saved(static function (User $user): void {
             if ($user->wasChanged(['name', 'surname', 'nickname', 'profile_photo_path'])) {
                 ApiCacheVersion::bump();
@@ -259,6 +267,47 @@ class User extends Authenticatable implements FilamentUser
     public function photoUrl(): ?string
     {
         return filled($this->profile_photo_path) ? Storage::disk('public')->url((string) $this->profile_photo_path) : null;
+    }
+
+    /**
+     * Convierte la foto de perfil subida a WebP (calidad 85, máx 512 px) y elimina el original previo.
+     */
+    public function convertProfilePhotoToWebp(): void
+    {
+        $path = (string) $this->profile_photo_path;
+
+        if (blank($path)) {
+            return;
+        }
+
+        $disk = Storage::disk('public');
+        $absolutePath = $disk->path($path);
+
+        if (! file_exists($absolutePath)) {
+            return;
+        }
+
+        try {
+            $mime = (string) (@mime_content_type($absolutePath) ?: 'image/jpeg');
+            $image = File::decodeImage($absolutePath, $mime);
+            $image->scaleDown(width: 512, height: 512);
+
+            $targetRelative = (string) preg_replace('/\.[^.\/]*$/', '', $path).'.webp';
+            $targetAbsolute = $disk->path($targetRelative);
+
+            $image->encode(new WebpEncoder(quality: 85, strip: true))->save($targetAbsolute);
+
+            if ($targetAbsolute !== $absolutePath) {
+                @unlink($absolutePath);
+            }
+
+            $this->profile_photo_path = $targetRelative;
+        } catch (\Throwable $e) {
+            Log::warning('User: no se ha podido convertir el avatar a WebP', [
+                'path' => $absolutePath,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
     public function urlAvatarIcon(): string

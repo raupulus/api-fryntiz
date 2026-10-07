@@ -37,11 +37,10 @@ trait HasImageFileUpload
      * trait—, y se pasa `false` allí donde no hay tipo que exigir: el editor de
      * contenido y los archivos adjuntos, donde se sube lo que haga falta.
      *
-     * `$webpOriginal` guarda el original en WebP (`File::addFile()`): hoy, las
-     * portadas de los contenidos y de sus páginas (C1 de la auditoría de
-     * contenidos; el resto de módulos, en docs/future).
+     * `$webpOriginal` guarda el original en WebP (`File::addFile()`): activo por
+     * defecto en toda la plataforma.
      */
-    protected function resolveImageUpload(array $data, string $field, string $module, bool $isPrivate = false, bool $validate = true, bool $webpOriginal = false): array
+    protected function resolveImageUpload(array $data, string $field, string $module, bool $isPrivate = false, bool $validate = true, bool $webpOriginal = true): array
     {
         $value = $data[$field] ?? null;
 

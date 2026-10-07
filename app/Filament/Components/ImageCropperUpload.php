@@ -27,14 +27,21 @@ class ImageCropperUpload extends FileUpload
             ->imageEditor()
             ->disk('public')
             ->visibility('public')
-            ->maxSize(4096)
+            ->maxSize(20480)
             // Explícito y no sólo por el valor por defecto de `multiple()`
             // (`false`): sin esto, nada impide que el campo llegue a tener dos
             // elementos a la vez —el que ya había y uno nuevo— si el navegador
             // añade el segundo antes de que la retirada del primero termine de
             // sincronizarse con el servidor.
             ->maxFiles(1)
-            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+            ->acceptedFileTypes([
+                'image/jpeg',
+                'image/png',
+                'image/webp',
+                'image/heic',
+                'image/heif',
+                'image/avif',
+            ])
             ->validationAttribute($validationLabel)
             // El mensaje genérico de Laravel para «uploaded» no dice la causa,
             // y casi siempre es que el archivo supera el límite del servidor

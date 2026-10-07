@@ -154,6 +154,11 @@ class File extends BaseModel
         'image/x-windows-bmp',
         'image/x-ms-bmp',
         'image/bmp',
+        'image/heic',
+        'image/heif',
+        'image/heic-sequence',
+        'image/heif-sequence',
+        'image/avif',
         'application/pdf',
     ];
 
@@ -168,9 +173,11 @@ class File extends BaseModel
     public const MAX_FILE_SIZE = 20 * 1024 * 1024;
 
     /**
-     * Ancho máximo al que se guarda el original de una imagen.
+     * Dimensión máxima (en su lado más grande, sea ancho o alto) al que se guarda el original de una imagen.
      */
     public const MAX_IMAGE_WIDTH = 2560;
+
+    public const MAX_IMAGE_DIMENSION = 2560;
 
     /**
      * Tipos que se enseñan en el navegador al servirlos. El resto se sirve como
@@ -329,7 +336,7 @@ class File extends BaseModel
         ?int $file_id = null,
         bool $has_thumbnails = true,
         bool $validate = true,
-        bool $webpOriginal = false,
+        bool $webpOriginal = true,
     ): ?File {
 
         $fullPath = ($is_private ? 'private' : 'public').'/'.$path;
@@ -444,6 +451,15 @@ class File extends BaseModel
             return false;
         }
 
+        if (in_array($mime, self::IMAGICK_ONLY_MIMES, true) && ! self::canReadWithImagick($mime)) {
+            Log::warning('File: servidor sin soporte Imagick para formato de imagen (HEIC/AVIF)', [
+                'mime' => $mime,
+                'original_name' => $originalName,
+            ]);
+
+            return false;
+        }
+
         if ($size !== null && $size > self::MAX_FILE_SIZE) {
             Log::warning('File: archivo por encima del tamaño máximo', [
                 'size' => $size,
@@ -491,10 +507,8 @@ class File extends BaseModel
             // píxeles antes, las fotos de móvil quedan tumbadas para siempre.
             $image->orient();
 
-            // # 2. Acotado al ancho máximo lógico para web.
-            if ($image->width() > self::MAX_IMAGE_WIDTH) {
-                $image->scale(width: self::MAX_IMAGE_WIDTH);
-            }
+            // # 2. Acotado al tamaño máximo por su lado mayor.
+            $image->scaleDown(width: self::MAX_IMAGE_WIDTH, height: self::MAX_IMAGE_WIDTH);
 
             // # 3. Limpieza de metadatos. Ver stripMetadata().
             self::stripMetadata($image);
@@ -584,9 +598,7 @@ class File extends BaseModel
             // lo aplica libheif al leerlas.
             $image = self::decodeImage($absolutePath, $mime);
 
-            if ($image->width() > self::MAX_IMAGE_WIDTH) {
-                $image->scale(width: self::MAX_IMAGE_WIDTH);
-            }
+            $image->scaleDown(width: self::MAX_IMAGE_WIDTH, height: self::MAX_IMAGE_WIDTH);
 
             self::stripMetadata($image);
 
@@ -623,9 +635,7 @@ class File extends BaseModel
      */
     public function replacePixels(ImageInterface $image): void
     {
-        if ($image->width() > self::MAX_IMAGE_WIDTH) {
-            $image->scale(width: self::MAX_IMAGE_WIDTH);
-        }
+        $image->scaleDown(width: self::MAX_IMAGE_WIDTH, height: self::MAX_IMAGE_WIDTH);
 
         self::stripMetadata($image);
 
@@ -778,7 +788,7 @@ class File extends BaseModel
      * escriben DESPUÉS y son otra cosa; ver el TODO de `createThumbnails()` y
      * `docs/future/metadatos-imagenes.md`.
      */
-    protected static function stripMetadata(ImageInterface $image): void
+    public static function stripMetadata(ImageInterface $image): void
     {
         // No hay un "borra todos los metadatos" de una pieza: se vacía el EXIF
         // y se quita el perfil ICC por separado. Se hace sobre la instancia, y
@@ -822,7 +832,8 @@ class File extends BaseModel
         bool $is_private = true,
         ?int $file_id = null,
         bool $has_thumbnails = true,
-        bool $validate = true): ?File
+        bool $validate = true,
+        bool $webpOriginal = true): ?File
     {
         $payload = (string) Arr::last(explode(',', $base64));
 
@@ -866,7 +877,7 @@ class File extends BaseModel
             true // Mark it as test, since the file isn't from real HTTP POST.
         );
 
-        $file = self::addFile($uploadedFile, $path, $is_private, $file_id, $has_thumbnails, $validate);
+        $file = self::addFile($uploadedFile, $path, $is_private, $file_id, $has_thumbnails, $validate, $webpOriginal);
 
         // Close this file after response is sent.
         // Closing the file will cause to remove it from temp director!
@@ -939,13 +950,8 @@ class File extends BaseModel
 
                 $extension = $file->fileType->extension;
 
-                if ($file->fileType->mime === 'image/jpeg') {
-                    $newName = preg_replace('/\.jpeg$/i', '.webp', $file->name);
-                    $newName = preg_replace('/\.jpg$/i', '.webp', $newName);
-                    $img->encode(new WebpEncoder(quality: 90, strip: true))->save($newPath.'/'.$newName);
-                    $extension = 'webp';
-                } elseif ($file->fileType->mime === 'image/png') {
-                    $newName = preg_replace('/\.png$/i', '.webp', $file->name);
+                if (in_array($file->fileType->mime, ['image/jpeg', 'image/pjpeg', 'image/png', 'image/webp'], true)) {
+                    $newName = (string) preg_replace('/\.[^.\/]*$/', '', (string) $file->name).'.webp';
                     $img->encode(new WebpEncoder(quality: 90, strip: true))->save($newPath.'/'.$newName);
                     $extension = 'webp';
                 } else {
