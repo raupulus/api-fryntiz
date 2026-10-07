@@ -41,11 +41,11 @@ class TurnstileService
         $secret = config('services.turnstile.secret_key');
 
         if (empty($secret)) {
-            return new CaptchaResult(valid: true, score: null, configured: false);
+            return new CaptchaResult(valid: true, score: null, configured: false, provider: 'turnstile');
         }
 
         if (empty($token)) {
-            return new CaptchaResult(valid: false, score: null, configured: true);
+            return new CaptchaResult(valid: false, score: null, configured: true, provider: 'turnstile');
         }
 
         try {
@@ -62,7 +62,7 @@ class TurnstileService
             // warning es la señal de alerta si aparece a ráfagas.
             Log::warning('Turnstile: could not verify', ['message' => $e->getMessage()]);
 
-            return new CaptchaResult(valid: true, score: null, configured: true);
+            return new CaptchaResult(valid: true, score: null, configured: true, provider: 'turnstile');
         }
 
         // Sólo un 5xx es «Cloudflare no puede contestar». Un 4xx es Cloudflare
@@ -71,7 +71,7 @@ class TurnstileService
         if ($response->serverError()) {
             Log::warning('Turnstile: unsatisfactory response', ['status' => $response->status()]);
 
-            return new CaptchaResult(valid: true, score: null, configured: true);
+            return new CaptchaResult(valid: true, score: null, configured: true, provider: 'turnstile');
         }
 
         $valid = $response->json('success') === true;
@@ -80,7 +80,7 @@ class TurnstileService
             $this->warnIfSecretIsWrong($response->json('error-codes'));
         }
 
-        return new CaptchaResult(valid: $valid, score: null, configured: true);
+        return new CaptchaResult(valid: $valid, score: null, configured: true, provider: 'turnstile');
     }
 
     /**

@@ -60,13 +60,15 @@ class PortfolioBlogSeederTest extends TestCase
 
         $this->assertSame(20, $this->blog()->count());
 
+        $jsonRawTypeId = (int) DB::table('content_available_page_raw')->where('type', 'json')->value('id');
+
         foreach ($this->blog()->with('pages.raws')->get() as $content) {
             $this->assertNotEmpty($content->pages, "{$content->slug} sin páginas");
 
             $text = '';
 
             foreach ($content->pages as $page) {
-                $json = $page->raws->firstWhere('available_page_raw_id', 2);
+                $json = $page->raws->firstWhere('available_page_raw_id', $jsonRawTypeId);
                 $this->assertNotNull($json, "{$content->slug}: falta el JSON de Editor.js");
 
                 foreach (json_decode($json->content, true)['blocks'] as $block) {

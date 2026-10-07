@@ -117,7 +117,17 @@ class EmailResource extends Resource
                 TextEntry::make('client_ip')->label('IP'),
                 TextEntry::make('client_user_agent')->label('User Agent'),
                 TextEntry::make('client_referer')->label('Referer'),
-                TextEntry::make('captcha_score')->label('Captcha Score'),
+                TextEntry::make('attributes.captcha_provider')
+                    ->label('Proveedor de Captcha')
+                    ->formatStateUsing(fn ($state) => match ($state) {
+                        'turnstile' => 'Cloudflare Turnstile',
+                        'recaptcha' => 'Google reCAPTCHA',
+                        default => $state ? ucfirst((string) $state) : null,
+                    })
+                    ->placeholder('No aplica'),
+                TextEntry::make('captcha_score')
+                    ->label('Captcha Score')
+                    ->placeholder('No aplica'),
                 TextEntry::make('app_name')->label('App'),
                 TextEntry::make('app_domain')->label('Dominio'),
             ])->columnSpanFull(),

@@ -17,6 +17,7 @@ final class CaptchaResult
         public readonly bool $valid,
         public readonly ?float $score,
         public readonly bool $configured,
+        public readonly ?string $provider = null,
     ) {}
 
     /**

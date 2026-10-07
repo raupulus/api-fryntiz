@@ -275,6 +275,7 @@ class ContactService
             'name' => isset($data['name']) ? $this->sanitise((string) $data['name']) : null,
             'captcha_configurado' => $captcha->configured,
             'captcha_valido' => $captcha->valid,
+            'captcha_provider' => $captcha->provider,
             'duplicado' => $duplicate,
             'extra' => $data['attributes'] ?? null,
         ], fn ($v) => $v !== null);

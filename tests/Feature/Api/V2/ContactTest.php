@@ -72,7 +72,10 @@ class ContactTest extends ApiTestCase
         $this->assertSuccessResponse($response, 201);
         $response->assertJson(['message' => 'Mensaje recibido correctamente']);
         $this->assertSame(1, Email::query()->count());
-        $this->assertSame('0.90', (string) Email::query()->value('captcha_score'));
+        $email = Email::query()->first();
+        $this->assertNotNull($email);
+        $this->assertSame('0.90', (string) $email->captcha_score);
+        $this->assertSame('recaptcha', $email->attributes['captcha_provider'] ?? null);
 
         Http::assertSent(fn (Request $request) => $request->url() === 'https://www.google.com/recaptcha/api/siteverify'
             && $request['secret'] === 'recaptcha-secret'
@@ -123,8 +126,11 @@ class ContactTest extends ApiTestCase
         $this->assertSuccessResponse($response, 201);
         $response->assertJson(['message' => 'Mensaje recibido correctamente']);
         $this->assertSame(1, Email::query()->count());
+        $email = Email::query()->first();
+        $this->assertNotNull($email);
         // Turnstile no da puntuación.
-        $this->assertNull(Email::query()->value('captcha_score'));
+        $this->assertNull($email->captcha_score);
+        $this->assertSame('turnstile', $email->attributes['captcha_provider'] ?? null);
 
         Http::assertSent(fn (Request $request) => $request->url() === 'https://challenges.cloudflare.com/turnstile/v0/siteverify'
             && $request['secret'] === 'turnstile-secret'

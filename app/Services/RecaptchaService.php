@@ -42,11 +42,11 @@ class RecaptchaService
         $secret = config('google.recaptcha.secret_key');
 
         if (empty($secret)) {
-            return new CaptchaResult(valid: true, score: null, configured: false);
+            return new CaptchaResult(valid: true, score: null, configured: false, provider: 'recaptcha');
         }
 
         if (empty($token)) {
-            return new CaptchaResult(valid: false, score: null, configured: true);
+            return new CaptchaResult(valid: false, score: null, configured: true, provider: 'recaptcha');
         }
 
         try {
@@ -72,14 +72,14 @@ class RecaptchaService
             // docs/info/auth.md y en docs/info/decisiones-tecnicas.md.
             Log::warning('reCAPTCHA: no se ha podido verificar', ['message' => $e->getMessage()]);
 
-            return new CaptchaResult(valid: true, score: null, configured: true);
+            return new CaptchaResult(valid: true, score: null, configured: true, provider: 'recaptcha');
         }
 
         if (! $response->successful()) {
             // Mismo criterio que arriba: fallo en abierto deliberado.
             Log::warning('reCAPTCHA: respuesta no satisfactoria', ['status' => $response->status()]);
 
-            return new CaptchaResult(valid: true, score: null, configured: true);
+            return new CaptchaResult(valid: true, score: null, configured: true, provider: 'recaptcha');
         }
 
         $valid = $response->json('success') === true;
@@ -101,6 +101,7 @@ class RecaptchaService
             valid: $valid,
             score: $score,
             configured: true,
+            provider: 'recaptcha',
         );
     }
 }

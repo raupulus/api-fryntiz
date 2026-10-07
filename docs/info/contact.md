@@ -85,8 +85,10 @@ Módulo para enviar formularios de contacto vía API con verificación de captch
 5. Respuesta: `{ success: true, message: "Mensaje enviado correctamente" }`
 
 > Turnstile no devuelve puntuación: el mensaje se guarda con `captcha_score` nulo y
-> sin el bonus de prioridad que da una puntuación alta de reCAPTCHA. El patrón de
-> reCAPTCHA (activo solo con claves en `.env`) protege también el login de los dos paneles Filament — ver [auth.md](auth.md).
+> sin el bonus de prioridad que da una puntuación alta de reCAPTCHA. El proveedor utilizado
+> (`turnstile` o `recaptcha`) se guarda en `attributes.captcha_provider` y se muestra en la ficha de Filament
+> (o «No aplica» si es nulo). El patrón de reCAPTCHA (activo solo con claves en `.env`) protege también
+> el login de los dos paneles Filament — ver [auth.md](auth.md).
 
 ## Comando de debug
 
@@ -96,4 +98,4 @@ php artisan debug:seed-contact --count=10
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-10-05
+> Creado: 2026-05-25 · Última revisión: 2026-10-07
