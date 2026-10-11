@@ -7,6 +7,7 @@ namespace App\Filament\Admin\Resources\Platforms;
 use App\Filament\Admin\Resources\Platforms\Pages\CreatePlatform;
 use App\Filament\Admin\Resources\Platforms\Pages\EditPlatform;
 use App\Filament\Admin\Resources\Platforms\Pages\ListPlatforms;
+use App\Filament\Admin\Resources\Platforms\RelationManagers\CategoriesRelationManager;
 use App\Filament\Components\ImageCropperUpload;
 use App\Models\Platform;
 use BackedEnum;
@@ -109,6 +110,11 @@ class PlatformResource extends Resource
                 BulkActionGroup::make([DeleteBulkAction::make()]),
             ])
             ->defaultSort('title');
+    }
+
+    public static function getRelations(): array
+    {
+        return [CategoriesRelationManager::class];
     }
 
     public static function getPages(): array

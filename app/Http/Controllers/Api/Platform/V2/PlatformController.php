@@ -72,7 +72,8 @@ class PlatformController extends BaseApiController
     }
 
     /**
-     * Categorías disponibles en una plataforma.
+     * Categorías raíz de una plataforma con sus subcategorías y cuántos
+     * contenidos publicados tiene cada una.
      */
     public function categories(string $slug): JsonResponse
     {
@@ -82,6 +83,6 @@ class PlatformController extends BaseApiController
             return $this->notFoundResponse('Plataforma no encontrada');
         }
 
-        return $this->successResponse($platform->getApiCategories());
+        return $this->successResponse($this->api->categories($platform));
     }
 }

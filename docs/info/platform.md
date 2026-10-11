@@ -21,7 +21,7 @@ Módulo de gestión multi-sitio que permite organizar contenidos por plataforma 
 | Archivo | Descripción |
 |---------|-------------|
 | `app/Services/Platform/PlatformService.php` | `getAll()`, `getBySlug(slug)` (sólo la fila: cada ruta carga lo suyo) |
-| `app/Services/Platform/PlatformApiService.php` | Ficha completa de la API (`detail()`, en caché) y etiquetas con su recuento (`tags()`) |
+| `app/Services/Platform/PlatformApiService.php` | Ficha completa de la API (`detail()`, en caché), etiquetas con su recuento (`tags()`) y categorías en árbol con su recuento (`categories()`, en caché) |
 
 ### Resources API V2
 | Archivo | Descripción |
@@ -33,6 +33,19 @@ Módulo de gestión multi-sitio que permite organizar contenidos por plataforma 
 | Archivo | Descripción |
 |---------|-------------|
 | `app/Enums/PlatformStatusEnum.php` | Estados de plataforma |
+
+### Panel (Filament)
+| Archivo | Descripción |
+|---------|-------------|
+| `app/Filament/Admin/Resources/Platforms/RelationManagers/CategoriesRelationManager.php` | Pestaña «Categorías» de la plataforma: lista las de `platform_categories` (con cuántos contenidos las tienen), añade existentes o crea una nueva (raíz o subcategoría) y las quita |
+
+Las categorías que se pueden elegir al editar un contenido de la plataforma, y
+las que devuelve `/categories`, son las de esa pestaña. **Quitar una categoría
+de la plataforma borra la fila de la pivote y, por la clave foránea en
+cascada, sus enlaces con los contenidos** (borradores incluidos); el modal
+avisa de cuántos. La categoría en sí no se borra: es global y se edita en
+«Categorías». No hay «mostrar en el menú» por categoría: el menú enseña todas
+las de la plataforma.
 
 ### Otros
 | Archivo | Descripción |
@@ -64,7 +77,7 @@ Módulo de gestión multi-sitio que permite organizar contenidos por plataforma 
 
 - `Platform` → `BelongsTo` → `User` (vía `user_id`)
 - `Platform` → `HasMany` → `Content` (vía `platform_id`)
-- `Platform` → `HasMany` → `PlatformCategory` (vía `platform_id`)
+- `Platform` → `HasMany` → `PlatformCategory` (vía `platform_id`; `Platform::platformCategories()`). `Platform::categories()` es el `BelongsToMany` hacia `Category` por la misma pivote
 - `Platform` → `HasMany` → `PlatformTag` (vía `platform_id`)
 - `Platform` → `HasMany` → `Newsletter` (vía `platform_id`)
 - `User` → `BelongsToMany` → `Platform` (`User::platforms()`, pivote `platform_user` con `auto_contributor`; `User::platformAssignments()` da las filas como `PlatformUser`)
@@ -77,7 +90,7 @@ Contrato completo, con ejemplos, en [`api/v2/content.md`](api/v2/content.md).
 |--------|------|------|-------------|
 | GET | `/api/v2/platforms` | No | Listar plataformas (paginado) |
 | GET | `/api/v2/platforms/{slug}` | No | Ficha completa: redes (sin `*_token`), autor con sus datos de `user_details`, tecnologías de sus proyectos publicados, recuento de contenidos publicados por tipo y páginas de tipo `page` |
-| GET | `/api/v2/platforms/{slug}/categories` | No | Categorías raíz con sus subcategorías |
+| GET | `/api/v2/platforms/{slug}/categories` | No | Categorías raíz con sus subcategorías anidadas y `contents_count` (publicados) de cada una: para montar un menú |
 | GET | `/api/v2/platforms/{slug}/tags` | No | Etiquetas con cuántos contenidos publicados las usan |
 | GET | `/api/v2/platforms/{slug}/contents…` | No | Contenidos: ver [content.md → Rutas API V2](content.md#rutas-api-v2) |
 

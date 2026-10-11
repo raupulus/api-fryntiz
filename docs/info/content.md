@@ -330,7 +330,7 @@ Contrato completo en [`api/v2/content.md`](api/v2/content.md).
 
 | Método | Ruta | Auth | Descripción |
 |--------|------|------|-------------|
-| GET | `/api/v2/platforms/{platform:slug}/contents` | No | Publicados y activos; `?featured=1`, `?type=`, `?category=`, `?tag=`, `?technology=`, `?q=` |
+| GET | `/api/v2/platforms/{platform:slug}/contents` | No | Publicados y activos; `?featured=1`, `?type=`, `?category=` (una raíz incluye sus subcategorías), `?tag=`, `?technology=`, `?q=` |
 | GET | `/api/v2/platforms/{platform:slug}/contents/highlights` | No | Destacados, últimos y tendencia (3 días) por tipo; `?type=featured\|latest\|trend\|all`, `?limit=` |
 | GET | `/api/v2/platforms/{platform:slug}/contents/{content:slug}` | No | Detalle: datos, índice de páginas sin texto y primera página; `?include=…\|all`, `?format=` |
 | GET | `/api/v2/platforms/{platform:slug}/contents/{content:slug}/pages` | No | Páginas con su texto; `?format=`, `?from=`, `?limit=` |

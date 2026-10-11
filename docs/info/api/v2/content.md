@@ -238,8 +238,13 @@ de una web y metadatos del SSR. **Nunca** lleva las claves de publicación
 
 ### `GET /platforms/{platform:slug}/categories` — Categorías de una plataforma
 
-- **Respuesta 200**: `data` es un array de categorías raíz con sus
-  subcategorías anidadas:
+Las categorías que la plataforma tiene asignadas (se gestionan en el panel,
+en la plataforma → «Categorías»), pensadas para montar un **menú**: categorías
+raíz por nombre, cada una con sus subcategorías anidadas y cuántos contenidos
+publicados tiene. Sólo salen las subcategorías que **también** están asignadas
+a la plataforma.
+
+- **Respuesta 200**: `data` es un array de categorías raíz:
 
 ```json
 {
@@ -254,18 +259,25 @@ de una web y metadatos del SSR. **Nunca** lleva las claves de publicación
       "color": "#3788d8",
       "urlImageMicro": "https://api.raupulus.dev/…/cat-micro.webp",
       "urlImageSmall": "https://api.raupulus.dev/…/cat-small.webp",
+      "contents_count": 5,
       "subcategories": [
-        { "slug": "arduino", "name": "Arduino", "description": "…", "icon": "fa fa-bolt", "color": "#2e7d32", "urlImageMicro": "…", "urlImageSmall": "…", "parent": "electronica" }
+        { "slug": "arduino", "name": "Arduino", "description": "…", "icon": "fa fa-bolt", "color": "#2e7d32", "urlImageMicro": "…", "urlImageSmall": "…", "contents_count": 3, "parent": "electronica" }
       ]
     }
   ]
 }
 ```
 
-  `urlImageMicro`/`urlImageSmall` nunca son `null` (caen a la imagen por
-  defecto). No hay `id` ni `image_id`. Se renueva al añadir una categoría a la
-  plataforma o al editarla (antes se guardaba para siempre y no se enteraba de
-  las categorías nuevas).
+  - `contents_count`: contenidos **publicados y activos** (las filas quitadas
+    de un contenido no cuentan). En una raíz suma los suyos y los de sus
+    subcategorías **sin repetir** (uno con la raíz y la hija cuenta una vez),
+    así que coincide con `meta.total` de `/contents?category={slug}`.
+  - `urlImageMicro`/`urlImageSmall` nunca son `null` (caen a la imagen por
+    defecto). No hay `id` ni `parent_id`: el identificador es `slug`.
+  - Una categoría sin contenidos sale con `contents_count: 0`; filtrarlas del
+    menú es cosa del cliente.
+  - Se renueva al añadir o quitar una categoría de la plataforma, al editarla
+    y cuando cambia un contenido; con la hora, por si hay uno programado.
 - **Errores**: `404` `Plataforma no encontrada`.
 
 ### `GET /platforms/{platform:slug}/tags` — Etiquetas de una plataforma
@@ -348,7 +360,7 @@ Es lo que sale en el listado y la base del detalle:
   |---|---|
   | `featured=1` | Sólo destacados |
   | `type={slug}` | Por tipo (`blog`, `project`, `page`…). Un tipo que no existe → `404` `Tipo de contenido no reconocido` |
-  | `category={slug}` | Con esa categoría o subcategoría de la plataforma |
+  | `category={slug}` | Con esa categoría o subcategoría de la plataforma. **Una categoría raíz incluye también los contenidos de sus subcategorías** (los mismos que cuenta `contents_count` en `/categories`) |
   | `tag={slug}` | Con esa etiqueta de la plataforma |
   | `technology={slug}` | Con esa tecnología |
   | `q={texto}` | El texto en el título o el extracto, sin distinguir mayúsculas. `%` y `_` se buscan tal cual |

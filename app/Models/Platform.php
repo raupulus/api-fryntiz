@@ -8,15 +8,13 @@ use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseModel;
 use App\Models\Concerns\BumpsApiCache;
 use App\Models\Content\Content;
-use App\Support\ApiCacheVersion;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Cache;
 
 /**
  * Class Platform
@@ -41,13 +39,14 @@ use Illuminate\Support\Facades\Cache;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Category> $categories
+ * @property-read Collection<int, Category> $categories
+ * @property-read Collection<int, PlatformCategory> $platformCategories
  * @property-read int|null $categories_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Content> $contentPages
+ * @property-read Collection<int, Content> $contentPages
  * @property-read int|null $content_pages_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Content> $contents
+ * @property-read Collection<int, Content> $contents
  * @property-read int|null $contents_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Content> $contentsActive
+ * @property-read Collection<int, Content> $contentsActive
  * @property-read int|null $contents_active_count
  * @property-read string $url_image
  * @property-read string $url_image_large
@@ -56,7 +55,7 @@ use Illuminate\Support\Facades\Cache;
  * @property-read string $url_image_normal
  * @property-read string $url_image_small
  * @property-read File|null $image
- * @property-read \Illuminate\Database\Eloquent\Collection<int, Tag> $tags
+ * @property-read Collection<int, Tag> $tags
  * @property-read int|null $tags_count
  * @property-read User|null $user
  *
@@ -159,6 +158,15 @@ class Platform extends BaseModel
     }
 
     /**
+     * Las filas de la pivote con sus categorías (`platform_categories`): se
+     * gestionan desde la plataforma y es a lo que se enlazan los contenidos.
+     */
+    public function platformCategories(): HasMany
+    {
+        return $this->hasMany(PlatformCategory::class, 'platform_id', 'id');
+    }
+
+    /**
      * Asocia a la imagen principal.
      */
     public function image(): BelongsTo
@@ -175,57 +183,5 @@ class Platform extends BaseModel
             ->whereNotIn('domain', ['', ' ', false])
             ->pluck('domain')
             ->toArray();
-    }
-
-    /**
-     * Devuelve todas las categorías formateadas para consumirla a través de api.
-     *
-     * En caché con la versión de `ApiCacheVersion`: antes era para siempre y
-     * sólo se renovaba al guardar una categoría, no al añadirla a la
-     * plataforma (F9).
-     */
-    public function getApiCategories(): Collection
-    {
-        return Cache::remember('api-categories-'.$this->id.'-'.ApiCacheVersion::current(), now()->addDay(), function () {
-            $categories = $this->categories()
-                ->select('categories.id', 'categories.parent_id', 'categories.slug', 'categories.name', 'categories.description', 'categories.icon', 'categories.color', 'categories.image_id')
-                ->where('parent_id', null)
-                ->with('subcategories', function ($query) {
-                    $query->select('id', 'parent_id', 'slug', 'name', 'description', 'icon', 'color', 'image_id');
-                })
-                ->with('image')
-                ->orderBy('categories.name')
-                ->get();
-
-            // TODO: Revisar la forma de obtener subcategorías para optimizar esta parte y quitar esos unset.
-            $categories->map(function ($category) {
-                $category->urlImageMicro = $category->urlImageMicro;
-                $category->urlImageSmall = $category->urlImageSmall;
-                unset($category->id);
-                unset($category->image_id);
-                unset($category->image);
-                unset($category->pivot);
-                unset($category->parent_id);
-
-                if ($category->subcategories) {
-                    $category->subcategories->map(function ($subcategory) use ($category) {
-                        $subcategory->urlImageMicro = $subcategory->urlImageMicro;
-                        $subcategory->urlImageSmall = $subcategory->urlImageSmall;
-                        unset($subcategory->id);
-                        unset($subcategory->image_id);
-                        unset($subcategory->image);
-                        unset($subcategory->parent_id);
-
-                        $subcategory->parent = $category->slug;
-
-                        return $subcategory;
-                    });
-                }
-
-                return $category;
-            });
-
-            return $categories;
-        });
     }
 }

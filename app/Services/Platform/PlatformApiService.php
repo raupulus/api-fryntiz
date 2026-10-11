@@ -7,6 +7,7 @@ namespace App\Services\Platform;
 use App\Http\Resources\V2\Content\ContentRelatedResource;
 use App\Http\Resources\V2\SocialImageResource;
 use App\Http\Resources\V2\TechnologyResource;
+use App\Models\Category;
 use App\Models\Content\Content;
 use App\Models\Content\ContentAvailableType;
 use App\Models\Platform;
@@ -105,6 +106,83 @@ class PlatformApiService
                 'color' => $tag->color,
                 'contents_count' => (int) $tag->getAttribute('contents_count'),
             ])
+            ->all();
+    }
+
+    /**
+     * Las categorías de la plataforma (las de `platform_categories`) para
+     * montar un menú: raíces con sus subcategorías anidadas, y en cada una
+     * cuántos contenidos publicados tiene. Una categoría raíz cuenta también
+     * los de sus subcategorías, sin repetir (lo mismo que devuelve
+     * `?category=` en los contenidos).
+     *
+     * Una subcategoría sólo sale si también está en la plataforma: las
+     * categorías son globales y no tienen por qué serlo sus hijas.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function categories(Platform $platform): array
+    {
+        $key = sprintf('api:platform:%d:categories:%d:%s', $platform->id, ApiCacheVersion::current(), now()->format('YmdH'));
+
+        return Cache::remember($key, now()->addHours(self::CACHE_HOURS), function () use ($platform): array {
+            $categories = Category::query()
+                ->join('platform_categories', 'platform_categories.category_id', '=', 'categories.id')
+                ->where('platform_categories.platform_id', $platform->id)
+                ->with('image')
+                ->select('categories.*')
+                ->orderBy('categories.name')
+                ->get();
+
+            $contentIds = $this->publishedContentsByCategory($platform);
+            $children = $categories->whereNotNull('parent_id')->groupBy('parent_id');
+
+            $format = fn (Category $category, array $ids): array => [
+                'slug' => $category->slug,
+                'name' => $category->name,
+                'description' => $category->description,
+                'icon' => $category->icon,
+                'color' => $category->color,
+                'urlImageMicro' => $category->urlImageMicro,
+                'urlImageSmall' => $category->urlImageSmall,
+                'contents_count' => count($ids),
+            ];
+
+            return $categories->whereNull('parent_id')->map(function (Category $root) use ($children, $contentIds, $format): array {
+                $subcategories = ($children[$root->id] ?? collect())->map(fn (Category $child): array => [
+                    ...$format($child, $contentIds[$child->id] ?? []),
+                    'parent' => $root->slug,
+                ])->values()->all();
+
+                $own = $contentIds[$root->id] ?? [];
+                $all = $own;
+
+                foreach ($children[$root->id] ?? [] as $child) {
+                    $all = [...$all, ...($contentIds[$child->id] ?? [])];
+                }
+
+                return [...$format($root, array_values(array_unique($all))), 'subcategories' => $subcategories];
+            })->values()->all();
+        });
+    }
+
+    /**
+     * Ids de los contenidos publicados de la plataforma, por id de categoría.
+     * Las filas borradas de `content_categories` no cuentan.
+     *
+     * @return array<int, list<int>>
+     */
+    private function publishedContentsByCategory(Platform $platform): array
+    {
+        return DB::table('content_categories')
+            ->join('platform_categories', 'platform_categories.id', '=', 'content_categories.platform_category_id')
+            ->whereNull('content_categories.deleted_at')
+            ->where('platform_categories.platform_id', $platform->id)
+            ->whereIn('content_categories.content_id', Content::query()->published()->where('platform_id', $platform->id)->select('id'))
+            ->select(['platform_categories.category_id', 'content_categories.content_id'])
+            ->get()
+            ->groupBy('category_id')
+            ->map(fn ($rows): array => $rows->pluck('content_id')->map(fn ($id): int => (int) $id)->unique()->values()->all())
             ->all();
     }
 

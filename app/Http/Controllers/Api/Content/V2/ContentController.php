@@ -228,17 +228,23 @@ class ContentController extends BaseApiController
     }
 
     /**
-     * Filtros por slug de categoría, etiqueta y tecnología de la plataforma, y
-     * búsqueda de texto (F3). Las filas borradas de los pivotes no cuentan.
+     * Filtros por slug de categoría (la raíz incluye sus subcategorías), etiqueta
+     * y tecnología de la plataforma, y búsqueda de texto (F3). Las filas
+     * borradas de los pivotes no cuentan.
      *
      * @param  Builder<Content>  $query
      */
     private function applyTaxonomyFilters(Builder $query, Request $request, Platform $platform): void
     {
         if ($request->filled('category')) {
+            // Una categoría raíz incluye lo de sus subcategorías (las que están
+            // en la plataforma), igual que el recuento del menú de categorías.
+            $slug = (string) $request->query('category');
             $query->whereHas('categoriesJoin.platformCategory', fn (Builder $category) => $category
                 ->where('platform_id', $platform->id)
-                ->whereHas('category', fn (Builder $row) => $row->where('slug', (string) $request->query('category'))));
+                ->whereHas('category', fn (Builder $row) => $row
+                    ->where('slug', $slug)
+                    ->orWhereHas('parentCategory', fn (Builder $parent) => $parent->where('slug', $slug))));
         }
 
         if ($request->filled('tag')) {
