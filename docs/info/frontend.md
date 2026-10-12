@@ -94,7 +94,7 @@ pnpm build    # producción, a public/build/
 | `layouts/app.blade.php` | `<head>` con title, description, keywords, Open Graph y Twitter Card, todos con `@yield` para que cada vista los pise |
 | `app/Models/Content/ContentSeo.php` | Las etiquetas de un contenido: genéricas, sociales y de X. Incluye `og:image:width`, `og:image:height` y `og:image:type`, que salen de la miniatura real vía `File::thumbnailModel()` |
 | `SitemapGeneratorCommand` | `php artisan sitemap:generate` → `public/sitemap.xml`. Portada, «sobre el proyecto», currículum (índice + una página por currículum público), plantas (una por planta), energía, contador de pulsaciones, vuelos y estación meteorológica (índice + una página por sensor con datos). `/docs` **no** entra: exige sesión iniciada, así que no tiene sentido ofrecerlo a un rastreador anónimo |
-| `public/robots.txt` | Bloquea `/admin`, `/panel`, `/livewire`, sesión y cuenta, y las URL con token (`/newsletter/`, `/cv/s/`). `/docs` no se lista explícitamente, pero tampoco se indexa: al exigir sesión, un rastreador anónimo sólo ve la redirección al login. **No basta por sí solo**: un `Disallow` impide rastrear, no indexar — quien impide la indexación de verdad es `App\Http\Middleware\NoIndex` (`X-Robots-Tag`) en los dos paneles. La directiva `Sitemap:` apunta a este mismo host (`api.raupulus.dev`, el que sirven de verdad los vhosts de `docs/deploys/vhosts/`) |
+| `public/robots.txt` | Bloquea `/admin`, `/panel`, `/livewire`, sesión y cuenta, las URL con token (`/newsletter/`, `/cv/s/`) y la paginación de la estación meteorológica (`/weatherstation/*?*page=`) para proteger el *crawl budget*. `/docs` no se lista explícitamente, pero tampoco se indexa: al exigir sesión, un rastreador anónimo sólo ve la redirección al login. **No basta por sí solo**: un `Disallow` impide rastrear, no indexar — quien impide la indexación de verdad es `App\Http\Middleware\NoIndex` (`X-Robots-Tag`) en los dos paneles. La directiva `Sitemap:` apunta a este mismo host (`api.raupulus.dev`, el que sirven de verdad los vhosts de `docs/deploys/vhosts/`) |
 
 `File::thumbnailModel()` devuelve el **modelo** de la miniatura, no sólo su URL, que
 es lo que permite rellenar el ancho, el alto y el mime. Además resuelve el
@@ -120,4 +120,4 @@ Cosas que necesitan un navegador de verdad y no se pueden cerrar desde aquí:
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-14
+> Creado: 2026-08-30 · Última revisión: 2026-10-12

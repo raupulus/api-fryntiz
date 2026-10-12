@@ -348,29 +348,6 @@ parameters:
 			count: 1
 			path: app/Models/Language.php
 
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$slug\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Platform.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$subcategories\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/Platform.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$urlImageMicro\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/Platform.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$urlImageSmall\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Models/Platform.php
 
 		-
 			message: '#^PHPDoc tag @return with type mixed is not subtype of native type Illuminate\\Database\\Eloquent\\Relations\\HasMany\.$#'

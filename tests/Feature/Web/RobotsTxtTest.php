@@ -38,4 +38,12 @@ class RobotsTxtTest extends TestCase
         $this->assertStringContainsString('Disallow: /cv/s/', $robots);
         $this->assertStringContainsString('Disallow: /newsletter/', $robots);
     }
+
+    #[Test]
+    public function it_blocks_weather_station_pagination_to_protect_crawl_budget(): void
+    {
+        $robots = File::get(public_path('robots.txt'));
+
+        $this->assertStringContainsString('Disallow: /weatherstation/*?*page=', $robots);
+    }
 }
