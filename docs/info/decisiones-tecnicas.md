@@ -521,6 +521,9 @@ contenido las dos cosas son una fila.
 es la marca de «quitado a mano», y el colaborador automático no lo vuelve a meter. Por eso
 todas las relaciones con pivote de `Content` filtran las filas borradas.
 
+Por eso el menú del panel enseña a un Editor todas las plataformas: los nombres no son privados,
+y el listado al que lleva cada una sólo enseña lo que puede editar.
+
 *Fijado por `ContentPolicyTest` (matriz de permisos) y `ContentContributorsTest`. Decidido en
 la DUDA-1 y la DUDA-2 del plan de contenidos del 2026-09-24.*
 
@@ -634,6 +637,8 @@ del plan de contenidos del 2026-09-24.*
 - **Borradores en la base de datos**, uno por usuario y página, y no en el navegador: se recuperan
   desde otro equipo o tras perder la sesión, y cada uno es sólo de quien lo escribió. Los de más
   de 30 días sin tocar se borran.
+  Por lo mismo no hay copia en `localStorage` cuando falla un autoguardado: el borrador del
+  servidor es la copia, y al caducar la sesión el panel avisa antes de mandar al login.
 - **Historial** con lo que había antes de cada cambio real del contenido (la huella no cuenta el
   `time` de Editor.js ni la indentación): **50 versiones por página y 30 días**. Es un colchón
   para deshacer, no un archivo: con más, la tabla crecería con cada autoguardado que se convierta
@@ -702,6 +707,66 @@ sólo ve lo que puede editar, y lo demás no pasa por él.
 
 *Fijado por `ContentPageAiAssistantTest::editing_an_editorjs_page_keeps_uploaded_images_and_special_blocks_intact`
 y `::a_block_that_gemini_removes_is_reported`. Auditoría del editor del 2026-10-14.*
+
+---
+
+### D45 · «JSON en crudo» comparte el estado con el editor visual, y un JSON a medias no borra nada
+
+Las dos pestañas de una página de Editor.js editan el mismo campo (`content_json`). Mientras lo
+que se escribe en «JSON en crudo» no es un JSON válido, el editor visual se queda vacío, pero no
+devuelve ese vacío al cuadro: al volcar compara con lo que cargó (`captureBaseline()` en
+`editorjs.js`) y devuelve lo cargado, que es lo que se está escribiendo. Al volver a ser válido,
+el editor visual lo pinta.
+
+**Por qué se anota.** Una auditoría externa lo dio por pérdida de datos crítica («borra el
+artículo al primer carácter inválido») leyendo sólo el `$watch`. No pasa: comprobado en Chrome
+quitando el final del JSON, con autoguardado en medio; el cuadro y el estado de Livewire
+conservaron lo escrito.
+
+*Comprobado en Chrome el 2026-10-17 (auditoría del editor del 2026-10-14). Sin test automático:
+es comportamiento del navegador.*
+
+---
+
+### D46 · El stream de Gemini no bloquea la sesión
+
+Mientras el asistente escribe, el autoguardado y el resto de peticiones del panel siguen
+funcionando: Laravel no bloquea la sesión salvo que una ruta lo pida con `->block()`, y ninguna
+lo hace. Además la sesión se guarda antes de empezar a emitir.
+
+**Ojo en local:** `php artisan serve` atiende una petición cada vez, así que ahí sí se quedan en
+cola mientras dura el stream. Se evita arrancándolo con varios procesos:
+`PHP_CLI_SERVER_WORKERS=4 php artisan serve`. En el servidor (PHP-FPM) no pasa.
+
+*Auditoría del editor del 2026-10-14, que proponía `$request->session()->save()` para un
+bloqueo que no existe.*
+
+---
+
+### D47 · Markdown y HTML se mandan al servidor al perder el foco
+
+Los editores de Markdown y de HTML de una página llevan `live(onBlur: true)`: al salir de ellos,
+su texto viaja al servidor.
+
+**Por qué.** La pestaña «Vista previa» se pinta en el servidor con ese texto. Sin esto enseñaría
+lo de antes. El coste es una petición al salir del editor, no una por tecla.
+
+*Auditoría del editor del 2026-10-14, que proponía quitarlo.*
+
+---
+
+### D48 · En el móvil, la lista de páginas es un desplegable y la barra de acciones no es fija
+
+Por debajo de 1024 px la lista de páginas pasa a un desplegable (con «borrador» y «en uso» en
+cada opción, y «+ Añadir página» al final) y la barra de «Guardar», «Historial»… deja de ser
+fija.
+
+**Por qué.** La lista de escritorio ocupa una columna que en un móvil se come el editor, y una
+barra fija de varias filas taparía lo que se escribe al desplazarse. Reordenar páginas queda
+para el escritorio.
+
+*Comentado en `panel.css`. Auditoría del editor del 2026-10-14, que lo daba por pérdida de
+funciones.*
 
 ---
 

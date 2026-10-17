@@ -604,7 +604,9 @@ posteriores.
 Cada página se escribe en **un** formato —Editor.js, Markdown o HTML—, su
 **fuente**, que marca `content_pages.current_page_raw_id`. En el panel sólo se
 ve y se edita el editor de ese formato; los demás se regeneran a partir de él
-al guardar. Una página nueva empieza en Editor.js.
+al guardar. Una página nueva empieza en Editor.js, aunque las demás del
+contenido estén en otro formato: es el formato por defecto del panel, y
+cambiarlo es un clic en «Pasar a Markdown» o «Pasar a HTML».
 
 ### Qué se guarda (`ContentPageFormatService::save()`)
 
@@ -1329,7 +1331,8 @@ Sólo aparece si hay clave y la página no está en lectura.
   `low`, `medium` (por defecto, `GEMINI_THINKING_LEVEL`) y `high`. Gemini 3.8
   razona siempre: no hay «apagado», y `minimal` da error. Se piden los
   resúmenes del razonamiento (`includeThoughts`) y se ven en el modal mientras
-  piensa. El navegador recuerda el último nivel, y si ya no está en la lista
+  piensa. Google los escribe en inglés aunque se le pidan en español
+  (probado); el texto de la página sí sale en español. El navegador recuerda el último nivel, y si ya no está en la lista
   usa el de por defecto. No se manda `temperature`: los modelos 3.x lo ignoran.
 - **Modos** (`GeminiAiModeEnum`):
   1. `create`: título, slug y cuerpo de una página nueva. En «Añadir página»
@@ -1345,7 +1348,8 @@ Sólo aparece si hay clave y la página no está en lectura.
   en Markdown (imágenes subidas, avisos, vídeos, tarjetas de enlace…) le llegan
   como marcas `[[BLOQUE_1]]` que no debe tocar; al volver se pone en cada una el
   bloque original, intacto. Si Gemini quita alguna, el resultado lo avisa. Ver
-  [decisiones-tecnicas.md](decisiones-tecnicas.md) D44.
+  [decisiones-tecnicas.md](decisiones-tecnicas.md) D44. Mientras escribe, el
+  autoguardado sigue funcionando (D46).
 - **Aplicar:** el resultado entra en el editor sin guardar. «Deshacer lo de
   Gemini» (`undoAiAction`, aviso encima del formulario) lo devuelve a como
   estaba antes de aplicarlo, desde la caché del servidor (un día, por pestaña
