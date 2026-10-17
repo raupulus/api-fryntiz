@@ -777,6 +777,10 @@ G4 y E3 de la auditoría). Sustituye a la ventana flotante del antiguo
 `/admin/content/contents/{id}/pages/{page?}` (`{page}` es el id de la página o
 `new`; sin él, abre la primera).
 
+La página que se edita se lee una vez por petición (`currentPage()`, en una
+propiedad privada que Livewire no conserva): antes cada sitio que la
+necesitaba la volvía a pedir y un autoguardado la leía 17 veces.
+
 **Piezas:** `Pages/ManageContentPages.php` (estado, lista, guardar, autoguardado,
 bloqueo, historial e imágenes), el rasgo `Pages/Concerns/ContentPageForm.php`
 (el formulario y el camino de cambio de formato, trasladados tal cual), las
@@ -1182,6 +1186,9 @@ pantalla de páginas»).
 - Como mucho 50 por página: al crear la 51 se borra la más antigua. Las de más
   de 30 días las borra `content:prune-drafts-and-versions`.
 - Sustituye a las copias como filas borradas de `content_page_raw`.
+- El modal «Historial» lista las versiones sin su texto (`all()` no lo lee); el
+  de cada una se pide al pulsar «Ver» (`ManageContentPages::versionContent()`,
+  sólo de versiones de esa página). Antes traía el de las 50 de golpe.
 
 ### Borradores (`ContentPageDraftService`, tabla `content_page_drafts`)
 

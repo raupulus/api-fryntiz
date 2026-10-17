@@ -147,6 +147,11 @@ class ManageContentPages extends Page
      */
     public bool $aiUndoAvailable = false;
 
+    /**
+     * Ver `currentPage()`.
+     */
+    private ?ContentPage $currentPageRecord = null;
+
     public static function canAccess(array $parameters = []): bool
     {
         $record = $parameters['record'] ?? null;
@@ -1053,6 +1058,15 @@ class ManageContentPages extends Page
     }
 
     /**
+     * El texto de una versión, al pulsar «Ver» en el historial. Sólo de una
+     * versión de esta página.
+     */
+    public function versionContent(int $versionId): string
+    {
+        return (string) ($this->versionFor($versionId)->content ?? '');
+    }
+
+    /**
      * «Recuperar» una versión: se abre en el editor sin guardar, con el mismo
      * aviso y la misma confirmación que un cambio de formato (G5).
      *
@@ -1257,9 +1271,26 @@ class ManageContentPages extends Page
         return $this->contentRecord();
     }
 
+    /**
+     * La página que se edita, leída una vez por petición.
+     *
+     * Cada sitio que la necesita (el formulario, las acciones, el bloqueo, el
+     * borrador…) la volvía a pedir: un autoguardado leía 17 veces la misma
+     * fila, con su HTML entero. Se guarda en una propiedad privada, que
+     * Livewire no conserva entre peticiones, así que cada petición empieza
+     * leyéndola de nuevo. Si cambia `pageId`, se vuelve a leer.
+     */
     protected function currentPage(): ?ContentPage
     {
-        return $this->pageId === null ? null : ContentPage::query()->where('content_id', $this->ownerContent()->id)->find($this->pageId);
+        if ($this->pageId === null) {
+            return null;
+        }
+
+        if ($this->currentPageRecord?->id !== $this->pageId) {
+            $this->currentPageRecord = ContentPage::query()->where('content_id', $this->ownerContent()->id)->find($this->pageId);
+        }
+
+        return $this->currentPageRecord;
     }
 
     public function isReadOnly(): bool

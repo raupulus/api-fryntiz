@@ -28,6 +28,7 @@ use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Livewire\Features\SupportTesting\Testable;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\Test;
@@ -428,6 +429,45 @@ class ContentPageEditorTest extends TestCase
         $this->open($this->first)
             ->call('loadVersion', $html->id)
             ->assertSet('data.source_format', Format::Html->value);
+    }
+
+    #[Test]
+    public function the_history_lists_the_versions_without_their_text_and_loads_it_on_demand(): void
+    {
+        $this->pages->savePage($this->first, [], Format::Markdown, 'Texto de la versión nueva', null, $this->admin);
+        $version = ContentPageVersion::query()->where('content_page_id', $this->first->id)->firstOrFail();
+        $foreign = ContentPageVersion::query()->create([
+            'content_page_id' => $this->second->id, 'format' => Format::Markdown, 'content' => 'De otra página',
+            'content_hash' => 'x', 'reason' => Reason::Save,
+        ]);
+
+        $editor = $this->open($this->first->refresh())->mountAction('history');
+
+        $editor->assertMountedActionModalSee('Ver')
+            ->assertMountedActionModalDontSee('Texto de Primera');
+
+        $this->assertStringContainsString('Texto de Primera', (string) $editor->instance()->versionContent($version->id));
+        $this->assertSame('', $editor->instance()->versionContent($foreign->id), 'Sólo las de su página.');
+    }
+
+    // ── Velocidad ───────────────────────────────────────────────────────────
+
+    #[Test]
+    public function an_autosave_reads_the_page_only_a_few_times(): void
+    {
+        $editor = $this->open($this->first)->fillForm(['content_json' => $this->editorJs('Sin guardar')]);
+
+        $reads = 0;
+        DB::listen(function ($query) use (&$reads): void {
+            if (str_starts_with($query->sql, 'select') && str_contains($query->sql, 'from "content_pages"')) {
+                $reads++;
+            }
+        });
+
+        $editor->call('autosave');
+
+        // Antes, 17: cada sitio que la necesitaba la volvía a pedir.
+        $this->assertLessThanOrEqual(3, $reads);
     }
 
     // ── Imágenes (H2) ───────────────────────────────────────────────────────

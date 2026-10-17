@@ -28,7 +28,7 @@ Providers: `app/Providers/Filament/AdminPanelProvider.php` y `TenantPanelProvide
 | Grupos de navegación | Sistema · Contenido · Hardware · Gestión · Módulos · Configuración · Documentación |
 | Descubrimiento | Resources, Pages, Widgets y Clusters automáticos desde `app/Filament/Admin/` |
 | Menú de usuario | Entrada "Editar perfil" → `App\Filament\Admin\Pages\Profile` |
-| Navegación dinámica | Un ítem por cada `Platform` bajo el grupo Contenido, enlazando al listado de contenidos filtrado |
+| Navegación dinámica | Un ítem por cada `Platform` bajo el grupo Contenido, enlazando al listado de contenidos filtrado. Se construye en `bootUsing()`, al arrancar el panel, y no en cada arranque de Laravel (antes cada comando, trabajo de cola y petición a la API consultaba las plataformas). En el listado filtrado se marca la plataforma y no «Contenidos» (`ContentResource::platformFilter()`) |
 | Navegación estática extra | "Documentación de la API" → `route('scribe')` (`/docs`), se abre en pestaña nueva |
 | Render hooks | `SCRIPTS_AFTER` para `@push('scripts')` y Editor.js en `EditContent`; `AUTH_LOGIN_FORM_BEFORE` para el script de reCAPTCHA v3 del login |
 
@@ -412,7 +412,7 @@ Cobertura parcial; el resto queda pendiente en la fase 09 del roadmap.
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-27
+> Creado: 2026-08-30 · Última revisión: 2026-10-17
 
 
 ## Imágenes: por qué el uploader no enseña la que ya hay

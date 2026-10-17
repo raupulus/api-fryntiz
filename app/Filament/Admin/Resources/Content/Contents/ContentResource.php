@@ -39,6 +39,7 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Navigation\NavigationItem;
 use Filament\Pages\Enums\SubNavigationPosition;
 use Filament\Resources\Pages\Page;
 use Filament\Resources\Resource;
@@ -61,6 +62,8 @@ use Illuminate\Support\Enumerable;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
+use function Filament\Support\original_request;
+
 class ContentResource extends Resource
 {
     protected static ?string $model = Content::class;
@@ -70,6 +73,36 @@ class ContentResource extends Resource
     protected static string|\UnitEnum|null $navigationGroup = 'Contenido';
 
     protected static ?int $navigationSort = 1;
+
+    /**
+     * «Contenidos» no se marca en el menú cuando se está en una plataforma:
+     * entonces se marca la suya (ver `AdminPanelProvider`).
+     *
+     * @return array<NavigationItem>
+     */
+    public static function getNavigationItems(): array
+    {
+        return array_map(
+            fn (NavigationItem $item): NavigationItem => $item->isActiveWhen(
+                fn (): bool => original_request()->routeIs(static::getNavigationItemActiveRoutePattern()) && static::platformFilter() === null,
+            ),
+            parent::getNavigationItems(),
+        );
+    }
+
+    /**
+     * La plataforma por la que está filtrado el listado en la URL, si lo está.
+     */
+    public static function platformFilter(): ?int
+    {
+        if (! original_request()->routeIs('filament.admin.resources.content.contents.index')) {
+            return null;
+        }
+
+        $value = data_get(original_request()->query('filters'), 'platform_id.value');
+
+        return is_numeric($value) ? (int) $value : null;
+    }
 
     protected static ?string $modelLabel = 'Contenido';
 

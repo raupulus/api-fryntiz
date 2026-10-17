@@ -7,6 +7,7 @@ namespace App\Providers\Filament;
 use App\Filament\Admin\Pages\Dashboard;
 use App\Filament\Admin\Pages\Login;
 use App\Filament\Admin\Pages\Profile;
+use App\Filament\Admin\Resources\Content\Contents\ContentResource;
 use App\Filament\Admin\Resources\Content\Contents\Pages\ManageContentPages;
 use App\Http\Middleware\NoIndex;
 use App\Models\Platform;
@@ -34,6 +35,9 @@ class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
     {
+        // Ver `bootUsing()` más abajo.
+        $platformItemsAdded = false;
+
         return $panel
             ->default()
             ->id('admin')
@@ -120,22 +124,31 @@ class AdminPanelProvider extends PanelProvider
             )
             ->defaultThemeMode(ThemeMode::Dark)
             ->font('Figtree')
-            ->navigationItems(
-                (function () {
-                    try {
-                        return Platform::query()->orderBy('title')->get()->map(fn ($p) => NavigationItem::make($p->title)
-                            ->icon('heroicon-o-rectangle-stack')
-                            ->group('Contenido')
-                            ->sort(10 + $p->id)
-                            ->url(fn (): string => route('filament.admin.resources.content.contents.index', [
-                                'filters' => ['platform_id' => ['value' => $p->id]],
-                            ]))
-                        )->all();
-                    } catch (\Throwable) {
-                        return [];
-                    }
-                })()
-            )
+            // Una entrada del menú por plataforma, que abre «Contenidos» filtrado
+            // por ella. Se construye al arrancar el panel, que es cuando se
+            // pinta: antes iba aquí mismo, y esta función corre en cada
+            // arranque de Laravel, así que cada comando de Artisan, cada
+            // trabajo de la cola y cada petición a la API consultaban las
+            // plataformas para nada. `bootUsing` puede correr más de una vez
+            // con el mismo panel (en los tests, una por petición): se añaden
+            // una sola vez.
+            ->bootUsing(function (Panel $panel) use (&$platformItemsAdded): void {
+                if ($platformItemsAdded) {
+                    return;
+                }
+
+                $platformItemsAdded = true;
+                $panel->navigationItems(Platform::query()->orderBy('title')->get()
+                    ->map(fn (Platform $platform): NavigationItem => NavigationItem::make($platform->title)
+                        ->icon('heroicon-o-rectangle-stack')
+                        ->group('Contenido')
+                        ->sort(10 + $platform->id)
+                        ->url(fn (): string => route('filament.admin.resources.content.contents.index', [
+                            'filters' => ['platform_id' => ['value' => $platform->id]],
+                        ]))
+                        ->isActiveWhen(fn (): bool => ContentResource::platformFilter() === $platform->id))
+                    ->all());
+            })
             ->navigationItems([
                 NavigationItem::make('Documentación de la API')
                     ->icon(Heroicon::OutlinedBookOpen)

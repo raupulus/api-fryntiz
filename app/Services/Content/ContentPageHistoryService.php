@@ -77,13 +77,19 @@ class ContentPageHistoryService
     }
 
     /**
-     * Todas, de la más reciente a la más antigua.
+     * Todas, de la más reciente a la más antigua, sin su texto: el modal del
+     * historial lo pide al abrir cada una (`ManageContentPages::versionContent()`).
+     * Antes se traía el de las 50 de golpe, varios megas en una página larga,
+     * para enseñar sólo fechas.
      *
      * @return Collection<int, ContentPageVersion>
      */
     public function all(ContentPage $page): Collection
     {
-        return $this->query($page->id)->with('user')->get();
+        return $this->query($page->id)
+            ->select(['id', 'content_page_id', 'user_id', 'format', 'title', 'content_hash', 'reason', 'created_at'])
+            ->with('user')
+            ->get();
     }
 
     /**
