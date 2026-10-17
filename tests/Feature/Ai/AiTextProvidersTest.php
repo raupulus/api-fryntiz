@@ -144,12 +144,17 @@ class AiTextProvidersTest extends TestCase
 
         $this->fake('api.x.ai', Http::response(['error' => 'Unauthorized'], 401));
         $this->assertSame('La clave de Grok no vale o no tiene permiso para usar la API (Unauthorized).', $this->of($this->collect($grok), 'error')[0]);
+
+        // Sin saldo, xAI responde 403: no es que la clave no valga (probado
+        // con la API real el 2026-10-17).
+        $this->fake('api.x.ai', Http::response(['code' => 'The caller does not have permission to execute the specified operation', 'error' => 'Your team abc has either used all available credits or reached its monthly spending limit.'], 403));
+        $this->assertStringStartsWith('La cuenta de Grok no tiene saldo o ha llegado a su límite de gasto', $this->of($this->collect($grok), 'error')[0]);
     }
 
     // ── Mistral ─────────────────────────────────────────────────────────────
 
     #[Test]
-    public function mistral_gets_chat_completions_with_reasoning_effort(): void
+    public function mistral_gets_chat_completions_and_reasons_with_high_whatever_the_level(): void
     {
         $provider = $this->provider(AiProviderEnum::Mistral, 'mistral-medium-3-5');
         $this->fake('api.mistral.ai', $this->sseResponse([$this->mistral('Hola')]));
@@ -161,7 +166,8 @@ class AiTextProvidersTest extends TestCase
             && $request['model'] === 'mistral-medium-3-5'
             && $request['messages'] === [['role' => 'system', 'content' => 'Sistema'], ['role' => 'user', 'content' => 'Pregunta']]
             && $request['stream'] === true
-            && $request['reasoning_effort'] === 'medium');
+            // `mistral-medium-3-5` sólo admite `high` o `none`: con `low` da 400.
+            && $request['reasoning_effort'] === 'high');
     }
 
     #[Test]

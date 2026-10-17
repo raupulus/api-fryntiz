@@ -117,6 +117,16 @@ enum AiProviderEnum: string
     }
 
     /**
+     * Si se elige cuánto razona (bajo, medio, alto). Mistral sólo razona o no
+     * (`reasoning_effort` `high` o `none`; `mistral-medium-3-5` rechaza `low`
+     * con un 400, probado el 2026-10-17): en el modal no sale el nivel.
+     */
+    public function choosesReasoningLevel(): bool
+    {
+        return $this !== self::Mistral;
+    }
+
+    /**
      * Si la API puede mandar el razonamiento mientras piensa. En Mistral no
      * se pide aparte: llega con el nivel de razonamiento.
      */

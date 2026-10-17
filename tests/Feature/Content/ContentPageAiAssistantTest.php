@@ -512,6 +512,23 @@ class ContentPageAiAssistantTest extends TestCase
     }
 
     #[Test]
+    public function the_modal_offers_the_usable_providers_and_no_reasoning_level_for_mistral(): void
+    {
+        AiProvider::factory()->provider(AiProviderEnum::Mistral, 'mistral-medium-3-5')->create();
+        AiProvider::factory()->provider(AiProviderEnum::OpenAi, 'gpt-apagado')->create(['is_active' => false]);
+
+        $component = $this->editor($this->page)->mountAction('aiAssistant');
+        $providers = $component->instance()->getMountedAction()->getModalContent()->getData()['providers'];
+
+        // El predeterminado primero; el inactivo no sale. Mistral sólo razona o
+        // no: el nivel no se elige (y `low` le da 400).
+        $this->assertSame(
+            [['gemini', true], ['mistral', false]],
+            array_map(fn (array $provider): array => [$provider['value'], $provider['reasoning']], $providers),
+        );
+    }
+
+    #[Test]
     public function livewire_ai_assistant_action_is_hidden_without_a_usable_provider(): void
     {
         $this->gemini->update(['is_active' => false]);

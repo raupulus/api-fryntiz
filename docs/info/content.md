@@ -1355,8 +1355,10 @@ lectura.
     `reasoning.effort` en Responses, `reasoning_effort` en Mistral; a un modelo
     sin razonamiento le da error) y «Pedir el resumen» (`includeThoughts` en
     Gemini, `reasoning.summary: auto` en Responses; de serie en Gemini y
-    OpenAI, no en Grok, que sólo lo admite en algunos modelos). En Mistral el
-    razonamiento llega solo, con el nivel.
+    OpenAI, no en Grok, que sólo lo admite en algunos modelos). **Mistral sólo
+    razona o no** (`reasoning_effort: high`; `mistral-medium-3-5` rechaza `low`
+    con un 400): el interruptor se llama «Razonar antes de escribir», el modal
+    no ofrece nivel, y el razonamiento llega solo, en español.
 - **Conectores** (`app/Services/Ai`, contrato `AiTextProvider`):
   `GeminiTextProvider` (`streamGenerateContent?alt=sse`),
   `ResponsesTextProvider` para OpenAI y Grok (`POST /responses`, con
@@ -1419,8 +1421,9 @@ lectura.
   (`ContentPageAiStreamController`), con `provider` (uno activo y con clave
   legible; si no, 422) y `reasoning_level`: `thought` y `content` mientras
   escribe; al terminar, `complete` (ya en el formato de la página, con avisos)
-  y `done`. Si algo falla, sólo `error`: sin saldo (402, o 429 con
-  `insufficient_quota` en OpenAI), clave sin permiso, cuota agotada, modelo que
+  y `done`. Si algo falla, sólo `error`: sin saldo o con el límite de gasto
+  alcanzado (402; 429 con `insufficient_quota` en OpenAI; 403 que habla de
+  «credits» o «spending limit» en Grok), clave sin permiso, cuota agotada, modelo que
   no existe, petición bloqueada o negativa del modelo, respuesta vacía. Una
   respuesta cortada (`MAX_TOKENS` en Gemini, `response.incomplete` en
   Responses, `finish_reason: length` en Mistral, los filtros de seguridad…)
@@ -1431,6 +1434,10 @@ lectura.
   propósito para no cortar a quien redacta; corta bucles y scripts. Al pasarlo,
   el modal lo dice.
 - **Cerrar el modal** mientras escribe detiene la petición.
+
+**Probado con la API real el 2026-10-17:** Gemini (`gemini-3.8-flash`) y Mistral
+(`mistral-medium-3-5`, con razonamiento y sin él). Grok: la clave responde,
+pero la cuenta estaba sin saldo. OpenAI: sin clave todavía.
 
 *Fijado por `tests/Feature/Content/ContentPageAiAssistantTest.php`,
 `tests/Feature/Content/EditorProfileTest.php`,

@@ -212,6 +212,14 @@ abstract class HttpTextProvider implements AiTextProvider
     }
 
     /**
+     * Si el error habla de saldo o de límite de gasto.
+     */
+    private function isAboutCredit(string $message): bool
+    {
+        return (bool) preg_match('/\\bcredits?\\b|spending limit|insufficient (?:funds|balance|quota)|billing/i', $message);
+    }
+
+    /**
      * Lo que se le dice a quien redacta cuando el proveedor responde con un
      * error.
      */
@@ -221,8 +229,10 @@ abstract class HttpTextProvider implements AiTextProvider
 
         return match (true) {
             // Google lo comprueba antes que la propia petición; OpenAI lo dice
-            // con un 429 y el código `insufficient_quota`.
-            $status === 402 || $code === 'insufficient_quota' => "La cuenta de {$label} no tiene saldo. Recárgalo en {$provider->provider->billingPlace()} y vuelve a intentarlo.",
+            // con un 429 y el código `insufficient_quota`, y xAI con un 403 y
+            // «used all available credits or reached its monthly spending
+            // limit» (probado el 2026-10-17): no es que la clave no valga.
+            $status === 402 || $code === 'insufficient_quota' || $this->isAboutCredit($message) => "La cuenta de {$label} no tiene saldo o ha llegado a su límite de gasto. Recárgalo en {$provider->provider->billingPlace()} y vuelve a intentarlo.",
             $status === 429 => "Se ha agotado la cuota de {$label} de esta clave. Espera un poco y vuelve a intentarlo.",
             in_array($status, [401, 403], true) => "La clave de {$label} no vale o no tiene permiso para usar la API ({$message}).",
             $status === 404 => "El modelo {$provider->model} no está disponible para esta clave de {$label} ({$message}).",

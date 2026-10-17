@@ -11,7 +11,7 @@ use Closure;
 /**
  * Mistral: Chat Completions (`POST /chat/completions`) en streaming.
  *
- * Con `reasoning_effort`, el razonamiento llega dentro de `delta.content`,
+ * Con `reasoning_effort: high`, el razonamiento llega dentro de `delta.content`,
  * que deja de ser un texto y pasa a ser una lista de trozos: `thinking` (con
  * su propia lista de textos) y `text`. Sin razonamiento, `delta.content` es
  * un texto. El stream termina con `data: [DONE]`.
@@ -29,8 +29,10 @@ class MistralTextProvider extends HttpTextProvider
             'stream' => true,
         ];
 
-        if ($provider->sends_reasoning_level && $level !== null) {
-            $payload['reasoning_effort'] = $level->value;
+        // Razona o no: `high` es el único nivel que admiten todos sus modelos
+        // con razonamiento (`AiProviderEnum::choosesReasoningLevel()`).
+        if ($provider->sends_reasoning_level) {
+            $payload['reasoning_effort'] = 'high';
         }
 
         return [$provider->provider->baseUrl().'/chat/completions', $payload];

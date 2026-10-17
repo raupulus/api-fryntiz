@@ -97,9 +97,13 @@ class AiProviderResource extends Resource
                     ->label('Predeterminado')
                     ->helperText('El que sale elegido en el asistente. Sólo puede haber uno.'),
                 Toggle::make('sends_reasoning_level')
-                    ->label('Mandar el nivel de razonamiento')
+                    ->label(fn (Get $get): string => AiProviderEnum::tryFrom((string) $get('provider'))?->choosesReasoningLevel() === false
+                        ? 'Razonar antes de escribir'
+                        : 'Mandar el nivel de razonamiento')
                     ->default(true)
-                    ->helperText('Desmárcalo si el modelo no razona: le da error.'),
+                    ->helperText(fn (Get $get): string => AiProviderEnum::tryFrom((string) $get('provider'))?->choosesReasoningLevel() === false
+                        ? 'Mistral sólo razona o no: el nivel no se elige en el asistente. Desmárcalo si el modelo no razona: le da error.'
+                        : 'Desmárcalo si el modelo no razona: le da error.'),
                 Toggle::make('requests_reasoning_summary')
                     ->label('Pedir el resumen del razonamiento')
                     ->default(fn (Get $get): bool => AiProviderEnum::tryFrom((string) $get('provider'))?->summarizesReasoningByDefault() ?? false)
