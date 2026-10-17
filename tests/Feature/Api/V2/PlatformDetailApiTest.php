@@ -44,6 +44,8 @@ class PlatformDetailApiTest extends ApiTestCase
             'tiktok' => 'raupulus',
             'instagram' => 'raupulus',
             'system_instruction' => 'SECRETO-DE-LA-INSTRUCCION-EDITORIAL',
+            // Sólo para generar imágenes: tampoco salen.
+            'theme_colors' => [['hex' => '#ABCDEF', 'role' => 'background']],
         ]);
     }
 
@@ -119,6 +121,8 @@ class PlatformDetailApiTest extends ApiTestCase
             $response = $this->getJson($url)->assertOk();
 
             $this->assertStringNotContainsString('SECRETO', (string) $response->getContent(), $url);
+            $this->assertStringNotContainsString('ABCDEF', (string) $response->getContent(), $url);
+            $this->assertStringNotContainsString('theme_colors', (string) $response->getContent(), $url);
             $this->assertSame([], $this->tokenKeys($response->json()), $url);
         }
     }

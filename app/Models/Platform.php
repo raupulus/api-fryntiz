@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\PlatformColorRoleEnum;
 use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseModel;
 use App\Models\Concerns\BumpsApiCache;
@@ -37,6 +38,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $tiktok Usuario en tiktok
  * @property string|null $instagram Usuario en instagram
  * @property string|null $system_instruction Instrucción editorial por defecto del asistente IA
+ * @property array<int, array{hex?: string, role?: string|null}>|null $theme_colors Colores del tema de su web, para generar imágenes con IA
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
@@ -100,8 +102,40 @@ class Platform extends BaseModel
 
     protected $fillable = ['user_id', 'image_id', 'title', 'slug', 'description', 'domain', 'url_about', 'youtube_channel_id',
         'youtube_presentation_video_id', 'twitter', 'twitter_token', 'mastodon', 'mastodon_token', 'twitch', 'tiktok',
-        'instagram', 'system_instruction',
+        'instagram', 'system_instruction', 'theme_colors',
     ];
+
+    /**
+     * Como mucho, los colores del tema que se guardan.
+     */
+    public const MAX_THEME_COLORS = 5;
+
+    protected $casts = [
+        'theme_colors' => 'array',
+    ];
+
+    /**
+     * Los colores del tema que valen: un hex de 6 cifras y, si se ha dicho,
+     * para qué lo usa la web. Lo que no valga se ignora.
+     *
+     * @return list<array{hex: string, role: PlatformColorRoleEnum|null}>
+     */
+    public function themeColors(): array
+    {
+        $colors = [];
+
+        foreach (is_array($this->theme_colors) ? $this->theme_colors : [] as $color) {
+            $hex = is_array($color) ? strtoupper(trim((string) ($color['hex'] ?? ''))) : '';
+
+            if (preg_match('/^#[0-9A-F]{6}$/', $hex) !== 1) {
+                continue;
+            }
+
+            $colors[] = ['hex' => $hex, 'role' => PlatformColorRoleEnum::tryFrom((string) ($color['role'] ?? ''))];
+        }
+
+        return array_slice($colors, 0, self::MAX_THEME_COLORS);
+    }
 
     /**
      * Asocia con el usuario al que pertenece la plataforma.

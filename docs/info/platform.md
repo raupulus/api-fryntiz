@@ -34,6 +34,7 @@ Módulo de gestión multi-sitio que permite organizar contenidos por plataforma 
 | Archivo | Descripción |
 |---------|-------------|
 | `app/Enums/PlatformStatusEnum.php` | Estados de plataforma |
+| `app/Enums/PlatformColorRoleEnum.php` | Para qué usa la web cada color del tema (fondo, texto, principal, secundario, acento) |
 
 ### Panel (Filament)
 | Archivo | Descripción |
@@ -76,6 +77,7 @@ las de la plataforma.
 | `tiktok` | string | Handler TikTok |
 | `instagram` | string | Handler Instagram |
 | `system_instruction` | text | Instrucción editorial por defecto del asistente IA (sección «Asistente IA»): quién escribe y cómo. Vacía, la genérica. **Nunca sale por la API** |
+| `theme_colors` | jsonb | Hasta 5 colores del tema de su web (`[{hex, role}]`, sección «Colores del tema»), para generar imágenes con IA que casen con ella; `role` es `PlatformColorRoleEnum` y es opcional. Cada web es un frontend aparte, así que se apuntan a mano. `Platform::themeColors()` devuelve sólo los válidos. **Nunca sale por la API** |
 
 ## Relaciones
 

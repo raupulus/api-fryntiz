@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Platforms;
 
+use App\Enums\PlatformColorRoleEnum;
 use App\Filament\Admin\Resources\Platforms\Pages\CreatePlatform;
 use App\Filament\Admin\Resources\Platforms\Pages\EditPlatform;
 use App\Filament\Admin\Resources\Platforms\Pages\ListPlatforms;
@@ -17,7 +18,10 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
@@ -87,6 +91,23 @@ class PlatformResource extends Resource
                         ->rows(8)->autosize()->maxLength(20000)
                         ->placeholder(ContentAiService::DEFAULT_EDITORIAL_INSTRUCTION)
                         ->helperText('Se manda en cada petición del asistente en las entradas de esta plataforma que no tengan un perfil de editor (abajo, «Perfiles de editor»); un perfil la sustituye. Vacía, se usa la genérica que se ve de ejemplo. El formato de la respuesta y las marcas de los bloques los añade siempre el asistente: no hace falta explicarlos.'),
+                ]),
+            Section::make('Colores del tema')->collapsed()->columnSpanFull()
+                ->description('Los de su web, para generar imágenes con IA que casen con ella. La API no los envía.')
+                ->schema([
+                    Repeater::make('theme_colors')->hiddenLabel()
+                        ->schema([
+                            ColorPicker::make('hex')->label('Color')->required()
+                                ->regex('/^#[0-9a-fA-F]{6}$/'),
+                            Select::make('role')->label('Para qué lo usa la web')
+                                ->options(PlatformColorRoleEnum::options())
+                                ->placeholder('Sin indicar'),
+                        ])
+                        ->columns(2)
+                        ->defaultItems(0)
+                        ->maxItems(Platform::MAX_THEME_COLORS)
+                        ->addActionLabel('Añadir color')
+                        ->helperText('Hasta '.Platform::MAX_THEME_COLORS.' (los de la web, el diseño o el logo). Al generar una imagen, la casilla «Usar los colores de la plataforma» se los pasa a la IA. Decir cuál es el fondo ayuda a que la imagen tenga buen contraste sobre él.'),
                 ]),
             Section::make('YouTube')->columns(2)->collapsed()->schema([
                 TextInput::make('youtube_channel_id')->maxLength(64)->label('Channel ID'),
