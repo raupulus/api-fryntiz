@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Resources\V2\Content;
 
 use App\Enums\ContentPageFormatEnum;
+use App\Http\Resources\V2\SocialImageResource;
 use App\Models\Content\ContentPage;
 use App\Services\Content\ContentPageFormatService;
 use Illuminate\Http\Request;
@@ -43,6 +44,9 @@ class ContentPageResource extends JsonResource
                 ? (json_decode($body, true) ?? ['blocks' => []])
                 : $body,
             'slug' => $this->slug,
+            // La portada de la página, con la misma forma y versiones que la
+            // del contenido.
+            'image' => $this->image === null ? null : new SocialImageResource($this->image),
             // `raw_type` no era columna: la tabla tiene `current_page_raw_id`.
             'current_page_raw_id' => $this->current_page_raw_id,
             'created_at' => $this->created_at?->toISOString(),

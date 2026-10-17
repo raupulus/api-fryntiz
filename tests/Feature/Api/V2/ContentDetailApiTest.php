@@ -51,7 +51,7 @@ class ContentDetailApiTest extends ApiTestCase
         $this->assertSame(['Introducción', 'Montaje', 'Resultados'], array_column($data['pages'], 'title'));
 
         foreach ($data['pages'] as $page) {
-            $this->assertSame(['id', 'order', 'title', 'slug', 'format'], array_keys($page), 'El índice no lleva texto.');
+            $this->assertSame(['id', 'order', 'title', 'slug', 'image', 'format'], array_keys($page), 'El índice no lleva texto.');
             $this->assertSame('html', $page['format']);
         }
 
@@ -62,6 +62,28 @@ class ContentDetailApiTest extends ApiTestCase
         foreach (self::PARTS as $part) {
             $this->assertArrayNotHasKey($part, $data, "Sin include no va «{$part}».");
         }
+    }
+
+    #[Test]
+    public function each_page_carries_its_cover_with_every_version_like_the_content(): void
+    {
+        ['content' => $content, 'pages' => $pages] = $this->richContent();
+        $cover = $pages[0]->image()->sole();
+
+        $data = $this->getJson($this->contentUrl($content))->assertOk()->json('data');
+        $image = $data['pages'][0]['image'];
+
+        $this->assertSame($cover->url, $image['url']);
+        $this->assertSame(['micro', 'small', 'medium', 'normal', 'large'], array_keys($image['thumbnails']), 'Todas las versiones, para que la web elija.');
+        $this->assertSame($cover->thumbnail('normal'), $image['thumbnails']['normal']);
+        $this->assertNull($data['pages'][1]['image'], 'Sin portada, null.');
+        $this->assertSame($image, $data['first_page']['image']);
+        $this->assertSame(array_keys($data['image']['thumbnails']), array_keys($image['thumbnails']), 'La misma forma que la del contenido.');
+
+        $this->assertSame($image, $this->getJson($this->contentUrl($content, '/pages/1'))->json('data.image'));
+        $this->assertSame($image, $this->getJson($this->contentUrl($content, '/pages/slug/'.$pages[0]->slug))->json('data.image'));
+        $this->assertSame($image, $this->getJson($this->contentUrl($content, '/pages?limit=1'))->json('data.0.image'));
+        $this->assertSame($image, $this->getJson($this->contentUrl($content, '?include=pages'))->json('data.pages.0.image'));
     }
 
     #[Test]
@@ -256,7 +278,8 @@ class ContentDetailApiTest extends ApiTestCase
         $content = $this->published(['slug' => 'principal']);
         $second = $this->published(['title' => 'Elegido segundo', 'published_at' => now()->subDays(20)]);
         $first = $this->published(['title' => 'Elegido primero', 'published_at' => now()->subDays(30)]);
-        $gone = $this->published(['title' => 'Desvinculado']);
+        // Con fecha fija: con la de la factoría (1 a 30 días) a veces se colaba al completar.
+        $gone = $this->published(['title' => 'Desvinculado', 'published_at' => now()->subDays(60)]);
         $recent = $this->published(['title' => 'Reciente', 'published_at' => now()->subDay()]);
         $older = $this->published(['title' => 'Más viejo', 'published_at' => now()->subDays(2)]);
         $this->published(['title' => 'De otro tipo', 'type_id' => $this->typeId('project'), 'published_at' => now()]);
@@ -406,9 +429,10 @@ class ContentDetailApiTest extends ApiTestCase
     public static function queryBudgets(): array
     {
         return [
-            'detalle' => ['', 17],
-            'detalle con todo' => ['?include=all', 31],
-            'páginas' => ['/pages', 5],
+            // Las portadas de las páginas son tres: fichero, tipo y miniaturas.
+            'detalle' => ['', 20],
+            'detalle con todo' => ['?include=all', 34],
+            'páginas' => ['/pages', 8],
             'una página' => ['/pages/2', 5],
             'página por slug' => ['/pages/slug/montaje', 5],
             'relacionados' => ['/related', 7],

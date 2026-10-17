@@ -68,6 +68,11 @@ class ContentApiService
     private const RESOURCE_RELATIONS = ['type', 'status', 'platform', 'seo', 'image.fileType', 'image.thumbnails'];
 
     /**
+     * La portada de cada página, con todas sus versiones.
+     */
+    private const PAGE_IMAGE_RELATIONS = ['image.fileType', 'image.thumbnails'];
+
+    /**
      * Contenidos publicados con lo que necesita `ContentResource`.
      *
      * @return Builder<Content>
@@ -140,8 +145,10 @@ class ContentApiService
                 $data['pages'] = ContentPageResource::collection($pages = $this->pagesWithBody($content))->resolve($request);
                 $first = $pages->first();
             } else {
-                $data['pages'] = ContentPageIndexResource::collection($this->pageIndex($content))->resolve($request);
-                $first = $this->pagesWithBody($content, limit: 1)->first();
+                $data['pages'] = ContentPageIndexResource::collection($index = $this->pageIndex($content))->resolve($request);
+                $first = $this->pagesWithBody($content, limit: 1, withImage: false)->first();
+                // Su portada ya ha llegado con el índice: no se carga dos veces.
+                $first?->setRelation('image', $index->firstWhere('id', $first->id)?->image);
             }
 
             $data['first_page'] = $first === null ? null : (new ContentPageResource($first))->resolve($request);
@@ -188,9 +195,10 @@ class ContentApiService
     {
         return ContentPage::query()
             ->where('content_id', $content->id)
-            ->select(['id', 'content_id', 'order', 'title', 'slug', 'current_page_raw_id'])
+            ->select(['id', 'content_id', 'order', 'title', 'slug', 'image_id', 'current_page_raw_id'])
             ->selectRaw("(content IS NOT NULL AND content <> '') AS has_html")
             ->with([
+                ...self::PAGE_IMAGE_RELATIONS,
                 'currentRawType',
                 'raws' => fn ($query) => $query->select(['id', 'content_page_id', 'available_page_raw_id']),
                 'raws.availableType',
@@ -202,15 +210,15 @@ class ContentApiService
 
     /**
      * Páginas con su texto, desde la página número `$from` (su orden), como
-     * mucho `$limit`.
+     * mucho `$limit`, y con su portada salvo que ya se tenga (`$withImage`).
      *
      * @return Collection<int, ContentPage>
      */
-    public function pagesWithBody(Content $content, ?int $from = null, ?int $limit = null): Collection
+    public function pagesWithBody(Content $content, ?int $from = null, ?int $limit = null, bool $withImage = true): Collection
     {
         return ContentPage::query()
             ->where('content_id', $content->id)
-            ->with(['currentRawType', 'raws.availableType'])
+            ->with([...($withImage ? self::PAGE_IMAGE_RELATIONS : []), 'currentRawType', 'raws.availableType'])
             ->when($from !== null, fn (Builder $query) => $query->where('order', '>=', $from))
             ->orderBy('order')
             ->orderBy('id')
@@ -228,7 +236,7 @@ class ContentApiService
         return ContentPage::query()
             ->where('content_id', $content->id)
             ->where('slug', $slug)
-            ->with(['currentRawType', 'raws.availableType'])
+            ->with([...self::PAGE_IMAGE_RELATIONS, 'currentRawType', 'raws.availableType'])
             ->first();
     }
 

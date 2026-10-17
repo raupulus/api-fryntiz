@@ -57,8 +57,12 @@
   - `?from=&to=` — alias de `created_at[gte]` / `created_at[lte]`.
   - `?sort=campo` / `?sort=-campo` — orden; el guion es descendente. Los
     `NULL` van siempre al final.
-- **Imágenes** (`image`, `cover`, portadas de relacionados…): siempre con la
-  misma forma, la de `SocialImageResource`. Las claves vacías se omiten:
+- **Imágenes** (`image` del contenido y de cada página, `cover`, portadas de
+  relacionados…): siempre con la misma forma, la de `SocialImageResource`: el
+  original en `url` y cada versión en `thumbnails` (micro 50 px, small 160,
+  medium 320, normal 640 y large 1280 de ancho), para que la web elija la que
+  necesite. Si una versión no existe (la imagen es más pequeña), sale la más
+  grande que haya. Las claves vacías se omiten:
 
   ```json
   {
@@ -71,7 +75,8 @@
       "micro": "https://api.raupulus.dev/file/thumbnail/get/content/301/PcDPH5Qz.webp",
       "small": "https://api.raupulus.dev/file/thumbnail/get/content/302/PcDPH5Qz.webp",
       "medium": "https://api.raupulus.dev/file/thumbnail/get/content/303/PcDPH5Qz.webp",
-      "large": "https://api.raupulus.dev/file/thumbnail/get/content/304/PcDPH5Qz.webp"
+      "normal": "https://api.raupulus.dev/file/thumbnail/get/content/304/PcDPH5Qz.webp",
+      "large": "https://api.raupulus.dev/file/thumbnail/get/content/305/PcDPH5Qz.webp"
     }
   }
   ```
@@ -451,15 +456,15 @@ demás, con `include` o por su ruta.
     "title": "Estación meteorológica con ESP32",
     "…": "el resto del contenido",
     "pages": [
-      { "id": 101, "order": 1, "title": "Introducción", "slug": "introduccion", "format": "editorjs" },
-      { "id": 102, "order": 2, "title": "Montaje", "slug": "montaje", "format": "editorjs" },
-      { "id": 103, "order": 3, "title": "Resultados", "slug": "resultados", "format": "markdown" }
+      { "id": 101, "order": 1, "title": "Introducción", "slug": "introduccion", "image": { "url": "…", "thumbnails": { "…": "…" } }, "format": "editorjs" },
+      { "id": 102, "order": 2, "title": "Montaje", "slug": "montaje", "image": null, "format": "editorjs" },
+      { "id": 103, "order": 3, "title": "Resultados", "slug": "resultados", "image": null, "format": "markdown" }
     ],
     "first_page": {
       "id": 101, "content_id": 42, "order": 1, "title": "Introducción",
       "format": "editorjs", "source_format": "editorjs",
       "body": { "time": 1790002185625, "blocks": [ { "id": "h1", "type": "header", "data": { "text": "Introducción", "level": 2 } } ], "version": "2.31.7" },
-      "slug": "introduccion", "current_page_raw_id": 2,
+      "slug": "introduccion", "image": { "url": "…", "thumbnails": { "…": "…" } }, "current_page_raw_id": 2,
       "created_at": "…", "updated_at": "…"
     }
   }
@@ -467,7 +472,7 @@ demás, con `include` o por su ruta.
 ```
 
 - `pages`: el índice, por orden, **sin texto**; `format` es el formato de cada
-  página en el panel. Con `include=pages` (o `all`), `pages` pasa a ser la
+  página en el panel, e `image` su portada (o `null`). Con `include=pages` (o `all`), `pages` pasa a ser la
   lista de [páginas completas](#la-página-contentpageresource).
 - `first_page`: la primera página, completa; `null` si no tiene páginas.
 - Cada `include` añade **sólo** su clave, con la misma forma que su ruta:
@@ -512,12 +517,18 @@ demás, con `include` o por su ruta.
   "source_format": "markdown",
   "body": "## Sobre mí\n\nTexto en **Markdown**.\n",
   "slug": "sobre-mi",
+  "image": {
+    "url": "…", "width": 1600, "height": 900, "type": "image/webp", "alt": "…",
+    "thumbnails": { "micro": "…", "small": "…", "medium": "…", "normal": "…", "large": "…" }
+  },
   "current_page_raw_id": 1,
   "created_at": "2026-08-15T09:00:00.000000Z",
   "updated_at": "2026-08-20T10:00:00.000000Z"
 }
 ```
 
+- `image`: la portada de la página, con la misma forma y versiones que la del
+  contenido; `null` si no tiene.
 - `format`: el formato en el que viene `body`. **Es lo que tiene que mirar el
   frontend para saber cómo pintarlo.** `source_format`: en el que se escribe
   en el panel. Sin `?format=`, coinciden.
@@ -683,6 +694,8 @@ Sólo se añade; lo que ya se leía sigue igual:
 |---|---|
 | No había forma de saber si un contenido estaba desactualizado | `is_obsolete` en el contenido y en la forma compacta (relacionados y destacados) |
 | Listado, relleno de relacionados, destacados y últimos por fecha | Igual, pero con los obsoletos al final; un `?sort=` pedido sigue mandando ([ver](#los-obsoletos-van-al-final)) |
+| Las páginas no llevaban su portada | `image` en cada página (índice del detalle, `first_page`, `/pages`, `/pages/{n}` y por slug), con la forma de todas las imágenes |
+| `thumbnails` llevaba micro, small, medium y large | Además `normal` (640 px), en todas las imágenes |
 
 ---
 

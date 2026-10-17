@@ -35,6 +35,7 @@ class SocialImageResource extends JsonResource
                 'micro' => $this->thumbnail('micro'),
                 'small' => $this->thumbnail('small'),
                 'medium' => $this->thumbnail('medium'),
+                'normal' => $this->thumbnail('normal'),
                 'large' => $this->thumbnail('large'),
             ]),
         ], fn ($value) => $value !== null && $value !== '' && $value !== []);

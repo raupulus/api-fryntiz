@@ -242,6 +242,9 @@ trait BuildsApiContents
         $unused = $this->upload($content, 'vieja.jpg');
         // Portada con miniaturas: así las consultas de la imagen cuentan.
         $content->update(['image_id' => $file->id]);
+        // Y la primera página también, para que cuenten las de las páginas.
+        // Como en el panel: un fichero suelto, no del contenido.
+        $pages[0]->update(['image_id' => File::addFile(UploadedFile::fake()->image('portada-pagina.jpg', 800, 600), 'content-pages')?->id]);
         ContentFile::query()->where('file_id', $unused->id)->update(['unused_since' => now()]);
 
         // De otro tipo: sólo sale por estar elegido, no al completar.
