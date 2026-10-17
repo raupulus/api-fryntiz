@@ -1396,12 +1396,31 @@ lectura.
   Un nivel que el proveedor no admite da 422. El navegador recuerda el último
   proveedor y, de cada uno, el último razonamiento elegido; si ya no están en la
   lista, usa los de por defecto.
+
+  La instrucción admite hasta 50 000 caracteres: cabe una noticia o una guía
+  pegada. Dos sugerencias rellenan la plantilla, cambian el modo y dejan el
+  cursor al final para pegar el original:
+  - **«Noticia propia a partir de otra»** (crear): los mismos hechos, datos,
+    fechas y nombres, con otras palabras, otra estructura y otro titular, sin
+    copiar frases ni añadir nada.
+  - **«Actualizar una guía antigua»** (editar la abierta; en una página nueva,
+    crear a partir de la que se pegue): versiones, comandos, rutas y paquetes
+    al día, fuera lo que ya no exista, y una nota en lo que no pueda
+    confirmar, en vez de inventarlo.
 - **Instrucción de sistema** (`ContentAiService::buildSystemInstruction()`):
   primero la editorial, después el contexto (plataforma y título) y al final
-  las reglas técnicas del modo, que no se editan desde el panel: el resultado
-  se lee con ellas (el bloque `---` con título y slug al crear, las marcas de
-  bloque al editar o corregir). La editorial (`editorialInstruction()`) es, por
-  este orden:
+  las reglas fijas, que no se editan desde el panel (D50):
+  - las del modo: el resultado se lee con ellas (el bloque `---` con título y
+    slug al crear, las marcas de bloque al editar o corregir);
+  - **títulos**: nada de h1 ni h2 (son el título del contenido y el de la
+    página, y los pone la web), los del texto desde h3, y sin repetir el título
+    de la página al principio;
+  - **estilo**: sin emojis ni símbolos decorativos salvo que se pidan (al
+    corregir se conservan los del original, sin añadir otros), sin negrita en
+    cada frase ni listas de «**Etiqueta:** texto» por sistema, sin cierres de
+    relleno ni preguntas al lector, y sin abusar de la raya.
+
+  La editorial (`editorialInstruction()`) es, por este orden:
   1. la del **perfil de editor** de la entrada («Perfil de editor (IA)» en la
      ficha, junto a «Tipo»; `contents.editor_profile_id`), que **sustituye** a la
      de la plataforma. Los perfiles (guía, noticia, blog…) se crean en la ficha
@@ -1434,6 +1453,14 @@ lectura.
   tal cual]». Si la IA quita alguna, el resultado lo avisa. Ver
   [decisiones-tecnicas.md](decisiones-tecnicas.md) D44. Mientras escribe, el
   autoguardado sigue funcionando (D46).
+- **Títulos del resultado** (`fixHeadings()`, `fixHtmlHeadings()`), aunque la
+  regla ya se lo pida: si empieza repitiendo el título de la página, se quita
+  y lo que colgaba de él sube para empezar en h3; si usa h1 o h2, todo baja lo
+  justo para empezar en h3. En los dos casos se conserva la jerarquía (hasta
+  h6) y sale un aviso. No se tocan las líneas de los bloques de código (un
+  `# comentario` no es un título) ni los bloques que la IA no ve: se arregla
+  antes de volver a ponerlos. El conversor a Editor.js aplanaba todo a h3; sólo
+  queda como red de seguridad.
 - **Aplicar:** el resultado entra en el editor sin guardar. «Deshacer lo de
   la IA» (`undoAiAction`, aviso encima del formulario) lo devuelve a como
   estaba antes de aplicarlo, desde la caché del servidor (un día, por pestaña
@@ -1457,8 +1484,10 @@ lectura.
 - **Cerrar el modal** mientras escribe detiene la petición.
 
 **Probado con la API real el 2026-10-17:** Gemini (`gemini-3.8-flash`) y Mistral
-(`mistral-medium-3-5`, con razonamiento y sin él). Grok: la clave responde,
-pero la cuenta estaba sin saldo. OpenAI: sin clave todavía.
+(`mistral-medium-3-5`, con razonamiento y sin él), también las dos sugerencias
+nuevas: ninguno puso h1, h2 ni emojis; Mistral repitió el título de la página
+en h3 con los apartados en h4, y el arreglo lo dejó en h3. Grok: la clave
+responde, pero la cuenta estaba sin saldo. OpenAI: sin clave todavía.
 
 *Fijado por `tests/Feature/Content/ContentPageAiAssistantTest.php`,
 `tests/Feature/Content/EditorProfileTest.php`,

@@ -844,9 +844,14 @@ entienden la misma petición.
 se edita) más el contexto y, al final, las reglas del modo: el bloque `---` con título y slug al
 crear y las marcas de bloque (D44) al editar o corregir. El resultado se lee con esas reglas;
 si una instrucción del panel las quitara, el asistente devolvería algo que no se puede aplicar.
+Desde el 2026-10-17 van también fijas las de **títulos** (desde h3, sin repetir el de la página:
+el h1 y el h2 los pone la web) y las de **estilo** (sin emojis, negritas por sistema ni cierres
+de relleno), porque un perfil sustituye a la instrucción de la plataforma (D51) y con ella se
+perderían. Los títulos se arreglan además en el resultado (`ContentAiService::fixHeadings()`).
 
-*Fijado por `AiTextProvidersTest` y
-`ContentPageAiAssistantTest::the_system_instruction_ends_with_the_technical_rules_of_the_mode`.
+*Fijado por `AiTextProvidersTest`,
+`ContentPageAiAssistantTest::the_system_instruction_ends_with_the_technical_rules_of_the_mode` y
+`…::every_mode_asks_for_headings_from_h3_and_a_human_style_after_the_editorial_instruction`.
 Decidido el 2026-10-17.*
 
 ---

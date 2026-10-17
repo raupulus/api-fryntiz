@@ -91,6 +91,21 @@ class ContentAiService
         $placeholders = "MARCAS DE BLOQUE: el texto puede llevar marcas como [[BLOQUE_1]]. Cada una sustituye a un bloque que no puedes ver ni editar (una imagen, un aviso, un vídeo, una tarjeta de enlace…).\n".
             "Cópialas tal cual, cada una sola en su propia línea. Puedes cambiarlas de sitio si reorganizas el texto, pero no las borres, no las modifiques y no las repitas.\n";
 
+        // Lo que se comprueba también en el resultado (`fixHeadings()`).
+        $headings = 'TÍTULOS: el h1 es el título del contenido y el h2 el de la página, y los pone la web. No uses títulos de nivel 1 ni 2 ('.
+            ($mode === AiModeEnum::Correct && $format === ContentPageFormatEnum::Html ? '<h1> ni <h2>' : '# ni ##').
+            '): los del texto empiezan en el nivel 3 ('.
+            ($mode === AiModeEnum::Correct && $format === ContentPageFormatEnum::Html ? '<h3>' : '###').
+            ") y bajan de ahí si hace falta. No repitas el título de la página al principio.\n";
+
+        $style = "ESTILO: escribe como lo haría una persona, sin las muletillas de un texto generado.\n".
+            ($mode === AiModeEnum::Correct
+                ? "- Conserva los emojis que ya tenga el texto, pero no añadas otros ni símbolos decorativos.\n"
+                : "- Sin emojis ni símbolos decorativos (✅, 🚀, ➡️, ★…) en títulos, listas ni texto, salvo que la instrucción del usuario los pida.\n").
+            "- Sin negrita en cada frase ni listas de «**Etiqueta:** texto» por sistema: la negrita, sólo para lo que de verdad hay que ver.\n".
+            "- Sin cierres de relleno («En resumen…», «En conclusión…») ni preguntas u ofrecimientos al lector al final.\n".
+            "- Sin abusar de la raya (—) para meter incisos.\n";
+
         return match ($mode) {
             AiModeEnum::Create => $base.
                 "MODO: CREACIÓN DE NUEVA PÁGINA\n".
@@ -101,12 +116,14 @@ class ContentAiService
                 "slug: slug-de-la-pagina\n".
                 "---\n\n".
                 "A continuación de ese bloque delimitado por '---', escribe el contenido íntegro en formato Markdown estructurado.\n".
-                'Usa encabezados a partir de h3 (###), párrafos claros, listas o tablas según sea necesario.',
+                "Usa párrafos claros, listas o tablas según sea necesario.\n\n".
+                $headings.$style,
 
             AiModeEnum::Edit => $base.
                 "MODO: EDICIÓN / AMPLIACIÓN DE PÁGINA ACTUAL\n".
                 "Reescribe, amplía o adapta el texto según las instrucciones del usuario.\n".
-                "Escribe directamente el contenido generado en formato Markdown estructurado (encabezados desde h3). No incluyas bloques '---' ni encabezados de título/slug.\n\n".
+                "Escribe directamente el contenido generado en formato Markdown estructurado. No incluyas bloques '---' ni el título o el slug de la página.\n\n".
+                $headings.$style."\n".
                 $placeholders,
 
             AiModeEnum::Correct => $base.
@@ -116,6 +133,7 @@ class ContentAiService
                 ($format === ContentPageFormatEnum::Html
                     ? "Devuelve el código HTML corregido preservando intacta la estructura de etiquetas.\n\n"
                     : "Devuelve el texto corregido en Markdown, con la misma estructura que el original.\n\n").
+                $headings.$style."\n".
                 $placeholders,
         };
     }
@@ -306,13 +324,15 @@ class ContentAiService
             $body = trim(preg_replace('/^#+\s+.+$/m', '', $text, 1) ?? $text);
         }
 
+        [$body, $headingWarnings] = $this->fixHeadings($body, $title);
+
         $conversion = $this->converter->convert($body, ContentPageFormatEnum::Markdown, $targetFormat);
 
         return [
             'title' => $title,
             'slug' => $slug,
             'content' => $conversion->content,
-            'warnings' => $conversion->warnings,
+            'warnings' => [...$headingWarnings, ...$conversion->warnings],
         ];
     }
 
@@ -323,7 +343,11 @@ class ContentAiService
      * responde en HTML. Antes de convertir se ponen en su sitio los bloques
      * de las marcas, y se avisa de los que haya quitado.
      *
+     * Los títulos se arreglan antes de poner los bloques en su sitio: dentro
+     * de un bloque puede haber código con líneas que empiezan por `#`.
+     *
      * @param  array<int, string>  $placeholders  Los de `prepareCurrentContent()`.
+     * @param  string|null  $pageTitle  El de la página, para quitarlo si la IA lo repite al principio.
      * @return array{content: string, warnings: list<string>}
      */
     public function convertResultToFormat(
@@ -331,11 +355,17 @@ class ContentAiService
         ContentPageFormatEnum $targetFormat,
         AiModeEnum $mode,
         array $placeholders = [],
+        ?string $pageTitle = null,
     ): array {
         $answersInHtml = $mode === AiModeEnum::Correct && $targetFormat === ContentPageFormatEnum::Html;
         $text = $this->withoutFence(str_replace("\r\n", "\n", trim($generatedText)));
 
+        [$text, $headingWarnings] = $answersInHtml
+            ? $this->fixHtmlHeadings($text, $pageTitle)
+            : $this->fixHeadings($text, $pageTitle);
+
         [$text, $warnings] = $this->restorePlaceholders($text, $placeholders, $answersInHtml);
+        $warnings = [...$headingWarnings, ...$warnings];
 
         if ($answersInHtml || $targetFormat === ContentPageFormatEnum::Markdown) {
             return ['content' => $text, 'warnings' => $warnings];
@@ -398,6 +428,149 @@ class ContentAiService
             count($missing) === 1 ? '1 bloque' : count($missing).' bloques',
             $labels,
         )]];
+    }
+
+    /**
+     * Los títulos de un Markdown escrito por la IA, como los quiere la web: el
+     * h1 y el h2 son el título del contenido y el de la página, así que los
+     * del texto empiezan en h3.
+     *
+     * - Si empieza repitiendo el título de la página, se quita, y lo que
+     *   colgaba de él sube para empezar en h3 (Mistral, el 2026-10-17, ponía
+     *   `### título` y los apartados en `####`).
+     * - Si usa h1 o h2, se bajan todos los niveles lo justo para que el más
+     *   alto quede en h3, **conservando la jerarquía** (`##` → `###`,
+     *   `###` → `####`), hasta h6. El conversor a Editor.js los aplanaría
+     *   todos a h3.
+     *
+     * Las líneas de los bloques de código no se tocan: un `# comentario` de
+     * un script no es un título.
+     *
+     * @return array{0: string, 1: list<string>}
+     */
+    public function fixHeadings(string $markdown, ?string $pageTitle = null): array
+    {
+        $lines = explode("\n", $markdown);
+        $headings = [];
+        $fence = null;
+
+        foreach ($lines as $index => $line) {
+            if (preg_match('/^ {0,3}(`{3,}|~{3,})/', $line, $match)) {
+                if ($fence === null) {
+                    $fence = $match[1];
+                } elseif ($match[1][0] === $fence[0] && strlen($match[1]) >= strlen($fence) && trim(substr(ltrim($line), strlen($match[1]))) === '') {
+                    $fence = null;
+                }
+
+                continue;
+            }
+
+            if ($fence === null && preg_match('/^ {0,3}(#{1,6})(?:[ \t]+(.*?))?[ \t]*$/', $line, $match)) {
+                $headings[$index] = ['level' => strlen($match[1]), 'text' => trim((string) preg_replace('/[ \t]+#+$/', '', $match[2] ?? ''))];
+            }
+        }
+
+        $warnings = [];
+        $first = array_key_first(array_filter($lines, fn (string $line): bool => trim($line) !== ''));
+        $removed = $first !== null && isset($headings[$first]) && $this->sameTitle($headings[$first]['text'], $pageTitle);
+
+        if ($removed) {
+            unset($lines[$first], $headings[$first]);
+            $warnings[] = 'Se ha quitado el título del principio: repetía el de la página, que ya lo pone la web.';
+        }
+
+        $shift = $this->headingShift(array_column($headings, 'level'), $removed);
+
+        if ($shift !== 0) {
+            foreach ($headings as $index => $heading) {
+                $lines[$index] = (string) preg_replace('/^( {0,3})#{1,6}/', '$1'.str_repeat('#', $this->shiftedLevel($heading['level'], $shift)), $lines[$index]);
+            }
+
+            $warnings[] = $this->shiftWarning($shift);
+        }
+
+        return [trim(implode("\n", $lines)), $warnings];
+    }
+
+    /**
+     * Lo mismo que `fixHeadings()` para el HTML que devuelve al corregir una
+     * página HTML. El código va escapado (`&lt;h1&gt;`), así que las
+     * etiquetas que quedan son títulos de verdad.
+     *
+     * @return array{0: string, 1: list<string>}
+     */
+    public function fixHtmlHeadings(string $html, ?string $pageTitle = null): array
+    {
+        $warnings = [];
+        $removed = preg_match('/^\s*<h[1-6]\b[^>]*>(.*?)<\/h[1-6]>\s*/is', $html, $match) === 1
+            && $this->sameTitle(html_entity_decode(strip_tags($match[1])), $pageTitle);
+
+        if ($removed) {
+            $html = substr($html, strlen($match[0]));
+            $warnings[] = 'Se ha quitado el título del principio: repetía el de la página, que ya lo pone la web.';
+        }
+
+        preg_match_all('/<h([1-6])\b/i', $html, $levels);
+        $shift = $this->headingShift(array_map('intval', $levels[1]), $removed);
+
+        if ($shift !== 0) {
+            $html = (string) preg_replace_callback(
+                '/<(\/?)h([1-6])\b/i',
+                fn (array $tag): string => '<'.$tag[1].'h'.$this->shiftedLevel((int) $tag[2], $shift),
+                $html,
+            );
+            $warnings[] = $this->shiftWarning($shift);
+        }
+
+        return [trim($html), $warnings];
+    }
+
+    /**
+     * Cuántos niveles se mueven los títulos para que el más alto quede en h3:
+     * hacia abajo si hay h1 o h2; hacia arriba sólo si se ha quitado el
+     * título repetido, porque lo demás colgaba de él. Sin eso, unos h4 son
+     * cosa de quien escribe (p. ej. al añadir al final de un apartado).
+     *
+     * @param  list<int>  $levels
+     */
+    private function headingShift(array $levels, bool $titleRemoved): int
+    {
+        if ($levels === []) {
+            return 0;
+        }
+
+        $top = min($levels);
+
+        return $top < ContentFormatConverter::MIN_HEADER_LEVEL || ($titleRemoved && $top > ContentFormatConverter::MIN_HEADER_LEVEL)
+            ? ContentFormatConverter::MIN_HEADER_LEVEL - $top
+            : 0;
+    }
+
+    private function shiftedLevel(int $level, int $shift): int
+    {
+        return max(ContentFormatConverter::MIN_HEADER_LEVEL, min(6, $level + $shift));
+    }
+
+    private function shiftWarning(int $shift): string
+    {
+        return $shift > 0
+            ? 'La IA había usado títulos de nivel 1 o 2: se han bajado para que empiecen en el 3 (el h1 y el h2 los pone la web), conservando la jerarquía.'
+            : 'Los títulos que colgaban del título quitado se han subido para que empiecen en el 3, conservando la jerarquía.';
+    }
+
+    /**
+     * Si un título dice lo mismo que el de la página (sin contar mayúsculas,
+     * tildes, negritas ni puntuación).
+     */
+    private function sameTitle(string $heading, ?string $pageTitle): bool
+    {
+        if (blank($pageTitle)) {
+            return false;
+        }
+
+        $slug = Str::slug(str_replace(['*', '_', '`'], '', $heading));
+
+        return $slug !== '' && $slug === Str::slug($pageTitle);
     }
 
     /**

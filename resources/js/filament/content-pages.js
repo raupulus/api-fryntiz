@@ -408,8 +408,44 @@ function contentPageAiAssistant({ streamUrl, providers, pageId, isNewPage, sourc
             this.cancel();
         },
 
-        setSuggestion(text) {
+        setSuggestion(text, mode = null) {
+            if (mode !== null) {
+                this.mode = mode;
+            }
+
             this.prompt = text;
+
+            // Con el cursor al final, para pegar el original detrás.
+            this.$nextTick(() => {
+                const field = this.$refs.prompt;
+                field?.focus();
+                field?.setSelectionRange(field.value.length, field.value.length);
+            });
+        },
+
+        // Se pega la noticia de otro medio y sale una página nueva con la
+        // misma información contada de otra manera.
+        suggestNewsRewrite() {
+            this.setSuggestion(
+                'Redacta una noticia propia a partir de la que pego abajo. Cuenta los mismos hechos con tus palabras, con otra estructura y otro titular, sin copiar frases del original. '
+                + 'Mantén exactos los datos, fechas, cifras y nombres, y no añadas nada que no esté en el original.\n\nNoticia original:\n',
+                'create',
+            );
+        },
+
+        // En una página que ya existe, sobre su texto; en una nueva, sobre la
+        // guía que se pegue.
+        suggestGuideUpdate() {
+            const rules = 'corrige versiones, comandos, rutas y paquetes que hayan cambiado y quita lo que ya no exista. '
+                + 'Si no puedes confirmar que algo siga vigente, dilo en una nota en vez de inventarlo. Mantén la estructura y el tono.';
+
+            if (isNewPage) {
+                this.setSuggestion(`Actualiza a la situación actual la guía que pego abajo y redáctala como página nueva: ${rules}\n\nGuía original:\n`, 'create');
+
+                return;
+            }
+
+            this.setSuggestion(`Actualiza esta guía a la situación actual: ${rules}`, 'edit');
         },
 
         async startStream() {

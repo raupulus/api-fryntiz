@@ -407,6 +407,115 @@ class ContentPageAiAssistantTest extends TestCase
         $this->assertStringContainsString("title: Título de la página\nslug: slug-de-la-pagina", $instruction);
     }
 
+    #[Test]
+    public function every_mode_asks_for_headings_from_h3_and_a_human_style_after_the_editorial_instruction(): void
+    {
+        $service = app(ContentAiService::class);
+
+        foreach ([AiModeEnum::Create, AiModeEnum::Edit, AiModeEnum::Correct] as $mode) {
+            $instruction = $service->buildSystemInstruction($mode, $this->content, ContentPageFormatEnum::Markdown);
+
+            $this->assertStringStartsWith(ContentAiService::DEFAULT_EDITORIAL_INSTRUCTION, $instruction, $mode->value);
+            $this->assertStringContainsString('No uses títulos de nivel 1 ni 2 (# ni ##)', $instruction, $mode->value);
+            $this->assertStringContainsString('No repitas el título de la página al principio.', $instruction, $mode->value);
+            $this->assertStringContainsString('ESTILO: escribe como lo haría una persona', $instruction, $mode->value);
+            $this->assertStringContainsString('«En resumen…»', $instruction, $mode->value);
+        }
+
+        $this->assertStringContainsString('Sin emojis ni símbolos decorativos', $service->buildSystemInstruction(AiModeEnum::Edit, $this->content, ContentPageFormatEnum::Markdown));
+
+        $correctHtml = $service->buildSystemInstruction(AiModeEnum::Correct, $this->content, ContentPageFormatEnum::Html);
+        $this->assertStringContainsString('<h1> ni <h2>', $correctHtml);
+        $this->assertStringContainsString('Conserva los emojis que ya tenga el texto, pero no añadas otros', $correctHtml);
+    }
+
+    #[Test]
+    public function the_headings_of_the_answer_start_at_h3_keeping_their_hierarchy_and_code_is_left_alone(): void
+    {
+        $answer = "# Introducción\n\n## Requisitos\n\nTexto.\n\n### Paquetes\n\n```bash\n# Esto es un comentario\n## y esto también\n```\n\n~~~\n# otro\n~~~\n\n#etiqueta no es un título";
+
+        [$text, $warnings] = app(ContentAiService::class)->fixHeadings($answer, 'Introducción');
+
+        $this->assertSame("### Requisitos\n\nTexto.\n\n#### Paquetes\n\n```bash\n# Esto es un comentario\n## y esto también\n```\n\n~~~\n# otro\n~~~\n\n#etiqueta no es un título", $text);
+        $this->assertCount(2, $warnings, 'Uno por el título repetido y otro por los niveles.');
+
+        [$same, $none] = app(ContentAiService::class)->fixHeadings("### Ya está bien\n\n#### Sub", 'Otra cosa');
+        $this->assertSame("### Ya está bien\n\n#### Sub", $same);
+        $this->assertSame([], $none);
+
+        [$deep] = app(ContentAiService::class)->fixHeadings("# Uno\n\n##### Cinco\n\n###### Seis", null);
+        $this->assertSame("### Uno\n\n###### Cinco\n\n###### Seis", $deep, 'No se pasa de h6.');
+
+        // Como hizo Mistral el 2026-10-17: el título en h3 y los apartados en h4.
+        [$nested, $raised] = app(ContentAiService::class)->fixHeadings("### Instalar Java\n\n#### Requisitos\n\n##### Detalle", 'Instalar Java');
+        $this->assertSame("### Requisitos\n\n#### Detalle", $nested);
+        $this->assertStringContainsString('se han subido', $raised[1]);
+
+        [$appended, $untouched] = app(ContentAiService::class)->fixHeadings("#### Un apartado más\n\nTexto.", 'Instalar Java');
+        $this->assertSame("#### Un apartado más\n\nTexto.", $appended, 'Sin título quitado, unos h4 se respetan.');
+        $this->assertSame([], $untouched);
+    }
+
+    #[Test]
+    public function editing_fixes_the_headings_before_putting_back_the_blocks_it_did_not_see(): void
+    {
+        $block = "<div data-editorjs-block=\"e30=\">\n<pre># no es un título</pre>\n</div>";
+
+        $result = app(ContentAiService::class)->convertResultToFormat(
+            "## Introducción\n\n## Montaje\n\n[[BLOQUE_1]]\n\n### Detalle",
+            ContentPageFormatEnum::Markdown,
+            AiModeEnum::Edit,
+            [1 => $block],
+            'Introducción',
+        );
+
+        $this->assertSame("### Montaje\n\n{$block}\n\n#### Detalle", $result['content']);
+        $this->assertStringContainsString('Se ha quitado el título del principio', $result['warnings'][0]);
+
+        $editorJs = app(ContentAiService::class)->convertResultToFormat("## Montaje\n\nTexto.\n\n### Detalle", ContentPageFormatEnum::EditorJs, AiModeEnum::Edit);
+        $levels = array_column(array_column(array_filter(json_decode($editorJs['content'], true)['blocks'], fn (array $block): bool => $block['type'] === 'header'), 'data'), 'level');
+        $this->assertSame([3, 4], $levels, 'En Editor.js también se conserva la jerarquía, en vez de aplanarlo todo a h3.');
+    }
+
+    #[Test]
+    public function correcting_an_html_page_also_fixes_its_headings(): void
+    {
+        $result = app(ContentAiService::class)->convertResultToFormat(
+            '<h2>Introducción</h2><h2 class="x">Uno</h2><p>Texto con &lt;h1&gt; escapado.</p><h3>Dos</h3>',
+            ContentPageFormatEnum::Html,
+            AiModeEnum::Correct,
+            [],
+            'Introducción',
+        );
+
+        $this->assertSame('<h3 class="x">Uno</h3><p>Texto con &lt;h1&gt; escapado.</p><h4>Dos</h4>', $result['content']);
+        $this->assertCount(2, $result['warnings']);
+    }
+
+    #[Test]
+    public function a_created_page_does_not_repeat_its_title_and_starts_its_headings_at_h3(): void
+    {
+        $parsed = app(ContentAiService::class)->parseCreatedPage(
+            "---\ntitle: Instalar Debian\nslug: instalar-debian\n---\n\n# Instalar Debian\n\n## Requisitos\n\nTexto.",
+            ContentPageFormatEnum::Markdown,
+        );
+
+        $this->assertSame('Instalar Debian', $parsed['title']);
+        $this->assertSame("### Requisitos\n\nTexto.", trim($parsed['content']));
+        $this->assertCount(2, $parsed['warnings']);
+    }
+
+    #[Test]
+    public function a_whole_pasted_news_item_fits_in_the_instruction(): void
+    {
+        $this->fakeGemini($this->sse(['Noticia reescrita.']));
+
+        $this->stream(['mode' => AiModeEnum::Create->value, 'prompt' => 'Redacta una noticia propia: '.str_repeat('Texto de la noticia original. ', 1000)])
+            ->assertOk();
+
+        $this->stream(['prompt' => str_repeat('a', 50001)])->assertSessionHasErrors('prompt');
+    }
+
     // ── Aplicar en el editor ────────────────────────────────────────────────
 
     #[Test]

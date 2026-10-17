@@ -63,15 +63,23 @@
         <textarea
             id="ai-prompt"
             class="cpe-ai__textarea"
-            rows="3"
+            rows="5"
+            x-ref="prompt"
             x-model="prompt"
             :disabled="isStreaming"
-            placeholder="Escribe lo que quieres que haga (ej. ampliar la explicación de la API, corregir ortografía, estructurar en pasos)..."
+            placeholder="Escribe lo que quieres que haga (ej. ampliar la explicación de la API, corregir ortografía, estructurar en pasos). Puedes pegar aquí una noticia o una guía entera para rehacerla."
         ></textarea>
 
-        {{-- Píldoras con sugerencias rápidas --}}
+        {{-- Píldoras con sugerencias rápidas. Las dos primeras cambian también
+             el modo y dejan el cursor al final para pegar el original. --}}
         <div class="cpe-ai__pills" x-show="!isStreaming">
             <span class="cpe-ai__pills-title">Sugerencias:</span>
+            <button type="button" class="cpe-ai__pill" x-on:click="suggestNewsRewrite()">
+                Noticia propia a partir de otra
+            </button>
+            <button type="button" class="cpe-ai__pill" x-on:click="suggestGuideUpdate()">
+                Actualizar una guía antigua
+            </button>
             <button type="button" class="cpe-ai__pill" x-on:click="setSuggestion('Corrige la ortografía, tildes y optimiza la legibilidad del texto sin alterar el significado.')">
                 Corregir ortografía y estilo
             </button>

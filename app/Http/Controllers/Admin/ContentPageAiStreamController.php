@@ -44,7 +44,8 @@ class ContentPageAiStreamController extends Controller
             // Sólo los que salen en el modal: activos y con una clave legible.
             'provider' => ['required', 'string', Rule::in($providers->map(fn (AiProvider $provider): string => $provider->provider->value)->all())],
             'reasoning_level' => ['nullable', Rule::enum(AiReasoningLevelEnum::class)],
-            'prompt' => ['nullable', 'string', 'max:5000'],
+            // Cabe una noticia o una guía pegada para reescribirla.
+            'prompt' => ['nullable', 'string', 'max:50000'],
             // Una página larga ronda los 100 KB; esto es el techo de lo que se
             // manda al proveedor en una petición.
             'current_content' => ['nullable', 'string', 'max:500000'],
@@ -76,7 +77,9 @@ class ContentPageAiStreamController extends Controller
         $systemInstruction = $assistant->buildSystemInstruction($mode, $content, $format);
         $fullPrompt = $assistant->buildContextPrompt($mode, $content, $page, (string) ($validated['prompt'] ?? ''), $current['text'], $format);
 
-        return response()->stream(function () use ($assistant, $provider, $systemInstruction, $fullPrompt, $level, $mode, $format, $current): void {
+        $pageTitle = $page?->title;
+
+        return response()->stream(function () use ($assistant, $provider, $systemInstruction, $fullPrompt, $level, $mode, $format, $current, $pageTitle): void {
             if (function_exists('set_time_limit')) {
                 @set_time_limit(200);
             }
@@ -127,7 +130,7 @@ class ContentPageAiStreamController extends Controller
             try {
                 $result = $mode === AiModeEnum::Create
                     ? $assistant->parseCreatedPage($text, $format)
-                    : $assistant->convertResultToFormat($text, $format, $mode, $current['placeholders']);
+                    : $assistant->convertResultToFormat($text, $format, $mode, $current['placeholders'], $pageTitle);
             } catch (Throwable $e) {
                 Log::error('Asistente IA: no se ha podido adaptar el resultado: '.$e->getMessage(), ['exception' => $e]);
                 $send('error', ['message' => 'No se ha podido adaptar el resultado al formato de la página.']);
