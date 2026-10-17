@@ -35,10 +35,39 @@ class TextFormatParseHelper
      */
     public static function getFieldRaw(string $id, array $data): string
     {
+        $html = is_string($data['html'] ?? null) ? $data['html'] : '';
+
+        // Dentro de un <pre> la sangría es parte del contenido: se escribe con
+        // espacios que el navegador no junta, como en los bloques de código.
+        // Fuera, el HTML se queda como estaba.
+        $html = (string) preg_replace_callback('#(<pre\b[^>]*>)(.*?)(</pre>)#is', fn (array $pre): string => $pre[1]
+            .implode('', array_map(
+                fn (string $part): string => str_starts_with($part, '<') ? $part : self::keepCodeSpaces($part),
+                preg_split('/(<[^>]*>)/', $pre[2], -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY) ?: [],
+            ))
+            .$pre[3], $html);
+
         return preg_replace('/\\n/', '', view('editor.fields._raw', [
             'id' => $id,
-            'html' => is_string($data['html'] ?? null) ? $data['html'] : '',
+            'html' => $html,
         ])->render());
+    }
+
+    /**
+     * Los espacios de código que el HTML juntaría en uno: los tabuladores
+     * (a cuatro espacios), los grupos de dos o más y el que abre una línea, en
+     * `&nbsp;`. Un espacio suelto entre palabras se queda, para que la línea
+     * pueda partirse.
+     *
+     * Sin esto la sangría no llegaba a la web: `arrayToHtml()` quita los
+     * tabuladores y junta los espacios del HTML de toda la página.
+     */
+    private static function keepCodeSpaces(string $text): string
+    {
+        $text = str_replace("\t", '    ', $text);
+        $text = (string) preg_replace_callback('/ {2,}/', fn (array $run): string => str_repeat('&nbsp;', strlen($run[0])), $text);
+
+        return (string) preg_replace('/(^|\n) /', '$1&nbsp;', $text);
     }
 
     /**
@@ -91,7 +120,7 @@ class TextFormatParseHelper
         // El código se enseña como texto: antes iba tal cual, así que un
         // `<div>` o un `<script>` dentro de un bloque de código se interpretaba
         // como HTML en la web en vez de verse.
-        $code = (string) preg_replace('/\\r\\n|\\n|\\r/', '<br>', e(is_string($data['code'] ?? null) ? $data['code'] : ''));
+        $code = (string) preg_replace('/\\r\\n|\\n|\\r/', '<br>', self::keepCodeSpaces(e(is_string($data['code'] ?? null) ? $data['code'] : '')));
         $nLines = substr_count($code, '<br>');
 
         return view('editor.fields._code', [

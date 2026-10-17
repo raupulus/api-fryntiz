@@ -26,10 +26,9 @@
             @endforeach
         </div>
 
-        <code class="r-codeblock"
-              data-language="{{isset($data['language']) ? $data['language'] : 'text'}}">
-            {!! $code !!}
-        </code>
+        {{-- El código pegado a las etiquetas: el espacio de la plantilla se
+             convertía en un espacio delante de la primera línea. --}}
+        <code class="r-codeblock" data-language="{{isset($data['language']) ? $data['language'] : 'text'}}">{!! $code !!}</code>
     </div>
 
     {{-- Footer --}}

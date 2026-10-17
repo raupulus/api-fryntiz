@@ -611,7 +611,14 @@ al guardar. Una página nueva empieza en Editor.js.
 1. La fuente, en `content_page_raw` con su tipo (`json`, `markdown` o `html`).
 2. `content_pages.content`: el HTML que se sirve, generado desde la fuente.
    En páginas Editor.js lo genera `TextFormatParseHelper`, el mismo de la v1:
-   comprobado con las 19 páginas reales, sale **idéntico** al que ya había.
+   comprobado con las 19 páginas reales, sale **idéntico** al que ya había,
+   salvo la sangría del código. Desde el 2026-10-17 se conserva: en los
+   bloques de código, y dentro de `<pre>` en los de HTML libre, los
+   tabuladores (a cuatro espacios), los grupos de espacios y el espacio con
+   el que empieza una línea van como `&nbsp;`; un espacio suelto se queda,
+   para que la línea pueda partirse. Antes `arrayToHtml()` los juntaba y el
+   código salía pegado a la izquierda. Las páginas guardadas antes la
+   recuperan al volver a guardarlas.
 3. Las versiones derivadas en Editor.js y Markdown (la que no sea la fuente).
    El HTML no se guarda aparte: es `content`. Si una derivada falla, se
    registra en el log y no impide guardar la fuente; la API la convierte al
