@@ -786,6 +786,13 @@ fija.
 barra fija de varias filas taparía lo que se escribe al desplazarse. Reordenar páginas queda
 para el escritorio.
 
+**Entre 1024 y 1439 px la lista sale plegada**: sólo el número de cada página y un «+», con un
+botón «Mostrar títulos» que la abre. A ese ancho también está la barra lateral de Filament, y
+las dos columnas juntas dejaban el editor estrecho. Desde 1440 px sale desplegada, y el mismo
+botón la pliega. No se recuerda entre páginas: lo pedido es que salga plegada por defecto. Sin
+JS manda el ancho (`panel.css`); con él, las clases que pone `contentPageEditor`, y las dos media
+queries tienen que cuadrar. Pedido por el usuario el 2026-10-17.
+
 *Comentado en `panel.css`. Auditoría del editor del 2026-10-14, que lo daba por pérdida de
 funciones.*
 

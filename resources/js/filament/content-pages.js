@@ -14,6 +14,10 @@ function csrfToken() {
     return document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
 }
 
+// Pantallas intermedias: la lista de páginas sale plegada (D48). Tiene que
+// cuadrar con la media query de `panel.css`.
+const INTERMEDIATE_QUERY = '(min-width: 64rem) and (max-width: 89.98rem)';
+
 function contentPageEditor({ autosaveMs, releaseUrl, lockToken }) {
     return {
         leaving: false,
@@ -21,6 +25,20 @@ function contentPageEditor({ autosaveMs, releaseUrl, lockToken }) {
         now: Date.now(),
         timers: [],
         listeners: [],
+
+        // La lista de páginas: `null` es la de su ancho (plegada en
+        // pantallas intermedias, desplegada en las grandes); el botón la fija
+        // hasta salir de la página o cambiar de tramo de ancho.
+        listMode: null,
+        intermediate: window.matchMedia(INTERMEDIATE_QUERY).matches,
+
+        get listCollapsed() {
+            return this.listMode === null ? this.intermediate : this.listMode === 'collapsed';
+        },
+
+        toggleList() {
+            this.listMode = this.listCollapsed ? 'open' : 'collapsed';
+        },
 
         // Distinto de lo guardado: lo que ya se autoguardó en el borrador
         // (`hasUnsavedChanges`, del servidor) o lo que aún no ha salido del
@@ -44,6 +62,11 @@ function contentPageEditor({ autosaveMs, releaseUrl, lockToken }) {
         },
 
         init() {
+            this.listen(window.matchMedia(INTERMEDIATE_QUERY), 'change', (event) => {
+                this.intermediate = event.matches;
+                this.listMode = null;
+            });
+
             this.timers.push(setInterval(() => this.autosave(), autosaveMs));
             this.timers.push(setInterval(() => (this.now = Date.now()), 5000));
 

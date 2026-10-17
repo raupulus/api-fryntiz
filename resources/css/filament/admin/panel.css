@@ -874,6 +874,169 @@
     color: #6b7280;
 }
 
+/* Lista plegada (D48): entre 1024 y 1439 px sale así, con sólo el número de
+   cada página y el «+», porque la barra lateral de Filament y la lista dejaban
+   el editor estrecho. «Mostrar títulos» la despliega; desde 1440 px sale
+   desplegada y el mismo botón la pliega. Sin JS (antes de que arranque
+   Alpine) manda el ancho; después, las clases `is-list-collapsed` /
+   `is-list-open` que pone `contentPageEditor`. La media query tiene que cuadrar
+   con `INTERMEDIATE_QUERY` de content-pages.js. Los textos que se esconden
+   siguen ahí para los lectores de pantalla. */
+.cpe-list__toggle {
+    display: none;
+}
+
+@media (min-width: 64rem) {
+    .cpe-list__toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        width: 100%;
+        margin-bottom: 0.5rem;
+        padding: 0.35rem 0.5rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        background: none;
+        color: #6b7280;
+        font-size: 0.8rem;
+        cursor: pointer;
+    }
+
+    .dark .cpe-list__toggle {
+        border-color: #3f3f46;
+        color: #a1a1aa;
+    }
+
+    .cpe-list__toggle:focus-visible {
+        outline: 2px solid #0ea5e9;
+        outline-offset: 1px;
+    }
+
+    .cpe-list__toggle-icon {
+        display: flex;
+    }
+
+    .cpe-list__link,
+    .cpe-list__add {
+        position: relative;
+    }
+}
+
+@media (min-width: 64rem) and (max-width: 89.98rem) {
+    .cpe:not(.is-list-open) .cpe-list {
+        flex-basis: 3.5rem;
+    }
+
+    .cpe:not(.is-list-open) .cpe-list__handle,
+    .cpe:not(.is-list-open) .cpe-trash {
+        display: none;
+    }
+
+    .cpe:not(.is-list-open) .cpe-list__title,
+    .cpe:not(.is-list-open) .cpe-list__add-label,
+    .cpe:not(.is-list-open) .cpe-list__toggle-label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+
+    .cpe:not(.is-list-open) .cpe-list__link,
+    .cpe:not(.is-list-open) .cpe-list__add {
+        justify-content: center;
+        padding: 0.4rem 0;
+    }
+
+    .cpe:not(.is-list-open) .cpe-list__order {
+        min-width: 0;
+        color: inherit;
+        text-align: center;
+    }
+
+    .cpe:not(.is-list-open) .cpe-list__flag {
+        position: absolute;
+        top: 0.3rem;
+        right: 0.35rem;
+        width: 0.45rem;
+        height: 0.45rem;
+        padding: 0;
+        overflow: hidden;
+        background: #f59e0b;
+        font-size: 0;
+    }
+
+    .cpe:not(.is-list-open) .cpe-list__lock {
+        position: absolute;
+        right: 0.2rem;
+        bottom: 0.2rem;
+    }
+
+    .cpe:not(.is-list-open) .cpe-list__lock .cpe-list__icon {
+        width: 0.75rem;
+        height: 0.75rem;
+    }
+}
+
+@media (min-width: 64rem) {
+    .cpe.is-list-collapsed .cpe-list {
+        flex-basis: 3.5rem;
+    }
+
+    .cpe.is-list-collapsed .cpe-list__handle,
+    .cpe.is-list-collapsed .cpe-trash {
+        display: none;
+    }
+
+    .cpe.is-list-collapsed .cpe-list__title,
+    .cpe.is-list-collapsed .cpe-list__add-label,
+    .cpe.is-list-collapsed .cpe-list__toggle-label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+    }
+
+    .cpe.is-list-collapsed .cpe-list__link,
+    .cpe.is-list-collapsed .cpe-list__add {
+        justify-content: center;
+        padding: 0.4rem 0;
+    }
+
+    .cpe.is-list-collapsed .cpe-list__order {
+        min-width: 0;
+        color: inherit;
+        text-align: center;
+    }
+
+    .cpe.is-list-collapsed .cpe-list__flag {
+        position: absolute;
+        top: 0.3rem;
+        right: 0.35rem;
+        width: 0.45rem;
+        height: 0.45rem;
+        padding: 0;
+        overflow: hidden;
+        background: #f59e0b;
+        font-size: 0;
+    }
+
+    .cpe.is-list-collapsed .cpe-list__lock {
+        position: absolute;
+        right: 0.2rem;
+        bottom: 0.2rem;
+    }
+
+    .cpe.is-list-collapsed .cpe-list__lock .cpe-list__icon {
+        width: 0.75rem;
+        height: 0.75rem;
+    }
+}
+
 .cpe-trash summary {
     cursor: pointer;
 }

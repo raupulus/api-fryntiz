@@ -802,6 +802,12 @@ el componente Alpine `resources/js/filament/content-pages.js` y los estilos
 `cpe-*` de `panel.css`.
 
 - **Lista a la izquierda** (en el móvil, un desplegable arriba):
+  - entre 1024 y 1439 px sale **plegada**: sólo el número de cada página (la
+    abierta resaltada, un punto si tienes borrador, el candado si está en uso,
+    y el título al pasar por encima) y un «+» para añadir. «Mostrar títulos»,
+    arriba, la despliega; desde 1440 px sale desplegada y el mismo botón la
+    pliega. Plegada no se reordena ni se ve la papelera. No se recuerda: cada
+    página abre como toca a su ancho (D48);
   - cambiar de página pasa siempre por `saveBeforeLeaving()`: **guarda antes**
     si hay cambios (si el guardado falla, no se cambia) y suelta el bloqueo.
     Sin esto último, el aviso de `pagehide` llegaba después de pintar la otra

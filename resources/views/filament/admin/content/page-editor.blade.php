@@ -16,8 +16,22 @@
     <div
         class="cpe"
         x-data="contentPageEditor(@js([...$this->editorConfig(), 'lockToken' => $lockToken]))"
+        x-bind:class="{ 'is-list-collapsed': listCollapsed, 'is-list-open': ! listCollapsed }"
     >
         <aside class="cpe-list" aria-label="Páginas del contenido">
+            {{-- Desde 1024 px: plegada sólo enseña el número de cada página (D48). --}}
+            <button
+                type="button"
+                class="cpe-list__toggle"
+                x-on:click="toggleList()"
+                x-bind:aria-expanded="(! listCollapsed).toString()"
+                x-bind:title="listCollapsed ? 'Mostrar los títulos de las páginas' : 'Plegar la lista de páginas'"
+            >
+                <span x-show="listCollapsed" class="cpe-list__toggle-icon"><x-filament::icon icon="heroicon-m-chevron-double-right" class="cpe-list__icon" /></span>
+                <span x-show="! listCollapsed" class="cpe-list__toggle-icon"><x-filament::icon icon="heroicon-m-chevron-double-left" class="cpe-list__icon" /></span>
+                <span class="cpe-list__toggle-label" x-text="listCollapsed ? 'Mostrar títulos' : 'Plegar'">Plegar</span>
+            </button>
+
             {{-- En el móvil, un desplegable. --}}
             <select class="cpe-list__select" aria-label="Página" x-on:change="go($event.target.value)">
                 @foreach ($pages as $item)
@@ -55,6 +69,7 @@
                             data-page-link
                             x-on:click.prevent="go(@js($this->pageUrl($item)))"
                             class="cpe-list__link"
+                            title="{{ $loop->iteration }}. {{ $item->title }}"
                         >
                             <span class="cpe-list__order">{{ $loop->iteration }}</span>
                             <span class="cpe-list__title">{{ $item->title }}</span>
@@ -78,8 +93,8 @@
             </ol>
 
             @if ($pageId !== null)
-                <a href="{{ $newUrl }}" data-page-link x-on:click.prevent="go(@js($newUrl))" class="cpe-list__add">
-                    <x-filament::icon icon="heroicon-m-plus" class="cpe-list__icon" /> Añadir página
+                <a href="{{ $newUrl }}" data-page-link x-on:click.prevent="go(@js($newUrl))" class="cpe-list__add" title="Añadir página">
+                    <x-filament::icon icon="heroicon-m-plus" class="cpe-list__icon" /> <span class="cpe-list__add-label">Añadir página</span>
                     @isset($marks['drafts']['new'])
                         <span class="cpe-list__flag" title="Tienes un borrador de una página nueva">Borrador</span>
                     @endisset
