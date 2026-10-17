@@ -180,7 +180,7 @@ class AiProviderResource extends Resource
         }
 
         return new HtmlString(sprintf(
-            'El identificador exacto del modelo en la API (<a href="%s" target="_blank" rel="noopener" class="underline">modelos de %s</a>). «Probar» comprueba que responde.',
+            'El identificador exacto del modelo en la API (<a href="%s" target="_blank" rel="noopener" style="text-decoration: underline">modelos de %s</a>). «Probar» comprueba que responde.',
             e($provider->modelsUrl()),
             e($provider->label()),
         ));
