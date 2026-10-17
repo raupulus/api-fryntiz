@@ -1435,7 +1435,8 @@ lectura.
   3. la genérica, `DEFAULT_EDITORIAL_INSTRUCTION`.
 
   El modal dice cuál se aplica («Perfil de editor»). Ninguna sale por la API.
-  Ver D51.
+  Ver D51. Hay instrucciones y perfiles de ejemplo para copiar y pegar en
+  [ia-instrucciones-de-ejemplo.md](ia-instrucciones-de-ejemplo.md).
 - **Modos** (`AiModeEnum`):
   1. `create`: título, slug y cuerpo de una página nueva. En «Añadir página»
      rellena el formulario sin guardar. Con una página abierta, antes la guarda
