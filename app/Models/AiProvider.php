@@ -6,6 +6,7 @@ namespace App\Models;
 
 use App\Casts\EncryptedString;
 use App\Enums\AiProviderEnum;
+use App\Services\Ai\AiImageProvider;
 use App\Services\Ai\AiTextProvider;
 use Database\Factories\AiProviderFactory;
 use Illuminate\Database\Eloquent\Collection;
@@ -25,6 +26,7 @@ use Illuminate\Support\Carbon;
  * @property int $id
  * @property AiProviderEnum $provider
  * @property string $model
+ * @property string|null $image_model Modelo de imágenes; vacío, no genera imágenes
  * @property string|null $api_key
  * @property bool $is_active
  * @property bool $is_default
@@ -49,6 +51,7 @@ class AiProvider extends Model
     protected $fillable = [
         'provider',
         'model',
+        'image_model',
         'api_key',
         'is_active',
         'is_default',
@@ -104,6 +107,24 @@ class AiProvider extends Model
     }
 
     /**
+     * Los que pueden generar imágenes: usables y con modelo de imágenes. El
+     * predeterminado, primero.
+     *
+     * @return Collection<int, static>
+     */
+    public static function usableForImages(): Collection
+    {
+        return static::usable()
+            ->filter(fn (AiProvider $provider): bool => $provider->supportsImages())
+            ->values();
+    }
+
+    public function supportsImages(): bool
+    {
+        return $this->isUsable() && filled(trim((string) $this->image_model));
+    }
+
+    /**
      * Si la clave está puesta, falta o no se puede leer.
      */
     public function keyStatus(): string
@@ -126,5 +147,18 @@ class AiProvider extends Model
     public function connector(): AiTextProvider
     {
         return app($this->provider->connector());
+    }
+
+    /**
+     * «Gemini · gemini-nano-banana-2.1».
+     */
+    public function imageLabel(): string
+    {
+        return $this->provider->label().' · '.$this->image_model;
+    }
+
+    public function imageConnector(): AiImageProvider
+    {
+        return app($this->provider->imageConnector());
     }
 }

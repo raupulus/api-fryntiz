@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
+use App\Services\Ai\AiImageProvider;
 use App\Services\Ai\AiTextProvider;
+use App\Services\Ai\Providers\GeminiImageProvider;
 use App\Services\Ai\Providers\GeminiTextProvider;
+use App\Services\Ai\Providers\MistralImageProvider;
 use App\Services\Ai\Providers\MistralTextProvider;
+use App\Services\Ai\Providers\OpenAiImageProvider;
 use App\Services\Ai\Providers\ResponsesTextProvider;
+use App\Services\Ai\Providers\XaiImageProvider;
 
 /**
  * Los proveedores de IA que puede usar el asistente del editor de páginas.
@@ -100,6 +105,99 @@ enum AiProviderEnum: string
             self::Mistral => 'mistral-medium-3-5',
             self::Xai => 'grok-4.7',
             self::OpenAi => null,
+        };
+    }
+
+    /**
+     * @return class-string<AiImageProvider>
+     */
+    public function imageConnector(): string
+    {
+        return match ($this) {
+            self::Gemini => GeminiImageProvider::class,
+            self::Mistral => MistralImageProvider::class,
+            self::Xai => XaiImageProvider::class,
+            self::OpenAi => OpenAiImageProvider::class,
+        };
+    }
+
+    /**
+     * Dónde se ven los modelos de imagen.
+     */
+    public function imageModelsUrl(): string
+    {
+        return match ($this) {
+            self::Gemini => 'https://ai.google.dev/gemini-api/docs/image-generation',
+            self::Mistral => 'https://docs.mistral.ai/studio-api/agents/agent-tools/image_generation',
+            self::Xai => 'https://docs.x.ai/developers/model-capabilities/images/generation',
+            self::OpenAi => 'https://developers.openai.com/api/docs/guides/image-generation',
+        };
+    }
+
+    /**
+     * Un modelo de imagen que existía al escribir esto; `null` si no se ha
+     * podido probar. Gemini y Mistral, con una llamada real el 2026-10-17; en
+     * Mistral es el de texto, que maneja su herramienta de imágenes. Grok, de
+     * su página de modelos (la cuenta no tenía saldo para probarlo).
+     */
+    public function imageModelExample(): ?string
+    {
+        return match ($this) {
+            self::Gemini => 'gemini-nano-banana-2.1',
+            self::Mistral => 'mistral-medium-3-5',
+            self::Xai => 'grok-imagine-image-2.0',
+            self::OpenAi => null,
+        };
+    }
+
+    /**
+     * Cuántas imágenes devuelve una petición: Gemini y Mistral, una; para más
+     * se hacen varias a la vez.
+     */
+    public function maxImagesPerRequest(): int
+    {
+        return match ($this) {
+            self::Gemini, self::Mistral => 1,
+            self::Xai, self::OpenAi => 10,
+        };
+    }
+
+    /**
+     * Si sabe mejorar una imagen que se le manda. La herramienta de Mistral
+     * sólo genera.
+     */
+    public function supportsImageEditing(): bool
+    {
+        return $this !== self::Mistral;
+    }
+
+    /**
+     * La calidad que se elige en cada petición de imagen, con su texto: en
+     * Gemini y Grok, el tamaño; en OpenAI, su `quality`. Mistral no tiene.
+     *
+     * @return array<string, string>
+     */
+    public function imageQualities(): array
+    {
+        return match ($this) {
+            self::Gemini => ['1K' => 'Normal (1K, más barata)', '2K' => 'Alta (2K)'],
+            self::Xai => ['1k' => 'Normal (1k, más barata)', '2k' => 'Alta (2k)'],
+            self::OpenAi => ['low' => 'Baja (más barata)', 'medium' => 'Media', 'high' => 'Alta (más cara)'],
+            self::Mistral => [],
+        };
+    }
+
+    /**
+     * La que sale elegida la primera vez: una portada se ve a 1600 px, así que
+     * la alta donde la hay.
+     */
+    public function defaultImageQuality(): ?string
+    {
+        return match ($this) {
+            self::Gemini => '2K',
+            self::Xai => '2k',
+            self::OpenAi => 'medium',
+            self::Mistral => null,
         };
     }
 

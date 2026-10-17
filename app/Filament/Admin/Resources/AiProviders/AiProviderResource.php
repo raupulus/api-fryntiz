@@ -71,6 +71,11 @@ class AiProviderResource extends Resource
                     ->maxLength(255)
                     ->placeholder(fn (Get $get): ?string => AiProviderEnum::tryFrom((string) $get('provider'))?->modelExample())
                     ->helperText(fn (Get $get): HtmlString|string => self::modelHelp(AiProviderEnum::tryFrom((string) $get('provider')))),
+                TextInput::make('image_model')
+                    ->label('Modelo de imágenes')
+                    ->maxLength(255)
+                    ->placeholder(fn (Get $get): ?string => AiProviderEnum::tryFrom((string) $get('provider'))?->imageModelExample())
+                    ->helperText(fn (Get $get): HtmlString|string => self::imageModelHelp(AiProviderEnum::tryFrom((string) $get('provider')))),
                 TextInput::make('api_key')
                     ->label('Clave de la API')
                     ->password()
@@ -118,6 +123,7 @@ class AiProviderResource extends Resource
                 TextColumn::make('provider')->label('Proveedor')
                     ->formatStateUsing(fn (AiProviderEnum $state): string => $state->fullLabel()),
                 TextColumn::make('model')->label('Modelo')->searchable(),
+                TextColumn::make('image_model')->label('Imágenes')->placeholder('—')->toggleable(),
                 TextColumn::make('key_status')->label('Clave')->badge()
                     ->state(fn (AiProvider $record): string => $record->keyStatus())
                     ->formatStateUsing(fn (string $state): string => match ($state) {
@@ -132,6 +138,7 @@ class AiProviderResource extends Resource
             ])
             ->recordActions([
                 self::probeAction(),
+                self::probeImagesAction(),
                 EditAction::make(),
                 DeleteAction::make(),
             ])
@@ -154,6 +161,32 @@ class AiProviderResource extends Resource
 
                 ($result['ok']
                     ? $notification->success()->body('Respuesta: '.$result['message'])
+                    : $notification->danger()->body($result['message'])->persistent()
+                )->send();
+            });
+    }
+
+    /**
+     * Genera una imagen de verdad con el modelo de imágenes guardado. Cuesta
+     * unos céntimos, así que lo pregunta antes.
+     */
+    public static function probeImagesAction(): Action
+    {
+        return Action::make('probeImages')
+            ->label('Probar imágenes')
+            ->icon('heroicon-o-photo')
+            ->color('gray')
+            ->visible(fn (AiProvider $record): bool => filled($record->image_model))
+            ->requiresConfirmation()
+            ->modalDescription('Genera una imagen de verdad con el modelo de imágenes: cuesta unos céntimos y tarda unos segundos.')
+            ->modalSubmitActionLabel('Generar una')
+            ->action(function (AiProvider $record): void {
+                $result = $record->imageConnector()->probe($record);
+
+                $notification = Notification::make()->title($result['ok'] ? "{$record->imageLabel()} genera imágenes" : "{$record->imageLabel()} no genera imágenes");
+
+                ($result['ok']
+                    ? $notification->success()->body($result['message'])
                     : $notification->danger()->body($result['message'])->persistent()
                 )->send();
             });
@@ -184,6 +217,28 @@ class AiProviderResource extends Resource
         return new HtmlString(sprintf(
             'El identificador exacto del modelo en la API (<a href="%s" target="_blank" rel="noopener" style="text-decoration: underline">modelos de %s</a>). «Probar» comprueba que responde.',
             e($provider->modelsUrl()),
+            e($provider->label()),
+        ));
+    }
+
+    private static function imageModelHelp(?AiProviderEnum $provider): HtmlString|string
+    {
+        $base = 'Para generar y mejorar las portadas de las entradas y sus páginas. Vacío, este proveedor no hace imágenes.';
+
+        if ($provider === null) {
+            return $base;
+        }
+
+        $extra = match ($provider) {
+            AiProviderEnum::Mistral => ' En Mistral es un modelo de texto, que usa su herramienta de imágenes: sólo genera, no mejora una que se le mande.',
+            default => '',
+        };
+
+        return new HtmlString(sprintf(
+            '%s%s (<a href="%s" target="_blank" rel="noopener" style="text-decoration: underline">imágenes de %s</a>). «Probar imágenes» genera una de verdad.',
+            e($base),
+            e($extra),
+            e($provider->imageModelsUrl()),
             e($provider->label()),
         ));
     }

@@ -831,6 +831,10 @@ Tres conectores sobre una base común (`app/Services/Ai`), sin paquete de tercer
 | `ResponsesTextProvider` | OpenAI, Grok (xAI) | `POST /responses` |
 | `MistralTextProvider` | Mistral | `POST /chat/completions` |
 
+Y para las imágenes, cuatro más sobre `HttpImageProvider` (`GeminiImageProvider`,
+`OpenAiImageProvider`, `XaiImageProvider` y `MistralImageProvider`, que usa la herramienta de
+imágenes de sus conversaciones): las cuatro API son distintas, y con las mismas razones.
+
 **Por qué no `laravel/ai`.** Admite los cuatro, pero el camino de Gemini ya estaba afinado y
 probado contra la API real (la clave en la cabecera, los resúmenes del razonamiento, los motivos
 de corte, el 402 sin saldo), y los otros tres son dos protocolos sencillos. Una dependencia nueva

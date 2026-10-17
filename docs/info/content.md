@@ -1362,6 +1362,13 @@ lectura.
     aunque el modelo esté apagado, así que listar modelos no demuestra nada. El
     ejemplo del campo es un modelo comprobado el 2026-10-17
     (`gemini-3.8-flash`, `mistral-medium-3-5`, `grok-4.7`).
+  - **Modelo de imágenes** (`image_model`): para generar y mejorar portadas.
+    Vacío, el proveedor no hace imágenes. Comprobados con una llamada real el
+    2026-10-17: `gemini-nano-banana-2.1` y, en Mistral, `mistral-medium-3-5`
+    (es un modelo de texto que usa su herramienta de imágenes). Grok
+    (`grok-imagine-image-2.0`, de su documentación) y OpenAI, sin probar.
+    «Probar imágenes» genera una de verdad: cuesta unos céntimos y lo pregunta
+    antes.
   - **Activo** (sale en el selector) y **predeterminado** (el que sale elegido;
     sólo uno).
   - **Razonamiento:** «Elegir el razonamiento en el asistente» (se manda como
@@ -1378,6 +1385,33 @@ lectura.
   `store: false`; xAI da Chat Completions por obsoleta) y `MistralTextProvider`
   (`POST /chat/completions`). Lo común (lectura del SSE, errores HTTP y
   «Probar») está en `HttpTextProvider`. Ver D50.
+- **Conectores de imágenes** (contrato `AiImageProvider`, base
+  `HttpImageProvider`; los mensajes de error, compartidos con los de texto en
+  `Concerns\DescribesApiErrors`). JSON sin streaming, hasta 180 s por
+  petición; mientras se espera, Guzzle avisa (`progress`) y quien pide puede
+  dar señales de vida. Devuelven `GeneratedImage` (bytes, tipo y tamaño leídos
+  de los propios bytes) o lanzan `AiImageException` con un mensaje para quien
+  redacta:
+  - `GeminiImageProvider`: `generateContent` con `responseModalities: [IMAGE]`
+    e `imageConfig {aspectRatio: 16:9, imageSize: 1K|2K}`. Una imagen por
+    petición: para varias, a la vez (`Http::pool`). La que se mejora va inline
+    delante del texto. Sale en JPEG (2K: 2752 × 1536). Con razonamiento puede
+    mandar borradores: vale la última que no es un pensamiento.
+  - `OpenAiImageProvider`: `/images/generations` y `/images/edits` en JSON, con
+    `n`, `1536x1024`, `quality` y PNG en base64.
+  - `XaiImageProvider`: las mismas rutas, sólo JSON, con `n`, `aspect_ratio:
+    16:9`, `resolution` y `response_format: b64_json`; la que se mejora, como
+    data URI en `image.url`.
+  - `MistralImageProvider`: no hay API de imágenes; `POST /conversations` con
+    la herramienta `image_generation` (beta). La imagen llega como URL firmada
+    de un blob de Azure (o como `tool_file`, que se baja de `/files/{id}`), y
+    sólo se descarga por HTTPS de los dominios de Mistral y de ese
+    almacenamiento. Sale en 1024 × 768 (no hace caso del 16:9) y no sabe
+    mejorar una imagen.
+
+  Los filtros de contenido (`IMAGE_SAFETY` de Gemini, `moderation_blocked` de
+  OpenAI…) se dicen como tales. Si de varias peticiones fallan algunas, se
+  quedan las imágenes que han llegado.
 - **Gemini:** el 2.0 Flash lo apagó Google el 2026-06-01 y los 2.5 sólo se
   sirven a proyectos que ya los usaban. Gemini 3.8 razona siempre: no hay
   «apagado», y `minimal` da error. Google escribe los resúmenes del

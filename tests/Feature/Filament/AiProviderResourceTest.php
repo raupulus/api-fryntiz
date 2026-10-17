@@ -160,4 +160,37 @@ class AiProviderResourceTest extends TestCase
 
         Http::assertSent(fn ($request): bool => $request['generationConfig']['thinkingConfig']['thinkingLevel'] === 'low');
     }
+
+    #[Test]
+    public function the_image_model_is_saved_and_probing_images_asks_first_and_generates_one(): void
+    {
+        $provider = AiProvider::factory()->create();
+
+        Livewire::actingAs($this->superadmin)
+            ->test(ListAiProviders::class)
+            ->assertActionHidden(TestAction::make('probeImages')->table($provider));
+
+        Livewire::actingAs($this->superadmin)
+            ->test(EditAiProvider::class, ['record' => $provider->id])
+            ->fillForm(['image_model' => 'gemini-nano-banana-2.1'])
+            ->call('save')
+            ->assertHasNoFormErrors();
+
+        $this->assertSame('gemini-nano-banana-2.1', $provider->refresh()->image_model);
+
+        $image = imagecreatetruecolor(16, 9);
+        ob_start();
+        imagepng($image);
+        Http::fake(['generativelanguage.googleapis.com/*' => Http::response(['candidates' => [['content' => ['parts' => [['inlineData' => ['mimeType' => 'image/png', 'data' => base64_encode((string) ob_get_clean())]]]]]]])]);
+
+        Livewire::actingAs($this->superadmin)
+            ->test(ListAiProviders::class)
+            ->assertActionVisible(TestAction::make('probeImages')->table($provider))
+            ->mountAction(TestAction::make('probeImages')->table($provider))
+            ->assertActionMounted(TestAction::make('probeImages')->table($provider))
+            ->callMountedAction()
+            ->assertNotified('Gemini · gemini-nano-banana-2.1 genera imágenes');
+
+        Http::assertSent(fn ($request): bool => str_contains($request->url(), '/models/gemini-nano-banana-2.1:generateContent'));
+    }
 }
