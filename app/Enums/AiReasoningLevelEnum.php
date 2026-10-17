@@ -5,13 +5,17 @@ declare(strict_types=1);
 namespace App\Enums;
 
 /**
- * Cuánto razona Gemini antes de escribir (`thinkingLevel` de la API).
+ * Cuánto razona el modelo antes de escribir.
+ *
+ * Son los tres niveles que entienden todos los proveedores: `thinkingLevel`
+ * en Gemini, `reasoning.effort` en la API Responses (OpenAI y xAI) y
+ * `reasoning_effort` en Mistral. Sólo se manda si el proveedor lo tiene
+ * marcado en el panel: a un modelo sin razonamiento le da error.
  *
  * Gemini 3.8 Flash razona siempre: no tiene nivel «apagado», y `minimal` da
- * error. Los presupuestos en tokens (`thinkingBudget`) son de los modelos
- * anteriores. Ver https://ai.google.dev/gemini-api/docs/generate-content/thinking.
+ * error. Ver https://ai.google.dev/gemini-api/docs/generate-content/thinking.
  */
-enum GeminiThinkingLevelEnum: string
+enum AiReasoningLevelEnum: string
 {
     case Low = 'low';
     case Medium = 'medium';
@@ -26,12 +30,9 @@ enum GeminiThinkingLevelEnum: string
         };
     }
 
-    /**
-     * El nivel de `.env` (`GEMINI_THINKING_LEVEL`), o el medio si no vale.
-     */
     public static function default(): self
     {
-        return self::tryFrom((string) config('google.gemini.thinking_level')) ?? self::Medium;
+        return self::Medium;
     }
 
     /**

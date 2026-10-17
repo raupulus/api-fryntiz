@@ -27,19 +27,21 @@ Sistema de gestión de contenidos multi-plataforma y multi-tipo. Soporta artícu
 | `app/Models/Content/ContentSeo.php` | `content_seo` | Datos SEO del contenido |
 | `app/Models/Content/ContentMetadata.php` | `content_metadata` | Metadata externa (repos, redes sociales) |
 | `app/Models/ContentDailyView.php` | `content_daily_views` | Vistas diarias |
+| `app/Models/AiProvider.php` | `ai_providers` | Proveedores del asistente IA: modelo y clave cifrada (sólo superadmin) |
 
 ### Controladores
 | Archivo | Versión | Descripción |
 |---------|---------|-------------|
 | `app/Http/Controllers/Api/Content/V2/ContentController.php` | API V2 | index (filtros), highlights, show (detalle con `include`), pages, page, pageBySlug, related, seo, galleries, files |
-| `app/Http/Controllers/Admin/ContentPageAiStreamController.php` | Web/Admin | Streaming SSE conectado a Google Gemini para el asistente del editor de páginas |
+| `app/Http/Controllers/Admin/ContentPageAiStreamController.php` | Web/Admin | Streaming SSE del asistente IA del editor de páginas, con el proveedor elegido en el modal |
 | `app/Http/Controllers/Content/*.php` | Web | Controladores frontend (12 archivos) |
 
 ### Servicios
 | Archivo | Descripción |
 |---------|-------------|
 | `app/Services/Content/ContentApiService.php` | Lo que sirve la API: detalle en caché con `include`, índice de páginas sin texto, partes, relacionados (elegidos primero), destacados/últimos/tendencia |
-| `app/Services/Content/GeminiContentService.php` | Asistente IA con Google Gemini: petición en streaming, contexto del contenido, la página en Markdown con marcas para los bloques que Gemini no ve, y el resultado al formato de la página |
+| `app/Services/Content/ContentAiService.php` | Asistente IA: instrucción de sistema, contexto del contenido, la página en Markdown con marcas para los bloques que la IA no ve, y el resultado al formato de la página. La petición la hace el conector del proveedor (`app/Services/Ai`) |
+| `app/Services/Ai/` | Conectores del asistente IA (`AiTextProvider`): `GeminiTextProvider`, `ResponsesTextProvider` (OpenAI y Grok) y `MistralTextProvider`, sobre `HttpTextProvider` |
 | `app/Services/Content/ContentSeoService.php` | Lógica SEO del contenido |
 | `app/Services/Content/ContentFormatConverter.php` | Conversión de páginas entre Editor.js, Markdown y HTML, y el HTML que se sirve |
 | `app/Services/Content/ContentPageFormatService.php` | Fuente única de cada página: guardar, regenerar derivados; al guardar, historial, bloqueo, fecha de apertura, borrador y ficheros sin usar |
@@ -73,9 +75,9 @@ y `ContentApiService` carga exactamente eso (D9).
 | `app/Enums/ContentPageRawTypeEnum.php` | Tipos raw: HTML, Markdown, JSON (sin uso) |
 | `app/Enums/ContentPageFormatEnum.php` | Formatos de edición de una página: `editorjs`, `markdown`, `html` (el tipo en BD de Editor.js es `json`) |
 | `app/Enums/ContentPageVersionReasonEnum.php` | Por qué una versión pasó al historial: `save`, `format_change`, `restore`, `draft_restore`, `emptied` |
-| `app/Enums/GeminiModelEnum.php` | El modelo del asistente: sólo `gemini-3.8-flash` |
-| `app/Enums/GeminiThinkingLevelEnum.php` | Razonamiento de Gemini: `low`, `medium` (por defecto), `high` |
-| `app/Enums/GeminiAiModeEnum.php` | Modos de operación del asistente IA: `create`, `edit`, `correct` |
+| `app/Enums/AiProviderEnum.php` | Proveedores del asistente IA: `gemini`, `mistral`, `xai` (Grok), `openai`, con su API y su conector |
+| `app/Enums/AiReasoningLevelEnum.php` | Razonamiento del asistente: `low`, `medium` (por defecto), `high` |
+| `app/Enums/AiModeEnum.php` | Modos de operación del asistente IA: `create`, `edit`, `correct` |
 
 ### Otros
 | Archivo | Descripción |
@@ -1319,30 +1321,63 @@ para escribir a mano el `gallery_id`). Implementado por completo:
   Blade propia del panel debe usar CSS en línea (`<style>`/`style=""`), no
   clases Tailwind: no hay ningún build que las genere.
 
-## Asistente IA con Google Gemini en el editor de páginas
+## Asistente IA en el editor de páginas
 
 Botón «Asistente IA» en la barra de `ManageContentPages` (`aiAssistantAction`).
-Sólo aparece si hay clave y la página no está en lectura.
+Sólo aparece si hay algún proveedor activo con clave y la página no está en
+lectura.
 
-- **Clave:** sólo `GEMINI_API_KEY` en `.env` (de Google AI Studio; en las
-  plantillas `.env.example*` va comentada, junto a `GEMINI_THINKING_LEVEL`). La de
-  Google de Maps y YouTube no sirve de alternativa: no tiene la API de Gemini, y
-  con ella el botón aparecía para fallar siempre. Viaja en la cabecera
-  `x-goog-api-key`, nunca en la URL: los errores de conexión llevan la URL
-  completa y acababan en el modal y en el log.
-- **Modelo:** sólo **Gemini 3.8 Flash** (`gemini-3.8-flash`,
-  `GeminiModelEnum::default()`), que no se elige: se enseña. Es el único modelo
-  de texto de la familia 3.8; el 2.0 Flash lo apagó Google el 2026-06-01 y los
-  2.5 sólo se sirven a proyectos que ya los usaban.
-- **Razonamiento** (`GeminiThinkingLevelEnum`, `thinkingLevel` de la API):
-  `low`, `medium` (por defecto, `GEMINI_THINKING_LEVEL`) y `high`. Gemini 3.8
-  razona siempre: no hay «apagado», y `minimal` da error. Se piden los
-  resúmenes del razonamiento (`includeThoughts`) y se ven en el modal mientras
-  piensa. Google los escribe en inglés aunque se le pidan en español
-  (probado); el texto de la página sí sale en español. El navegador recuerda
-  el último nivel, y si ya no está en la lista usa el de por defecto. No se
-  manda `temperature`: los modelos 3.x lo ignoran.
-- **Modos** (`GeminiAiModeEnum`):
+- **Proveedores** (Configuración → Proveedores de IA, `AiProviderResource`,
+  **sólo superadmin**; tabla `ai_providers`, `AiProviderEnum`): Gemini, Mistral,
+  Grok (xAI) y OpenAI, uno de cada, con su modelo y su clave. Valen para todas
+  las plataformas. Ninguna clave va en el `.env` ni en el código: se pegan en el
+  panel.
+  - **Clave:** cifrada con la `APP_KEY` (cast `EncryptedString`) y fuera de
+    `toArray()`. La tabla sólo dice «Puesta», «Falta» o «Ilegible». Al editar
+    llega al navegador del superadmin, para verla con el ojo; dejar el campo
+    vacío conserva la que había. Si la `APP_KEY` cambia (en desarrollo
+    `project:clear` la regenera), sale «Ilegible», el proveedor deja de estar
+    disponible y hay que volver a pegarla: ver D49 en
+    [decisiones-tecnicas.md](decisiones-tecnicas.md). Viaja en una cabecera
+    (`x-goog-api-key` en Gemini, `Authorization: Bearer` en el resto), nunca en
+    la URL: los errores de conexión llevan la URL completa y acababan en el
+    modal y en el log.
+  - **Modelo:** el identificador exacto de la API, que se escribe. Lo comprueba
+    «Probar», que hace una llamada real mínima: Gemini da 200 en `GET models/…`
+    aunque el modelo esté apagado, así que listar modelos no demuestra nada. El
+    ejemplo del campo es un modelo comprobado el 2026-10-17
+    (`gemini-3.8-flash`, `mistral-medium-3-5`, `grok-4.7`).
+  - **Activo** (sale en el selector) y **predeterminado** (el que sale elegido;
+    sólo uno).
+  - **Razonamiento:** «Mandar el nivel» (`thinkingLevel` en Gemini,
+    `reasoning.effort` en Responses, `reasoning_effort` en Mistral; a un modelo
+    sin razonamiento le da error) y «Pedir el resumen» (`includeThoughts` en
+    Gemini, `reasoning.summary: auto` en Responses; de serie en Gemini y
+    OpenAI, no en Grok, que sólo lo admite en algunos modelos). En Mistral el
+    razonamiento llega solo, con el nivel.
+- **Conectores** (`app/Services/Ai`, contrato `AiTextProvider`):
+  `GeminiTextProvider` (`streamGenerateContent?alt=sse`),
+  `ResponsesTextProvider` para OpenAI y Grok (`POST /responses`, con
+  `store: false`; xAI da Chat Completions por obsoleta) y `MistralTextProvider`
+  (`POST /chat/completions`). Lo común (lectura del SSE, errores HTTP y
+  «Probar») está en `HttpTextProvider`. Ver D50.
+- **Gemini:** el 2.0 Flash lo apagó Google el 2026-06-01 y los 2.5 sólo se
+  sirven a proyectos que ya los usaban. Gemini 3.8 razona siempre: no hay
+  «apagado», y `minimal` da error. Google escribe los resúmenes del
+  razonamiento en inglés aunque se le pidan en español (probado); el texto de
+  la página sí sale en español. No se manda `temperature`: los modelos 3.x lo
+  ignoran.
+- **Modal:** proveedor (selector si hay más de uno) y razonamiento
+  (`AiReasoningLevelEnum`: `low`, `medium` por defecto y `high`; sólo si el
+  proveedor manda el nivel). El navegador recuerda el último proveedor y el
+  último nivel, y si ya no están en la lista usa el predeterminado.
+- **Instrucción de sistema** (`ContentAiService::buildSystemInstruction()`):
+  primero la editorial (quién escribe y cómo; sin otra, el texto genérico
+  `DEFAULT_EDITORIAL_INSTRUCTION`), después el contexto (plataforma y título) y
+  al final las reglas técnicas del modo, que no se editan desde el panel: el
+  resultado se lee con ellas (el bloque `---` con título y slug al crear, las
+  marcas de bloque al editar o corregir).
+- **Modos** (`AiModeEnum`):
   1. `create`: título, slug y cuerpo de una página nueva. En «Añadir página»
      rellena el formulario sin guardar. Con una página abierta, antes la guarda
      (si no se puede, no sigue), crea la nueva al final con su contenido de una
@@ -1351,31 +1386,38 @@ Sólo aparece si hay clave y la página no está en lectura.
   2. `edit`: reescribe o amplía la página abierta. «Reemplazar contenido actual»
      o «Añadir al final».
   3. `correct`: sólo ortografía, puntuación y estilo.
-- **Qué recibe Gemini:** la página en Markdown (Editor.js se convierte antes) o
+- **Qué recibe la IA:** la página en Markdown (Editor.js se convierte antes) o
   en HTML si es HTML. Nunca el JSON de Editor.js. Los bloques sin equivalente
   en Markdown (imágenes subidas, avisos, vídeos, tarjetas de enlace…) le llegan
   como marcas `[[BLOQUE_1]]` que no debe tocar; al volver se pone en cada una el
   bloque original, intacto. En el modal se ven como «[bloque 1: se conserva
-  tal cual]». Si Gemini quita alguna, el resultado lo avisa. Ver
+  tal cual]». Si la IA quita alguna, el resultado lo avisa. Ver
   [decisiones-tecnicas.md](decisiones-tecnicas.md) D44. Mientras escribe, el
   autoguardado sigue funcionando (D46).
 - **Aplicar:** el resultado entra en el editor sin guardar. «Deshacer lo de
-  Gemini» (`undoAiAction`, aviso encima del formulario) lo devuelve a como
+  la IA» (`undoAiAction`, aviso encima del formulario) lo devuelve a como
   estaba antes de aplicarlo, desde la caché del servidor (un día, por pestaña
   y página). Guardar lo olvida.
 - **Stream** `POST /admin/contents/{content}/pages/ai/stream`
-  (`ContentPageAiStreamController`): `thought` y `content` mientras escribe; al
-  terminar, `complete` (ya en el formato de la página, con avisos) y `done`. Si
-  algo falla, sólo `error`: sin saldo (402), clave sin permiso, cuota agotada,
-  petición bloqueada por los filtros de Google, respuesta vacía. Una respuesta
-  cortada (`finishReason` `MAX_TOKENS`, `SAFETY`…) llega con su aviso.
-- **Límite:** `throttle:content-ai`, por usuario: 20 por minuto y 300 por hora
-  (`config/rate_limits.php`; `RATE_LIMIT_CONTENT_AI` y
-  `RATE_LIMIT_CONTENT_AI_HOUR` en `.env`). Holgado a propósito para no cortar a quien
-  redacta; corta bucles y scripts. Al pasarlo, el modal lo dice.
+  (`ContentPageAiStreamController`), con `provider` (uno activo y con clave
+  legible; si no, 422) y `reasoning_level`: `thought` y `content` mientras
+  escribe; al terminar, `complete` (ya en el formato de la página, con avisos)
+  y `done`. Si algo falla, sólo `error`: sin saldo (402, o 429 con
+  `insufficient_quota` en OpenAI), clave sin permiso, cuota agotada, modelo que
+  no existe, petición bloqueada o negativa del modelo, respuesta vacía. Una
+  respuesta cortada (`MAX_TOKENS` en Gemini, `response.incomplete` en
+  Responses, `finish_reason: length` en Mistral, los filtros de seguridad…)
+  llega con su aviso.
+- **Límite:** `throttle:content-ai`, por usuario y sumando todos los
+  proveedores: 20 por minuto y 300 por hora (`config/rate_limits.php`;
+  `RATE_LIMIT_CONTENT_AI` y `RATE_LIMIT_CONTENT_AI_HOUR` en `.env`). Holgado a
+  propósito para no cortar a quien redacta; corta bucles y scripts. Al pasarlo,
+  el modal lo dice.
 - **Cerrar el modal** mientras escribe detiene la petición.
 
-*Fijado por `tests/Feature/Content/ContentPageAiAssistantTest.php`.*
+*Fijado por `tests/Feature/Content/ContentPageAiAssistantTest.php`,
+`tests/Feature/Ai/AiTextProvidersTest.php` y
+`tests/Feature/Filament/AiProviderResourceTest.php`.*
 
 ---
 

@@ -80,7 +80,12 @@ Variables imprescindibles a revisar:
 | `MAIL_*` | SMTP del proveedor (Mailgun/SES/…). `MAIL_ADMIN_ADDRESS` es el buzón de los mensajes de contacto que no son de un usuario. |
 | `AEMET_API_KEY` | Clave AEMET. Ver [docs/info/apis/aemet.md](../info/apis/aemet.md). |
 | `BROADCAST_CONNECTION` | `reverb` si se usa WebSockets (ver [websockets.md](../info/websockets.md)). |
-| `GEMINI_API_KEY` | Opcional. Clave de Google AI Studio para el asistente IA del editor de páginas; en la plantilla va comentada. Sin ella el botón no aparece. Cada petición gasta saldo de la cuenta. |
+
+Las claves del **asistente IA** del editor de páginas (Gemini, Mistral, Grok,
+OpenAI) no van en el `.env`: tras desplegar, el superadmin las pega en el panel,
+Configuración → Proveedores de IA, y pulsa «Probar». Se guardan cifradas con la
+`APP_KEY`: si se rota (`project:clear --key`), hay que volver a pegarlas. Sin
+ningún proveedor activo, el botón «Asistente IA» no aparece.
 
 #### Las cuatro que fallan en silencio
 

@@ -692,18 +692,20 @@ plan de contenidos del 2026-09-24.*
 
 ---
 
-### D44 · A Gemini se le habla en Markdown, con marcas para los bloques que no ve
+### D44 · A la IA se le habla en Markdown, con marcas para los bloques que no ve
 
-El asistente de IA no le manda nunca a Gemini el JSON de Editor.js. Una página de Editor.js se
+El asistente de IA no le manda nunca al proveedor (Gemini, Mistral, Grok u OpenAI) el JSON de
+Editor.js. Una página de Editor.js se
 convierte antes a Markdown, y los bloques que Markdown no sabe expresar (imágenes subidas con su
 `file_id` y su pie de foto, avisos, vídeos, tarjetas de enlace, adjuntos, bloques con estilos)
 viajan como una marca fija, `[[BLOQUE_1]]`, que se le pide no tocar. Al volver se pone en cada
-marca el bloque original, intacto; si Gemini quita alguna, el resultado avisa de cuáles.
+marca el bloque original, intacto; si la IA quita alguna, el resultado avisa de cuáles.
 
 **Por qué.** Al pedir el JSON, la respuesta se cortaba o volvía con una llave de menos, y la página
 acababa siendo ese JSON como texto. Al pedir Markdown sin marcas, las imágenes perdían el
-vínculo con su fichero y los avisos y vídeos salían como Gemini quisiera. Con las marcas, Gemini
-sólo ve lo que puede editar, y lo demás no pasa por él.
+vínculo con su fichero y los avisos y vídeos salían como el modelo quisiera. Con las marcas, la
+IA sólo ve lo que puede editar, y lo demás no pasa por ella. No depende del proveedor: las marcas
+las pone y las quita `ContentAiService`, antes y después del conector.
 
 *Fijado por `ContentPageAiAssistantTest::editing_an_editorjs_page_keeps_uploaded_images_and_special_blocks_intact`
 y `::a_block_that_gemini_removes_is_reported`. Auditoría del editor del 2026-10-14.*
@@ -728,7 +730,7 @@ es comportamiento del navegador.*
 
 ---
 
-### D46 · El stream de Gemini no bloquea la sesión
+### D46 · El stream del asistente IA no bloquea la sesión
 
 Mientras el asistente escribe, el autoguardado y el resto de peticiones del panel siguen
 funcionando: Laravel no bloquea la sesión salvo que una ruta lo pida con `->block()`, y ninguna
@@ -767,6 +769,59 @@ para el escritorio.
 
 *Comentado en `panel.css`. Auditoría del editor del 2026-10-14, que lo daba por pérdida de
 funciones.*
+
+---
+
+### D49 · Las claves de IA viven cifradas en la base, y sólo las ve el superadmin
+
+Las claves de los proveedores del asistente (Gemini, Mistral, Grok, OpenAI) se pegan en el panel,
+Configuración → Proveedores de IA, y valen para todas las plataformas. No hay variable de `.env`
+ni migración o seeder que las traiga: el `GEMINI_API_KEY` que había dejó de leerse.
+
+- **Sólo el superadmin** (`AiProviderPolicy`): son claves de pago. Un `Admin` no ve ni el menú.
+- **Cifradas con la `APP_KEY`** (cast `EncryptedString`) y fuera de `toArray()`. Al editar llegan al
+  navegador del superadmin para verlas con el ojo, que es lo que se pidió; en la tabla no salen.
+- **Si la `APP_KEY` cambia, se leen como `null`**, no como un error: el proveedor sale «Ilegible»,
+  deja de estar disponible y se vuelve a pegar la clave. En desarrollo pasa en cada
+  `project:clear` (D15); en producción, al rotar la clave con `--key`. Con el cast `encrypted`
+  de Laravel, abrir la ficha daba un 500 y pegar una clave nueva también: Eloquent descifra la
+  vieja para ver si ha cambiado.
+
+**Por qué no en el `.env`.** El usuario quiere darlas de alta y cambiarlas desde el panel, y
+probarlas allí mismo («Probar» hace una llamada real mínima). Y su clave real no tiene que pasar
+por nada versionado, ni siquiera una migración que la lea del `.env`.
+
+*Fijado por `AiProviderResourceTest`. Decidido el 2026-10-17.*
+
+---
+
+### D50 · Conectores propios para la IA, y las reglas técnicas del modo no se editan
+
+Tres conectores sobre una base común (`app/Services/Ai`), sin paquete de terceros:
+
+| Conector | Proveedores | API |
+|---|---|---|
+| `GeminiTextProvider` | Gemini | `streamGenerateContent?alt=sse` |
+| `ResponsesTextProvider` | OpenAI, Grok (xAI) | `POST /responses` |
+| `MistralTextProvider` | Mistral | `POST /chat/completions` |
+
+**Por qué no `laravel/ai`.** Admite los cuatro, pero el camino de Gemini ya estaba afinado y
+probado contra la API real (la clave en la cabecera, los resúmenes del razonamiento, los motivos
+de corte, el 402 sin saldo), y los otros tres son dos protocolos sencillos. Una dependencia nueva
+habría que seguirla con D7 sin necesitarla.
+
+**Por qué Responses para Grok.** xAI da Chat Completions por obsoleta y con ella no devuelve el
+razonamiento de los modelos 4.x; OpenAI recomienda Responses para los de razonamiento. Las dos
+entienden la misma petición.
+
+**Las reglas técnicas del modo no se editan.** La instrucción de sistema es la editorial (que sí
+se edita) más el contexto y, al final, las reglas del modo: el bloque `---` con título y slug al
+crear y las marcas de bloque (D44) al editar o corregir. El resultado se lee con esas reglas;
+si una instrucción del panel las quitara, el asistente devolvería algo que no se puede aplicar.
+
+*Fijado por `AiTextProvidersTest` y
+`ContentPageAiAssistantTest::the_system_instruction_ends_with_the_technical_rules_of_the_mode`.
+Decidido el 2026-10-17.*
 
 ---
 
@@ -866,7 +921,8 @@ había que arreglar era producción, y ya está arreglado. El comentario del pro
 
 **Por qué en producción es al revés.** Allí el comando se ejecuta después de cada despliegue.
 Regenerar la clave en ese momento invalida las sesiones abiertas y deja sin descifrar los
-`two_factor_secret` que Fortify guarda cifrados —los tokens de Sanctum no, que se guardan hasheados—.
+`two_factor_secret` que Fortify guarda cifrados y las claves de los proveedores de IA (D49) —los
+tokens de Sanctum no, que se guardan hasheados—.
 Rotar la clave es una operación aparte, que no tiene nada que ver con subir código: para eso está
 `--key`, que además sigue pidiendo confirmación salvo `--force`.
 

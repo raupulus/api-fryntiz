@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Content\Contents\Pages;
 
+use App\Enums\AiModeEnum;
+use App\Enums\AiReasoningLevelEnum;
 use App\Enums\ContentPageFormatEnum;
 use App\Enums\ContentPageVersionReasonEnum;
-use App\Enums\GeminiAiModeEnum;
-use App\Enums\GeminiModelEnum;
-use App\Enums\GeminiThinkingLevelEnum;
 use App\Exceptions\ContentPageConflictException;
 use App\Exceptions\ContentPageLockedException;
 use App\Exceptions\ContentUploadException;
@@ -16,11 +15,13 @@ use App\Filament\Admin\Resources\Content\Contents\ContentResource;
 use App\Filament\Admin\Resources\Content\Contents\Pages\Concerns\ContentPageForm;
 use App\Filament\Admin\Resources\Content\Contents\Pages\Concerns\ContentSectionPage;
 use App\Filament\Concerns\HasImageFileUpload;
+use App\Models\AiProvider;
 use App\Models\Content\Content;
 use App\Models\Content\ContentPage;
 use App\Models\Content\ContentPageDraft;
 use App\Models\File;
 use App\Models\User;
+use App\Services\Content\ContentAiService;
 use App\Services\Content\ContentFileService;
 use App\Services\Content\ContentFormatConverter;
 use App\Services\Content\ContentImageService;
@@ -28,7 +29,6 @@ use App\Services\Content\ContentPageDraftService;
 use App\Services\Content\ContentPageHistoryService;
 use App\Services\Content\ContentPageLockService;
 use App\Services\Content\ContentPageLockState;
-use App\Services\Content\GeminiContentService;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
@@ -143,7 +143,7 @@ class ManageContentPages extends Page
     public mixed $replacement = null;
 
     /**
-     * Se ha aplicado algo de Gemini y se puede deshacer (`undoAiAction`).
+     * Se ha aplicado algo de la IA y se puede deshacer (`undoAiAction`).
      */
     public bool $aiUndoAvailable = false;
 
@@ -825,12 +825,13 @@ class ManageContentPages extends Page
         return ContentPage::onlyTrashed()->where('content_id', $this->ownerContent()->id)->find((int) ($arguments['page'] ?? 0));
     }
 
-    // ── Asistente IA (Google Gemini) ────────────────────────────────────────
+    // ── Asistente IA ────────────────────────────────────────────────────────
 
     /**
-     * El modal del asistente. Lo que escribe Gemini llega por el stream de
+     * El modal del asistente. Lo que escribe la IA llega por el stream de
      * `ContentPageAiStreamController`, y se aplica con `applyAiContent()` o
-     * `applyAiNewPage()`.
+     * `applyAiNewPage()`. Los proveedores son los activos con clave
+     * (`AiProvider::usable()`), el predeterminado primero.
      */
     public function aiAssistantAction(): Action
     {
@@ -840,13 +841,18 @@ class ManageContentPages extends Page
             ->icon('heroicon-m-sparkles')
             ->color('primary')
             ->modalWidth(Width::FourExtraLarge)
-            ->modalHeading('Asistente Google Gemini')
-            ->modalDescription('Genera contenido, amplía o corrige ortografía con Gemini en tiempo real.')
+            ->modalHeading('Asistente IA')
+            ->modalDescription('Genera contenido, amplía o corrige ortografía en tiempo real, con el proveedor que elijas.')
             ->modalContent(fn () => view('filament.admin.content.partials.ai-modal', [
-                'modelLabel' => GeminiModelEnum::default()->label(),
-                'thinkingLevels' => GeminiThinkingLevelEnum::options(),
-                'modes' => GeminiAiModeEnum::options(),
-                'defaultThinkingLevel' => GeminiThinkingLevelEnum::default()->value,
+                'providers' => AiProvider::usable()->map(fn (AiProvider $provider): array => [
+                    'value' => $provider->provider->value,
+                    'label' => $provider->label(),
+                    'name' => $provider->provider->label(),
+                    'reasoning' => $provider->sends_reasoning_level,
+                ])->all(),
+                'reasoningLevels' => AiReasoningLevelEnum::options(),
+                'modes' => AiModeEnum::options(),
+                'defaultReasoningLevel' => AiReasoningLevelEnum::default()->value,
                 'currentFormat' => ContentPageFormatEnum::tryFrom((string) ($this->data['source_format'] ?? '')) ?? ContentPageFormatEnum::EditorJs,
                 'pageId' => $this->pageId,
                 'isNewPage' => $this->pageId === null,
@@ -854,12 +860,12 @@ class ManageContentPages extends Page
             ]))
             ->modalSubmitAction(false)
             ->modalCancelActionLabel('Cerrar')
-            ->visible(fn (): bool => ! $this->readOnly && app(GeminiContentService::class)->isAvailable());
+            ->visible(fn (): bool => ! $this->readOnly && app(ContentAiService::class)->isAvailable());
     }
 
     /**
-     * Lo de Gemini al editor, sin guardar: sustituye el contenido o lo añade
-     * al final. Lo que había se aparta para «Deshacer lo de Gemini».
+     * Lo de la IA al editor, sin guardar: sustituye el contenido o lo añade
+     * al final. Lo que había se aparta para «Deshacer lo de la IA».
      */
     public function applyAiContent(string $newContent, bool $append = false): void
     {
@@ -889,13 +895,13 @@ class ManageContentPages extends Page
 
         Notification::make()
             ->title('Contenido aplicado')
-            ->body('El texto de Gemini está en el editor sin guardar. Revísalo y pulsa Guardar (Ctrl+S), o «Deshacer lo de Gemini».')
+            ->body('El texto de la IA está en el editor sin guardar. Revísalo y pulsa Guardar (Ctrl+S), o «Deshacer lo de la IA».')
             ->success()
             ->send();
     }
 
     /**
-     * Los bloques de Gemini detrás de los que ya hay.
+     * Los bloques de la IA detrás de los que ya hay.
      */
     private function appendBlocks(string $existing, string $new): string
     {
@@ -909,7 +915,7 @@ class ManageContentPages extends Page
     }
 
     /**
-     * Una página nueva con lo que ha creado Gemini.
+     * Una página nueva con lo que ha creado la IA.
      *
      * En «Añadir página» se rellena el formulario sin guardar. Con una página
      * abierta se crea al final y se abre, como al cambiar de página: antes se
@@ -938,7 +944,7 @@ class ManageContentPages extends Page
 
             Notification::make()
                 ->title('Página nueva preparada')
-                ->body('Se han cargado el título, el slug y el contenido de Gemini. Revísalos y pulsa Guardar.')
+                ->body('Se han cargado el título, el slug y el contenido de la IA. Revísalos y pulsa Guardar.')
                 ->success()
                 ->send();
 
@@ -975,7 +981,7 @@ class ManageContentPages extends Page
 
         Notification::make()
             ->title('Página creada')
-            ->body("Se ha creado la página «{$title}» con el contenido de Gemini.")
+            ->body("Se ha creado la página «{$title}» con el contenido de la IA.")
             ->success()
             ->send();
 
@@ -983,7 +989,7 @@ class ManageContentPages extends Page
     }
 
     /**
-     * Aparta lo que hay en el editor antes de aplicar lo de Gemini, en la
+     * Aparta lo que hay en el editor antes de aplicar lo de la IA, en la
      * caché del servidor y para esta pestaña, como el cambio de formato.
      */
     private function rememberForAiUndo(ContentPageFormatEnum $format, string $content): void
@@ -1006,12 +1012,12 @@ class ManageContentPages extends Page
     public function undoAiAction(): Action
     {
         return Action::make('undoAi')
-            ->label('Deshacer lo de Gemini')
+            ->label('Deshacer lo de la IA')
             ->icon('heroicon-o-arrow-uturn-left')
             ->color('warning')
             ->requiresConfirmation()
-            ->modalHeading('Deshacer lo de Gemini')
-            ->modalDescription('El editor vuelve a como estaba antes de aplicar lo de Gemini. Lo que hayas escrito después se descarta.')
+            ->modalHeading('Deshacer lo de la IA')
+            ->modalDescription('El editor vuelve a como estaba antes de aplicar lo de la IA. Lo que hayas escrito después se descarta.')
             ->modalSubmitActionLabel('Deshacer')
             ->visible(fn (): bool => $this->aiUndoAvailable && ! $this->readOnly)
             ->action(function (): void {
@@ -1032,7 +1038,7 @@ class ManageContentPages extends Page
                 $this->form->fill($data);
                 $this->hasUnsavedChanges = $this->differsFromSaved();
 
-                Notification::make()->success()->title('Deshecho')->body('El editor está como antes de aplicar lo de Gemini.')->send();
+                Notification::make()->success()->title('Deshecho')->body('El editor está como antes de aplicar lo de la IA.')->send();
             });
     }
 

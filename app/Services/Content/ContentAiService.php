@@ -4,41 +4,44 @@ declare(strict_types=1);
 
 namespace App\Services\Content;
 
+use App\Enums\AiModeEnum;
+use App\Enums\AiReasoningLevelEnum;
 use App\Enums\ContentPageFormatEnum;
-use App\Enums\GeminiAiModeEnum;
-use App\Enums\GeminiModelEnum;
-use App\Enums\GeminiThinkingLevelEnum;
+use App\Models\AiProvider;
 use App\Models\Content\Content;
 use App\Models\Content\ContentPage;
 use App\Models\Platform;
 use Closure;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use JsonException;
-use RuntimeException;
-use Throwable;
 
 /**
- * El asistente de Google Gemini del editor de páginas: crear una página,
- * editar o ampliar la actual y corregirla.
+ * El asistente de IA del editor de páginas: crear una página, editar o
+ * ampliar la actual y corregirla, con el proveedor que se elija en el modal
+ * (`AiProvider`; la petición la hace su conector, `App\Services\Ai`).
  *
- * A Gemini siempre se le habla en Markdown (o en HTML, si la página es HTML y
+ * A la IA siempre se le habla en Markdown (o en HTML, si la página es HTML y
  * sólo se corrige), nunca con el JSON de Editor.js: el JSON es largo, se corta,
  * y cuando volvía con una llave de menos la página acababa siendo ese JSON
  * como texto. Lo que Markdown no sabe expresar (imágenes subidas, avisos,
  * vídeos, tarjetas de enlace…) viaja con el envoltorio `<div data-editorjs-block>`
- * del conversor, y a Gemini le llega sustituido por una marca fija
+ * del conversor, y a la IA le llega sustituido por una marca fija
  * (`[[BLOQUE_1]]`) que no tiene que tocar: al volver se pone el bloque original
  * en su sitio, intacto, con su `file_id` y su pie de foto.
  */
-class GeminiContentService
+class ContentAiService
 {
-    private const API_BASE = 'https://generativelanguage.googleapis.com/v1beta';
+    /**
+     * La instrucción editorial cuando ni la entrada ni su plataforma tienen
+     * una propia.
+     */
+    public const DEFAULT_EDITORIAL_INSTRUCTION = "Eres un asistente editorial experto que redacta y revisa contenidos para la plataforma digital de Raúl Caro Pastorino (@raupulus).\n".
+        "Tus textos deben ser profesionales, rigurosos, técnicos y pedagógicos. Usa siempre español con tildes y ortografía impecable.\n".
+        'No inventes datos ni tecnologías inexistentes. Sé directo y evita preámbulos innecesarios o saludos.';
 
     /**
-     * Marca de un bloque que Gemini no ve. Al volver se admite también con las
+     * Marca de un bloque que la IA no ve. Al volver se admite también con las
      * barras de escape que pone a veces al escribir Markdown (`\[\[BLOQUE_1\]\]`).
      */
     private const PLACEHOLDER = '[[BLOQUE_%d]]';
@@ -52,71 +55,43 @@ class GeminiContentService
      */
     private const WRAPPER_PATTERN = '/<div '.ContentFormatConverter::BLOCK_ATTRIBUTE.'="[A-Za-z0-9+\/=]+">(?:<\/div>|\n(?:(?!\n\n).)*?\n<\/div>(?=\n|$))/s';
 
-    /**
-     * Motivos de fin que no son «terminado»: la respuesta se ha cortado.
-     */
-    private const FINISH_REASONS = [
-        'MAX_TOKENS' => 'la respuesta se ha cortado por larga',
-        'SAFETY' => 'los filtros de seguridad de Google la han cortado',
-        'RECITATION' => 'Google la ha cortado por parecerse demasiado a un texto publicado',
-        'BLOCKLIST' => 'Google la ha cortado por contener términos bloqueados',
-        'PROHIBITED_CONTENT' => 'Google la ha cortado por contenido prohibido',
-        'SPII' => 'Google la ha cortado por contener datos personales sensibles',
-    ];
-
     public function __construct(
         private readonly ContentFormatConverter $converter,
     ) {}
 
     /**
-     * La clave de la API (ver `config/google.php`).
-     *
-     * @throws RuntimeException si no hay ninguna.
-     */
-    public function apiKey(): string
-    {
-        $key = (string) config('google.gemini.api_key', '');
-
-        if (blank($key)) {
-            throw new RuntimeException('No se ha configurado ninguna clave API para Google Gemini (GEMINI_API_KEY).');
-        }
-
-        return $key;
-    }
-
-    /**
-     * Si hay clave: sin ella el botón del asistente no aparece.
+     * Si hay algún proveedor activo con clave: sin él, el botón del asistente
+     * no aparece.
      */
     public function isAvailable(): bool
     {
-        return filled(config('google.gemini.api_key', ''));
-    }
-
-    public function model(): GeminiModelEnum
-    {
-        return GeminiModelEnum::default();
+        return AiProvider::usable()->isNotEmpty();
     }
 
     /**
-     * Las instrucciones de sistema según el modo y el formato de la página.
+     * Las instrucciones de sistema: la editorial (quién escribe y cómo), el
+     * contexto y, al final, las reglas técnicas del modo.
+     *
+     * Las reglas técnicas no se pueden cambiar desde el panel: el resultado se
+     * lee con ellas (el bloque `---` con título y slug al crear, las marcas de
+     * bloque al editar o corregir). Por eso van detrás de la instrucción
+     * editorial, y ninguna instrucción del panel las quita.
      */
     public function buildSystemInstruction(
-        GeminiAiModeEnum $mode,
+        AiModeEnum $mode,
         Content $content,
         ContentPageFormatEnum $format,
     ): string {
         $platform = $content->platform instanceof Platform ? $content->platform->title : 'General';
 
-        $base = "Eres un asistente editorial experto que redacta y revisa contenidos para la plataforma digital de Raúl Caro Pastorino (@raupulus).\n".
-            "La plataforma de publicación es '{$platform}' y el título general del contenido es '{$content->title}'.\n".
-            "Tus textos deben ser profesionales, rigurosos, técnicos y pedagógicos. Usa siempre español con tildes y ortografía impecable.\n".
-            "No inventes datos ni tecnologías inexistentes. Sé directo y evita preámbulos innecesarios o saludos.\n\n";
+        $base = trim($this->editorialInstruction($content))."\n\n".
+            "La plataforma de publicación es '{$platform}' y el título general del contenido es '{$content->title}'.\n\n";
 
         $placeholders = "MARCAS DE BLOQUE: el texto puede llevar marcas como [[BLOQUE_1]]. Cada una sustituye a un bloque que no puedes ver ni editar (una imagen, un aviso, un vídeo, una tarjeta de enlace…).\n".
             "Cópialas tal cual, cada una sola en su propia línea. Puedes cambiarlas de sitio si reorganizas el texto, pero no las borres, no las modifiques y no las repitas.\n";
 
         return match ($mode) {
-            GeminiAiModeEnum::Create => $base.
+            AiModeEnum::Create => $base.
                 "MODO: CREACIÓN DE NUEVA PÁGINA\n".
                 "Debes proponer un título descriptivo y claro para la página, un slug limpio (minúsculas, separado por guiones y sin tildes) y redactar el contenido completo.\n".
                 "ESTRUCTURA OBLIGATORIA AL INICIO:\n".
@@ -127,13 +102,13 @@ class GeminiContentService
                 "A continuación de ese bloque delimitado por '---', escribe el contenido íntegro en formato Markdown estructurado.\n".
                 'Usa encabezados a partir de h3 (###), párrafos claros, listas o tablas según sea necesario.',
 
-            GeminiAiModeEnum::Edit => $base.
+            AiModeEnum::Edit => $base.
                 "MODO: EDICIÓN / AMPLIACIÓN DE PÁGINA ACTUAL\n".
                 "Reescribe, amplía o adapta el texto según las instrucciones del usuario.\n".
                 "Escribe directamente el contenido generado en formato Markdown estructurado (encabezados desde h3). No incluyas bloques '---' ni encabezados de título/slug.\n\n".
                 $placeholders,
 
-            GeminiAiModeEnum::Correct => $base.
+            AiModeEnum::Correct => $base.
                 "MODO: SOLO CORREGIR ORTOGRAFÍA, ESTILO Y OPTIMIZAR\n".
                 "Tu tarea es corregir tildes, puntuación, erratas y mejorar la fluidez y legibilidad del texto sin alterar el significado ni la intención original.\n".
                 "Conserva intactos todos los enlaces URL, nombres de código y fragmentos técnicos.\n".
@@ -150,7 +125,7 @@ class GeminiContentService
      * `$currentText` es la página ya preparada con `prepareCurrentContent()`.
      */
     public function buildContextPrompt(
-        GeminiAiModeEnum $mode,
+        AiModeEnum $mode,
         Content $content,
         ?ContentPage $page,
         string $userPrompt,
@@ -185,7 +160,7 @@ class GeminiContentService
         $context .= "\n=== INSTRUCCIÓN DEL USUARIO ===\n";
         $context .= filled($userPrompt) ? trim($userPrompt) : 'Procesa y optimiza el contenido según el modo indicado.';
 
-        if ($mode !== GeminiAiModeEnum::Create && filled($currentText)) {
+        if ($mode !== AiModeEnum::Create && filled($currentText)) {
             $language = $format === ContentPageFormatEnum::Html ? 'HTML' : 'Markdown';
             $context .= "\n\n=== CONTENIDO ACTUAL DE LA PÁGINA (en {$language}) ===\n{$currentText}\n";
         }
@@ -194,7 +169,7 @@ class GeminiContentService
     }
 
     /**
-     * La página actual tal como se le manda a Gemini.
+     * La página actual tal como se le manda a la IA.
      *
      * Editor.js se pasa antes a Markdown. Los bloques sin equivalente se
      * sustituyen por marcas; `placeholders` guarda el envoltorio original de
@@ -230,156 +205,28 @@ class GeminiContentService
     }
 
     /**
-     * Pide a Gemini el texto en streaming y lo va pasando a `$callback`.
-     *
-     * `$callback($tipo, $texto)`: `thought` (resumen del razonamiento),
-     * `content` (texto de la página), `warning` (la respuesta se ha cortado) y
-     * `error` (no hay respuesta; después no llega nada más).
-     *
-     * La clave va en la cabecera `x-goog-api-key` y no en la URL: los errores
-     * de conexión de Guzzle llevan la URL completa, y ese mensaje acababa en el
-     * modal y en el log. Por lo mismo, al navegador sólo le llega un mensaje
-     * genérico; el detalle va al log.
+     * La instrucción editorial de la entrada. Si no hay ninguna propia, la
+     * genérica.
+     */
+    public function editorialInstruction(Content $content): string
+    {
+        return self::DEFAULT_EDITORIAL_INSTRUCTION;
+    }
+
+    /**
+     * Pide el texto al proveedor en streaming y lo va pasando a `$callback`
+     * (ver `AiTextProvider::stream()`).
      *
      * @param  Closure(string $type, string $text): void  $callback
      */
     public function streamGenerateContent(
+        AiProvider $provider,
         string $systemInstruction,
         string $userPrompt,
-        GeminiThinkingLevelEnum $thinkingLevel,
+        ?AiReasoningLevelEnum $level,
         Closure $callback,
     ): void {
-        $apiKey = $this->apiKey();
-        $model = $this->model();
-
-        // Sin `temperature`: los modelos 3.x lo ignoran y Google pide quitarlo.
-        // `includeThoughts` es lo que hace que lleguen los resúmenes del
-        // razonamiento; sin él, el modal se quedaba mudo mientras Gemini piensa.
-        $payload = [
-            'contents' => [
-                ['role' => 'user', 'parts' => [['text' => $userPrompt]]],
-            ],
-            'systemInstruction' => [
-                'parts' => [['text' => $systemInstruction]],
-            ],
-            'generationConfig' => [
-                'thinkingConfig' => [
-                    'thinkingLevel' => $thinkingLevel->value,
-                    'includeThoughts' => true,
-                ],
-            ],
-        ];
-
-        try {
-            $response = Http::withOptions(['stream' => true, 'timeout' => 180, 'connect_timeout' => 15])
-                ->withHeaders(['x-goog-api-key' => $apiKey])
-                ->post(self::API_BASE."/models/{$model->value}:streamGenerateContent?alt=sse", $payload);
-
-            if ($response->failed()) {
-                $message = (string) ($response->json('error.message') ?? Str::limit(strip_tags($response->body()), 300));
-
-                Log::warning('Gemini: error de la API', ['status' => $response->status(), 'error' => $message]);
-                $callback('error', $this->apiErrorMessage($response->status(), $message, $model));
-
-                return;
-            }
-
-            $body = $response->toPsrResponse()->getBody();
-            $buffer = '';
-
-            while (! $body->eof()) {
-                if (connection_aborted()) {
-                    return;
-                }
-
-                $buffer .= str_replace("\r\n", "\n", $body->read(1024));
-
-                while (($position = strpos($buffer, "\n\n")) !== false) {
-                    $this->processSseBlock(substr($buffer, 0, $position), $callback);
-                    $buffer = substr($buffer, $position + 2);
-                }
-            }
-
-            if (trim($buffer) !== '' && ! connection_aborted()) {
-                $this->processSseBlock($buffer, $callback);
-            }
-        } catch (Throwable $e) {
-            Log::error('Gemini: fallo de conexión: '.$e->getMessage(), ['exception' => $e]);
-            $callback('error', 'No se ha podido conectar con Gemini. Vuelve a intentarlo en un momento.');
-        }
-    }
-
-    /**
-     * Lo que se le dice a quien redacta cuando Google responde con un error.
-     */
-    private function apiErrorMessage(int $status, string $message, GeminiModelEnum $model): string
-    {
-        return match (true) {
-            // Google lo comprueba antes que la propia petición.
-            $status === 402 => 'La cuenta de Gemini no tiene saldo. Recárgalo en Google AI Studio (https://ai.studio/projects) y vuelve a intentarlo.',
-            $status === 429 => 'Se ha agotado la cuota de Gemini de esta clave. Espera un poco y vuelve a intentarlo.',
-            in_array($status, [401, 403], true) => 'La clave de Gemini no vale o no tiene permiso para usar la API ('.$message.').',
-            $status === 404 => 'El modelo '.$model->label().' no está disponible para esta clave ('.$message.').',
-            $status >= 500 => 'Gemini no está disponible ahora mismo. Vuelve a intentarlo en un momento.',
-            default => 'Gemini ha rechazado la petición ('.$status.'): '.$message,
-        };
-    }
-
-    /**
-     * Un evento SSE de Gemini.
-     *
-     * @param  Closure(string $type, string $text): void  $callback
-     */
-    private function processSseBlock(string $block, Closure $callback): void
-    {
-        foreach (explode("\n", trim($block)) as $line) {
-            $line = trim($line);
-
-            if (! str_starts_with($line, 'data: ')) {
-                continue;
-            }
-
-            try {
-                $data = json_decode(substr($line, 6), true, 512, JSON_THROW_ON_ERROR);
-            } catch (JsonException) {
-                continue;
-            }
-
-            if (! is_array($data)) {
-                continue;
-            }
-
-            // La petición entera bloqueada: no llega ningún candidato.
-            if (filled($data['promptFeedback']['blockReason'] ?? null)) {
-                $callback('error', 'Gemini ha bloqueado la petición ('.$data['promptFeedback']['blockReason'].'). Cambia la instrucción o el texto y vuelve a intentarlo.');
-
-                return;
-            }
-
-            $candidate = $data['candidates'][0] ?? null;
-
-            if (! is_array($candidate)) {
-                continue;
-            }
-
-            foreach ($candidate['content']['parts'] ?? [] as $part) {
-                $text = is_array($part) ? (string) ($part['text'] ?? '') : '';
-
-                if ($text === '') {
-                    continue;
-                }
-
-                $callback(($part['thought'] ?? false) === true ? 'thought' : 'content', $text);
-            }
-
-            $reason = (string) ($candidate['finishReason'] ?? '');
-
-            if (isset(self::FINISH_REASONS[$reason])) {
-                $callback('warning', 'Gemini no ha terminado: '.self::FINISH_REASONS[$reason].'. Revisa el final antes de aplicarlo.');
-            } elseif (! in_array($reason, ['', 'STOP', 'FINISH_REASON_UNSPECIFIED'], true)) {
-                $callback('warning', 'Gemini no ha terminado ('.$reason.'). Revisa el resultado antes de aplicarlo.');
-            }
-        }
+        $provider->connector()->stream($provider, $systemInstruction, $userPrompt, $provider->sends_reasoning_level ? $level : null, $callback);
     }
 
     /**
@@ -426,9 +273,9 @@ class GeminiContentService
     /**
      * El resultado de «Editar» o «Corregir» en el formato de la página.
      *
-     * Gemini responde en Markdown, salvo al corregir una página HTML, que
+     * La IA responde en Markdown, salvo al corregir una página HTML, que
      * responde en HTML. Antes de convertir se ponen en su sitio los bloques
-     * de las marcas, y se avisa de los que Gemini haya quitado.
+     * de las marcas, y se avisa de los que haya quitado.
      *
      * @param  array<int, string>  $placeholders  Los de `prepareCurrentContent()`.
      * @return array{content: string, warnings: list<string>}
@@ -436,10 +283,10 @@ class GeminiContentService
     public function convertResultToFormat(
         string $generatedText,
         ContentPageFormatEnum $targetFormat,
-        GeminiAiModeEnum $mode,
+        AiModeEnum $mode,
         array $placeholders = [],
     ): array {
-        $answersInHtml = $mode === GeminiAiModeEnum::Correct && $targetFormat === ContentPageFormatEnum::Html;
+        $answersInHtml = $mode === AiModeEnum::Correct && $targetFormat === ContentPageFormatEnum::Html;
         $text = $this->withoutFence(str_replace("\r\n", "\n", trim($generatedText)));
 
         [$text, $warnings] = $this->restorePlaceholders($text, $placeholders, $answersInHtml);
@@ -459,7 +306,7 @@ class GeminiContentService
     /**
      * Cada marca vuelve a ser su bloque. En Markdown el bloque va separado por
      * líneas en blanco, que es como se reconoce un bloque HTML; en HTML, en
-     * lugar del párrafo en el que Gemini lo haya dejado.
+     * lugar del párrafo en el que la IA lo haya dejado.
      *
      * @param  array<int, string>  $placeholders
      * @return array{0: string, 1: list<string>}
@@ -501,7 +348,7 @@ class GeminiContentService
             ->implode(', ');
 
         return [$text, [sprintf(
-            'Gemini ha quitado %s que no podía editar (%s). No están en el resultado: si los quieres, no lo apliques o vuelve a añadirlos.',
+            'La IA ha quitado %s que no podía editar (%s). No están en el resultado: si los quieres, no lo apliques o vuelve a añadirlos.',
             count($missing) === 1 ? '1 bloque' : count($missing).' bloques',
             $labels,
         )]];

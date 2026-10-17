@@ -4,18 +4,20 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Content;
 
+use App\Enums\AiModeEnum;
+use App\Enums\AiProviderEnum;
+use App\Enums\AiReasoningLevelEnum;
 use App\Enums\ContentPageFormatEnum;
-use App\Enums\GeminiAiModeEnum;
-use App\Enums\GeminiThinkingLevelEnum;
 use App\Enums\UserRoleEnum;
 use App\Filament\Admin\Resources\Content\Contents\Pages\ManageContentPages;
+use App\Models\AiProvider;
 use App\Models\Content\Content;
 use App\Models\Content\ContentPage;
 use App\Models\User;
+use App\Services\Content\ContentAiService;
 use App\Services\Content\ContentContributorService;
 use App\Services\Content\ContentFormatConverter;
 use App\Services\Content\ContentPageFormatService;
-use App\Services\Content\GeminiContentService;
 use Database\Seeders\ContentAvailablePageRawSeeder;
 use Database\Seeders\ContentAvailableTypesSeeder;
 use Database\Seeders\RolesTableSeeder;
@@ -33,7 +35,9 @@ use Tests\TestCase;
 use Tests\Traits\SeedsProductionContentStatuses;
 
 /**
- * El asistente de Google Gemini del editor de páginas.
+ * El asistente de IA del editor de páginas, con Gemini como proveedor. Los
+ * conectores de Mistral y de la API Responses (OpenAI y Grok) tienen sus
+ * propias pruebas en `tests/Feature/Ai`.
  */
 class ContentPageAiAssistantTest extends TestCase
 {
@@ -46,6 +50,8 @@ class ContentPageAiAssistantTest extends TestCase
 
     private ContentPage $page;
 
+    private AiProvider $assistant;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -55,7 +61,7 @@ class ContentPageAiAssistantTest extends TestCase
         (new ContentAvailableTypesSeeder)->run();
         (new ContentAvailablePageRawSeeder)->run();
 
-        Config::set('google.gemini.api_key', 'test-gemini-key');
+        $this->gemini = AiProvider::factory()->create();
 
         $this->admin = User::factory()->create([
             'role_id' => UserRoleEnum::Admin->value,
@@ -84,7 +90,7 @@ class ContentPageAiAssistantTest extends TestCase
         $this->fakeGemini($this->sse(['Contenido generado.']));
 
         // El stream corre al leer la respuesta.
-        $this->stream(['mode' => GeminiAiModeEnum::Edit->value, 'thinking_level' => 'high'])->streamedContent();
+        $this->stream(['mode' => AiModeEnum::Edit->value, 'reasoning_level' => 'high'])->streamedContent();
 
         Http::assertSent(function (HttpRequest $request): bool {
             return str_contains($request->url(), '/models/gemini-3.8-flash:streamGenerateContent?alt=sse')
@@ -177,12 +183,39 @@ class ContentPageAiAssistantTest extends TestCase
     }
 
     #[Test]
-    public function the_thinking_level_has_to_be_one_of_the_list(): void
+    public function the_reasoning_level_has_to_be_one_of_the_list(): void
     {
         $this->actingAs($this->admin)
-            ->postJson(route('admin.contents.pages.ai.stream', $this->content), $this->payload(['thinking_level' => 'minimal']))
+            ->postJson(route('admin.contents.pages.ai.stream', $this->content), $this->payload(['reasoning_level' => 'minimal']))
             ->assertStatus(422)
-            ->assertJsonValidationErrors(['thinking_level']);
+            ->assertJsonValidationErrors(['reasoning_level']);
+    }
+
+    #[Test]
+    public function without_reasoning_level_the_request_carries_no_thinking_level(): void
+    {
+        $this->gemini->update(['sends_reasoning_level' => false]);
+        $this->fakeGemini($this->sse(['Texto.']));
+
+        $this->stream(['reasoning_level' => 'high'])->streamedContent();
+
+        Http::assertSent(fn (HttpRequest $request): bool => $request['generationConfig'] === ['thinkingConfig' => ['includeThoughts' => true]]);
+    }
+
+    #[Test]
+    public function only_an_active_provider_with_a_readable_key_can_be_asked(): void
+    {
+        AiProvider::factory()->provider(AiProviderEnum::Mistral, 'mistral-medium-3-5')->create(['is_active' => false]);
+        // Cifrada con otra APP_KEY: no se puede leer.
+        $grok = AiProvider::factory()->provider(AiProviderEnum::Xai, 'grok-4.7')->create();
+        $grok->newQuery()->whereKey($grok->id)->update(['api_key' => 'eyJpdiI6ImNpZnJhZGEtY29uLW90cmEta2V5In0=']);
+
+        foreach (['mistral', 'xai', 'openai'] as $provider) {
+            $this->actingAs($this->admin)
+                ->postJson(route('admin.contents.pages.ai.stream', $this->content), $this->payload(['provider' => $provider]))
+                ->assertStatus(422)
+                ->assertJsonValidationErrors(['provider']);
+        }
     }
 
     #[Test]
@@ -227,19 +260,19 @@ class ContentPageAiAssistantTest extends TestCase
             ->assertNotFound();
     }
 
-    // ── Bloques que Gemini no ve ────────────────────────────────────────────
+    // ── Bloques que la IA no ve ─────────────────────────────────────────────
 
     #[Test]
     public function editing_an_editorjs_page_keeps_uploaded_images_and_special_blocks_intact(): void
     {
-        $gemini = app(GeminiContentService::class);
+        $assistant = app(ContentAiService::class);
         $original = $this->editorJs([
             ['id' => 'p1', 'type' => 'paragraph', 'data' => ['text' => 'Texto con erata']],
             ['id' => 'i1', 'type' => 'image', 'data' => ['file' => ['url' => 'https://api.raupulus.dev/file/get/content/5', 'file_id' => 5], 'caption' => 'Pie de foto']],
             ['id' => 'a1', 'type' => 'alert', 'data' => ['type' => 'info', 'message' => 'Ojo con esto']],
         ]);
 
-        $prepared = $gemini->prepareCurrentContent($original, ContentPageFormatEnum::EditorJs);
+        $prepared = $assistant->prepareCurrentContent($original, ContentPageFormatEnum::EditorJs);
 
         // A Gemini le llega Markdown con dos marcas, no el JSON ni el HTML.
         $this->assertStringContainsString('Texto con erata', $prepared['text']);
@@ -250,7 +283,7 @@ class ContentPageAiAssistantTest extends TestCase
 
         // Gemini corrige, cambia de sitio una marca y la escapa como Markdown.
         $answer = "Texto con errata corregida\n\n\\[\\[BLOQUE_2\\]\\]\n\n[[BLOQUE_1]]";
-        $result = $gemini->convertResultToFormat($answer, ContentPageFormatEnum::EditorJs, GeminiAiModeEnum::Correct, $prepared['placeholders']);
+        $result = $assistant->convertResultToFormat($answer, ContentPageFormatEnum::EditorJs, AiModeEnum::Correct, $prepared['placeholders']);
         $blocks = json_decode($result['content'], true)['blocks'];
 
         $this->assertSame(['paragraph', 'alert', 'image'], array_column($blocks, 'type'));
@@ -263,27 +296,27 @@ class ContentPageAiAssistantTest extends TestCase
     #[Test]
     public function a_block_that_gemini_removes_is_reported(): void
     {
-        $gemini = app(GeminiContentService::class);
-        $prepared = $gemini->prepareCurrentContent($this->editorJs([
+        $assistant = app(ContentAiService::class);
+        $prepared = $assistant->prepareCurrentContent($this->editorJs([
             ['id' => 'p1', 'type' => 'paragraph', 'data' => ['text' => 'Hola']],
             ['id' => 'i1', 'type' => 'image', 'data' => ['file' => ['url' => 'https://x.test/file/get/content/5', 'file_id' => 5], 'caption' => 'Pie']],
         ]), ContentPageFormatEnum::EditorJs);
 
-        $result = $gemini->convertResultToFormat('Hola, mundo', ContentPageFormatEnum::EditorJs, GeminiAiModeEnum::Edit, $prepared['placeholders']);
+        $result = $assistant->convertResultToFormat('Hola, mundo', ContentPageFormatEnum::EditorJs, AiModeEnum::Edit, $prepared['placeholders']);
 
-        $this->assertStringContainsString('Gemini ha quitado 1 bloque que no podía editar (imagen)', implode(' ', $result['warnings']));
+        $this->assertStringContainsString('La IA ha quitado 1 bloque que no podía editar (imagen)', implode(' ', $result['warnings']));
     }
 
     #[Test]
     public function correcting_an_html_page_puts_the_blocks_back_where_gemini_left_them(): void
     {
-        $gemini = app(GeminiContentService::class);
+        $assistant = app(ContentAiService::class);
         $html = "<p>Hola</p>\n\n".app(ContentFormatConverter::class)->wrapBlock(
             ['id' => 'a1', 'type' => 'alert', 'data' => ['type' => 'info', 'message' => 'Aviso']],
         );
 
-        $prepared = $gemini->prepareCurrentContent($html, ContentPageFormatEnum::Html);
-        $result = $gemini->convertResultToFormat("```html\n<p>Hola corregido</p>\n<p>[[BLOQUE_1]]</p>\n```", ContentPageFormatEnum::Html, GeminiAiModeEnum::Correct, $prepared['placeholders']);
+        $prepared = $assistant->prepareCurrentContent($html, ContentPageFormatEnum::Html);
+        $result = $assistant->convertResultToFormat("```html\n<p>Hola corregido</p>\n<p>[[BLOQUE_1]]</p>\n```", ContentPageFormatEnum::Html, AiModeEnum::Correct, $prepared['placeholders']);
 
         $this->assertStringStartsWith('<p>Hola corregido</p>', $result['content']);
         $this->assertStringContainsString($prepared['placeholders'][1], $result['content']);
@@ -296,7 +329,7 @@ class ContentPageAiAssistantTest extends TestCase
         $this->fakeGemini($this->sse(['Hola corregido']));
 
         $this->stream([
-            'mode' => GeminiAiModeEnum::Correct->value,
+            'mode' => AiModeEnum::Correct->value,
             'source_format' => ContentPageFormatEnum::EditorJs->value,
             'current_content' => $this->editorJs([['id' => 'p1', 'type' => 'paragraph', 'data' => ['text' => 'Ola']]]),
         ])->streamedContent();
@@ -313,7 +346,7 @@ class ContentPageAiAssistantTest extends TestCase
     {
         ContentPage::query()->create(['content_id' => $this->content->id, 'title' => 'Instalación', 'slug' => 'instalacion', 'order' => 2]);
 
-        $prompt = app(GeminiContentService::class)->buildContextPrompt(GeminiAiModeEnum::Edit, $this->content, $this->page, 'Amplía la explicación', 'Contenido breve actual');
+        $prompt = app(ContentAiService::class)->buildContextPrompt(AiModeEnum::Edit, $this->content, $this->page, 'Amplía la explicación', 'Contenido breve actual');
 
         $this->assertStringContainsString('Tutorial de Laravel y Vue', $prompt);
         $this->assertStringContainsString('Guía paso a paso', $prompt);
@@ -326,7 +359,7 @@ class ContentPageAiAssistantTest extends TestCase
     #[Test]
     public function service_parses_created_page_with_frontmatter(): void
     {
-        $parsed = app(GeminiContentService::class)->parseCreatedPage("---\ntitle: Configuración del entorno\nslug: configuracion-del-entorno\n---\n\n### Pasos previos\n\nAquí están las instrucciones.", ContentPageFormatEnum::Markdown);
+        $parsed = app(ContentAiService::class)->parseCreatedPage("---\ntitle: Configuración del entorno\nslug: configuracion-del-entorno\n---\n\n### Pasos previos\n\nAquí están las instrucciones.", ContentPageFormatEnum::Markdown);
 
         $this->assertSame('Configuración del entorno', $parsed['title']);
         $this->assertSame('configuracion-del-entorno', $parsed['slug']);
@@ -336,7 +369,7 @@ class ContentPageAiAssistantTest extends TestCase
     #[Test]
     public function service_parses_created_page_with_crlf_and_markdown_fences(): void
     {
-        $parsed = app(GeminiContentService::class)->parseCreatedPage("```markdown\r\n---\r\ntitle: Página con CRLF\r\nslug: pagina-con-crlf\r\n---\r\n\r\n### Contenido\r\n\r\nTexto de prueba.\r\n```", ContentPageFormatEnum::Markdown);
+        $parsed = app(ContentAiService::class)->parseCreatedPage("```markdown\r\n---\r\ntitle: Página con CRLF\r\nslug: pagina-con-crlf\r\n---\r\n\r\n### Contenido\r\n\r\nTexto de prueba.\r\n```", ContentPageFormatEnum::Markdown);
 
         $this->assertSame('Página con CRLF', $parsed['title']);
         $this->assertSame('pagina-con-crlf', $parsed['slug']);
@@ -347,24 +380,31 @@ class ContentPageAiAssistantTest extends TestCase
     #[Test]
     public function service_handles_html_format_in_correct_mode_preserving_tags_and_fences(): void
     {
-        $result = app(GeminiContentService::class)->convertResultToFormat("```html\n<p>Texto con <strong>etiquetas preservadas</strong> y <a href=\"https://raupulus.dev\">enlaces</a>.</p>\n```", ContentPageFormatEnum::Html, GeminiAiModeEnum::Correct);
+        $result = app(ContentAiService::class)->convertResultToFormat("```html\n<p>Texto con <strong>etiquetas preservadas</strong> y <a href=\"https://raupulus.dev\">enlaces</a>.</p>\n```", ContentPageFormatEnum::Html, AiModeEnum::Correct);
 
         $this->assertSame('<p>Texto con <strong>etiquetas preservadas</strong> y <a href="https://raupulus.dev">enlaces</a>.</p>', $result['content']);
         $this->assertEmpty($result['warnings']);
     }
 
     #[Test]
-    public function service_throws_exception_when_api_key_is_missing(): void
+    public function without_a_usable_provider_the_assistant_is_not_available(): void
     {
-        Config::set('google.gemini.api_key', '');
+        $service = app(ContentAiService::class);
+        $this->assertTrue($service->isAvailable());
 
-        $service = app(GeminiContentService::class);
+        $this->gemini->update(['is_active' => false]);
+
         $this->assertFalse($service->isAvailable());
+    }
 
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('No se ha configurado ninguna clave API para Google Gemini');
+    #[Test]
+    public function the_system_instruction_ends_with_the_technical_rules_of_the_mode(): void
+    {
+        $instruction = app(ContentAiService::class)->buildSystemInstruction(AiModeEnum::Create, $this->content, ContentPageFormatEnum::Markdown);
 
-        $service->apiKey();
+        $this->assertStringStartsWith(ContentAiService::DEFAULT_EDITORIAL_INSTRUCTION, $instruction);
+        $this->assertStringContainsString("el título general del contenido es 'Tutorial de Laravel y Vue'", $instruction);
+        $this->assertStringContainsString("title: Título de la página\nslug: slug-de-la-pagina", $instruction);
     }
 
     // ── Aplicar en el editor ────────────────────────────────────────────────
@@ -472,9 +512,9 @@ class ContentPageAiAssistantTest extends TestCase
     }
 
     #[Test]
-    public function livewire_ai_assistant_action_is_hidden_when_api_key_is_missing(): void
+    public function livewire_ai_assistant_action_is_hidden_without_a_usable_provider(): void
     {
-        Config::set('google.gemini.api_key', '');
+        $this->gemini->update(['is_active' => false]);
 
         $this->editor($this->page)->assertActionHidden('aiAssistant');
     }
@@ -510,8 +550,9 @@ class ContentPageAiAssistantTest extends TestCase
     {
         return [
             'page_id' => $this->page->id,
-            'mode' => GeminiAiModeEnum::Edit->value,
-            'thinking_level' => GeminiThinkingLevelEnum::Medium->value,
+            'mode' => AiModeEnum::Edit->value,
+            'provider' => AiProviderEnum::Gemini->value,
+            'reasoning_level' => AiReasoningLevelEnum::Medium->value,
             'prompt' => 'Añade una conclusión',
             'current_content' => 'Texto anterior',
             'source_format' => ContentPageFormatEnum::Markdown->value,

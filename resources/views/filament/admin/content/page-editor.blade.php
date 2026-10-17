@@ -153,7 +153,7 @@
             @if ($aiUndoAvailable && ! $readOnly)
                 <div class="cpe-notice cpe-notice--draft" role="status">
                     <x-filament::icon icon="heroicon-m-sparkles" class="cpe-notice__icon" />
-                    <span class="cpe-notice__text">Has aplicado texto de Gemini sin guardar.</span>
+                    <span class="cpe-notice__text">Has aplicado texto de la IA sin guardar.</span>
                     <x-filament::actions :actions="[$this->undoAiAction]" />
                 </div>
             @endif

@@ -177,8 +177,8 @@ cp .env.example.production .env
 # sin ellas los formularios públicos y el login de los paneles se quedan SIN
 # captcha y sin ningún aviso.
 #
-# Opcional: descomentar GEMINI_API_KEY y poner la clave de Google AI Studio
-# para el asistente IA del editor de páginas (sin ella, el botón no aparece).
+# Las claves del asistente IA del editor de páginas no van aquí: se pegan en
+# el panel, Configuración → Proveedores de IA (sólo superadmin).
 
 # 2. Instalar dependencias optimizadas
 composer install --optimize-autoloader --no-dev

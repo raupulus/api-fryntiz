@@ -311,14 +311,17 @@ const AI_HTTP_MESSAGES = {
     429: 'Has hecho muchas peticiones seguidas al asistente. Espera un minuto y vuelve a intentarlo.',
 };
 
-function contentPageAiAssistant({ streamUrl, thinkingLevels, defaultThinkingLevel, pageId, isNewPage, sourceFormat }) {
-    // El nivel recordado sólo vale si sigue en la lista: si no, el servidor
-    // rechazaría la petición sin que se viera por qué.
-    const savedLevel = remembered('gemini_ai_thinking_level');
+function contentPageAiAssistant({ streamUrl, providers, reasoningLevels, defaultReasoningLevel, pageId, isNewPage, sourceFormat }) {
+    // Lo recordado sólo vale si sigue en la lista: si no, el servidor
+    // rechazaría la petición sin que se viera por qué. El primer proveedor es
+    // el predeterminado.
+    const savedProvider = remembered('ai_provider');
+    const savedLevel = remembered('ai_reasoning_level');
 
     return {
         mode: isNewPage ? 'create' : 'edit',
-        thinkingLevel: thinkingLevels.includes(savedLevel) ? savedLevel : defaultThinkingLevel,
+        provider: providers.some((option) => option.value === savedProvider) ? savedProvider : (providers[0]?.value ?? null),
+        reasoningLevel: reasoningLevels.includes(savedLevel) ? savedLevel : defaultReasoningLevel,
         prompt: '',
         isStreaming: false,
         isThinking: false,
@@ -329,7 +332,21 @@ function contentPageAiAssistant({ streamUrl, thinkingLevels, defaultThinkingLeve
         finalResult: null,
         abortController: null,
 
-        // Lo que escribe Gemini, con las marcas de los bloques que no ve
+        get providerOption() {
+            return providers.find((option) => option.value === this.provider) ?? null;
+        },
+
+        // «Gemini», «Mistral»… para los textos del modal.
+        get providerName() {
+            return this.providerOption?.name ?? 'la IA';
+        },
+
+        // Si el proveedor elegido admite nivel de razonamiento.
+        get hasReasoningLevels() {
+            return this.providerOption?.reasoning === true;
+        },
+
+        // Lo que escribe la IA, con las marcas de los bloques que no ve
         // (`[[BLOQUE_1]]`) dichas en claro: al aplicar, en cada una vuelve su
         // bloque original.
         get displayText() {
@@ -358,7 +375,8 @@ function contentPageAiAssistant({ streamUrl, thinkingLevels, defaultThinkingLeve
         async startStream() {
             if (this.isStreaming) return;
 
-            remember('gemini_ai_thinking_level', this.thinkingLevel);
+            remember('ai_provider', this.provider);
+            remember('ai_reasoning_level', this.reasoningLevel);
 
             await window.flushEditorJs?.();
 
@@ -378,7 +396,8 @@ function contentPageAiAssistant({ streamUrl, thinkingLevels, defaultThinkingLeve
             const payload = {
                 page_id: pageId,
                 mode: this.mode,
-                thinking_level: this.thinkingLevel,
+                provider: this.provider,
+                reasoning_level: this.hasReasoningLevels ? this.reasoningLevel : null,
                 prompt: this.prompt,
                 current_content: currentData[field] || '',
                 source_format: format,
@@ -438,7 +457,7 @@ function contentPageAiAssistant({ streamUrl, thinkingLevels, defaultThinkingLeve
 
                 // Sin `complete` ni `error`: la conexión se cortó a medias.
                 if (! this.finalResult && ! this.errorMessage) {
-                    this.errorMessage = 'La conexión con Gemini se ha cortado antes de terminar. Vuelve a intentarlo.';
+                    this.errorMessage = `La conexión con ${this.providerName} se ha cortado antes de terminar. Vuelve a intentarlo.`;
                 }
 
                 this.isStreaming = false;

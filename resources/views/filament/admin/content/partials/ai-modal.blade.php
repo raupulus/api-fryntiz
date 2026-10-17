@@ -1,19 +1,21 @@
 {{--
-    Modal del Asistente Google Gemini para el editor de páginas de contenidos.
+    Modal del asistente IA del editor de páginas de contenidos, con el
+    proveedor que se elija (los activos con clave, el predeterminado primero).
     Estilos definidos en resources/css/filament/admin/panel.css (.cpe-ai-*).
 --}}
 <div
     class="cpe-ai"
     x-data="contentPageAiAssistant({
         streamUrl: @js($streamUrl),
-        thinkingLevels: @js(array_keys($thinkingLevels)),
-        defaultThinkingLevel: @js($defaultThinkingLevel),
+        providers: @js($providers),
+        reasoningLevels: @js(array_keys($reasoningLevels)),
+        defaultReasoningLevel: @js($defaultReasoningLevel),
         pageId: @js($pageId),
         isNewPage: @js($isNewPage),
         sourceFormat: @js($currentFormat->value),
     })"
 >
-    {{-- Configuración: modo, modelo (uno solo, fijo) y nivel de razonamiento --}}
+    {{-- Configuración: modo, proveedor y nivel de razonamiento --}}
     <div class="cpe-ai__controls">
         <div class="cpe-ai__field">
             <label class="cpe-ai__label" for="ai-mode">Modo de operación</label>
@@ -24,15 +26,26 @@
             </select>
         </div>
 
-        <div class="cpe-ai__field">
-            <span class="cpe-ai__label">Modelo</span>
-            <span class="cpe-ai__fixed">{{ $modelLabel }}</span>
-        </div>
+        @if (count($providers) > 1)
+            <div class="cpe-ai__field">
+                <label class="cpe-ai__label" for="ai-provider">Proveedor</label>
+                <select id="ai-provider" class="cpe-ai__select" x-model="provider" :disabled="isStreaming">
+                    @foreach ($providers as $option)
+                        <option value="{{ $option['value'] }}">{{ $option['label'] }}</option>
+                    @endforeach
+                </select>
+            </div>
+        @else
+            <div class="cpe-ai__field">
+                <span class="cpe-ai__label">Proveedor</span>
+                <span class="cpe-ai__fixed">{{ $providers[0]['label'] ?? '' }}</span>
+            </div>
+        @endif
 
-        <div class="cpe-ai__field">
+        <div class="cpe-ai__field" x-show="hasReasoningLevels">
             <label class="cpe-ai__label" for="ai-thinking">Razonamiento</label>
-            <select id="ai-thinking" class="cpe-ai__select" x-model="thinkingLevel" :disabled="isStreaming">
-                @foreach ($thinkingLevels as $value => $label)
+            <select id="ai-thinking" class="cpe-ai__select" x-model="reasoningLevel" :disabled="isStreaming">
+                @foreach ($reasoningLevels as $value => $label)
                     <option value="{{ $value }}">{{ $label }}</option>
                 @endforeach
             </select>
@@ -41,14 +54,14 @@
 
     {{-- Instrucción / Prompt --}}
     <div class="cpe-ai__prompt-section">
-        <label class="cpe-ai__label" for="ai-prompt">Instrucción para Gemini</label>
+        <label class="cpe-ai__label" for="ai-prompt">Instrucción</label>
         <textarea
             id="ai-prompt"
             class="cpe-ai__textarea"
             rows="3"
             x-model="prompt"
             :disabled="isStreaming"
-            placeholder="Escribe lo que deseas que haga Gemini (ej. ampliar la explicación de la API, corregir ortografía, estructurar en pasos)..."
+            placeholder="Escribe lo que quieres que haga (ej. ampliar la explicación de la API, corregir ortografía, estructurar en pasos)..."
         ></textarea>
 
         {{-- Píldoras con sugerencias rápidas --}}
@@ -78,7 +91,7 @@
             x-on:click="startStream()"
         >
             <x-filament::icon icon="heroicon-m-sparkles" class="cpe-ai__btn-icon" />
-            <span x-text="isFinished ? 'Regenerar con Gemini' : 'Generar con Gemini'"></span>
+            <span x-text="(isFinished ? 'Regenerar con ' : 'Generar con ') + providerName"></span>
         </button>
 
         <button
@@ -94,7 +107,7 @@
         {{-- Estado en vivo --}}
         <div class="cpe-ai__status" x-show="isStreaming">
             <span class="cpe-ai__spinner"></span>
-            <span x-show="isThinking">Gemini razonando internamente...</span>
+            <span x-show="isThinking" x-text="providerName + ' está razonando...'"></span>
             <span x-show="!isThinking">Redactando contenido en tiempo real...</span>
         </div>
     </div>
@@ -111,7 +124,7 @@
             <summary class="cpe-ai__thought-summary">
                 <span class="cpe-ai__thought-title">
                     <x-filament::icon icon="heroicon-m-light-bulb" class="cpe-ai__thought-icon" />
-                    Razonamiento de Gemini (resumen)
+                    Razonamiento (resumen)
                 </span>
                 <span class="cpe-ai__thought-badge" x-show="isThinking">Pensando...</span>
             </summary>

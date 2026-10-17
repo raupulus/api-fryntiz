@@ -13,7 +13,7 @@
 ## MAIL_FROM_ADDRESS, MAIL_FROM_NAME, MAIL_ADMIN_ADDRESS
 ## FRONTEND_URLS, SANCTUM_STATEFUL_DOMAINS
 ## RECAPTCHA_SITE_KEY, RECAPTCHA_SECRET_KEY, TURNSTILE_SECRET_KEY
-## GOOGLE_API_KEY, GOOGLE_DEV_API_KEY, GEMINI_API_KEY
+## GOOGLE_API_KEY, GOOGLE_DEV_API_KEY
 ## AEMET_API_KEY, AEMET_API_KEY_EXPIRES_AT
 
 ################ Asignación de variables por parámetros ################
@@ -108,11 +108,10 @@ set_if_given 'RECAPTCHA_SITE_KEY'
 set_if_given 'RECAPTCHA_SECRET_KEY'
 set_if_given 'TURNSTILE_SECRET_KEY'
 
-## Google (Maps/YouTube) y Gemini (asistente IA del editor de páginas). En el
-## ejemplo GEMINI_API_KEY va comentada: al escribirla, se descomenta.
+## Google (Maps/YouTube). Las claves del asistente IA no van en el .env: se
+## pegan en el panel (Configuración → Proveedores de IA).
 set_if_given 'GOOGLE_API_KEY'
 set_if_given 'GOOGLE_DEV_API_KEY'
-set_if_given 'GEMINI_API_KEY'
 
 ## AEMET
 set_if_given 'AEMET_API_KEY'

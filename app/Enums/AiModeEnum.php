@@ -7,7 +7,7 @@ namespace App\Enums;
 /**
  * Modos de operación del asistente IA en el editor de páginas.
  */
-enum GeminiAiModeEnum: string
+enum AiModeEnum: string
 {
     case Create = 'create';
     case Edit = 'edit';

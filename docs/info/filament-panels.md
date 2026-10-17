@@ -32,12 +32,13 @@ Providers: `app/Providers/Filament/AdminPanelProvider.php` y `TenantPanelProvide
 | Navegación estática extra | "Documentación de la API" → `route('scribe')` (`/docs`), se abre en pestaña nueva |
 | Render hooks | `SCRIPTS_AFTER` para `@push('scripts')` y Editor.js en `EditContent`; `AUTH_LOGIN_FORM_BEFORE` para el script de reCAPTCHA v3 del login |
 
-### Resources (24)
+### Resources (25)
 
 | Grupo | Resource | Modelo |
 |-------|----------|--------|
 | Sistema | `UserResource` | `User` |
 | Sistema | `ApiTokenResource` | `ApiToken` |
+| Configuración | `AiProviderResource` | `AiProvider`: proveedores de IA del asistente del editor (modelo y clave cifrada). **Sólo `SuperAdmin`**, ni un `Admin` lo ve (`AiProviderPolicy`). Acción «Probar»: una llamada real mínima |
 | Contenido | `ContentResource` | `Content` |
 | Contenido | `CategoryResource` | `Category` |
 | Contenido | `TagResource` | `Tag` |
@@ -219,6 +220,10 @@ El provider tiene tres mapas:
 | `SuperAdmin` | Todo. Vía `Gate::before`, sin llegar a las policies. |
 | `Admin` | Todo de todo el mundo, **menos lo de un `SuperAdmin`**. Ve y edita. |
 | `User` · `Editor` | Sólo lo suyo. |
+
+Lo único que un `Admin` no ve en todo el panel son los **proveedores de IA**
+(Configuración → Proveedores de IA): llevan las claves de pago de las API, que
+valen para todas las plataformas.
 
 ⚠️ **`Gate::before` sólo implementa el primer escalón.** Un `Admin` no recibe
 nada de ese atajo, así que **cada policy tiene que contemplarlo explícitamente**

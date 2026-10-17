@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\AiModeEnum;
+use App\Enums\AiReasoningLevelEnum;
 use App\Enums\ContentPageFormatEnum;
-use App\Enums\GeminiAiModeEnum;
-use App\Enums\GeminiThinkingLevelEnum;
 use App\Http\Controllers\Controller;
+use App\Models\AiProvider;
 use App\Models\Content\Content;
-use App\Services\Content\GeminiContentService;
+use App\Services\Content\ContentAiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
@@ -17,9 +18,10 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
 
 /**
- * El stream SSE del asistente de Gemini en el editor de páginas.
+ * El stream SSE del asistente de IA en el editor de páginas, con el
+ * proveedor elegido en el modal.
  *
- * Eventos: `thought` y `content` mientras Gemini escribe; al terminar,
+ * Eventos: `thought` y `content` mientras la IA escribe; al terminar,
  * `complete` con el resultado ya en el formato de la página y `done`. Si algo
  * falla, sólo `error`, y no llega nada más: con un `complete` vacío detrás, el
  * modal habría dado por buena una respuesta que no existe.
@@ -31,15 +33,19 @@ class ContentPageAiStreamController extends Controller
     public function stream(
         Request $request,
         Content $content,
-        GeminiContentService $gemini,
+        ContentAiService $assistant,
     ): StreamedResponse {
+        $providers = AiProvider::usable();
+
         $validated = $request->validate([
             'page_id' => ['nullable', 'integer'],
-            'mode' => ['required', Rule::enum(GeminiAiModeEnum::class)],
-            'thinking_level' => ['required', Rule::enum(GeminiThinkingLevelEnum::class)],
+            'mode' => ['required', Rule::enum(AiModeEnum::class)],
+            // Sólo los que salen en el modal: activos y con una clave legible.
+            'provider' => ['required', 'string', Rule::in($providers->map(fn (AiProvider $provider): string => $provider->provider->value)->all())],
+            'reasoning_level' => ['nullable', Rule::enum(AiReasoningLevelEnum::class)],
             'prompt' => ['nullable', 'string', 'max:5000'],
             // Una página larga ronda los 100 KB; esto es el techo de lo que se
-            // manda a Google en una petición.
+            // manda al proveedor en una petición.
             'current_content' => ['nullable', 'string', 'max:500000'],
             'source_format' => ['required', Rule::enum(ContentPageFormatEnum::class)],
         ]);
@@ -50,18 +56,19 @@ class ContentPageAiStreamController extends Controller
             abort_unless($page !== null, 404, 'La página indicada no pertenece a este contenido.');
         }
 
-        $mode = GeminiAiModeEnum::from((string) $validated['mode']);
+        $mode = AiModeEnum::from((string) $validated['mode']);
         $format = ContentPageFormatEnum::from((string) $validated['source_format']);
-        $thinkingLevel = GeminiThinkingLevelEnum::from((string) $validated['thinking_level']);
+        $level = AiReasoningLevelEnum::tryFrom((string) ($validated['reasoning_level'] ?? '')) ?? AiReasoningLevelEnum::default();
+        $provider = $providers->firstOrFail(fn (AiProvider $provider): bool => $provider->provider->value === $validated['provider']);
 
-        $current = $mode === GeminiAiModeEnum::Create
+        $current = $mode === AiModeEnum::Create
             ? ['text' => '', 'placeholders' => []]
-            : $gemini->prepareCurrentContent((string) ($validated['current_content'] ?? ''), $format);
+            : $assistant->prepareCurrentContent((string) ($validated['current_content'] ?? ''), $format);
 
-        $systemInstruction = $gemini->buildSystemInstruction($mode, $content, $format);
-        $fullPrompt = $gemini->buildContextPrompt($mode, $content, $page, (string) ($validated['prompt'] ?? ''), $current['text'], $format);
+        $systemInstruction = $assistant->buildSystemInstruction($mode, $content, $format);
+        $fullPrompt = $assistant->buildContextPrompt($mode, $content, $page, (string) ($validated['prompt'] ?? ''), $current['text'], $format);
 
-        return response()->stream(function () use ($gemini, $systemInstruction, $fullPrompt, $thinkingLevel, $mode, $format, $current): void {
+        return response()->stream(function () use ($assistant, $provider, $systemInstruction, $fullPrompt, $level, $mode, $format, $current): void {
             if (function_exists('set_time_limit')) {
                 @set_time_limit(200);
             }
@@ -86,7 +93,7 @@ class ContentPageAiStreamController extends Controller
             $warnings = [];
             $error = null;
 
-            $gemini->streamGenerateContent($systemInstruction, $fullPrompt, $thinkingLevel, function (string $type, string $chunk) use ($send, &$text, &$warnings, &$error): void {
+            $assistant->streamGenerateContent($provider, $systemInstruction, $fullPrompt, $level, function (string $type, string $chunk) use ($send, &$text, &$warnings, &$error): void {
                 if ($type === 'thought') {
                     $send('thought', ['text' => $chunk]);
                 } elseif ($type === 'content') {
@@ -100,7 +107,7 @@ class ContentPageAiStreamController extends Controller
             });
 
             if ($error === null && trim($text) === '') {
-                $error = $warnings[0] ?? 'Gemini no ha devuelto ningún texto. Vuelve a intentarlo o cambia la instrucción.';
+                $error = $warnings[0] ?? $provider->provider->label().' no ha devuelto ningún texto. Vuelve a intentarlo o cambia la instrucción.';
             }
 
             if ($error !== null) {
@@ -110,11 +117,11 @@ class ContentPageAiStreamController extends Controller
             }
 
             try {
-                $result = $mode === GeminiAiModeEnum::Create
-                    ? $gemini->parseCreatedPage($text, $format)
-                    : $gemini->convertResultToFormat($text, $format, $mode, $current['placeholders']);
+                $result = $mode === AiModeEnum::Create
+                    ? $assistant->parseCreatedPage($text, $format)
+                    : $assistant->convertResultToFormat($text, $format, $mode, $current['placeholders']);
             } catch (Throwable $e) {
-                Log::error('Gemini: no se ha podido adaptar el resultado: '.$e->getMessage(), ['exception' => $e]);
+                Log::error('Asistente IA: no se ha podido adaptar el resultado: '.$e->getMessage(), ['exception' => $e]);
                 $send('error', ['message' => 'No se ha podido adaptar el resultado al formato de la página.']);
 
                 return;
