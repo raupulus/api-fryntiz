@@ -33,6 +33,11 @@ class KeyCounterSummaryTest extends ApiTestCase
     {
         parent::setUp();
 
+        // A mediodía (UTC) del día de hoy. Las pruebas crean rachas «de hace
+        // dos horas» o «de hace cinco minutos» que tienen que caer hoy: entre
+        // las 00:00 y las 02:00 caían ayer y la suma de hoy fallaba.
+        $this->travelTo(today()->setTime(12, 0));
+
         $this->user = $this->createAuthenticatedUser();
         $this->keyboardDevice = HardwareDevice::create(['user_id' => $this->user->id, 'name' => 'Thinkpad']);
         $this->otherDevice = HardwareDevice::create(['user_id' => $this->user->id, 'name' => 'Sobremesa']);
