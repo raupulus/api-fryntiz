@@ -68,6 +68,14 @@ class ContentFactory extends Factory
         });
     }
 
+    /**
+     * Obsoleto: sigue publicado, pero va al final de los listados (D52).
+     */
+    public function obsolete(): static
+    {
+        return $this->state(fn () => ['is_obsolete' => true]);
+    }
+
     public function draft(): static
     {
         return $this->state(fn () => [

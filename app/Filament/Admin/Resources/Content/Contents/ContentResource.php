@@ -271,6 +271,7 @@ class ContentResource extends Resource
                     }),
                 IconColumn::make('is_active')->boolean()->label('Activo')->visibleFrom('md'),
                 IconColumn::make('is_featured')->boolean()->label('Destacado')->toggleable()->visibleFrom('lg'),
+                IconColumn::make('is_obsolete')->boolean()->label('Obsoleto')->toggleable(isToggledHiddenByDefault: true)->visibleFrom('lg'),
                 TextColumn::make('published_at')->label('Publicado el')->dateTime('d/m/Y')->sortable()->toggleable()->visibleFrom('lg'),
             ])
             ->filters([
@@ -279,6 +280,7 @@ class ContentResource extends Resource
                 SelectFilter::make('type_id')->relationship('type', 'name')->label('Tipo'),
                 TernaryFilter::make('is_active')->label('Activo'),
                 TernaryFilter::make('is_featured')->label('Destacado'),
+                TernaryFilter::make('is_obsolete')->label('Obsoleto'),
                 // Borrar un contenido lo manda aquí; se restaura o, sólo el
                 // SuperAdmin, se elimina definitivamente (G3).
                 TrashedFilter::make()

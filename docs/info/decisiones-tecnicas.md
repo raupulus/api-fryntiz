@@ -396,6 +396,25 @@ un parámetro nuevo por una diferencia de cinco elementos.
 
 *Origen: API-03.*
 
+### D52 · Los contenidos obsoletos van al final, sin pisar el orden que se pida
+
+Un contenido obsoleto (`is_obsolete`) sigue publicado, pero en los listados va detrás de los
+vigentes. **Sin `?sort=`**, por delante del orden por defecto: primero los vigentes, después los
+obsoletos, cada grupo por fecha. **Con `?sort=`**, detrás del orden pedido, que manda: el obsoleto
+sólo desempata. Lo hace `CollectionQuery` con `sinkColumn`; destacados y últimos y el relleno de
+relacionados siguen la misma regla; la tendencia ordena por visitas, que es lo que se pide, y los
+relacionados elegidos a mano conservan su orden.
+
+**Por qué no es un estado.** Un publicado no cambia de estado (D31), y un obsoleto tiene que seguir
+saliendo en las webs.
+
+**Por qué un argumento nuevo en `CollectionQuery`.** D8 descarta parámetros para que un endpoint
+pagine distinto; esto es orden, y sin la clase no hay sitio para un criterio que vaya detrás del
+`?sort=` del cliente: un `orderBy` puesto antes de paginar se le impondría.
+
+*Fijado por `CollectionQuerySortTest` y `ContentDetailApiTest` (los tests con «obsolete»). Pedido por
+el usuario el 2026-10-17.*
+
 ---
 
 ## Base de datos

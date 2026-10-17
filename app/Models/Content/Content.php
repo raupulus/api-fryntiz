@@ -54,6 +54,7 @@ use function url;
  * @property bool $is_comment_enabled Indica si los comentarios están habilitados
  * @property bool $is_comment_anonymous Indica si se permiten comentarios anónimos
  * @property bool $is_featured Indica si el contenido es destacado
+ * @property bool $is_obsolete Indica si el contenido está obsoleto: sigue publicado, pero va al final de los listados (D52)
  * @property bool $is_visible_on_home Indica si el contenido está visible en la página principal
  * @property bool $is_visible_on_menu Indica si el contenido está visible en el menú
  * @property bool $is_visible_on_footer Indica si el contenido está visible en el footer
@@ -178,6 +179,7 @@ class Content extends BaseModel
         'is_comment_anonymous',
         'is_active',
         'is_featured',
+        'is_obsolete',
         'is_visible',
         'is_visible_on_home',
         'is_visible_on_menu',
@@ -195,6 +197,7 @@ class Content extends BaseModel
     ];
 
     protected $casts = [
+        'is_obsolete' => 'boolean',
         'published_at' => 'datetime',
         'scheduled_at' => 'datetime',
         'processed_at' => 'datetime',

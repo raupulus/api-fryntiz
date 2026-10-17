@@ -88,6 +88,7 @@ class ContentDetailApiTest extends ApiTestCase
         $this->assertFalse($data['visibility']['rss']);
         $this->assertSame(['enabled' => true, 'anonymous' => false], $data['comments']);
         $this->assertNull($data['copyright_valid'], 'Sin comprobar no es «no».');
+        $this->assertFalse($data['is_obsolete']);
         $this->assertNull($data['first_page'], 'Sin páginas, no hay primera página.');
         $this->assertSame([], $data['pages']);
     }
@@ -271,7 +272,22 @@ class ContentDetailApiTest extends ApiTestCase
         $this->assertSame(['Elegido primero', 'Elegido segundo', 'Reciente', 'Más viejo'], $titles);
 
         $item = $this->getJson($this->contentUrl($content, '/related?limit=1'))->json('data.0');
-        $this->assertSame(['id', 'title', 'slug', 'excerpt', 'image', 'type', 'is_featured', 'published_at'], array_keys($item));
+        $this->assertSame(['id', 'title', 'slug', 'excerpt', 'image', 'type', 'is_featured', 'is_obsolete', 'published_at'], array_keys($item));
+    }
+
+    #[Test]
+    public function related_fill_leaves_the_obsolete_ones_for_last_but_keeps_the_chosen_order(): void
+    {
+        $content = $this->published(['slug' => 'principal']);
+        $chosen = $this->published(['title' => 'Elegido obsoleto', 'is_obsolete' => true, 'published_at' => now()->subDays(30)]);
+        $this->published(['title' => 'Obsoleto reciente', 'is_obsolete' => true, 'published_at' => now()->subHour()]);
+        $this->published(['title' => 'Vigente', 'published_at' => now()->subDays(5)]);
+
+        $this->linkRelated($content, $chosen);
+
+        $titles = array_column($this->getJson($this->contentUrl($content, '/related?limit=3'))->assertOk()->json('data'), 'title');
+
+        $this->assertSame(['Elegido obsoleto', 'Vigente', 'Obsoleto reciente'], $titles, 'Lo elegido a mano no se reordena; el relleno, con los obsoletos detrás.');
     }
 
     // ── Listado y filtros ───────────────────────────────────────────────────
@@ -293,6 +309,24 @@ class ContentDetailApiTest extends ApiTestCase
         $this->assertSame([$content->title], $titles('q=CASERA'), 'Sin distinguir mayúsculas, en el extracto.');
         $this->assertSame(['Otro 100% distinto'], $titles('q='.urlencode('100%')), 'El % se busca tal cual.');
         $this->assertSame([], $titles('q=_'), 'Un _ no es un comodín.');
+    }
+
+    #[Test]
+    public function the_list_leaves_the_obsolete_ones_for_last_without_overriding_the_requested_sort(): void
+    {
+        $this->published(['title' => 'A obsoleto reciente', 'is_obsolete' => true, 'published_at' => now()->subHour()]);
+        $this->published(['title' => 'B vigente', 'published_at' => now()->subDays(2)]);
+        $this->published(['title' => 'C vigente antiguo', 'published_at' => now()->subDays(9)]);
+        $this->published(['title' => 'D obsoleto antiguo', 'is_obsolete' => true, 'published_at' => now()->subDays(20)]);
+
+        $list = fn (string $query = ''): array => $this->getJson("/api/v2/platforms/{$this->platform->slug}/contents?{$query}")->assertOk()->json('data');
+        $titles = fn (string $query = ''): array => array_column($list($query), 'title');
+
+        $this->assertSame(['B vigente', 'C vigente antiguo', 'A obsoleto reciente', 'D obsoleto antiguo'], $titles(), 'Por defecto, los obsoletos al final y cada grupo por fecha.');
+        $this->assertSame(['A obsoleto reciente', 'B vigente', 'C vigente antiguo', 'D obsoleto antiguo'], $titles('sort=title'), 'El orden pedido manda.');
+        $this->assertSame(['A obsoleto reciente', 'B vigente', 'C vigente antiguo', 'D obsoleto antiguo'], $titles('sort=-published_at'), 'También si se pide el de por defecto.');
+        $this->assertSame(['B vigente', 'C vigente antiguo'], $titles('is_obsolete=0'));
+        $this->assertSame([true, false, false, true], array_column($list('sort=title'), 'is_obsolete'));
     }
 
     #[Test]
@@ -340,6 +374,25 @@ class ContentDetailApiTest extends ApiTestCase
 
         $this->getJson("/api/v2/platforms/{$this->platform->slug}/contents/highlights?type=otro")->assertStatus(422);
         $this->getJson('/api/v2/platforms/no-existe/contents/highlights')->assertNotFound();
+    }
+
+    #[Test]
+    public function highlights_leave_the_obsolete_ones_for_last_except_in_the_trend_order(): void
+    {
+        $obsolete = $this->published(['title' => 'Obsoleto reciente', 'is_obsolete' => true, 'published_at' => now()->subHour()]);
+        $this->published(['title' => 'Vigente', 'published_at' => now()->subDays(3)]);
+        $this->published(['title' => 'Destacado obsoleto', 'is_featured' => true, 'is_obsolete' => true, 'published_at' => now()->subHour()]);
+        $this->published(['title' => 'Destacado vigente', 'is_featured' => true, 'published_at' => now()->subDays(3)]);
+
+        DB::table('content_daily_views')->insert([
+            ['content_id' => $obsolete->id, 'date' => now()->subDay()->toDateString(), 'views' => 80, 'created_at' => now(), 'updated_at' => now()],
+        ]);
+
+        $data = $this->getJson("/api/v2/platforms/{$this->platform->slug}/contents/highlights?limit=1")->assertOk()->json('data');
+
+        $this->assertSame(['Vigente'], array_column($data['latest']['blog'], 'title'));
+        $this->assertSame(['Destacado vigente'], array_column($data['featured']['blog'], 'title'));
+        $this->assertSame(['Obsoleto reciente'], array_column($data['trend']['blog'], 'title'), 'En la tendencia mandan las visitas.');
     }
 
     // ── Consultas por ruta ──────────────────────────────────────────────────

@@ -46,6 +46,8 @@ class EditContentVisibility extends EditRecord
                         ->helperText('A las webs sólo va lo publicado y activo. Desmarcarlo retira un contenido publicado sin borrarlo.'),
                     Toggle::make('is_featured')->label('Destacado')
                         ->helperText('Sale entre los destacados de su plataforma.'),
+                    Toggle::make('is_obsolete')->label('Obsoleto')
+                        ->helperText('Desactualizado o de un programa que ya no existe, pero se deja publicado. La API lo indica y en los listados va al final, sin pisar el orden que pida la web.'),
                     DateTimePicker::make('published_at')->label('Publicado el')
                         ->disabled()
                         ->helperText('Se pone sola al publicar: a mano, con la acción «Publicar» o al llegar la fecha programada.'),

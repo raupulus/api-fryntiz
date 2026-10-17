@@ -80,10 +80,12 @@ class ContentController extends BaseApiController
 
             $this->applyTaxonomyFilters($query, $request, $platform);
 
+            // Los obsoletos, al final, sin pisar el `?sort=` que se pida (D52).
             $collectionQuery = new CollectionQuery(
-                filterable: ['is_featured', 'type_id', 'published_at', 'created_at'],
+                filterable: ['is_featured', 'is_obsolete', 'type_id', 'published_at', 'created_at'],
                 sortable: ['published_at', 'created_at', 'title'],
                 defaultSortColumn: 'published_at',
+                sinkColumn: 'is_obsolete',
             );
 
             return $this->paginatedResponse($collectionQuery->paginate($query, $request), ContentResource::class)->getData(true);

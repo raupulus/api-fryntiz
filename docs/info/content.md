@@ -110,6 +110,7 @@ y `ContentApiService` carga exactamente eso (D9).
 | `is_comment_anonymous` | boolean | Comentarios anónimos |
 | `is_active` | boolean | Contenido activo |
 | `is_featured` | boolean | Contenido destacado |
+| `is_obsolete` | boolean | Obsoleto: sigue publicado, pero va al final de los listados de la API (D52) |
 | `is_visible` | boolean | Visible públicamente |
 | `is_visible_on_home` | boolean | Visible en home |
 | `is_visible_on_menu` | boolean | Visible en menú |
@@ -1147,13 +1148,19 @@ contenidos de la misma). El panel avisa de todo eso al guardar.
 
 ### Visibilidad
 
-«Activo», «Destacado» y la fecha de publicación (sólo lectura); dónde se
+«Activo», «Destacado», «Obsoleto» y la fecha de publicación (sólo lectura); dónde se
 enseña (portada, menú, pie, barra lateral, buscador, archivo, RSS, sitemap y
 sitemap de noticias); comentarios, comentarios anónimos y derechos de autor.
 Cada uno con una línea de ayuda. «Derechos de autor» tiene tres estados
 (comprobados, con material ajeno, o sin marcar = sin comprobar): un
 interruptor convertía el «sin comprobar» de la base en «no» al guardar. La API
 los enviará todos (F9).
+
+«Obsoleto» es para lo desactualizado o de un programa que ya no existe que se
+quiere dejar publicado: no es un estado (un publicado no cambia de estado,
+D31). La API lo envía en `is_obsolete` y deja esos contenidos al final de los
+listados sin pisar el orden que pida la web (D52). En el listado del panel hay
+columna (oculta por defecto) y filtro.
 
 ### Papelera
 

@@ -44,6 +44,8 @@ class ContentResource extends JsonResource
                 'name' => $this->status->name,
             ],
             'is_featured' => (bool) $this->is_featured,
+            // Desactualizado, pero publicado: la web decide si lo avisa (D52).
+            'is_obsolete' => (bool) $this->is_obsolete,
             // Con ancho, alto, tipo y todos los tamaños, para las etiquetas
             // Open Graph (B9).
             'image' => $this->image === null ? null : new SocialImageResource($this->image),

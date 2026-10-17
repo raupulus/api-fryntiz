@@ -28,6 +28,7 @@ class ContentRelatedResource extends JsonResource
             'image' => $this->image === null ? null : new SocialImageResource($this->image),
             'type' => $this->type === null ? null : ['id' => $this->type->id, 'slug' => $this->type->slug, 'name' => $this->type->name],
             'is_featured' => (bool) $this->is_featured,
+            'is_obsolete' => (bool) $this->is_obsolete,
             'published_at' => $this->published_at?->toISOString(),
         ];
     }

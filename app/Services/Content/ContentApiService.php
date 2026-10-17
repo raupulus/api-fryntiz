@@ -309,7 +309,7 @@ class ContentApiService
     /**
      * Relacionados (F2): primero los elegidos a mano, en el orden en que se
      * vincularon; si faltan, se completa con los publicados más recientes de la
-     * misma plataforma y tipo.
+     * misma plataforma y tipo, con los obsoletos al final.
      *
      * @return Collection<int, Content>
      */
@@ -338,6 +338,8 @@ class ContentApiService
             ->where('platform_id', $content->platform_id)
             ->where('type_id', $content->type_id)
             ->whereNotIn('id', [$content->id, ...$chosen->modelKeys()])
+            // Los obsoletos, sólo si faltan (D52).
+            ->orderBy('is_obsolete')
             ->orderByDesc('published_at')
             ->limit($limit - $chosen->count())
             ->get();
@@ -391,12 +393,15 @@ class ContentApiService
      */
     private function highlightQuery(Platform $platform, string $kind, int $limit): Builder
     {
+        // Los obsoletos van al final (D52): en destacados y últimos, delante de
+        // la fecha, porque es el orden por defecto; en la tendencia, detrás de
+        // las visitas, que es el criterio que se pide.
         $order = match ($kind) {
-            'featured', 'latest' => 'contents.published_at DESC',
+            'featured', 'latest' => 'contents.is_obsolete ASC, contents.published_at DESC',
             // Los más vistos de los últimos días; sin visitas, 0, y a igualdad
             // el más reciente.
             default => '(SELECT COALESCE(SUM(views), 0) FROM content_daily_views'
-                .' WHERE content_daily_views.content_id = contents.id AND content_daily_views.date >= ?) DESC, contents.published_at DESC',
+                .' WHERE content_daily_views.content_id = contents.id AND content_daily_views.date >= ?) DESC, contents.is_obsolete ASC, contents.published_at DESC',
         };
 
         $ranked = Content::query()

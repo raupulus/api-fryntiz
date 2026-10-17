@@ -182,12 +182,13 @@ class ContentSectionsTest extends TestCase
         $this->content->update(['is_copyright_valid' => null]);
 
         Livewire::test(EditContentVisibility::class, ['record' => $this->content->getRouteKey()])
-            ->fillForm(['is_visible_on_home' => true, 'is_comment_enabled' => true, 'is_comment_anonymous' => true])
+            ->fillForm(['is_visible_on_home' => true, 'is_obsolete' => true, 'is_comment_enabled' => true, 'is_comment_anonymous' => true])
             ->call('save')
             ->assertHasNoFormErrors();
 
         $this->content->refresh();
         $this->assertTrue($this->content->is_visible_on_home);
+        $this->assertTrue($this->content->is_obsolete);
         $this->assertTrue($this->content->is_comment_enabled);
         $this->assertNull($this->content->is_copyright_valid, '«Sin comprobar» no pasa a «no» al guardar.');
     }

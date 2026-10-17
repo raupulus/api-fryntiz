@@ -218,7 +218,7 @@ de una web y metadatos del SSR. **Nunca** lleva las claves de publicación
       ]
     },
     "pages": [
-      { "id": 30, "title": "Sobre mí", "slug": "sobre-mi", "excerpt": "…", "image": null, "type": { "id": 1, "slug": "page", "name": "Página" }, "is_featured": false, "published_at": "2026-09-01T10:00:00.000000Z" }
+      { "id": 30, "title": "Sobre mí", "slug": "sobre-mi", "excerpt": "…", "image": null, "type": { "id": 1, "slug": "page", "name": "Página" }, "is_featured": false, "is_obsolete": false, "published_at": "2026-09-01T10:00:00.000000Z" }
     ],
     "created_at": "2023-08-04T22:00:05.000000Z"
   }
@@ -323,6 +323,7 @@ Es lo que sale en el listado y la base del detalle:
   "type": { "id": 5, "slug": "project", "name": "Proyecto", "plural_name": "Proyectos" },
   "status": { "id": 3, "slug": "published", "name": "Publicado" },
   "is_featured": true,
+  "is_obsolete": false,
   "image": { "url": "…", "width": 1200, "height": 630, "type": "image/webp", "alt": "…", "thumbnails": { "…": "…" } },
   "seo_title": "Título para compartir",
   "seo_description": "Descripción para buscadores",
@@ -349,6 +350,9 @@ Es lo que sale en el listado y la base del detalle:
   aplica cada web.
 - `comments`: aún no hay comentarios, pero el interruptor ya está.
 - `copyright_valid`: `true`/`false`, o `null` si no se ha comprobado.
+- `is_obsolete`: el contenido está desactualizado (o es de un programa que ya
+  no existe), pero se deja publicado porque a alguien le sirve. La web decide
+  si lo avisa. En los listados va al final ([orden](#los-obsoletos-van-al-final)).
 - `views_count`: visitas de siempre; `0` si no tiene. Se refresca cada hora
   como mucho.
 
@@ -366,14 +370,29 @@ Es lo que sale en el listado y la base del detalle:
   | `q={texto}` | El texto en el título o el extracto, sin distinguir mayúsculas. `%` y `_` se buscan tal cual |
 
   Las categorías, etiquetas y tecnologías quitadas de un contenido no cuentan.
-- **Colección paginada**: filtrable por `is_featured`, `type_id`,
-  `published_at`, `created_at`; ordenable por `published_at`, `created_at`,
-  `title`; por defecto `published_at` descendente.
+- **Colección paginada**: filtrable por `is_featured`, `is_obsolete`
+  (`is_obsolete=0` los quita), `type_id`, `published_at`, `created_at`;
+  ordenable por `published_at`, `created_at`, `title`; por defecto
+  `published_at` descendente, con los obsoletos al final.
 - **Respuesta 200**: `data` es una lista de [contenidos](#el-contenido-contentresource), con `meta`.
 
 ```bash
 GET /api/v2/platforms/portfolio/contents?type=project&tag=iot&q=esp32&per_page=10
 ```
+
+#### Los obsoletos van al final
+
+En los listados de contenidos, los que tienen `is_obsolete: true` van detrás
+de los demás, **sin pisar el orden que se pida**:
+
+- Sin `?sort=`, primero los vigentes y después los obsoletos, cada grupo por
+  `published_at` descendente.
+- Con `?sort=`, manda el orden pedido: `?sort=title` da el orden alfabético de
+  todos, y los obsoletos sólo van detrás a igualdad de título.
+
+Lo mismo en el relleno de los [relacionados](#get-platformsplatformslugcontentscontentslugrelated--relacionados)
+y en [destacados y últimos](#get-platformsplatformslugcontentshighlights--destacados-últimos-y-tendencia).
+Los relacionados elegidos a mano conservan su orden.
 
 ### `GET /platforms/{platform:slug}/contents/highlights` — Destacados, últimos y tendencia
 
@@ -401,10 +420,13 @@ en `main`. Cada elemento tiene la forma compacta de los
 }
 ```
 
-- `featured`: destacados, del más reciente al más antiguo.
-- `latest`: los más recientes **sin los destacados**, que ya salen aparte.
+- `featured`: destacados, del más reciente al más antiguo, con los obsoletos
+  al final.
+- `latest`: los más recientes **sin los destacados**, que ya salen aparte, con
+  los obsoletos al final.
 - `trend`: los más vistos de los **últimos 3 días**; sin visitas, detrás, por
-  fecha.
+  fecha. Aquí mandan las visitas: un obsoleto muy visto sale; sólo a igualdad
+  de visitas va detrás.
 - Una lista sin nada sale como `[]`; un tipo sin contenidos no aparece.
 - **Errores**: `404` `Plataforma no encontrada`; `422` `El tipo tiene que ser
   featured, latest, trend o all.`
@@ -564,7 +586,8 @@ Igual que la anterior, buscando por el slug de la página.
 - Primero los **elegidos a mano** en el panel, en el orden en que se
   vincularon; si no llegan al límite, se completa con los publicados más
   recientes de la misma plataforma y tipo (sin repetir ni incluir el propio
-  contenido). Sólo publicados y de la misma plataforma.
+  contenido), con los obsoletos al final. Sólo publicados y de la misma
+  plataforma.
 
 ```json
 {
@@ -579,6 +602,7 @@ Igual que la anterior, buscando por el slug de la página.
       "image": { "url": "…", "width": 1200, "height": 630, "type": "image/webp", "alt": "…", "thumbnails": { "…": "…" } },
       "type": { "id": 5, "slug": "project", "name": "Proyecto" },
       "is_featured": false,
+      "is_obsolete": false,
       "published_at": "2026-08-10T10:00:00.000000Z"
     }
   ]
@@ -651,6 +675,17 @@ ninguna página esperan a borrarse y no salen):
 
 ---
 
+## Cambios de contrato del 2026-10-17
+
+Sólo se añade; lo que ya se leía sigue igual:
+
+| Antes | Ahora |
+|---|---|
+| No había forma de saber si un contenido estaba desactualizado | `is_obsolete` en el contenido y en la forma compacta (relacionados y destacados) |
+| Listado, relleno de relacionados, destacados y últimos por fecha | Igual, pero con los obsoletos al final; un `?sort=` pedido sigue mandando ([ver](#los-obsoletos-van-al-final)) |
+
+---
+
 ## Cambios de contrato del 2026-09-27
 
 Lo que cambia para quien ya consumía esta API (F9 del plan de contenidos):
@@ -679,4 +714,4 @@ del listado.
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-27
+> Creado: 2026-08-30 · Última revisión: 2026-10-17

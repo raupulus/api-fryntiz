@@ -27,6 +27,11 @@ use Illuminate\Support\Facades\Validator;
  *   ?from=&to=                     alias de created_at[gte] / created_at[lte]
  *   ?sort=-created_at              orden; el guion es descendente
  *
+ * Una colección puede declarar además una columna que «hunde» sus filas
+ * (`$sinkColumn`): las que la tienen a `true` van al final. Sin `?sort=` va
+ * delante del orden por defecto; con `?sort=`, detrás del pedido, que manda
+ * (D52).
+ *
  * Sólo se aceptan los campos que el controlador declara. Un parámetro que no
  * esté en la lista se ignora: ni filtra ni revienta, y sobre todo no deja al
  * cliente ordenar o filtrar por una columna arbitraria.
@@ -81,6 +86,7 @@ class CollectionQuery
      * @param  string|null  $defaultSortColumn  Columna del orden por defecto.
      * @param  bool  $defaultSortDescending  Si el orden por defecto es descendente.
      * @param  array<string, string>  $types  Tipo de una columna cuando el nombre no lo delata.
+     * @param  string|null  $sinkColumn  Columna booleana cuyas filas a `true` van al final (D52).
      */
     public function __construct(
         private readonly array $filterable = [],
@@ -88,6 +94,7 @@ class CollectionQuery
         private readonly ?string $defaultSortColumn = 'created_at',
         private readonly bool $defaultSortDescending = true,
         private readonly array $types = [],
+        private readonly ?string $sinkColumn = null,
     ) {}
 
     /**
@@ -359,13 +366,32 @@ class CollectionQuery
                 $applied = true;
             }
 
+            // El orden pedido manda: lo hundido sólo desempata.
             if ($applied) {
+                $this->sink($query);
+
                 return;
             }
         }
 
+        $this->sink($query);
+
         if ($this->defaultSortColumn !== null) {
             $this->orderByColumn($query, $this->defaultSortColumn, $this->defaultSortDescending);
+        }
+    }
+
+    /**
+     * Las filas con `$sinkColumn` a `true`, al final.
+     *
+     * @template TModel of Model
+     *
+     * @param  Builder<TModel>  $query
+     */
+    private function sink(Builder $query): void
+    {
+        if ($this->sinkColumn !== null) {
+            $this->orderByColumn($query, $this->sinkColumn, false);
         }
     }
 
