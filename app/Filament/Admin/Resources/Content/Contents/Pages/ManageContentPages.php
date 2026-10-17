@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Content\Contents\Pages;
 
 use App\Enums\AiModeEnum;
-use App\Enums\AiReasoningLevelEnum;
 use App\Enums\ContentPageFormatEnum;
 use App\Enums\ContentPageVersionReasonEnum;
 use App\Exceptions\ContentPageConflictException;
@@ -848,12 +847,16 @@ class ManageContentPages extends Page
                     'value' => $provider->provider->value,
                     'label' => $provider->label(),
                     'name' => $provider->provider->label(),
-                    'reasoning' => $provider->sends_reasoning_level && $provider->provider->choosesReasoningLevel(),
+                    // Lo que se puede elegir en cada petición: cuánto razona, o
+                    // en Mistral si razona o no.
+                    'reasoning' => $provider->sends_reasoning_level,
+                    'levels' => collect($provider->provider->reasoningOptions())
+                        ->map(fn (string $label, string $value): array => ['value' => $value, 'label' => $label])
+                        ->values()->all(),
+                    'defaultLevel' => $provider->provider->defaultReasoningLevel()->value,
                 ])->all(),
                 'editorialSource' => app(ContentAiService::class)->editorialSource($this->ownerContent()),
-                'reasoningLevels' => AiReasoningLevelEnum::options(),
                 'modes' => AiModeEnum::options(),
-                'defaultReasoningLevel' => AiReasoningLevelEnum::default()->value,
                 'currentFormat' => ContentPageFormatEnum::tryFrom((string) ($this->data['source_format'] ?? '')) ?? ContentPageFormatEnum::EditorJs,
                 'pageId' => $this->pageId,
                 'isNewPage' => $this->pageId === null,

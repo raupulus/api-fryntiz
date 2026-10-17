@@ -117,13 +117,43 @@ enum AiProviderEnum: string
     }
 
     /**
-     * Si se elige cuánto razona (bajo, medio, alto). Mistral sólo razona o no
-     * (`reasoning_effort` `high` o `none`; `mistral-medium-3-5` rechaza `low`
-     * con un 400, probado el 2026-10-17): en el modal no sale el nivel.
+     * Lo que se puede elegir en el modal para cada petición. Mistral sólo
+     * razona o no (`reasoning_effort` `high` o `none`; `mistral-medium-3-5`
+     * rechaza `low` con un 400, probado el 2026-10-17); el resto, cuánto.
+     *
+     * @return list<AiReasoningLevelEnum>
      */
-    public function choosesReasoningLevel(): bool
+    public function reasoningLevels(): array
     {
-        return $this !== self::Mistral;
+        return $this === self::Mistral
+            ? [AiReasoningLevelEnum::None, AiReasoningLevelEnum::High]
+            : [AiReasoningLevelEnum::Low, AiReasoningLevelEnum::Medium, AiReasoningLevelEnum::High];
+    }
+
+    /**
+     * Los niveles del modal, con su texto.
+     *
+     * @return array<string, string>
+     */
+    public function reasoningOptions(): array
+    {
+        $options = [];
+
+        foreach ($this->reasoningLevels() as $level) {
+            $options[$level->value] = $this === self::Mistral && $level === AiReasoningLevelEnum::High
+                ? 'Razonar (más lento, más cuidado)'
+                : $level->label();
+        }
+
+        return $options;
+    }
+
+    /**
+     * El que sale elegido la primera vez.
+     */
+    public function defaultReasoningLevel(): AiReasoningLevelEnum
+    {
+        return $this === self::Mistral ? AiReasoningLevelEnum::High : AiReasoningLevelEnum::default();
     }
 
     /**

@@ -14,6 +14,7 @@ use App\Services\Content\ContentAiService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
 
@@ -58,8 +59,15 @@ class ContentPageAiStreamController extends Controller
 
         $mode = AiModeEnum::from((string) $validated['mode']);
         $format = ContentPageFormatEnum::from((string) $validated['source_format']);
-        $level = AiReasoningLevelEnum::tryFrom((string) ($validated['reasoning_level'] ?? '')) ?? AiReasoningLevelEnum::default();
         $provider = $providers->firstOrFail(fn (AiProvider $provider): bool => $provider->provider->value === $validated['provider']);
+        $level = AiReasoningLevelEnum::tryFrom((string) ($validated['reasoning_level'] ?? '')) ?? $provider->provider->defaultReasoningLevel();
+
+        // Cada proveedor admite los suyos: Mistral sólo razonar o no.
+        if (! in_array($level, $provider->provider->reasoningLevels(), true)) {
+            throw ValidationException::withMessages([
+                'reasoning_level' => 'Ese nivel de razonamiento no vale para '.$provider->provider->label().'.',
+            ]);
+        }
 
         $current = $mode === AiModeEnum::Create
             ? ['text' => '', 'placeholders' => []]

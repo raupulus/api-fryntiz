@@ -29,9 +29,10 @@ class MistralTextProvider extends HttpTextProvider
             'stream' => true,
         ];
 
-        // Razona o no: `high` es el único nivel que admiten todos sus modelos
-        // con razonamiento (`AiProviderEnum::choosesReasoningLevel()`).
-        if ($provider->sends_reasoning_level) {
+        // Razona o no, según se elija en el modal: `high` es el único nivel que
+        // admiten sus modelos con razonamiento, y sin `reasoning_effort` no
+        // razona (`AiProviderEnum::reasoningLevels()`).
+        if ($provider->sends_reasoning_level && $level === AiReasoningLevelEnum::High) {
             $payload['reasoning_effort'] = 'high';
         }
 

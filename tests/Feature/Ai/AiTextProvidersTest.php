@@ -154,20 +154,26 @@ class AiTextProvidersTest extends TestCase
     // ── Mistral ─────────────────────────────────────────────────────────────
 
     #[Test]
-    public function mistral_gets_chat_completions_and_reasons_with_high_whatever_the_level(): void
+    public function mistral_gets_chat_completions_and_reasons_only_when_asked(): void
     {
         $provider = $this->provider(AiProviderEnum::Mistral, 'mistral-medium-3-5');
         $this->fake('api.mistral.ai', $this->sseResponse([$this->mistral('Hola')]));
 
-        $this->collect($provider, AiReasoningLevelEnum::Medium);
+        $this->collect($provider, AiReasoningLevelEnum::High);
+        $this->collect($provider, AiReasoningLevelEnum::None);
 
-        Http::assertSent(fn (HttpRequest $request): bool => $request->url() === 'https://api.mistral.ai/v1/chat/completions'
+        $requests = Http::recorded()->map(fn (array $pair): HttpRequest => $pair[0]);
+
+        $this->assertTrue($requests->every(fn (HttpRequest $request): bool => $request->url() === 'https://api.mistral.ai/v1/chat/completions'
             && $request->hasHeader('Authorization', 'Bearer test-mistral-key')
             && $request['model'] === 'mistral-medium-3-5'
             && $request['messages'] === [['role' => 'system', 'content' => 'Sistema'], ['role' => 'user', 'content' => 'Pregunta']]
-            && $request['stream'] === true
-            // `mistral-medium-3-5` sólo admite `high` o `none`: con `low` da 400.
-            && $request['reasoning_effort'] === 'high');
+            && $request['stream'] === true));
+
+        // Razonar es `high`, el único nivel que admite (`low` le da 400); no
+        // razonar es no mandar `reasoning_effort`.
+        $this->assertSame('high', $requests[0]['reasoning_effort']);
+        $this->assertFalse(isset($requests[1]['reasoning_effort']));
     }
 
     #[Test]

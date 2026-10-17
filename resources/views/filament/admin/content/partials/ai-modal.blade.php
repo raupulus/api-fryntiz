@@ -8,8 +8,6 @@
     x-data="contentPageAiAssistant({
         streamUrl: @js($streamUrl),
         providers: @js($providers),
-        reasoningLevels: @js(array_keys($reasoningLevels)),
-        defaultReasoningLevel: @js($defaultReasoningLevel),
         pageId: @js($pageId),
         isNewPage: @js($isNewPage),
         sourceFormat: @js($currentFormat->value),
@@ -48,12 +46,13 @@
             <span class="cpe-ai__fixed">{{ $editorialSource }}</span>
         </div>
 
+        {{-- Los niveles son del proveedor: cuánto razona, o en Mistral si razona o no --}}
         <div class="cpe-ai__field" x-show="hasReasoningLevels">
             <label class="cpe-ai__label" for="ai-thinking">Razonamiento</label>
             <select id="ai-thinking" class="cpe-ai__select" x-model="reasoningLevel" :disabled="isStreaming">
-                @foreach ($reasoningLevels as $value => $label)
-                    <option value="{{ $value }}">{{ $label }}</option>
-                @endforeach
+                <template x-for="level in reasoningLevels" :key="level.value">
+                    <option :value="level.value" x-text="level.label" :selected="level.value === reasoningLevel"></option>
+                </template>
             </select>
         </div>
     </div>

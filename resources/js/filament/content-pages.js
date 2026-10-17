@@ -311,17 +311,26 @@ const AI_HTTP_MESSAGES = {
     429: 'Has hecho muchas peticiones seguidas al asistente. Espera un minuto y vuelve a intentarlo.',
 };
 
-function contentPageAiAssistant({ streamUrl, providers, reasoningLevels, defaultReasoningLevel, pageId, isNewPage, sourceFormat }) {
+function contentPageAiAssistant({ streamUrl, providers, pageId, isNewPage, sourceFormat }) {
     // Lo recordado sólo vale si sigue en la lista: si no, el servidor
     // rechazaría la petición sin que se viera por qué. El primer proveedor es
     // el predeterminado.
     const savedProvider = remembered('ai_provider');
-    const savedLevel = remembered('ai_reasoning_level');
+    const initialProvider = providers.some((option) => option.value === savedProvider) ? savedProvider : (providers[0]?.value ?? null);
+
+    // El último razonamiento elegido con cada proveedor: cada uno tiene sus
+    // niveles (Mistral sólo razonar o no).
+    const levelFor = (value) => {
+        const option = providers.find((candidate) => candidate.value === value);
+        const saved = remembered(`ai_reasoning_level:${value}`);
+
+        return option?.levels.some((level) => level.value === saved) ? saved : (option?.defaultLevel ?? null);
+    };
 
     return {
         mode: isNewPage ? 'create' : 'edit',
-        provider: providers.some((option) => option.value === savedProvider) ? savedProvider : (providers[0]?.value ?? null),
-        reasoningLevel: reasoningLevels.includes(savedLevel) ? savedLevel : defaultReasoningLevel,
+        provider: initialProvider,
+        reasoningLevel: levelFor(initialProvider),
         prompt: '',
         isStreaming: false,
         isThinking: false,
@@ -341,9 +350,13 @@ function contentPageAiAssistant({ streamUrl, providers, reasoningLevels, default
             return this.providerOption?.name ?? 'la IA';
         },
 
-        // Si el proveedor elegido admite nivel de razonamiento.
+        get reasoningLevels() {
+            return this.providerOption?.levels ?? [];
+        },
+
+        // Si con el proveedor elegido se elige el razonamiento.
         get hasReasoningLevels() {
-            return this.providerOption?.reasoning === true;
+            return this.providerOption?.reasoning === true && this.reasoningLevels.length > 0;
         },
 
         // Lo que escribe la IA, con las marcas de los bloques que no ve
@@ -362,6 +375,10 @@ function contentPageAiAssistant({ streamUrl, providers, reasoningLevels, default
                     this.cancel();
                 }
             });
+
+            this.$watch('provider', (value) => {
+                this.reasoningLevel = levelFor(value);
+            });
         },
 
         destroy() {
@@ -376,7 +393,7 @@ function contentPageAiAssistant({ streamUrl, providers, reasoningLevels, default
             if (this.isStreaming) return;
 
             remember('ai_provider', this.provider);
-            remember('ai_reasoning_level', this.reasoningLevel);
+            remember(`ai_reasoning_level:${this.provider}`, this.reasoningLevel);
 
             await window.flushEditorJs?.();
 

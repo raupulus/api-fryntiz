@@ -512,7 +512,7 @@ class ContentPageAiAssistantTest extends TestCase
     }
 
     #[Test]
-    public function the_modal_offers_the_usable_providers_and_no_reasoning_level_for_mistral(): void
+    public function the_modal_offers_each_provider_with_its_own_reasoning_choices(): void
     {
         AiProvider::factory()->provider(AiProviderEnum::Mistral, 'mistral-medium-3-5')->create();
         AiProvider::factory()->provider(AiProviderEnum::OpenAi, 'gpt-apagado')->create(['is_active' => false]);
@@ -520,12 +520,33 @@ class ContentPageAiAssistantTest extends TestCase
         $component = $this->editor($this->page)->mountAction('aiAssistant');
         $providers = $component->instance()->getMountedAction()->getModalContent()->getData()['providers'];
 
-        // El predeterminado primero; el inactivo no sale. Mistral sólo razona o
-        // no: el nivel no se elige (y `low` le da 400).
+        // El predeterminado primero; el inactivo no sale. Con Mistral se elige
+        // en cada petición si razona o no (no tiene niveles: `low` le da 400).
         $this->assertSame(
-            [['gemini', true], ['mistral', false]],
-            array_map(fn (array $provider): array => [$provider['value'], $provider['reasoning']], $providers),
+            [
+                ['gemini', true, ['low', 'medium', 'high'], 'medium'],
+                ['mistral', true, ['none', 'high'], 'high'],
+            ],
+            array_map(fn (array $provider): array => [
+                $provider['value'],
+                $provider['reasoning'],
+                array_column($provider['levels'], 'value'),
+                $provider['defaultLevel'],
+            ], $providers),
         );
+    }
+
+    #[Test]
+    public function each_provider_only_takes_its_own_reasoning_levels(): void
+    {
+        AiProvider::factory()->provider(AiProviderEnum::Mistral, 'mistral-medium-3-5')->create();
+
+        foreach ([['gemini', 'none'], ['mistral', 'low'], ['mistral', 'medium']] as [$provider, $level]) {
+            $this->actingAs($this->admin)
+                ->postJson(route('admin.contents.pages.ai.stream', $this->content), $this->payload(['provider' => $provider, 'reasoning_level' => $level]))
+                ->assertStatus(422)
+                ->assertJsonValidationErrors(['reasoning_level']);
+        }
     }
 
     #[Test]

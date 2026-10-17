@@ -1351,14 +1351,14 @@ lectura.
     (`gemini-3.8-flash`, `mistral-medium-3-5`, `grok-4.7`).
   - **Activo** (sale en el selector) y **predeterminado** (el que sale elegido;
     sólo uno).
-  - **Razonamiento:** «Mandar el nivel» (`thinkingLevel` en Gemini,
-    `reasoning.effort` en Responses, `reasoning_effort` en Mistral; a un modelo
-    sin razonamiento le da error) y «Pedir el resumen» (`includeThoughts` en
-    Gemini, `reasoning.summary: auto` en Responses; de serie en Gemini y
-    OpenAI, no en Grok, que sólo lo admite en algunos modelos). **Mistral sólo
-    razona o no** (`reasoning_effort: high`; `mistral-medium-3-5` rechaza `low`
-    con un 400): el interruptor se llama «Razonar antes de escribir», el modal
-    no ofrece nivel, y el razonamiento llega solo, en español.
+  - **Razonamiento:** «Elegir el razonamiento en el asistente» (se manda como
+    `thinkingLevel` en Gemini, `reasoning.effort` en Responses y
+    `reasoning_effort` en Mistral; desmarcado, no se manda nada, porque a un
+    modelo sin razonamiento le da error) y «Pedir el resumen»
+    (`includeThoughts` en Gemini, `reasoning.summary: auto` en Responses; de
+    serie en Gemini y OpenAI, no en Grok, que sólo lo admite en algunos
+    modelos). En Mistral el razonamiento llega solo cuando razona, en
+    español.
 - **Conectores** (`app/Services/Ai`, contrato `AiTextProvider`):
   `GeminiTextProvider` (`streamGenerateContent?alt=sse`),
   `ResponsesTextProvider` para OpenAI y Grok (`POST /responses`, con
@@ -1371,10 +1371,18 @@ lectura.
   razonamiento en inglés aunque se le pidan en español (probado); el texto de
   la página sí sale en español. No se manda `temperature`: los modelos 3.x lo
   ignoran.
-- **Modal:** proveedor (selector si hay más de uno) y razonamiento
-  (`AiReasoningLevelEnum`: `low`, `medium` por defecto y `high`; sólo si el
-  proveedor manda el nivel). El navegador recuerda el último proveedor y el
-  último nivel, y si ya no están en la lista usa el predeterminado.
+- **Modal:** proveedor (selector si hay más de uno) y razonamiento, que se
+  elige en cada petición con las opciones del proveedor
+  (`AiProviderEnum::reasoningLevels()`, valores de `AiReasoningLevelEnum`):
+  - Gemini, OpenAI y Grok: bajo, medio (por defecto) o alto.
+  - Mistral: **razonar o no razonar** (por defecto, razonar). Sus modelos sólo
+    admiten `reasoning_effort` `high` o `none`: `mistral-medium-3-5` rechaza
+    `low` con un 400 (probado). Razonar manda `high`; no razonar no manda
+    `reasoning_effort`.
+
+  Un nivel que el proveedor no admite da 422. El navegador recuerda el último
+  proveedor y, de cada uno, el último razonamiento elegido; si ya no están en la
+  lista, usa los de por defecto.
 - **Instrucción de sistema** (`ContentAiService::buildSystemInstruction()`):
   primero la editorial, después el contexto (plataforma y título) y al final
   las reglas técnicas del modo, que no se editan desde el panel: el resultado

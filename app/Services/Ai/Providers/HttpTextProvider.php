@@ -94,7 +94,8 @@ abstract class HttpTextProvider implements AiTextProvider
             $provider,
             'Esto es una prueba de conexión. Responde en español y en una sola línea.',
             'Responde sólo con la palabra «OK».',
-            $provider->sends_reasoning_level ? AiReasoningLevelEnum::Low : null,
+            // El nivel más ligero que admite: la prueba no necesita pensar.
+            $provider->sends_reasoning_level ? $provider->provider->reasoningLevels()[0] : null,
             function (string $type, string $chunk) use (&$error, &$text): void {
                 if ($type === 'error') {
                     $error ??= $chunk;
