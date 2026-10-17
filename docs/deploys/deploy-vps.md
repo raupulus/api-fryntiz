@@ -77,9 +77,10 @@ Variables imprescindibles a revisar:
 | `RECAPTCHA_SECRET_KEY` / `TURNSTILE_SECRET_KEY` | Al menos una es obligatoria: con las dos vacías la verificación se desactiva sola y los formularios públicos quedan sin protección. El formulario de contacto acepta el token de cualquiera de los dos proveedores; el login de los paneles usa sólo reCAPTCHA. |
 | `DB_*` | Credenciales coherentes con `docker-compose.prod.yml` |
 | `REDIS_*` | id. |
-| `MAIL_*` | SMTP del proveedor (Mailgun/SES/…). |
+| `MAIL_*` | SMTP del proveedor (Mailgun/SES/…). `MAIL_ADMIN_ADDRESS` es el buzón de los mensajes de contacto que no son de un usuario. |
 | `AEMET_API_KEY` | Clave AEMET. Ver [docs/info/apis/aemet.md](../info/apis/aemet.md). |
-| `BROADCAST_DRIVER` | `reverb` si se usa WebSockets (ver [websockets.md](../info/websockets.md)). |
+| `BROADCAST_CONNECTION` | `reverb` si se usa WebSockets (ver [websockets.md](../info/websockets.md)). |
+| `GEMINI_API_KEY` | Opcional. Clave de Google AI Studio para el asistente IA del editor de páginas; en la plantilla va comentada. Sin ella el botón no aparece. Cada petición gasta saldo de la cuenta. |
 
 #### Las cuatro que fallan en silencio
 
@@ -491,4 +492,4 @@ Estrategia mínima:
 - [WebSockets en VPS](../info/websockets.md)
 - [Configuración de autenticación](../info/auth.md)
 
-> Creado: 2026-05-26 · Última revisión: 2026-10-05
+> Creado: 2026-05-26 · Última revisión: 2026-10-17

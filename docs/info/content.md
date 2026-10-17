@@ -1324,7 +1324,8 @@ para escribir a mano el `gallery_id`). Implementado por completo:
 Botón «Asistente IA» en la barra de `ManageContentPages` (`aiAssistantAction`).
 Sólo aparece si hay clave y la página no está en lectura.
 
-- **Clave:** sólo `GEMINI_API_KEY` en `.env` (de Google AI Studio). La de
+- **Clave:** sólo `GEMINI_API_KEY` en `.env` (de Google AI Studio; en las
+  plantillas `.env.example*` va comentada, junto a `GEMINI_THINKING_LEVEL`). La de
   Google de Maps y YouTube no sirve de alternativa: no tiene la API de Gemini, y
   con ella el botón aparecía para fallar siempre. Viaja en la cabecera
   `x-goog-api-key`, nunca en la URL: los errores de conexión llevan la URL
@@ -1338,8 +1339,9 @@ Sólo aparece si hay clave y la página no está en lectura.
   razona siempre: no hay «apagado», y `minimal` da error. Se piden los
   resúmenes del razonamiento (`includeThoughts`) y se ven en el modal mientras
   piensa. Google los escribe en inglés aunque se le pidan en español
-  (probado); el texto de la página sí sale en español. El navegador recuerda el último nivel, y si ya no está en la lista
-  usa el de por defecto. No se manda `temperature`: los modelos 3.x lo ignoran.
+  (probado); el texto de la página sí sale en español. El navegador recuerda
+  el último nivel, y si ya no está en la lista usa el de por defecto. No se
+  manda `temperature`: los modelos 3.x lo ignoran.
 - **Modos** (`GeminiAiModeEnum`):
   1. `create`: título, slug y cuerpo de una página nueva. En «Añadir página»
      rellena el formulario sin guardar. Con una página abierta, antes la guarda
@@ -1353,7 +1355,8 @@ Sólo aparece si hay clave y la página no está en lectura.
   en HTML si es HTML. Nunca el JSON de Editor.js. Los bloques sin equivalente
   en Markdown (imágenes subidas, avisos, vídeos, tarjetas de enlace…) le llegan
   como marcas `[[BLOQUE_1]]` que no debe tocar; al volver se pone en cada una el
-  bloque original, intacto. Si Gemini quita alguna, el resultado lo avisa. Ver
+  bloque original, intacto. En el modal se ven como «[bloque 1: se conserva
+  tal cual]». Si Gemini quita alguna, el resultado lo avisa. Ver
   [decisiones-tecnicas.md](decisiones-tecnicas.md) D44. Mientras escribe, el
   autoguardado sigue funcionando (D46).
 - **Aplicar:** el resultado entra en el editor sin guardar. «Deshacer lo de
@@ -1367,7 +1370,8 @@ Sólo aparece si hay clave y la página no está en lectura.
   petición bloqueada por los filtros de Google, respuesta vacía. Una respuesta
   cortada (`finishReason` `MAX_TOKENS`, `SAFETY`…) llega con su aviso.
 - **Límite:** `throttle:content-ai`, por usuario: 20 por minuto y 300 por hora
-  (`config/rate_limits.php`). Holgado a propósito para no cortar a quien
+  (`config/rate_limits.php`; `RATE_LIMIT_CONTENT_AI` y
+  `RATE_LIMIT_CONTENT_AI_HOUR` en `.env`). Holgado a propósito para no cortar a quien
   redacta; corta bucles y scripts. Al pasarlo, el modal lo dice.
 - **Cerrar el modal** mientras escribe detiene la petición.
 

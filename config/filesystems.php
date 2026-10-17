@@ -15,7 +15,10 @@ return [
     |
     */
 
-    'default' => env('FILESYSTEM_DRIVER', 'local'),
+    // `FILESYSTEM_DISK` es el nombre que traen los .env de ejemplo (el de
+    // Laravel desde la 9); `FILESYSTEM_DRIVER` se sigue leyendo por los .env
+    // antiguos. Antes sólo se leía éste y la línea de los ejemplos no hacía nada.
+    'default' => env('FILESYSTEM_DISK', env('FILESYSTEM_DRIVER', 'local')),
 
     /*
     |--------------------------------------------------------------------------

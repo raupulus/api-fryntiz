@@ -5,17 +5,16 @@
 ## $1 DB_USERNAME
 ## $2 DB_PASSWORD
 
-## Parámetros tomados desde el entorno:
-## GOOGLE_CAPTCHA_KEY
-## GOOGLE_CAPTCHA_SECRET
-## MAIL_HOST
-## MAIL_PORT
-## MAIL_USERNAME
-## MAIL_PASSWORD
-## MAIL_ENCRYPTION
-## MAIL_FROM_ADDRESS
-## MAIL_FROM_NAME
-
+## Parámetros tomados desde el entorno (sólo se escriben los que tengan valor;
+## los demás se quedan como en .env.example.production):
+## APP_NAME, APP_URL, API_URL
+## DB_DATABASE, DB_CONNECTION, DB_PORT
+## MAIL_HOST, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD, MAIL_ENCRYPTION,
+## MAIL_FROM_ADDRESS, MAIL_FROM_NAME, MAIL_ADMIN_ADDRESS
+## FRONTEND_URLS, SANCTUM_STATEFUL_DOMAINS
+## RECAPTCHA_SITE_KEY, RECAPTCHA_SECRET_KEY, TURNSTILE_SECRET_KEY
+## GOOGLE_API_KEY, GOOGLE_DEV_API_KEY, GEMINI_API_KEY
+## AEMET_API_KEY, AEMET_API_KEY_EXPIRES_AT
 
 ################ Asignación de variables por parámetros ################
 echo $DB_USERNAME
@@ -66,59 +65,58 @@ source "${WORKSCRIPT}/scripts/functions.sh"
 cp "${WORKSCRIPT}/.env.example.production" "${WORKSCRIPT}/.env"
 chmod ug+rw "${WORKSCRIPT}/.env"
 
+## Sólo las que lleguen con valor: antes se escribían todas, y una variable que
+## no venía en el entorno dejaba vacía la del ejemplo (APP_URL, por ejemplo).
+## Varias ya no existían en el proyecto (GOOGLE_CAPTCHA_*, PUSHER_*,
+## REDIS_PASSWORD, API_TOKEN…) y faltaban las actuales.
+set_if_given() {
+    local VAR="${1}"
+
+    if [[ -n "${!VAR}" ]]; then
+        replace_or_add_var_in_file "${WORKSCRIPT}/.env" "${VAR}" "${!VAR}"
+    fi
+}
+
 ## General
+set_if_given 'APP_NAME'
+set_if_given 'APP_URL'
+set_if_given 'API_URL'
 
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'APP_NAME' "${APP_NAME}"
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'APP_DESCRIPTION' "${APP_DESCRIPTION}"
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'APP_URL' "${APP_URL}"
-
-## DB.
-
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'DB_DATABASE' "${DB_DATABASE}"
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'DB_USERNAME' "${DB_USERNAME}"
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'DB_PASSWORD' "${DB_PASSWORD}"
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'DB_CONNECTION' "${DB_CONNECTION}"
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'DB_PORT' "${DB_PORT}"
-
-## Redis
-
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'REDIS_PASSWORD' "${REDIS_PASSWORD}"
-
-
-## Google Captcha
-
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'GOOGLE_API_KEY' "${GOOGLE_API_KEY}"
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'GOOGLE_DEV_API_KEY' "${GOOGLE_DEV_API_KEY}"
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'GOOGLE_CAPTCHA_KEY' "${GOOGLE_CAPTCHA_KEY}"
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'GOOGLE_CAPTCHA_SECRET' "${GOOGLE_CAPTCHA_SECRET}"
+## DB
+set_if_given 'DB_DATABASE'
+set_if_given 'DB_USERNAME'
+set_if_given 'DB_PASSWORD'
+set_if_given 'DB_CONNECTION'
+set_if_given 'DB_PORT'
 
 ## Mail
+set_if_given 'MAIL_HOST'
+set_if_given 'MAIL_PORT'
+set_if_given 'MAIL_USERNAME'
+set_if_given 'MAIL_PASSWORD'
+set_if_given 'MAIL_ENCRYPTION'
+set_if_given 'MAIL_FROM_ADDRESS'
+set_if_given 'MAIL_FROM_NAME'
+set_if_given 'MAIL_ADMIN_ADDRESS'
 
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'MAIL_HOST' "${MAIL_HOST}"
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'MAIL_PORT' "${MAIL_PORT}"
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'MAIL_USERNAME' "${MAIL_USERNAME}"
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'MAIL_PASSWORD' "${MAIL_PASSWORD}"
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'MAIL_ENCRYPTION' "${MAIL_ENCRYPTION}"
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'MAIL_FROM_ADDRESS' "${MAIL_FROM_ADDRESS}"
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'MAIL_FROM_NAME' "${MAIL_FROM_NAME}"
+## Webs que consumen la API
+set_if_given 'FRONTEND_URLS'
+set_if_given 'SANCTUM_STATEFUL_DOMAINS'
 
-## Pusher
+## Captcha (reCAPTCHA v3 y Cloudflare Turnstile)
+set_if_given 'RECAPTCHA_SITE_KEY'
+set_if_given 'RECAPTCHA_SECRET_KEY'
+set_if_given 'TURNSTILE_SECRET_KEY'
 
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'PUSHER_APP_KEY' "${PUSHER_APP_KEY}"
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'PUSHER_APP_SECRET' "${PUSHER_APP_SECRET}"
-
-## Api
-
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'API_URL' "${API_URL}"
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'API_NAME' "${API_NAME}"
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'API_TOKEN' "${API_TOKEN}"
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'FRONTEND_URLS' "${FRONTEND_URLS}"
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'SANCTUM_STATEFUL_DOMAINS' "${SANCTUM_STATEFUL_DOMAINS}"
+## Google (Maps/YouTube) y Gemini (asistente IA del editor de páginas). En el
+## ejemplo GEMINI_API_KEY va comentada: al escribirla, se descomenta.
+set_if_given 'GOOGLE_API_KEY'
+set_if_given 'GOOGLE_DEV_API_KEY'
+set_if_given 'GEMINI_API_KEY'
 
 ## AEMET
-
-replace_or_add_var_in_file "${WORKSCRIPT}/.env" 'AEMET_API_KEY' "${AEMET_API_KEY}"
-
+set_if_given 'AEMET_API_KEY'
+set_if_given 'AEMET_API_KEY_EXPIRES_AT'
 
 echo ""
 echo "Resultado del .env final:"

@@ -176,6 +176,9 @@ cp .env.example.production .env
 # TURNSTILE_SECRET_KEY para Cloudflare Turnstile en el formulario de contacto):
 # sin ellas los formularios públicos y el login de los paneles se quedan SIN
 # captcha y sin ningún aviso.
+#
+# Opcional: descomentar GEMINI_API_KEY y poner la clave de Google AI Studio
+# para el asistente IA del editor de páginas (sin ella, el botón no aparece).
 
 # 2. Instalar dependencias optimizadas
 composer install --optimize-autoloader --no-dev
@@ -335,4 +338,4 @@ Este proyecto está licenciado bajo **GNU General Public License v3.0** — ver 
 
 ---
 
-> Última revisión de este documento: 2026-09-28
+> Última revisión de este documento: 2026-10-17
