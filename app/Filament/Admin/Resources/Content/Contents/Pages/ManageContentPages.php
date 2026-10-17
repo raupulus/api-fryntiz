@@ -850,6 +850,7 @@ class ManageContentPages extends Page
                     'name' => $provider->provider->label(),
                     'reasoning' => $provider->sends_reasoning_level,
                 ])->all(),
+                'editorialSource' => app(ContentAiService::class)->editorialSource($this->ownerContent()),
                 'reasoningLevels' => AiReasoningLevelEnum::options(),
                 'modes' => AiModeEnum::options(),
                 'defaultReasoningLevel' => AiReasoningLevelEnum::default()->value,

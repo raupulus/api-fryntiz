@@ -19,6 +19,7 @@ use App\Filament\Components\ImageCropperUpload;
 use App\Filament\Components\YoutubeVideoField;
 use App\Models\Content\Content;
 use App\Models\Platform;
+use App\Models\PlatformEditorProfile;
 use App\Models\User;
 use App\Policies\ContentPolicy;
 use App\Services\Content\ContentApiService;
@@ -47,6 +48,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
@@ -156,6 +158,9 @@ class ContentResource extends Resource
                         ->disabled(fn (?Content $record): bool => $record !== null && Gate::denies('manage', $record))
                         ->helperText(fn (?Content $record): ?string => $record === null ? null
                             : 'Al cambiarla, sus categorías y etiquetas pasan a la nueva; las categorías que no existan allí dejan de verse.')
+                        // El perfil de editor es de la plataforma.
+                        ->live()
+                        ->afterStateUpdated(fn (Set $set) => $set('editor_profile_id', null))
                         ->searchable()->label('Plataforma'),
                     Select::make('author_id')->required()
                         ->getSearchResultsUsing(fn (string $search): array => self::authorResults($search))
@@ -184,6 +189,11 @@ class ContentResource extends Resource
                             : 'Al publicar se pone la fecha de publicación y se marca «Activo».'),
                     Select::make('type_id')
                         ->relationship('type', 'name')->required()->label('Tipo'),
+                    Select::make('editor_profile_id')->label('Perfil de editor (IA)')
+                        ->options(fn (Get $get): array => self::editorProfileOptions($get('platform_id')))
+                        ->in(fn (Get $get): array => array_keys(self::editorProfileOptions($get('platform_id'))))
+                        ->placeholder('El de la plataforma')
+                        ->helperText('Cómo escribe el asistente IA en esta entrada; sin perfil, como dice la plataforma. Los perfiles se crean en la ficha de la plataforma.'),
                     DateTimePicker::make('scheduled_at')->label('Publicar el')
                         ->visible(fn (Get $get): bool => (int) $get('status_id') === ContentStatusEnum::Scheduled->value)
                         ->required(fn (Get $get): bool => (int) $get('status_id') === ContentStatusEnum::Scheduled->value)
@@ -406,6 +416,24 @@ class ContentResource extends Resource
         return collect(ContentStatusEnum::cases())
             ->reject(fn (ContentStatusEnum $status): bool => $status === ContentStatusEnum::Published && ! $canPublish)
             ->mapWithKeys(fn (ContentStatusEnum $status): array => [$status->value => $status->label()])
+            ->all();
+    }
+
+    /**
+     * Los perfiles de editor de la plataforma elegida en el formulario.
+     *
+     * @return array<int, string>
+     */
+    private static function editorProfileOptions(mixed $platformId): array
+    {
+        if (blank($platformId)) {
+            return [];
+        }
+
+        return PlatformEditorProfile::query()
+            ->where('platform_id', (int) $platformId)
+            ->orderBy('name')
+            ->pluck('name', 'id')
             ->all();
     }
 

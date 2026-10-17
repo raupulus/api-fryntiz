@@ -27,6 +27,7 @@ Sistema de gestión de contenidos multi-plataforma y multi-tipo. Soporta artícu
 | `app/Models/Content/ContentSeo.php` | `content_seo` | Datos SEO del contenido |
 | `app/Models/Content/ContentMetadata.php` | `content_metadata` | Metadata externa (repos, redes sociales) |
 | `app/Models/ContentDailyView.php` | `content_daily_views` | Vistas diarias |
+| `app/Models/PlatformEditorProfile.php` | `platform_editor_profiles` | Perfiles de editor del asistente IA de cada plataforma (ver [platform.md](platform.md)) |
 | `app/Models/AiProvider.php` | `ai_providers` | Proveedores del asistente IA: modelo y clave cifrada (sólo superadmin) |
 
 ### Controladores
@@ -100,6 +101,7 @@ y `ContentApiService` carga exactamente eso (D9).
 | `status_id` | int | FK → `content_available_status.id` (`ContentStatusEnum`). Vacío en los contenidos que vienen de la v1 |
 | `type_id` | int | FK → `content_available_types.id` |
 | `image_id` | int | FK → `files.id` — imagen principal |
+| `editor_profile_id` | int | FK → `platform_editor_profiles.id`, nullable — perfil de editor del asistente IA; vacío, la instrucción de la plataforma. Al borrar el perfil, `SET NULL` |
 | `title` | string | Título del contenido |
 | `slug` | string | Slug URL único |
 | `excerpt` | text | Extracto/resumen |
@@ -1372,11 +1374,26 @@ lectura.
   proveedor manda el nivel). El navegador recuerda el último proveedor y el
   último nivel, y si ya no están en la lista usa el predeterminado.
 - **Instrucción de sistema** (`ContentAiService::buildSystemInstruction()`):
-  primero la editorial (quién escribe y cómo; sin otra, el texto genérico
-  `DEFAULT_EDITORIAL_INSTRUCTION`), después el contexto (plataforma y título) y
-  al final las reglas técnicas del modo, que no se editan desde el panel: el
-  resultado se lee con ellas (el bloque `---` con título y slug al crear, las
-  marcas de bloque al editar o corregir).
+  primero la editorial, después el contexto (plataforma y título) y al final
+  las reglas técnicas del modo, que no se editan desde el panel: el resultado
+  se lee con ellas (el bloque `---` con título y slug al crear, las marcas de
+  bloque al editar o corregir). La editorial (`editorialInstruction()`) es, por
+  este orden:
+  1. la del **perfil de editor** de la entrada («Perfil de editor (IA)» en la
+     ficha, junto a «Tipo»; `contents.editor_profile_id`), que **sustituye** a la
+     de la plataforma. Los perfiles (guía, noticia, blog…) se crean en la ficha
+     de la plataforma, pestaña «Perfiles de editor», y sólo valen en su
+     plataforma: la ficha sólo ofrece los suyos, al cambiar de plataforma se
+     vacía, y el modelo quita uno ajeno al guardar
+     (`Content::dropForeignEditorProfile()`). Se elige a mano: el tipo de la
+     entrada no influye. Borrar un perfil devuelve sus entradas a la
+     instrucción de la plataforma;
+  2. la de la **plataforma** (`platforms.system_instruction`, sección
+     «Asistente IA» de su ficha);
+  3. la genérica, `DEFAULT_EDITORIAL_INSTRUCTION`.
+
+  El modal dice cuál se aplica («Perfil de editor»). Ninguna sale por la API.
+  Ver D51.
 - **Modos** (`AiModeEnum`):
   1. `create`: título, slug y cuerpo de una página nueva. En «Añadir página»
      rellena el formulario sin guardar. Con una página abierta, antes la guarda
@@ -1416,6 +1433,7 @@ lectura.
 - **Cerrar el modal** mientras escribe detiene la petición.
 
 *Fijado por `tests/Feature/Content/ContentPageAiAssistantTest.php`,
+`tests/Feature/Content/EditorProfileTest.php`,
 `tests/Feature/Ai/AiTextProvidersTest.php` y
 `tests/Feature/Filament/AiProviderResourceTest.php`.*
 

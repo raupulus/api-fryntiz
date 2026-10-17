@@ -10,6 +10,7 @@ Módulo de gestión multi-sitio que permite organizar contenidos por plataforma 
 | `app/Models/Platform.php` | `platforms` | Plataforma principal |
 | `app/Models/PlatformCategory.php` | `platform_categories` | Pivot plataforma ↔ categoría |
 | `app/Models/PlatformTag.php` | `platform_tags` | Pivot plataforma ↔ tag |
+| `app/Models/PlatformEditorProfile.php` | `platform_editor_profiles` | Perfiles de editor del asistente IA: nombre e instrucción editorial. Se eligen en cada entrada (`contents.editor_profile_id`) y sustituyen a la instrucción de la plataforma (ver [content.md → Asistente IA](content.md#asistente-ia-en-el-editor-de-páginas)) |
 | `app/Models/PlatformUser.php` | `platform_user` | Plataformas asignadas a un Editor: dónde puede crear contenidos. `auto_contributor` (bool, por defecto `false`): entra como colaborador en todos los contenidos de la plataforma (ver [content.md → Permisos](content.md#permisos)) |
 
 ### Controladores
@@ -38,6 +39,7 @@ Módulo de gestión multi-sitio que permite organizar contenidos por plataforma 
 | Archivo | Descripción |
 |---------|-------------|
 | `app/Filament/Admin/Resources/Platforms/RelationManagers/CategoriesRelationManager.php` | Pestaña «Categorías» de la plataforma: lista las de `platform_categories` (con cuántos contenidos las tienen), añade existentes o crea una nueva (raíz o subcategoría) y las quita |
+| `app/Filament/Admin/Resources/Platforms/RelationManagers/EditorProfilesRelationManager.php` | Pestaña «Perfiles de editor»: los del asistente IA, con cuántas entradas lo tienen elegido. Nombre único en la plataforma. Al borrar uno, sus entradas pasan a la instrucción de la plataforma |
 
 Las categorías que se pueden elegir al editar un contenido de la plataforma, y
 las que devuelve `/categories`, son las de esa pestaña. **Quitar una categoría
@@ -51,6 +53,7 @@ las de la plataforma.
 | Archivo | Descripción |
 |---------|-------------|
 | `app/Policies/PlatformPolicy.php` | Política de autorización |
+| `app/Policies/PlatformEditorProfilePolicy.php` | Perfiles de editor: sólo administración (los mismos que editan la plataforma) |
 
 ## Campos del modelo Platform
 
@@ -72,6 +75,7 @@ las de la plataforma.
 | `twitch` | string | Handler Twitch |
 | `tiktok` | string | Handler TikTok |
 | `instagram` | string | Handler Instagram |
+| `system_instruction` | text | Instrucción editorial por defecto del asistente IA (sección «Asistente IA»): quién escribe y cómo. Vacía, la genérica. **Nunca sale por la API** |
 
 ## Relaciones
 
@@ -79,6 +83,7 @@ las de la plataforma.
 - `Platform` → `HasMany` → `Content` (vía `platform_id`)
 - `Platform` → `HasMany` → `PlatformCategory` (vía `platform_id`; `Platform::platformCategories()`). `Platform::categories()` es el `BelongsToMany` hacia `Category` por la misma pivote
 - `Platform` → `HasMany` → `PlatformTag` (vía `platform_id`)
+- `Platform` → `HasMany` → `PlatformEditorProfile` (vía `platform_id`; `Platform::editorProfiles()`, por nombre). Borrar la plataforma borra sus perfiles
 - `Platform` → `HasMany` → `Newsletter` (vía `platform_id`)
 - `User` → `BelongsToMany` → `Platform` (`User::platforms()`, pivote `platform_user` con `auto_contributor`; `User::platformAssignments()` da las filas como `PlatformUser`)
 
@@ -118,4 +123,4 @@ php artisan debug:seed-platform --count=3
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-27
+> Creado: 2026-05-25 · Última revisión: 2026-10-17

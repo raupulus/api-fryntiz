@@ -825,6 +825,24 @@ Decidido el 2026-10-17.*
 
 ---
 
+### D51 · El perfil de editor sustituye a la instrucción de la plataforma, y se elige a mano
+
+Una entrada con perfil de editor (guía, noticia, blog…) manda al asistente IA la instrucción del
+perfil **en lugar de** la de la plataforma, no sumada a ella. Sin perfil, la de la plataforma; sin
+ninguna, la genérica. El perfil se elige a mano en cada entrada: el «Tipo» del contenido no lo
+propone, porque los tipos no cuadran con los perfiles (no hay tipo «Guía»).
+
+**Consecuencia.** Cada perfil tiene que llevar también la voz y el tono, no sólo el patrón del tipo
+de entrada; el formulario lo recuerda.
+
+Un perfil es de su plataforma: la ficha sólo ofrece los suyos, al cambiar la plataforma se vacía
+(también si llega por otro sitio: `Content::dropForeignEditorProfile()`), y el asistente no usa uno
+ajeno aunque esté en la base.
+
+*Fijado por `EditorProfileTest`. Decidido por el usuario el 2026-10-17.*
+
+---
+
 ## Dependencias
 
 ### D7 · Las dependencias se mantienen al día, incluidos los majors

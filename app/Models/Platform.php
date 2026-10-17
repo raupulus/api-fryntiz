@@ -36,6 +36,7 @@ use Illuminate\Support\Carbon;
  * @property string|null $twitch Usuario en twitch
  * @property string|null $tiktok Usuario en tiktok
  * @property string|null $instagram Usuario en instagram
+ * @property string|null $system_instruction Instrucción editorial por defecto del asistente IA
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property string|null $deleted_at
@@ -99,7 +100,7 @@ class Platform extends BaseModel
 
     protected $fillable = ['user_id', 'image_id', 'title', 'slug', 'description', 'domain', 'url_about', 'youtube_channel_id',
         'youtube_presentation_video_id', 'twitter', 'twitter_token', 'mastodon', 'mastodon_token', 'twitch', 'tiktok',
-        'instagram',
+        'instagram', 'system_instruction',
     ];
 
     /**
@@ -164,6 +165,16 @@ class Platform extends BaseModel
     public function platformCategories(): HasMany
     {
         return $this->hasMany(PlatformCategory::class, 'platform_id', 'id');
+    }
+
+    /**
+     * Los perfiles de editor del asistente IA en esta plataforma.
+     *
+     * @return HasMany<PlatformEditorProfile, $this>
+     */
+    public function editorProfiles(): HasMany
+    {
+        return $this->hasMany(PlatformEditorProfile::class, 'platform_id')->orderBy('name');
     }
 
     /**

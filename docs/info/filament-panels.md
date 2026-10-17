@@ -61,12 +61,13 @@ Providers: `app/Providers/Filament/AdminPanelProvider.php` y `TenantPanelProvide
 | Módulos | `SmartPlantPlantResource` | `SmartPlantPlant` |
 | Módulos | `SmartPlantRegisterResource` | `SmartPlantRegister` |
 
-### RelationManagers (29)
+### RelationManagers (31)
 
 | Resource padre | RelationManagers |
 |----------------|------------------|
 | `CurriculumResource` | 15 — AcademicComplementary, AcademicComplementaryOnline, AcademicTraining, Collaborations, ExperienceAccredited, ExperienceAdditional, ExperienceNoAccredited, ExperienceOther, ExperienceSelfEmployed, Hobbies, Jobs, Projects, Repositories, Services, Skills |
 | `ContentResource` | 5 — Contributors, Files, Galleries, Pages, Related |
+| `PlatformResource` | 2 — Categories, EditorProfiles (perfiles de editor del asistente IA) |
 | `HardwareDeviceResource` | 2 — Components, Tokens |
 | `HardwareEnergyResource` | 2 — PowerGenerators, PowerLoads |
 | `AirFlightAirPlaneResource` | 1 — Routes |

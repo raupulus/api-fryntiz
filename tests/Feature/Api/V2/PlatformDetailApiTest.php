@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Api\V2;
 
+use App\Models\Content\Content;
 use App\Models\PlatformCategory;
+use App\Models\PlatformEditorProfile;
 use App\Models\SocialNetwork;
 use App\Models\UserDetail;
 use App\Models\UserSocial;
@@ -41,6 +43,7 @@ class PlatformDetailApiTest extends ApiTestCase
             'twitch' => 'raupulus',
             'tiktok' => 'raupulus',
             'instagram' => 'raupulus',
+            'system_instruction' => 'SECRETO-DE-LA-INSTRUCCION-EDITORIAL',
         ]);
     }
 
@@ -98,6 +101,10 @@ class PlatformDetailApiTest extends ApiTestCase
     public function no_platform_response_carries_a_token(): void
     {
         $this->richContent();
+        // Ni la instrucción del asistente IA de la plataforma ni la de un
+        // perfil de editor salen en la API.
+        $profile = PlatformEditorProfile::factory()->create(['platform_id' => $this->platform->id, 'system_instruction' => 'SECRETO-DEL-PERFIL']);
+        Content::query()->where('platform_id', $this->platform->id)->update(['editor_profile_id' => $profile->id]);
         $slug = $this->platform->slug;
 
         foreach ([

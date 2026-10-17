@@ -11,6 +11,7 @@ use App\Models\AiProvider;
 use App\Models\Content\Content;
 use App\Models\Content\ContentPage;
 use App\Models\Platform;
+use App\Models\PlatformEditorProfile;
 use Closure;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
@@ -205,12 +206,57 @@ class ContentAiService
     }
 
     /**
-     * La instrucción editorial de la entrada. Si no hay ninguna propia, la
-     * genérica.
+     * La instrucción editorial de la entrada: la de su perfil de editor, que
+     * sustituye a la de la plataforma; sin perfil, la de la plataforma; y sin
+     * ninguna, la genérica.
      */
     public function editorialInstruction(Content $content): string
     {
+        $profile = $this->editorProfile($content);
+
+        if ($profile !== null) {
+            return $profile->system_instruction;
+        }
+
+        $platform = $content->platform;
+
+        if ($platform instanceof Platform && filled(trim((string) $platform->system_instruction))) {
+            return (string) $platform->system_instruction;
+        }
+
         return self::DEFAULT_EDITORIAL_INSTRUCTION;
+    }
+
+    /**
+     * De dónde sale la instrucción editorial, para enseñarlo en el modal.
+     */
+    public function editorialSource(Content $content): string
+    {
+        $profile = $this->editorProfile($content);
+
+        if ($profile !== null) {
+            return 'Perfil «'.$profile->name.'»';
+        }
+
+        $platform = $content->platform;
+
+        return $platform instanceof Platform && filled(trim((string) $platform->system_instruction))
+            ? 'El de la plataforma ('.$platform->title.')'
+            : 'El genérico (la plataforma no tiene uno propio)';
+    }
+
+    /**
+     * El perfil de la entrada si es de su plataforma y tiene instrucción.
+     */
+    private function editorProfile(Content $content): ?PlatformEditorProfile
+    {
+        $profile = $content->editorProfile;
+
+        return $profile instanceof PlatformEditorProfile
+            && (int) $profile->platform_id === (int) $content->platform_id
+            && filled(trim($profile->system_instruction))
+            ? $profile
+            : null;
     }
 
     /**

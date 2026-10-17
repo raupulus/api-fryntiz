@@ -13,6 +13,7 @@ use App\Models\File;
 use App\Models\Gallery;
 use App\Models\Platform;
 use App\Models\PlatformCategory;
+use App\Models\PlatformEditorProfile;
 use App\Models\PlatformTag;
 use App\Models\Tag;
 use App\Models\Technology;
@@ -44,6 +45,7 @@ use function url;
  * @property int|null $status_id FK al estado en la tabla content_status
  * @property int|null $type_id FK al tipo de contenido en la tabla content_type
  * @property int|null $image_id FK a la imagen en la tabla files
+ * @property int|null $editor_profile_id FK al perfil de editor del asistente IA; vacío, el de la plataforma
  * @property string $title Título de la página
  * @property string $slug Slug para el URL
  * @property string|null $excerpt Descripción breve del contenido
@@ -99,6 +101,7 @@ use function url;
  * @property-read Collection<int, ContentPage> $pages
  * @property-read int|null $pages_count
  * @property-read Platform|null $platform
+ * @property-read PlatformEditorProfile|null $editorProfile
  * @property-read ContentSeo|null $seo
  * @property-read ContentAvailableStatus|null $status
  * @property-read Collection<int, ContentTag> $tagsJoin
@@ -165,6 +168,7 @@ class Content extends BaseModel
         'status_id',
         'type_id',
         'image_id',
+        'editor_profile_id',
         'title',
         'slug',
         'excerpt',
@@ -204,6 +208,11 @@ class Content extends BaseModel
         // cumplan igual desde el panel, la acción masiva, el cron o cualquier
         // otro sitio que guarde un contenido.
         static::saving(fn (Content $model) => $model->applyPublicationRules());
+
+        // El perfil de editor del asistente IA es de una plataforma: con el de
+        // otra (al cambiar de plataforma, o llegado por otro sitio), la
+        // entrada vuelve al de la suya.
+        static::saving(fn (Content $model) => $model->dropForeignEditorProfile());
 
         // Colaboradores automáticos de la plataforma (DUDA-1).
         static::created(fn (Content $model) => app(ContentContributorService::class)->applyToNewContent($model));
@@ -660,6 +669,34 @@ class Content extends BaseModel
     public function platform(): BelongsTo
     {
         return $this->belongsTo(Platform::class, 'platform_id', 'id');
+    }
+
+    /**
+     * El perfil de editor del asistente IA; sin él, la instrucción de la
+     * plataforma.
+     */
+    public function editorProfile(): BelongsTo
+    {
+        return $this->belongsTo(PlatformEditorProfile::class, 'editor_profile_id');
+    }
+
+    /**
+     * Quita el perfil de editor si no es de la plataforma de la entrada.
+     */
+    public function dropForeignEditorProfile(): void
+    {
+        if ($this->editor_profile_id === null || ! $this->isDirty(['editor_profile_id', 'platform_id'])) {
+            return;
+        }
+
+        $ofItsPlatform = PlatformEditorProfile::query()
+            ->whereKey($this->editor_profile_id)
+            ->where('platform_id', $this->platform_id)
+            ->exists();
+
+        if (! $ofItsPlatform) {
+            $this->editor_profile_id = null;
+        }
     }
 
     /**

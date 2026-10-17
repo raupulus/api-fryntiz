@@ -15,7 +15,7 @@
         sourceFormat: @js($currentFormat->value),
     })"
 >
-    {{-- Configuración: modo, proveedor y nivel de razonamiento --}}
+    {{-- Configuración: modo, proveedor, perfil de editor y nivel de razonamiento --}}
     <div class="cpe-ai__controls">
         <div class="cpe-ai__field">
             <label class="cpe-ai__label" for="ai-mode">Modo de operación</label>
@@ -41,6 +41,12 @@
                 <span class="cpe-ai__fixed">{{ $providers[0]['label'] ?? '' }}</span>
             </div>
         @endif
+
+        {{-- Se elige en la entrada; sin perfil, el de la plataforma --}}
+        <div class="cpe-ai__field">
+            <span class="cpe-ai__label">Perfil de editor</span>
+            <span class="cpe-ai__fixed">{{ $editorialSource }}</span>
+        </div>
 
         <div class="cpe-ai__field" x-show="hasReasoningLevels">
             <label class="cpe-ai__label" for="ai-thinking">Razonamiento</label>

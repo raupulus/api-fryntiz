@@ -8,8 +8,10 @@ use App\Filament\Admin\Resources\Platforms\Pages\CreatePlatform;
 use App\Filament\Admin\Resources\Platforms\Pages\EditPlatform;
 use App\Filament\Admin\Resources\Platforms\Pages\ListPlatforms;
 use App\Filament\Admin\Resources\Platforms\RelationManagers\CategoriesRelationManager;
+use App\Filament\Admin\Resources\Platforms\RelationManagers\EditorProfilesRelationManager;
 use App\Filament\Components\ImageCropperUpload;
 use App\Models\Platform;
+use App\Services\Content\ContentAiService;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -78,6 +80,14 @@ class PlatformResource extends Resource
                 TextInput::make('url_about')->url()->maxLength(255)->label('URL "Acerca de"'),
             ])->columnSpanFull(),
 
+            Section::make('Asistente IA')->collapsed()->columnSpanFull()
+                ->description('Quién escribe en esta plataforma y cómo: el perfil de editor por defecto del asistente.')
+                ->schema([
+                    Textarea::make('system_instruction')->label('Instrucción editorial')
+                        ->rows(8)->autosize()->maxLength(20000)
+                        ->placeholder(ContentAiService::DEFAULT_EDITORIAL_INSTRUCTION)
+                        ->helperText('Se manda en cada petición del asistente en las entradas de esta plataforma que no tengan un perfil de editor (abajo, «Perfiles de editor»); un perfil la sustituye. Vacía, se usa la genérica que se ve de ejemplo. El formato de la respuesta y las marcas de los bloques los añade siempre el asistente: no hace falta explicarlos.'),
+                ]),
             Section::make('YouTube')->columns(2)->collapsed()->schema([
                 TextInput::make('youtube_channel_id')->maxLength(64)->label('Channel ID'),
                 TextInput::make('youtube_presentation_video_id')->maxLength(64)->label('Vídeo presentación'),
@@ -114,7 +124,7 @@ class PlatformResource extends Resource
 
     public static function getRelations(): array
     {
-        return [CategoriesRelationManager::class];
+        return [CategoriesRelationManager::class, EditorProfilesRelationManager::class];
     }
 
     public static function getPages(): array
