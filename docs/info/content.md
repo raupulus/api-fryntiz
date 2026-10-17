@@ -1518,6 +1518,53 @@ lectura.
   el modal lo dice.
 - **Cerrar el modal** mientras escribe detiene la petición.
 
+### Portadas con IA
+
+En el campo de portada de «Datos» de la entrada (al editarla; al crearla aún no
+existe) y en el de cada página («Datos de la página»), tres acciones
+(`AiCoverImageActions`, con la lógica en `HasAiCoverImages`):
+
+- **Generar con IA**: si hay algún proveedor usable con modelo de imágenes.
+- **Mejorar con IA**: además, con una imagen en el campo (la guardada o una
+  recién subida) y un proveedor que sepa mejorar (todos menos Mistral).
+- **Deshacer**: tras poner una imagen de la IA y hasta guardar. Devuelve el
+  campo a como estaba antes de la primera (`takeAiCoverUndo()`); una subida
+  sin guardar no se puede devolver, y el campo queda vacío.
+
+El modal (`partials/ai-image-modal.blade.php`, componente Alpine
+`contentAiImages` de `resources/js/filament/ai-images.js`) pide en cada
+petición el proveedor, cuántas (de 1 a 5), la calidad del proveedor
+(`AiProviderEnum::imageQualities()`), la casilla «Usar los colores de la
+plataforma» (si la plataforma los tiene, `platforms.theme_colors`) y qué tiene
+que salir. El navegador recuerda proveedor, cantidad, calidad y casilla.
+
+- **El prompt** (`ContentAiImageService::buildPrompt()`) lleva lo que se
+  escribe y, sin que se vea, la plataforma, el título, el extracto y la página;
+  portada apaisada 16:9 con el motivo en el centro; sin texto, letras ni
+  logotipos salvo que se pidan; sin el aspecto genérico de imagen de IA; y, con
+  la casilla, los colores con su papel («#0F172A (fondo)…») para que la imagen
+  se integre en la web y cuide el contraste con el fondo.
+- **La petición** `POST /admin/contents/{content}/ai/images`
+  (`ContentAiImageController`, límite `content-ai`): SSE con `image` por cada
+  una, `done`, o sólo `error`. Una imagen puede tardar hasta un par de minutos
+  y nginx corta a los 60 s sin datos: mientras espera manda `: ping` cada 5 s
+  (con la opción `progress` de Guzzle).
+- **Las candidatas** se recortan al centro a 16:9 y se guardan como subida
+  temporal de Livewire, sólo para enseñarlas; las que no se eligen las borra
+  Livewire a las 24 h.
+- **Elegir una** («Usar esta»): el navegador la descarga y se la da al campo
+  como una subida más, sustituyendo a la que hubiera. Así pasa por el mismo
+  recorte del campo (1600 × 900) y se guarda con el formulario por el camino de
+  siempre, en WebP (D40). Hasta guardar no cambia nada.
+- **Mejorar**: la imagen del campo no la manda el navegador; al abrir el modal
+  se apunta en la caché (un token de esa persona y ese contenido, 24 h) y el
+  servidor la lee de ahí, en JPEG de 2048 px como mucho.
+
+Ver D53 en [decisiones-tecnicas.md](decisiones-tecnicas.md). **Probado con la
+API real el 2026-10-17** con Gemini (`gemini-nano-banana-2.1`: generar 2 en
+unos 20 s, mejorar, deshacer y guardar, en la entrada y en una página) y con el
+conector de Mistral (generar). Grok y OpenAI, sólo con simulaciones.
+
 **Probado con la API real el 2026-10-17:** Gemini (`gemini-3.8-flash`) y Mistral
 (`mistral-medium-3-5`, con razonamiento y sin él), también las dos sugerencias
 nuevas: ninguno puso h1, h2 ni emojis; Mistral repitió el título de la página
@@ -1525,6 +1572,8 @@ en h3 con los apartados en h4, y el arreglo lo dejó en h3. Grok: la clave
 responde, pero la cuenta estaba sin saldo. OpenAI: sin clave todavía.
 
 *Fijado por `tests/Feature/Content/ContentPageAiAssistantTest.php`,
+`tests/Feature/Content/ContentAiCoverImagesTest.php`,
+`tests/Feature/Ai/AiImageProvidersTest.php`,
 `tests/Feature/Content/EditorProfileTest.php`,
 `tests/Feature/Ai/AiTextProvidersTest.php` y
 `tests/Feature/Filament/AiProviderResourceTest.php`.*

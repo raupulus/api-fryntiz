@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Content\Contents\Pages;
 
 use App\Filament\Admin\Resources\Content\Contents\ContentResource;
+use App\Filament\Admin\Resources\Content\Contents\Pages\Concerns\AiCoverImagesPage;
 use App\Filament\Admin\Resources\Content\Contents\Pages\Concerns\ContentSectionPage;
+use App\Filament\Admin\Resources\Content\Contents\Pages\Concerns\HasAiCoverImages;
 use App\Filament\Admin\Resources\Content\Contents\Pages\Concerns\SavesFromTheHeader;
 use App\Filament\Concerns\HasImageFileUpload;
 use App\Models\Content\Content;
@@ -21,9 +23,10 @@ use Filament\Support\Icons\Heroicon;
  * «Datos»: la primera sección de la ficha (título, slug, plataforma, autor,
  * estado, tipo, extracto, imagen, vídeo y enlaces).
  */
-class EditContent extends EditRecord
+class EditContent extends EditRecord implements AiCoverImagesPage
 {
     use ContentSectionPage;
+    use HasAiCoverImages;
     use HasImageFileUpload;
     use SavesFromTheHeader;
 
@@ -54,12 +57,33 @@ class EditContent extends EditRecord
         return $this->resolveImageUpload($data, 'image_id', 'contents', webpOriginal: true);
     }
 
+    protected function aiCoverContent(): ?Content
+    {
+        $record = $this->getRecord();
+
+        return $record instanceof Content ? $record : null;
+    }
+
+    protected function aiCoverPageId(): ?int
+    {
+        return null;
+    }
+
+    protected function aiCoverSavedId(): ?int
+    {
+        $id = $this->aiCoverContent()?->getOriginal('image_id');
+
+        return is_numeric($id) ? (int) $id : null;
+    }
+
     /**
      * Si ha cambiado de plataforma, qué ha pasado con sus categorías,
      * etiquetas y relacionados (`Content::moveTaxonomiesToItsPlatform()`).
      */
     protected function afterSave(): void
     {
+        $this->forgetAiCoverUndo();
+
         /** @var Content $record */
         $record = $this->getRecord();
         $move = $record->taxonomyMove;

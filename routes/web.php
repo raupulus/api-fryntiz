@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Admin\ContentAiImageController;
 use App\Http\Controllers\Admin\ContentPageAiStreamController;
 use App\Http\Controllers\Admin\ContentPageEditorController;
 use App\Http\Controllers\Admin\EditorJsController;
@@ -118,8 +119,8 @@ Route::middleware(['auth', 'can:access-editorjs', 'can:update,content'])
     });
 
 /*
-| El asistente de Gemini del editor de páginas. Éste sí sale a la red, y cada
-| petición gasta tokens de la cuenta de Google: va con su propio límite
+| El asistente IA del editor de páginas y las portadas con IA. Salen a la red,
+| y cada petición gasta de la cuenta del proveedor: van con su propio límite
 | (`content-ai`, holgado para no cortar a quien redacta; ver
 | config/rate_limits.php).
 */
@@ -128,6 +129,7 @@ Route::middleware(['auth', 'can:access-editorjs', 'can:update,content', 'throttl
     ->name('admin.contents.')
     ->group(function () {
         Route::post('/pages/ai/stream', [ContentPageAiStreamController::class, 'stream'])->name('pages.ai.stream');
+        Route::post('/ai/images', [ContentAiImageController::class, 'stream'])->name('ai.images');
     });
 
 /*

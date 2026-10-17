@@ -11,8 +11,10 @@ use App\Exceptions\ContentPageConflictException;
 use App\Exceptions\ContentPageLockedException;
 use App\Exceptions\ContentUploadException;
 use App\Filament\Admin\Resources\Content\Contents\ContentResource;
+use App\Filament\Admin\Resources\Content\Contents\Pages\Concerns\AiCoverImagesPage;
 use App\Filament\Admin\Resources\Content\Contents\Pages\Concerns\ContentPageForm;
 use App\Filament\Admin\Resources\Content\Contents\Pages\Concerns\ContentSectionPage;
+use App\Filament\Admin\Resources\Content\Contents\Pages\Concerns\HasAiCoverImages;
 use App\Filament\Concerns\HasImageFileUpload;
 use App\Models\AiProvider;
 use App\Models\Content\Content;
@@ -73,10 +75,11 @@ use RuntimeException;
  *
  * @property-read Schema $form
  */
-class ManageContentPages extends Page
+class ManageContentPages extends Page implements AiCoverImagesPage
 {
     use ContentPageForm;
     use ContentSectionPage;
+    use HasAiCoverImages;
     use HasImageFileUpload;
     use InteractsWithRecord;
     use WithFileUploads;
@@ -186,6 +189,7 @@ class ManageContentPages extends Page
         $this->lockMessage = null;
         $this->lockStatus = null;
         $this->aiUndoAvailable = false;
+        $this->forgetAiCoverUndo();
 
         if ($page !== null) {
             $this->applyLockState($this->locks()->acquire($page, $this->user(), $this->lockToken));
@@ -1006,6 +1010,7 @@ class ManageContentPages extends Page
     {
         Cache::forget($this->aiUndoKey());
         $this->aiUndoAvailable = false;
+        $this->forgetAiCoverUndo();
     }
 
     private function aiUndoKey(): string
@@ -1282,6 +1287,26 @@ class ManageContentPages extends Page
     protected function ownerContent(): Content
     {
         return $this->contentRecord();
+    }
+
+    protected function aiCoverContent(): ?Content
+    {
+        return $this->ownerContent();
+    }
+
+    protected function aiCoverPageId(): ?int
+    {
+        return $this->pageId;
+    }
+
+    protected function aiCoverSavedId(): ?int
+    {
+        return $this->coverId($this->currentPage()?->image_id);
+    }
+
+    protected function aiCoverEditable(): bool
+    {
+        return ! $this->readOnly;
     }
 
     /**

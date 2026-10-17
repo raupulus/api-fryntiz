@@ -27,6 +27,9 @@ export default defineConfig({
                 // salir, recorte de imágenes). Va con Editor.js en el mismo
                 // render hook.
                 'resources/js/filament/content-pages.js',
+                // El modal de las portadas con IA (ficha de la entrada y
+                // editor de páginas). Lo carga su propio render hook.
+                'resources/js/filament/ai-images.js',
             ],
             refresh: true,
         }),

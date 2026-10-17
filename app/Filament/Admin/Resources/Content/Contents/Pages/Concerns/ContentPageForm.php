@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Content\Contents\Pages\Concerns;
 
 use App\Enums\ContentPageFormatEnum;
+use App\Filament\Admin\Resources\Content\Contents\AiCoverImageActions;
 use App\Filament\Components\EditorJsField;
 use App\Filament\Components\ImageCropperUpload;
 use App\Models\Content\Content;
@@ -114,11 +115,11 @@ trait ContentPageForm
                         // Pedía `image_path`, una columna que no existe en
                         // ninguna tabla del proyecto (N232). La real es
                         // `image_id`, con su clave foránea a `files`.
-                        ImageCropperUpload::makeImage('image_id')
+                        AiCoverImageActions::attach(ImageCropperUpload::makeImage('image_id')
                             ->asFileRecord()
                             ->storeFiles(false)
                             ->cover16x9()
-                            ->directory('content-pages')
+                            ->directory('content-pages'))
                             ->columnSpanFull()->label('Imagen de la página'),
                     ]),
 

@@ -39,7 +39,7 @@ Providers: `app/Providers/Filament/AdminPanelProvider.php` y `TenantPanelProvide
 | Sistema | `UserResource` | `User` |
 | Sistema | `ApiTokenResource` | `ApiToken` |
 | Configuración | `AiProviderResource` | `AiProvider`: proveedores de IA del asistente del editor (modelo de texto, modelo de imágenes y clave cifrada). **Sólo `SuperAdmin`**, ni un `Admin` lo ve (`AiProviderPolicy`). Acción «Probar»: una llamada real mínima. «Probar imágenes» (con modelo de imágenes): genera una de verdad, tras confirmar, porque cuesta unos céntimos |
-| Contenido | `ContentResource` | `Content` |
+| Contenido | `ContentResource` | `Content`. El campo de portada (de la entrada y de cada página) tiene «Generar con IA», «Mejorar con IA» y «Deshacer» (`AiCoverImageActions`; ver [content.md](content.md#portadas-con-ia)) |
 | Contenido | `CategoryResource` | `Category` |
 | Contenido | `TagResource` | `Tag` |
 | Contenido | `TechnologyResource` | `Technology` |

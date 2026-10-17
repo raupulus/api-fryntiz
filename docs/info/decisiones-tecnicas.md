@@ -876,6 +876,31 @@ ajeno aunque esté en la base.
 
 *Fijado por `EditorProfileTest`. Decidido por el usuario el 2026-10-17.*
 
+### D53 · Portadas con IA: la elegida entra en el campo como una subida más
+
+Las imágenes de la IA no se guardan al llegar. Se recortan a 16:9 y se dejan como subidas temporales
+de Livewire, sólo para enseñarlas; las que no se eligen las borra Livewire a las 24 h. La elegida
+la descarga el navegador y se la da al campo de portada como si se subiera a mano.
+
+**Por qué así.** El componente de subida de Filament no sabe enseñar una subida temporal que ponga
+el servidor (para él, su vista previa es `null`), y guardarla al momento como `File` dejaría
+ficheros huérfanos cada vez que no se guarda la ficha. Como subida normal pasa por el mismo recorte
+del campo y se guarda con el formulario, en WebP (D40).
+
+**Con orden.** Al quitar la portada anterior, el campo vuelve a cargar sus ficheros y se llevaba por
+delante la nueva: el modal no le deja hasta que la nueva está subida. «Deshacer» lo hace el propio
+campo, porque con el id de una portada guardada (un número) el vigilante de estado de Filament falla
+y no repinta.
+
+**El latido.** Una imagen puede tardar un par de minutos y nginx corta a los 60 s sin datos: la
+respuesta es SSE y manda `: ping` cada 5 s mientras espera, como el asistente de texto (D46).
+
+**Lo que se mejora no lo manda el navegador**: al abrir el modal se apunta en la caché, ligado a esa
+persona y ese contenido, y el navegador sólo ve un token.
+
+*Fijado por `ContentAiCoverImagesTest` y `AiImageProvidersTest`. Pedido por el usuario el
+2026-10-17.*
+
 ---
 
 ## Dependencias

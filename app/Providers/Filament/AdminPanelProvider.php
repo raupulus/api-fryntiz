@@ -8,6 +8,7 @@ use App\Filament\Admin\Pages\Dashboard;
 use App\Filament\Admin\Pages\Login;
 use App\Filament\Admin\Pages\Profile;
 use App\Filament\Admin\Resources\Content\Contents\ContentResource;
+use App\Filament\Admin\Resources\Content\Contents\Pages\EditContent;
 use App\Filament\Admin\Resources\Content\Contents\Pages\ManageContentPages;
 use App\Http\Middleware\NoIndex;
 use App\Models\Platform;
@@ -29,6 +30,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Vite;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AdminPanelProvider extends PanelProvider
@@ -121,6 +123,13 @@ class AdminPanelProvider extends PanelProvider
                 PanelsRenderHook::SCRIPTS_AFTER,
                 fn (): string => view('filament.components.editorjs-scripts')->render(),
                 scopes: ManageContentPages::class,
+            )
+            // El modal de las portadas con IA, en las dos pantallas que tienen
+            // campo de portada.
+            ->renderHook(
+                PanelsRenderHook::SCRIPTS_AFTER,
+                fn (): string => Vite::withEntryPoints(['resources/js/filament/ai-images.js'])->toHtml(),
+                scopes: [EditContent::class, ManageContentPages::class],
             )
             ->defaultThemeMode(ThemeMode::Dark)
             ->font('Figtree')

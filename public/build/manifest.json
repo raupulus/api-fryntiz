@@ -13,7 +13,7 @@
     "isEntry": true
   },
   "resources/css/filament/admin/panel.css": {
-    "file": "assets/panel-DwvNtWsG.css",
+    "file": "assets/panel-kr4R9FR4.css",
     "name": "panel",
     "names": [
       "panel.css"
@@ -38,6 +38,12 @@
     "imports": [
       "_chunk-QTnfLwEv.js"
     ]
+  },
+  "resources/js/filament/ai-images.js": {
+    "file": "assets/ai-images-m39-Epzv.js",
+    "name": "ai-images",
+    "src": "resources/js/filament/ai-images.js",
+    "isEntry": true
   },
   "resources/js/filament/content-pages.js": {
     "file": "assets/content-pages-B6c8o_Gy.js",

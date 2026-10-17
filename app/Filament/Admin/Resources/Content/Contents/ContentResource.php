@@ -207,11 +207,12 @@ class ContentResource extends Resource
                 ]),
                 Textarea::make('excerpt')->maxLength(1023)->rows(2)
                     ->columnSpanFull()->label('Extracto'),
-                ImageCropperUpload::makeImage('image_id')
+                // Al editar: generar o mejorar la portada con IA (D53).
+                AiCoverImageActions::attach(ImageCropperUpload::makeImage('image_id')
                     ->asFileRecord()
                     ->storeFiles(false)
                     ->cover16x9()
-                    ->directory('contents')
+                    ->directory('contents'))
                     ->columnSpanFull()->label('Imagen principal'),
             ]),
 

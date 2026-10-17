@@ -1764,3 +1764,98 @@
     flex-wrap: wrap;
     gap: 0.5rem;
 }
+
+/* ── Contenidos · Portadas con IA (.cpe-aiimg-*) ──────────────────────────────
+   El modal de «Generar con IA» y «Mejorar con IA» del campo de portada
+   (ai-image-modal.blade.php). Usa también los estilos .cpe-ai-* de arriba. */
+.cpe-aiimg__source {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.cpe-aiimg__source-img {
+    max-width: 20rem;
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+}
+
+.dark .cpe-aiimg__source-img {
+    border-color: #3f3f46;
+}
+
+.cpe-aiimg__colors {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.cpe-aiimg__swatches {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.cpe-aiimg__swatch {
+    width: 1.1rem;
+    height: 1.1rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.dark .cpe-aiimg__swatch {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.cpe-aiimg__hint {
+    margin: 0.25rem 0 0;
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.dark .cpe-aiimg__hint {
+    color: #a1a1aa;
+}
+
+.cpe-aiimg__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+    gap: 1rem;
+}
+
+.cpe-aiimg__card {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.6rem;
+}
+
+.dark .cpe-aiimg__card {
+    border-color: #3f3f46;
+}
+
+.cpe-aiimg__img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    background: #f3f4f6;
+}
+
+.dark .cpe-aiimg__img {
+    background: #27272a;
+}
+
+.cpe-aiimg__caption {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.5rem 0.6rem;
+    font-size: 0.8rem;
+    color: #6b7280;
+}
