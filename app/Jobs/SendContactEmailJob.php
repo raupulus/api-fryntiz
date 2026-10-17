@@ -40,7 +40,10 @@ class SendContactEmailJob implements ShouldQueue
             return;
         }
 
-        $destination = $email->user->email ?? config('mail.admin_address', config('mail.from.address'));
+        // Con `??` y no con el segundo argumento de `config()`: la clave
+        // `mail.admin_address` existe siempre, y sin MAIL_ADMIN_ADDRESS vale null,
+        // así que el valor por defecto de `config()` no llegaría a usarse.
+        $destination = $email->user->email ?? config('mail.admin_address') ?? config('mail.from.address');
 
         if (empty($destination)) {
             Log::error('Contacto: no hay buzón de destino configurado', ['email_id' => $email->id]);

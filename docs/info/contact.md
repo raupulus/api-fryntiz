@@ -81,7 +81,7 @@ Módulo para enviar formularios de contacto vía API con verificación de captch
    - Si llegan los dos, manda Turnstile. Si el token es de un proveedor sin clave pero hay otro configurado, se rechaza (si no, bastaría inventarse el token del proveedor que no está para saltarse la comprobación).
    - **Sin ninguna clave configurada** (desarrollo y tests) se omite la comprobación externa para no bloquear sin credenciales.
    - Token inválido → 422 «Verificacion de seguridad fallida» y el mensaje no se guarda.
-4. `ContactService::sendContactForm()` envía el `ContactMail`
+4. `ContactService::sendContactForm()` envía el `ContactMail` (por la cola, `SendContactEmailJob`) al usuario de la web que lo recibe o, si no tiene, a `MAIL_ADMIN_ADDRESS` (`mail.admin_address`), y si tampoco hay, a `MAIL_FROM_ADDRESS`. Hasta el 2026-10-17 la clave `mail.admin_address` no existía y `MAIL_ADMIN_ADDRESS` no se leía nunca.
 5. Respuesta: `{ success: true, message: "Mensaje enviado correctamente" }`
 
 > Turnstile no devuelve puntuación: el mensaje se guarda con `captcha_score` nulo y
@@ -98,4 +98,4 @@ php artisan debug:seed-contact --count=10
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-10-07
+> Creado: 2026-05-25 · Última revisión: 2026-10-17
