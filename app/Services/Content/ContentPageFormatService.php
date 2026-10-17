@@ -178,7 +178,7 @@ class ContentPageFormatService
      * @param  User|null  $author  Quién guarda; null es el sistema (se le trata como administrador).
      * @param  CarbonInterface|null  $openedAt  `updated_at` que tenía la página al abrirla; si ha cambiado, no se guarda (D4).
      * @param  string|null  $lockToken  Pestaña que guarda, si tiene el bloqueo.
-     * @return bool Si se ha guardado el contenido (false si venía vacío).
+     * @return bool Si se ha guardado el contenido (false si no lo había; ver `save()`).
      *
      * @throws ValidationException si el contenido no se puede guardar tal cual (ver `save()`).
      * @throws ContentPageLockedException si otro tiene la página bloqueada.
@@ -262,8 +262,11 @@ class ContentPageFormatService
      *    de HTML libre, ni pasar la página a HTML o cambiar su HTML, y el HTML
      *    que escriba dentro de un Markdown se limpia.
      *
-     * Si `$content` está vacío no se toca nada (vaciar un editor por error no
-     * borra la página), y devuelve false.
+     * Vaciar la página a propósito se guarda en los tres formatos, y lo que
+     * tenía queda en el historial como «Página vaciada». Lo que no se guarda
+     * (devuelve false) es la falta de contenido: `null` (el formulario no lo
+     * mandó, como el HTML que un Editor no puede tocar) o un Editor.js sin
+     * nada (el editor no llegó a volcar; vaciarlo manda `{"blocks":[]}`).
      *
      * @param  ContentPageVersionReasonEnum|null  $reason  Motivo de la versión que se guarde; si no, se deduce.
      * @param  User|null  $author  Quién guarda; null es el sistema (se le trata como administrador).
@@ -296,8 +299,13 @@ class ContentPageFormatService
         ?User $author,
         ?string $previousTitle,
     ): bool {
-        if ($content === null || trim($content) === '') {
+        if ($content === null || ($format === ContentPageFormatEnum::EditorJs && trim($content) === '')) {
             return false;
+        }
+
+        // Un Markdown o un HTML con sólo espacios es una página vacía.
+        if (trim($content) === '') {
+            $content = '';
         }
 
         $content = $this->prepare($page, $format, $content, $author === null || $author->isAdmin());

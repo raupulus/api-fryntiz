@@ -630,7 +630,13 @@ cambiarlo es un clic en «Pasar a Markdown» o «Pasar a HTML».
    cambio de formato, recuperación, página vaciada o guardado normal.
    `latestBackup()` devuelve la última versión.
 
-Un editor vacío no guarda nada (vaciar el editor por error no borra la página).
+**Vaciar una página la guarda vacía, en los tres formatos**, y lo que tenía
+queda en el historial como «Página vaciada», recuperable desde «Historial».
+Hasta el 2026-10-17 sólo Editor.js lo hacía: en Markdown y HTML no se vaciaba,
+volvía el texto de antes sin avisar y salía «Página guardada». Lo que no toca
+el contenido es que no llegue: el campo sin enviar (el HTML que un Editor no
+puede cambiar va deshabilitado) o un Editor.js que no llegó a volcar nada
+(vaciarlo a propósito manda `{"blocks":[]}`).
 
 ### Páginas sin `current_page_raw_id`
 

@@ -109,18 +109,36 @@ class ContentPageFormatServiceTest extends TestCase
     }
 
     #[Test]
-    public function an_empty_editor_does_not_touch_the_page(): void
+    public function an_editor_that_sends_nothing_does_not_touch_the_page(): void
     {
         $page = $this->page();
         $this->service->save($page, Format::EditorJs, $this->editorJs('Algo'));
         $before = $page->refresh()->content;
 
-        $this->assertFalse($this->service->save($page, Format::Markdown, '   '));
+        // Sin campo (null) o un Editor.js que no llegó a volcar ('').
+        $this->assertFalse($this->service->save($page, Format::Markdown, null));
+        $this->assertFalse($this->service->save($page, Format::EditorJs, '  '));
 
         $page->refresh();
         $this->assertSame($before, $page->content);
         $this->assertSame(Format::EditorJs, $this->service->sourceFormat($page));
         $this->assertNull($this->service->latestBackup($page));
+    }
+
+    #[Test]
+    public function emptying_a_markdown_or_html_page_saves_it_empty_and_keeps_a_copy(): void
+    {
+        foreach ([Format::Markdown, Format::Html] as $format) {
+            $page = $this->page();
+            $this->service->save($page, $format, $format === Format::Html ? '<p>Algo</p>' : 'Algo');
+
+            $this->assertTrue($this->service->save($page->refresh(), $format, "  \n "));
+
+            $this->assertSame('', (string) $page->refresh()->content, $format->value);
+            $this->assertSame('', $this->service->sourceContent($page), $format->value);
+            $this->assertStringContainsString('Algo', (string) $this->service->latestBackup($page)?->content);
+            $this->assertSame(Reason::Emptied, $this->service->latestBackup($page)?->reason);
+        }
     }
 
     #[Test]

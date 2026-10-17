@@ -450,6 +450,43 @@ class ContentPageEditorTest extends TestCase
         $this->assertSame('', $editor->instance()->versionContent($foreign->id), 'Sólo las de su página.');
     }
 
+    // ── Vaciar ──────────────────────────────────────────────────────────────
+
+    #[Test]
+    public function emptying_a_markdown_page_in_the_panel_saves_it_empty_and_keeps_a_copy(): void
+    {
+        $this->pages->savePage($this->first, [], Format::Markdown, 'Texto en Markdown', null, $this->admin);
+
+        // Antes: no se vaciaba, volvía el texto de antes sin avisar y salía
+        // «Página guardada».
+        $this->open($this->first->refresh())
+            ->set('data.content_markdown', '')
+            ->call('save')
+            ->assertNotified('Página guardada')
+            ->assertSet('data.content_markdown', '')
+            ->assertSet('hasUnsavedChanges', false);
+
+        $this->assertSame('', (string) $this->first->refresh()->content);
+        $this->assertSame(Reason::Emptied, ContentPageVersion::query()->where('content_page_id', $this->first->id)->latest('id')->first()?->reason);
+    }
+
+    #[Test]
+    public function an_editor_changing_the_title_of_an_html_page_does_not_empty_it(): void
+    {
+        // Para un Editor el HTML va deshabilitado y no se envía: no es vaciarlo.
+        $this->pages->savePage($this->first, [], Format::Html, '<p>HTML del administrador</p>', null, $this->admin);
+
+        $this->actingAs($this->editor);
+        $this->open($this->first->refresh())
+            ->set('data.title', 'Título nuevo')
+            ->call('save')
+            ->assertNotified('Página guardada');
+
+        $this->first->refresh();
+        $this->assertSame('Título nuevo', $this->first->title);
+        $this->assertStringContainsString('HTML del administrador', (string) $this->first->content);
+    }
+
     // ── Velocidad ───────────────────────────────────────────────────────────
 
     #[Test]

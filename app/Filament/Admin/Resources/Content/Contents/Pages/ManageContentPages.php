@@ -281,7 +281,10 @@ class ManageContentPages extends Page
 
         $data = $this->form->getState();
         $format = ContentPageFormatEnum::tryFrom((string) ($data['source_format'] ?? '')) ?? ContentPageFormatEnum::EditorJs;
-        $content = isset($data[$format->formField()]) ? (string) $data[$format->formField()] : null;
+        // Si el campo viene, aunque sea vacío, es lo que hay que guardar: vaciar
+        // la página también se guarda. Si no viene (el HTML que un Editor no
+        // puede tocar va deshabilitado y no se envía), el contenido no se toca.
+        $content = array_key_exists($format->formField(), $data) ? (string) ($data[$format->formField()] ?? '') : null;
         $reason = match ($data['pending_change'] ?? null) {
             'restore' => ContentPageVersionReasonEnum::Restore,
             'convert' => ContentPageVersionReasonEnum::FormatChange,
