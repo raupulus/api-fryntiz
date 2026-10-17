@@ -220,6 +220,18 @@ class AppServiceProvider extends ServiceProvider
         // comprueban.
         RateLimiter::for('content-editor', fn (Request $request) => Limit::perMinute(30)->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip())));
 
+        // Asistente de Gemini: por usuario, por minuto y por hora. Los números
+        // y por qué son tan holgados, en config/rate_limits.php. También en los
+        // tests, que lo comprueban.
+        RateLimiter::for('content-ai', function (Request $request): array {
+            $key = (string) ($request->user()?->getAuthIdentifier() ?? $request->ip());
+
+            return [
+                Limit::perMinute((int) config('rate_limits.content_ai_per_minute', 20))->by('minute:'.$key),
+                Limit::perHour((int) config('rate_limits.content_ai_per_hour', 300))->by('hour:'.$key),
+            ];
+        });
+
         if (app()->environment('testing')) {
             RateLimiter::for('api-global', fn () => Limit::none());
             RateLimiter::for('api-fallback', fn () => Limit::none());

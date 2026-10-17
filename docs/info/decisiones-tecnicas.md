@@ -687,6 +687,24 @@ plan de contenidos del 2026-09-24.*
 
 ---
 
+### D44 · A Gemini se le habla en Markdown, con marcas para los bloques que no ve
+
+El asistente de IA no le manda nunca a Gemini el JSON de Editor.js. Una página de Editor.js se
+convierte antes a Markdown, y los bloques que Markdown no sabe expresar (imágenes subidas con su
+`file_id` y su pie de foto, avisos, vídeos, tarjetas de enlace, adjuntos, bloques con estilos)
+viajan como una marca fija, `[[BLOQUE_1]]`, que se le pide no tocar. Al volver se pone en cada
+marca el bloque original, intacto; si Gemini quita alguna, el resultado avisa de cuáles.
+
+**Por qué.** Al pedir el JSON, la respuesta se cortaba o volvía con una llave de menos, y la página
+acababa siendo ese JSON como texto. Al pedir Markdown sin marcas, las imágenes perdían el
+vínculo con su fichero y los avisos y vídeos salían como Gemini quisiera. Con las marcas, Gemini
+sólo ve lo que puede editar, y lo demás no pasa por él.
+
+*Fijado por `ContentPageAiAssistantTest::editing_an_editorjs_page_keeps_uploaded_images_and_special_blocks_intact`
+y `::a_block_that_gemini_removes_is_reported`. Auditoría del editor del 2026-10-14.*
+
+---
+
 ## Dependencias
 
 ### D7 · Las dependencias se mantienen al día, incluidos los majors
@@ -872,4 +890,4 @@ existe— **qué test lo fija**.
 Lo que no va aquí: decisiones que el código ya explica por sí solo, y cosas que simplemente están
 pendientes (eso es `docs/future/`).
 
-> Creado: 2026-09-01 · Última revisión: 2026-10-05
+> Creado: 2026-09-01 · Última revisión: 2026-10-17

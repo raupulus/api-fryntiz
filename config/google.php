@@ -81,4 +81,26 @@ return [
         : env('GOOGLE_DEV_API_KEY', env('GOOGLE_API_KEY')),
 
     'dev_api_key' => env('GOOGLE_DEV_API_KEY'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Google Gemini API
+    |--------------------------------------------------------------------------
+    |
+    | El asistente de IA del editor de páginas de contenidos.
+    |
+    | Sólo con `GEMINI_API_KEY` (de Google AI Studio). No se usa como
+    | alternativa la clave de Google de arriba: es la de Maps y YouTube, sin la
+    | API de Gemini activada, y con ella el botón del asistente aparecía para
+    | fallar siempre con un 403.
+    |
+    | El modelo no se configura: es `GeminiModelEnum::default()`. El nivel de
+    | razonamiento por defecto, uno de `GeminiThinkingLevelEnum` (`low`,
+    | `medium`, `high`).
+    |
+    */
+    'gemini' => [
+        'api_key' => (string) env('GEMINI_API_KEY', ''),
+        'thinking_level' => env('GEMINI_THINKING_LEVEL', 'medium'),
+    ],
 ];

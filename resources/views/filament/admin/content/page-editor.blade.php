@@ -125,7 +125,7 @@
                     @endunless
                     {{-- `<x-filament::actions>` y no `{{ $this->accion }}`: sólo
                          el componente mira si cada acción es visible. --}}
-                    <x-filament::actions :actions="[$this->historyAction, $this->imagesAction, $this->deletePageAction]" />
+                    <x-filament::actions :actions="[$this->aiAssistantAction, $this->historyAction, $this->imagesAction, $this->deletePageAction]" />
                 </div>
             </div>
 
@@ -147,6 +147,14 @@
                         @endif
                     </span>
                     <x-filament::actions :actions="[$this->restoreDraftAction, $this->discardDraftAction]" />
+                </div>
+            @endif
+
+            @if ($aiUndoAvailable && ! $readOnly)
+                <div class="cpe-notice cpe-notice--draft" role="status">
+                    <x-filament::icon icon="heroicon-m-sparkles" class="cpe-notice__icon" />
+                    <span class="cpe-notice__text">Has aplicado texto de Gemini sin guardar.</span>
+                    <x-filament::actions :actions="[$this->undoAiAction]" />
                 </div>
             @endif
 

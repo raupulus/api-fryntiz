@@ -6,6 +6,9 @@ namespace App\Filament\Admin\Resources\Content\Contents\Pages;
 
 use App\Enums\ContentPageFormatEnum;
 use App\Enums\ContentPageVersionReasonEnum;
+use App\Enums\GeminiAiModeEnum;
+use App\Enums\GeminiModelEnum;
+use App\Enums\GeminiThinkingLevelEnum;
 use App\Exceptions\ContentPageConflictException;
 use App\Exceptions\ContentPageLockedException;
 use App\Exceptions\ContentUploadException;
@@ -19,11 +22,13 @@ use App\Models\Content\ContentPageDraft;
 use App\Models\File;
 use App\Models\User;
 use App\Services\Content\ContentFileService;
+use App\Services\Content\ContentFormatConverter;
 use App\Services\Content\ContentImageService;
 use App\Services\Content\ContentPageDraftService;
 use App\Services\Content\ContentPageHistoryService;
 use App\Services\Content\ContentPageLockService;
 use App\Services\Content\ContentPageLockState;
+use App\Services\Content\GeminiContentService;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
@@ -137,6 +142,11 @@ class ManageContentPages extends Page
      */
     public mixed $replacement = null;
 
+    /**
+     * Se ha aplicado algo de Gemini y se puede deshacer (`undoAiAction`).
+     */
+    public bool $aiUndoAvailable = false;
+
     public static function canAccess(array $parameters = []): bool
     {
         $record = $parameters['record'] ?? null;
@@ -171,6 +181,7 @@ class ManageContentPages extends Page
         $this->autosavedAt = null;
         $this->lockMessage = null;
         $this->lockStatus = null;
+        $this->aiUndoAvailable = false;
 
         if ($page !== null) {
             $this->applyLockState($this->locks()->acquire($page, $this->user(), $this->lockToken));
@@ -314,6 +325,7 @@ class ManageContentPages extends Page
         $isNew = $this->pageId === null;
         $page->refresh();
         Cache::forget($this->undoKey());
+        $this->forgetAiUndo();
 
         if ($isNew) {
             // Nueva: desde ahora es de esta pestaña.
@@ -803,6 +815,217 @@ class ManageContentPages extends Page
     private function trashedPage(array $arguments): ?ContentPage
     {
         return ContentPage::onlyTrashed()->where('content_id', $this->ownerContent()->id)->find((int) ($arguments['page'] ?? 0));
+    }
+
+    // ── Asistente IA (Google Gemini) ────────────────────────────────────────
+
+    /**
+     * El modal del asistente. Lo que escribe Gemini llega por el stream de
+     * `ContentPageAiStreamController`, y se aplica con `applyAiContent()` o
+     * `applyAiNewPage()`.
+     */
+    public function aiAssistantAction(): Action
+    {
+        return Action::make('aiAssistant')
+            ->label('Asistente IA')
+            ->labeledFrom('md')
+            ->icon('heroicon-m-sparkles')
+            ->color('primary')
+            ->modalWidth(Width::FourExtraLarge)
+            ->modalHeading('Asistente Google Gemini')
+            ->modalDescription('Genera contenido, amplía o corrige ortografía con Gemini en tiempo real.')
+            ->modalContent(fn () => view('filament.admin.content.partials.ai-modal', [
+                'modelLabel' => GeminiModelEnum::default()->label(),
+                'thinkingLevels' => GeminiThinkingLevelEnum::options(),
+                'modes' => GeminiAiModeEnum::options(),
+                'defaultThinkingLevel' => GeminiThinkingLevelEnum::default()->value,
+                'currentFormat' => ContentPageFormatEnum::tryFrom((string) ($this->data['source_format'] ?? '')) ?? ContentPageFormatEnum::EditorJs,
+                'pageId' => $this->pageId,
+                'isNewPage' => $this->pageId === null,
+                'streamUrl' => route('admin.contents.pages.ai.stream', $this->ownerContent()),
+            ]))
+            ->modalSubmitAction(false)
+            ->modalCancelActionLabel('Cerrar')
+            ->visible(fn (): bool => ! $this->readOnly && app(GeminiContentService::class)->isAvailable());
+    }
+
+    /**
+     * Lo de Gemini al editor, sin guardar: sustituye el contenido o lo añade
+     * al final. Lo que había se aparta para «Deshacer lo de Gemini».
+     */
+    public function applyAiContent(string $newContent, bool $append = false): void
+    {
+        abort_unless(Gate::allows('update', $this->getRecord()), 403);
+        abort_if($this->readOnly, 403, 'La página está bloqueada en modo sólo lectura.');
+
+        $data = $this->data ?? [];
+        $format = ContentPageFormatEnum::tryFrom((string) ($data['source_format'] ?? '')) ?? ContentPageFormatEnum::EditorJs;
+        $field = $format->formField();
+        $existing = (string) ($data[$field] ?? '');
+
+        $this->rememberForAiUndo($format, $existing);
+
+        if ($append && trim($existing) !== '') {
+            $data[$field] = match ($format) {
+                ContentPageFormatEnum::EditorJs => $this->appendBlocks($existing, $newContent),
+                ContentPageFormatEnum::Markdown => rtrim($existing)."\n\n".ltrim($newContent),
+                ContentPageFormatEnum::Html => rtrim($existing)."\n".ltrim($newContent),
+            };
+        } else {
+            $data[$field] = $newContent;
+        }
+
+        $this->form->fill($data);
+        $this->hasUnsavedChanges = true;
+        $this->unmountAction();
+
+        Notification::make()
+            ->title('Contenido aplicado')
+            ->body('El texto de Gemini está en el editor sin guardar. Revísalo y pulsa Guardar (Ctrl+S), o «Deshacer lo de Gemini».')
+            ->success()
+            ->send();
+    }
+
+    /**
+     * Los bloques de Gemini detrás de los que ya hay.
+     */
+    private function appendBlocks(string $existing, string $new): string
+    {
+        $converter = app(ContentFormatConverter::class);
+
+        try {
+            return $converter->encodeBlocks([...$converter->decodeBlocks($existing), ...$converter->decodeBlocks($new)], pretty: true);
+        } catch (InvalidArgumentException) {
+            return $new;
+        }
+    }
+
+    /**
+     * Una página nueva con lo que ha creado Gemini.
+     *
+     * En «Añadir página» se rellena el formulario sin guardar. Con una página
+     * abierta se crea al final y se abre, como al cambiar de página: antes se
+     * guarda la actual (si no se puede, no se sigue), y la nueva se crea con su
+     * contenido de una vez, así que si algo se rechaza no queda una página
+     * vacía. El bloqueo de la actual se suelta sólo cuando la nueva existe.
+     */
+    public function applyAiNewPage(string $title, string $slug, string $content): void
+    {
+        abort_unless(Gate::allows('update', $this->getRecord()), 403);
+        abort_if($this->readOnly, 403, 'La página está bloqueada en modo sólo lectura.');
+
+        $format = ContentPageFormatEnum::tryFrom((string) ($this->data['source_format'] ?? '')) ?? ContentPageFormatEnum::EditorJs;
+        $field = $format->formField();
+        $slug = $this->freeSlug(Str::slug($slug) !== '' ? Str::slug($slug) : Str::slug($title));
+
+        if ($this->pageId === null) {
+            $data = $this->data ?? [];
+            $this->rememberForAiUndo($format, (string) ($data[$field] ?? ''));
+            $data['title'] = $title;
+            $data['slug'] = $slug;
+            $data[$field] = $content;
+            $this->form->fill($data);
+            $this->hasUnsavedChanges = true;
+            $this->unmountAction();
+
+            Notification::make()
+                ->title('Página nueva preparada')
+                ->body('Se han cargado el título, el slug y el contenido de Gemini. Revísalos y pulsa Guardar.')
+                ->success()
+                ->send();
+
+            return;
+        }
+
+        if ($this->differsFromSaved() && ! $this->persist()) {
+            return;
+        }
+
+        $page = new ContentPage([
+            'content_id' => $this->ownerContent()->id,
+            'order' => (int) $this->pagesQuery()->max('order') + 1,
+        ]);
+
+        try {
+            $this->formatService()->savePage($page, ['title' => $title, 'slug' => $slug], $format, $content, null, $this->user());
+        } catch (ValidationException $e) {
+            $this->refuse(implode(' ', Arr::flatten($e->errors())));
+
+            return;
+        } catch (UniqueConstraintViolationException) {
+            $this->refuse('Ese slug ya lo usa otra página del contenido.');
+
+            return;
+        } catch (InvalidArgumentException|RuntimeException $e) {
+            $this->refuse($e->getMessage());
+
+            return;
+        }
+
+        $this->releaseLock();
+        $this->unmountAction();
+
+        Notification::make()
+            ->title('Página creada')
+            ->body("Se ha creado la página «{$title}» con el contenido de Gemini.")
+            ->success()
+            ->send();
+
+        $this->redirect($this->pageUrl($page), navigate: true);
+    }
+
+    /**
+     * Aparta lo que hay en el editor antes de aplicar lo de Gemini, en la
+     * caché del servidor y para esta pestaña, como el cambio de formato.
+     */
+    private function rememberForAiUndo(ContentPageFormatEnum $format, string $content): void
+    {
+        Cache::put($this->aiUndoKey(), ['format' => $format->value, 'content' => $content], now()->addDay());
+        $this->aiUndoAvailable = true;
+    }
+
+    private function forgetAiUndo(): void
+    {
+        Cache::forget($this->aiUndoKey());
+        $this->aiUndoAvailable = false;
+    }
+
+    private function aiUndoKey(): string
+    {
+        return sprintf('content-page-ai-undo:%s:%s', $this->getId(), $this->pageId ?? 'new');
+    }
+
+    public function undoAiAction(): Action
+    {
+        return Action::make('undoAi')
+            ->label('Deshacer lo de Gemini')
+            ->icon('heroicon-o-arrow-uturn-left')
+            ->color('warning')
+            ->requiresConfirmation()
+            ->modalHeading('Deshacer lo de Gemini')
+            ->modalDescription('El editor vuelve a como estaba antes de aplicar lo de Gemini. Lo que hayas escrito después se descarta.')
+            ->modalSubmitActionLabel('Deshacer')
+            ->visible(fn (): bool => $this->aiUndoAvailable && ! $this->readOnly)
+            ->action(function (): void {
+                $original = Cache::get($this->aiUndoKey());
+                $this->forgetAiUndo();
+
+                if (! is_array($original)) {
+                    Notification::make()->warning()->title('Ya no se puede deshacer')->body('Lo de antes ya no está guardado. Recarga la página para volver a lo guardado.')->send();
+
+                    return;
+                }
+
+                $format = ContentPageFormatEnum::tryFrom((string) ($original['format'] ?? '')) ?? ContentPageFormatEnum::EditorJs;
+                $data = $this->data ?? [];
+                $data['source_format'] = $format->value;
+                $data[$format->formField()] = (string) ($original['content'] ?? '');
+
+                $this->form->fill($data);
+                $this->hasUnsavedChanges = $this->differsFromSaved();
+
+                Notification::make()->success()->title('Deshecho')->body('El editor está como antes de aplicar lo de Gemini.')->send();
+            });
     }
 
     // ── Historial ───────────────────────────────────────────────────────────

@@ -1383,6 +1383,14 @@ class ContentFormatConverter
     }
 
     /**
+     * Nombre de un tipo de bloque para enseñarlo («imagen», «vídeo incrustado»…).
+     */
+    public function blockLabel(string $type): string
+    {
+        return self::BLOCK_LABELS[$type] ?? $type;
+    }
+
+    /**
      * «imagen ×2, alerta ×1».
      *
      * @param  list<string>  $types

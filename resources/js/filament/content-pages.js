@@ -286,9 +286,244 @@ function contentImageCropper({ fileId, width, height, usages }) {
     };
 }
 
+// localStorage puede no estar (modo privado, almacenamiento bloqueado): el
+// modal funciona igual, sólo que no recuerda el nivel elegido.
+function remembered(key) {
+    try {
+        return window.localStorage.getItem(key);
+    } catch (_) {
+        return null;
+    }
+}
+
+function remember(key, value) {
+    try {
+        window.localStorage.setItem(key, value);
+    } catch (_) {
+        // Sin almacenamiento, no se recuerda.
+    }
+}
+
+// Lo que se enseña cuando el servidor no deja ni empezar.
+const AI_HTTP_MESSAGES = {
+    403: 'No tienes permiso para editar este contenido.',
+    419: 'La sesión ha caducado. Recarga la página y vuelve a intentarlo.',
+    429: 'Has hecho muchas peticiones seguidas al asistente. Espera un minuto y vuelve a intentarlo.',
+};
+
+function contentPageAiAssistant({ streamUrl, thinkingLevels, defaultThinkingLevel, pageId, isNewPage, sourceFormat }) {
+    // El nivel recordado sólo vale si sigue en la lista: si no, el servidor
+    // rechazaría la petición sin que se viera por qué.
+    const savedLevel = remembered('gemini_ai_thinking_level');
+
+    return {
+        mode: isNewPage ? 'create' : 'edit',
+        thinkingLevel: thinkingLevels.includes(savedLevel) ? savedLevel : defaultThinkingLevel,
+        prompt: '',
+        isStreaming: false,
+        isThinking: false,
+        isFinished: false,
+        errorMessage: null,
+        thoughtText: '',
+        contentText: '',
+        finalResult: null,
+        abortController: null,
+
+        // Lo que escribe Gemini, con las marcas de los bloques que no ve
+        // (`[[BLOQUE_1]]`) dichas en claro: al aplicar, en cada una vuelve su
+        // bloque original.
+        get displayText() {
+            return this.contentText.replace(/\\?\[\\?\[BLOQUE_(\d+)\\?\]\\?\]/g, '[bloque $1: se conserva tal cual]');
+        },
+
+        init() {
+            // Cerrar el modal mientras escribe para la petición: si no, seguía
+            // en segundo plano gastando tokens. `isOpen` es del modal de
+            // Filament que lo contiene.
+            this.$watch('isOpen', (open) => {
+                if (open === false) {
+                    this.cancel();
+                }
+            });
+        },
+
+        destroy() {
+            this.cancel();
+        },
+
+        setSuggestion(text) {
+            this.prompt = text;
+        },
+
+        async startStream() {
+            if (this.isStreaming) return;
+
+            remember('gemini_ai_thinking_level', this.thinkingLevel);
+
+            await window.flushEditorJs?.();
+
+            this.isStreaming = true;
+            this.isThinking = false;
+            this.isFinished = false;
+            this.errorMessage = null;
+            this.thoughtText = '';
+            this.contentText = '';
+            this.finalResult = null;
+            this.abortController = new AbortController();
+
+            const currentData = this.$wire.data || {};
+            const format = currentData.source_format || sourceFormat;
+            const field = { editorjs: 'content_json', markdown: 'content_markdown' }[format] ?? 'content_html';
+
+            const payload = {
+                page_id: pageId,
+                mode: this.mode,
+                thinking_level: this.thinkingLevel,
+                prompt: this.prompt,
+                current_content: currentData[field] || '',
+                source_format: format,
+            };
+
+            try {
+                const response = await fetch(streamUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken(),
+                        // JSON primero: así los errores (validación, límite)
+                        // llegan como JSON y no como una página HTML.
+                        'Accept': 'application/json, text/event-stream',
+                    },
+                    body: JSON.stringify(payload),
+                    signal: this.abortController.signal,
+                });
+
+                if (! response.ok) {
+                    let message = AI_HTTP_MESSAGES[response.status] ?? null;
+
+                    if (! message) {
+                        try {
+                            message = (await response.json()).message;
+                        } catch (_) {
+                            // Sin cuerpo legible.
+                        }
+                    }
+
+                    this.errorMessage = message || `El asistente no ha podido empezar (error ${response.status}).`;
+                    this.isStreaming = false;
+
+                    return;
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder('utf-8');
+                let buffer = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const blocks = buffer.split('\n\n');
+                    buffer = blocks.pop() || '';
+
+                    for (const block of blocks) {
+                        this.processEventBlock(block);
+                    }
+                }
+
+                if (buffer.trim()) {
+                    this.processEventBlock(buffer);
+                }
+
+                // Sin `complete` ni `error`: la conexión se cortó a medias.
+                if (! this.finalResult && ! this.errorMessage) {
+                    this.errorMessage = 'La conexión con Gemini se ha cortado antes de terminar. Vuelve a intentarlo.';
+                }
+
+                this.isStreaming = false;
+                this.isThinking = false;
+                this.isFinished = true;
+            } catch (err) {
+                this.errorMessage = err.name === 'AbortError'
+                    ? 'Generación detenida.'
+                    : `Error de conexión: ${err.message}`;
+                this.isStreaming = false;
+                this.isThinking = false;
+            }
+        },
+
+        processEventBlock(block) {
+            let event = 'message';
+            let dataStr = '';
+
+            for (const line of block.split('\n')) {
+                if (line.startsWith('event: ')) {
+                    event = line.slice(7).trim();
+                } else if (line.startsWith('data: ')) {
+                    dataStr = line.slice(6).trim();
+                }
+            }
+
+            if (! dataStr) return;
+
+            let data;
+            try {
+                data = JSON.parse(dataStr);
+            } catch (_) {
+                return;
+            }
+
+            if (event === 'thought') {
+                this.isThinking = true;
+                this.thoughtText += data.text || '';
+            } else if (event === 'content') {
+                this.isThinking = false;
+                this.contentText += data.text || '';
+            } else if (event === 'complete') {
+                this.finalResult = data;
+            } else if (event === 'error') {
+                this.errorMessage = data.message || 'Error desconocido';
+                this.isStreaming = false;
+                this.isThinking = false;
+            } else if (event === 'done') {
+                this.isStreaming = false;
+                this.isThinking = false;
+                this.isFinished = true;
+            }
+        },
+
+        cancel() {
+            if (this.isStreaming) {
+                this.abortController?.abort();
+            }
+            this.isStreaming = false;
+            this.isThinking = false;
+        },
+
+        async apply(append = false) {
+            if (! this.finalResult) return;
+
+            if (this.mode === 'create') {
+                await this.$wire.applyAiNewPage(
+                    this.finalResult.title || 'Nueva página',
+                    this.finalResult.slug || 'nueva-pagina',
+                    this.finalResult.content || this.contentText,
+                );
+            } else {
+                await this.$wire.applyAiContent(
+                    this.finalResult.content || this.contentText,
+                    append,
+                );
+            }
+        },
+    };
+}
+
 const register = () => {
     window.Alpine.data('contentPageEditor', contentPageEditor);
     window.Alpine.data('contentImageCropper', contentImageCropper);
+    window.Alpine.data('contentPageAiAssistant', contentPageAiAssistant);
 };
 
 if (window.Alpine) {

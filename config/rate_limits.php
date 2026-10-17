@@ -138,4 +138,16 @@ return [
      */
     'public_widget_per_minute' => (int) env('RATE_LIMIT_PUBLIC_WIDGET', 40),
 
+    /*
+     * Asistente de Gemini del editor de páginas. Por usuario, porque cada
+     * petición gasta tokens de la cuenta de Google.
+     *
+     * Muy holgado a propósito: no tiene que cortar a nadie que esté
+     * redactando. Una generación tarda de 5 a 30 s, así que 20 por minuto es
+     * regenerar sin parar, y 300 por hora es una cada 12 s durante una hora
+     * seguida. Lo que corta es un bucle o un script, no a una persona.
+     */
+    'content_ai_per_minute' => (int) env('RATE_LIMIT_CONTENT_AI', 20),
+    'content_ai_per_hour' => (int) env('RATE_LIMIT_CONTENT_AI_HOUR', 300),
+
 ];

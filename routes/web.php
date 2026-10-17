@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Admin\ContentPageAiStreamController;
 use App\Http\Controllers\Admin\ContentPageEditorController;
 use App\Http\Controllers\Admin\EditorJsController;
 use App\Http\Controllers\Admin\YouTubeSearchController;
@@ -114,6 +115,19 @@ Route::middleware(['auth', 'can:access-editorjs', 'can:update,content'])
     ->group(function () {
         Route::get('/editor/csrf-token', [ContentPageEditorController::class, 'csrfToken'])->name('editor.csrf-token');
         Route::post('/pages/{page}/lock/release', [ContentPageEditorController::class, 'releaseLock'])->name('pages.lock.release');
+    });
+
+/*
+| El asistente de Gemini del editor de páginas. Éste sí sale a la red, y cada
+| petición gasta tokens de la cuenta de Google: va con su propio límite
+| (`content-ai`, holgado para no cortar a quien redacta; ver
+| config/rate_limits.php).
+*/
+Route::middleware(['auth', 'can:access-editorjs', 'can:update,content', 'throttle:content-ai'])
+    ->prefix('admin/contents/{content}')
+    ->name('admin.contents.')
+    ->group(function () {
+        Route::post('/pages/ai/stream', [ContentPageAiStreamController::class, 'stream'])->name('pages.ai.stream');
     });
 
 /*

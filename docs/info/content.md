@@ -32,12 +32,14 @@ Sistema de gestión de contenidos multi-plataforma y multi-tipo. Soporta artícu
 | Archivo | Versión | Descripción |
 |---------|---------|-------------|
 | `app/Http/Controllers/Api/Content/V2/ContentController.php` | API V2 | index (filtros), highlights, show (detalle con `include`), pages, page, pageBySlug, related, seo, galleries, files |
+| `app/Http/Controllers/Admin/ContentPageAiStreamController.php` | Web/Admin | Streaming SSE conectado a Google Gemini para el asistente del editor de páginas |
 | `app/Http/Controllers/Content/*.php` | Web | Controladores frontend (12 archivos) |
 
 ### Servicios
 | Archivo | Descripción |
 |---------|-------------|
 | `app/Services/Content/ContentApiService.php` | Lo que sirve la API: detalle en caché con `include`, índice de páginas sin texto, partes, relacionados (elegidos primero), destacados/últimos/tendencia |
+| `app/Services/Content/GeminiContentService.php` | Asistente IA con Google Gemini: petición en streaming, contexto del contenido, la página en Markdown con marcas para los bloques que Gemini no ve, y el resultado al formato de la página |
 | `app/Services/Content/ContentSeoService.php` | Lógica SEO del contenido |
 | `app/Services/Content/ContentFormatConverter.php` | Conversión de páginas entre Editor.js, Markdown y HTML, y el HTML que se sirve |
 | `app/Services/Content/ContentPageFormatService.php` | Fuente única de cada página: guardar, regenerar derivados; al guardar, historial, bloqueo, fecha de apertura, borrador y ficheros sin usar |
@@ -71,6 +73,9 @@ y `ContentApiService` carga exactamente eso (D9).
 | `app/Enums/ContentPageRawTypeEnum.php` | Tipos raw: HTML, Markdown, JSON (sin uso) |
 | `app/Enums/ContentPageFormatEnum.php` | Formatos de edición de una página: `editorjs`, `markdown`, `html` (el tipo en BD de Editor.js es `json`) |
 | `app/Enums/ContentPageVersionReasonEnum.php` | Por qué una versión pasó al historial: `save`, `format_change`, `restore`, `draft_restore`, `emptied` |
+| `app/Enums/GeminiModelEnum.php` | El modelo del asistente: sólo `gemini-3.8-flash` |
+| `app/Enums/GeminiThinkingLevelEnum.php` | Razonamiento de Gemini: `low`, `medium` (por defecto), `high` |
+| `app/Enums/GeminiAiModeEnum.php` | Modos de operación del asistente IA: `create`, `edit`, `correct` |
 
 ### Otros
 | Archivo | Descripción |
@@ -1281,6 +1286,58 @@ para escribir a mano el `gallery_id`). Implementado por completo:
   Blade propia del panel debe usar CSS en línea (`<style>`/`style=""`), no
   clases Tailwind: no hay ningún build que las genere.
 
+## Asistente IA con Google Gemini en el editor de páginas
+
+Botón «Asistente IA» en la barra de `ManageContentPages` (`aiAssistantAction`).
+Sólo aparece si hay clave y la página no está en lectura.
+
+- **Clave:** sólo `GEMINI_API_KEY` en `.env` (de Google AI Studio). La de
+  Google de Maps y YouTube no sirve de alternativa: no tiene la API de Gemini, y
+  con ella el botón aparecía para fallar siempre. Viaja en la cabecera
+  `x-goog-api-key`, nunca en la URL: los errores de conexión llevan la URL
+  completa y acababan en el modal y en el log.
+- **Modelo:** sólo **Gemini 3.8 Flash** (`gemini-3.8-flash`,
+  `GeminiModelEnum::default()`), que no se elige: se enseña. Es el único modelo
+  de texto de la familia 3.8; el 2.0 Flash lo apagó Google el 2026-06-01 y los
+  2.5 sólo se sirven a proyectos que ya los usaban.
+- **Razonamiento** (`GeminiThinkingLevelEnum`, `thinkingLevel` de la API):
+  `low`, `medium` (por defecto, `GEMINI_THINKING_LEVEL`) y `high`. Gemini 3.8
+  razona siempre: no hay «apagado», y `minimal` da error. Se piden los
+  resúmenes del razonamiento (`includeThoughts`) y se ven en el modal mientras
+  piensa. El navegador recuerda el último nivel, y si ya no está en la lista
+  usa el de por defecto. No se manda `temperature`: los modelos 3.x lo ignoran.
+- **Modos** (`GeminiAiModeEnum`):
+  1. `create`: título, slug y cuerpo de una página nueva. En «Añadir página»
+     rellena el formulario sin guardar. Con una página abierta, antes la guarda
+     (si no se puede, no sigue), crea la nueva al final con su contenido de una
+     vez (si se rechaza, no queda una página vacía), suelta el bloqueo de la
+     actual y abre la nueva. Para cambiar la página abierta está `edit`.
+  2. `edit`: reescribe o amplía la página abierta. «Reemplazar contenido actual»
+     o «Añadir al final».
+  3. `correct`: sólo ortografía, puntuación y estilo.
+- **Qué recibe Gemini:** la página en Markdown (Editor.js se convierte antes) o
+  en HTML si es HTML. Nunca el JSON de Editor.js. Los bloques sin equivalente
+  en Markdown (imágenes subidas, avisos, vídeos, tarjetas de enlace…) le llegan
+  como marcas `[[BLOQUE_1]]` que no debe tocar; al volver se pone en cada una el
+  bloque original, intacto. Si Gemini quita alguna, el resultado lo avisa. Ver
+  [decisiones-tecnicas.md](decisiones-tecnicas.md) D44.
+- **Aplicar:** el resultado entra en el editor sin guardar. «Deshacer lo de
+  Gemini» (`undoAiAction`, aviso encima del formulario) lo devuelve a como
+  estaba antes de aplicarlo, desde la caché del servidor (un día, por pestaña
+  y página). Guardar lo olvida.
+- **Stream** `POST /admin/contents/{content}/pages/ai/stream`
+  (`ContentPageAiStreamController`): `thought` y `content` mientras escribe; al
+  terminar, `complete` (ya en el formato de la página, con avisos) y `done`. Si
+  algo falla, sólo `error`: sin saldo (402), clave sin permiso, cuota agotada,
+  petición bloqueada por los filtros de Google, respuesta vacía. Una respuesta
+  cortada (`finishReason` `MAX_TOKENS`, `SAFETY`…) llega con su aviso.
+- **Límite:** `throttle:content-ai`, por usuario: 20 por minuto y 300 por hora
+  (`config/rate_limits.php`). Holgado a propósito para no cortar a quien
+  redacta; corta bucles y scripts. Al pasarlo, el modal lo dice.
+- **Cerrar el modal** mientras escribe detiene la petición.
+
+*Fijado por `tests/Feature/Content/ContentPageAiAssistantTest.php`.*
+
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-10-07
+> Creado: 2026-05-25 · Última revisión: 2026-10-17
