@@ -1116,7 +1116,18 @@ de las categorías elegidas, etiquetas y tecnologías. Se puede crear una
 categoría, subcategoría o etiqueta sin salir: si ya existe una con ese nombre
 o slug (son únicos en toda la base) se reutiliza, y se añade a la plataforma.
 Se guarda con `saveCategories()` y `saveTags()` (F5); sin categoría principal
-se pasa `0` para que ninguna quede marcada.
+se pasa `0` para que ninguna quede marcada. Al quitar una categoría se quitan
+también sus subcategorías del formulario (antes seguían elegidas sin verse y el
+guardado fallaba).
+
+**Al cambiar de plataforma** (en «Datos»), `Content::moveTaxonomiesToItsPlatform()`
+(evento `updated` del modelo) pasa a la nueva las etiquetas, todas (como al
+elegirlas, la que la plataforma no tenía se le añade), y las categorías que la
+nueva también tenga, con su marca de principal. Las demás se quedan ligadas a
+la anterior: no se ven, pero vuelven si el contenido vuelve a ella; no se
+añaden a la nueva porque de sus categorías sale el menú de la web. Los
+relacionados de la plataforma anterior dejan de mostrarse (sólo se enlazan
+contenidos de la misma). El panel avisa de todo eso al guardar.
 
 ### Visibilidad
 

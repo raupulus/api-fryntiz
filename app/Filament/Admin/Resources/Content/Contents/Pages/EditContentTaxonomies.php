@@ -66,6 +66,15 @@ class EditContentTaxonomies extends EditRecord
                             if (! in_array((int) $get('main_category_id'), array_map('intval', (array) $get('categories')), true)) {
                                 $set('main_category_id', null);
                             }
+
+                            // Y las subcategorías, de las elegidas: una de una
+                            // categoría quitada dejaba de verse en la lista,
+                            // seguía elegida por debajo y el guardado fallaba
+                            // con «subcategorías no es válido».
+                            $set('subcategories', array_values(array_intersect(
+                                array_map('intval', (array) $get('subcategories')),
+                                array_keys($this->subcategoryOptions((array) $get('categories'))),
+                            )));
                         })
                         ->createOptionForm([TextInput::make('name')->label('Nombre')->required()->maxLength(255)])
                         ->createOptionUsing(fn (array $data): int => $this->createCategory((string) $data['name']))
@@ -120,8 +129,12 @@ class EditContentTaxonomies extends EditRecord
             // Esta consulta une tablas (la API lee `is_main` del join): la
             // columna va con su tabla.
             'subcategories' => $content->subcategoriesQuery()->distinct()->pluck('categories.id')->map(fn ($id): int => (int) $id)->all(),
+            // De su plataforma: las de otra (si se cambió de plataforma y no
+            // existían en ésta) no están entre las opciones, y una principal
+            // que no se ve impedía guardar.
             'main_category_id' => DB::table('content_categories')
                 ->join('platform_categories', 'platform_categories.id', '=', 'content_categories.platform_category_id')
+                ->where('platform_categories.platform_id', $content->platform_id)
                 ->where('content_categories.content_id', $content->id)
                 ->whereNull('content_categories.deleted_at')
                 ->where('content_categories.is_main', true)

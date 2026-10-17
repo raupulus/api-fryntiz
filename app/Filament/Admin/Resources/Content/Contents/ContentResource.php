@@ -121,6 +121,8 @@ class ContentResource extends Resource
                         ->in(fn (?Content $record): array => array_keys(self::platformOptions($record)))
                         ->default(fn () => request()->query('platform_id'))
                         ->disabled(fn (?Content $record): bool => $record !== null && Gate::denies('manage', $record))
+                        ->helperText(fn (?Content $record): ?string => $record === null ? null
+                            : 'Al cambiarla, sus categorías y etiquetas pasan a la nueva; las categorías que no existan allí dejan de verse.')
                         ->searchable()->label('Plataforma'),
                     Select::make('author_id')->required()
                         ->getSearchResultsUsing(fn (string $search): array => self::authorResults($search))

@@ -217,6 +217,14 @@ class Content extends BaseModel
         // y tendencia de la plataforma, que no leía nadie, y sus categorías,
         // que no dependen de los contenidos. La API tiene ahora su propia
         // caché, que cualquier cambio invalida (F9).
+        // Las categorías y etiquetas van ligadas a la plataforma: al cambiarla
+        // se pasan a la nueva, o dejarían de verse en el panel y en la API.
+        static::updated(function (Content $model): void {
+            if ($model->wasChanged('platform_id')) {
+                $model->taxonomyMove = $model->moveTaxonomiesToItsPlatform();
+            }
+        });
+
         static::saved(fn () => ApiCacheVersion::bump());
         static::deleted(fn () => ApiCacheVersion::bump());
         static::restored(fn () => ApiCacheVersion::bump());
@@ -718,6 +726,83 @@ class Content extends BaseModel
                 $row->save();
             }
         }
+    }
+
+    /**
+     * Lo que pasó con sus taxonomías al cambiar de plataforma en el último
+     * guardado (`moveTaxonomiesToItsPlatform()`), para avisar en el panel. No
+     * es una columna.
+     *
+     * @var array{categories: int, tags: int, left: list<string>, related: int}|null
+     */
+    public ?array $taxonomyMove = null;
+
+    /**
+     * Pasa sus categorías y etiquetas a la plataforma que tiene ahora.
+     *
+     * Las etiquetas pasan todas: igual que al elegirlas (`saveTags()`), una
+     * etiqueta que la plataforma no tenía se le añade. Las categorías pasan si
+     * la nueva plataforma también las tiene, con su marca de principal; las
+     * demás se quedan como estaban, ligadas a la plataforma anterior: no se
+     * ven, pero vuelven si el contenido vuelve a ella. No se añaden a la nueva
+     * porque de sus categorías sale el menú de la web.
+     *
+     * Los relacionados no se tocan: sólo se enlazan contenidos de la misma
+     * plataforma, así que los de la anterior dejan de mostrarse.
+     *
+     * @return array{categories: int, tags: int, left: list<string>, related: int}
+     */
+    public function moveTaxonomiesToItsPlatform(): array
+    {
+        $tagIds = ContentTag::query()
+            ->where('content_tags.content_id', $this->id)
+            ->join('platform_tags', 'platform_tags.id', '=', 'content_tags.platform_tag_id')
+            ->where('platform_tags.platform_id', '!=', $this->platform_id)
+            ->pluck('platform_tags.tag_id')
+            ->map(fn ($id): int => (int) $id)
+            ->all();
+
+        if ($tagIds !== []) {
+            $this->saveTags([...$tagIds, ...$this->tagsQuery()->pluck('id')->all()]);
+        }
+
+        $moved = 0;
+        $left = [];
+
+        $rows = ContentCategory::query()
+            ->where('content_id', $this->id)
+            ->whereHas('platformCategory', fn ($query) => $query->where('platform_id', '!=', $this->platform_id))
+            ->with('platformCategory.category')
+            ->get();
+
+        foreach ($rows as $row) {
+            $categoryId = (int) $row->platformCategory?->category_id;
+            $target = PlatformCategory::query()->where('platform_id', $this->platform_id)->where('category_id', $categoryId)->first();
+
+            if ($target === null) {
+                $left[] = (string) ($row->platformCategory?->category->name ?? $categoryId);
+
+                continue;
+            }
+
+            $new = ContentCategory::withTrashed()->firstOrNew(['content_id' => $this->id, 'platform_category_id' => $target->id]);
+
+            if ($new->trashed()) {
+                $new->restore();
+            }
+
+            $new->is_main = (bool) $row->is_main;
+            $new->save();
+            $row->delete();
+            $moved++;
+        }
+
+        return [
+            'categories' => $moved,
+            'tags' => count(array_unique($tagIds)),
+            'left' => $left,
+            'related' => $this->contentsRelatedAllPlatforms()->where('contents.platform_id', '!=', $this->platform_id)->count(),
+        ];
     }
 
     /**
