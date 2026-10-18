@@ -101,5 +101,8 @@ Thumbs.db
 
 ## Archivos generados DDL y base de datos
 /database/DDL
+# Volcados e importaciones en SQL: llevan datos reales (contraseñas cifradas,
+# correos…) y no se suben nunca.
+/database/sql
 /derby.log
 /plantilla
