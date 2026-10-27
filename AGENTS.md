@@ -165,12 +165,11 @@ No usar ninguna otra dirección.
 | `filament/filament` | ^5.0 | Paneles de administración |
 | `laravel/sanctum` | ^4.0 | Autenticación API por tokens |
 | `laravel/fortify` | ^1.24 | Autenticación web |
-| `laravel/mcp` | ^0.8.1 | Servidor MCP (`app/Mcp/`, `routes/ai.php`) |
+| `laravel/mcp` | ^1.1 | Servidor MCP (`app/Mcp/`, `routes/ai.php`) |
 | `laravel/tinker` | ^3.0 | REPL |
-| `intervention/image` + `-laravel` | ^3.0 / ^1.5 | Procesamiento de imágenes |
+| `intervention/image` + `-laravel` | ^4.0 / ^4.0 | Procesamiento de imágenes |
 | `guzzlehttp/guzzle` | ^7.9 | Cliente HTTP (AEMET) |
 | `spatie/laravel-sitemap` | ^8.0 | Sitemap |
-| `google/recaptcha` | ^1.3 | reCAPTCHA |
 
 **Dev:** `knuckleswtf/scribe` ^5.11 (doc de API) · `larastan/larastan` ^3.10 ·
 `laravel/pint` ^1.18 · `phpunit/phpunit` ^11.0 · `barryvdh/laravel-debugbar` ^4.0 ·
@@ -182,10 +181,10 @@ No usar ninguna otra dirección.
 | Paquete | Versión |
 |---------|---------|
 | `vue` | ^3.5 |
-| `alpinejs` | ^3.15 |
+| `alpinejs` | ^3.17 |
 | `tailwindcss` + `@tailwindcss/vite` | ^4.3 |
-| `vite` | ^8.0 |
-| `laravel-vite-plugin` | ^3.1 |
+| `vite` | ^8.3 |
+| `laravel-vite-plugin` | ^3.2 |
 | `@vitejs/plugin-vue` | ^6.0 |
 | `@tailwindcss/forms` | ^0.5 |
 

@@ -74,6 +74,7 @@ _ide_helper_models.php
 !.agents/skills/
 .claude/*
 !.claude/skills/
+/skills/
 
 # Documentación interna y planificación: NO va en git.
 #

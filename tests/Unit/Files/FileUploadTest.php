@@ -316,8 +316,8 @@ class FileUploadTest extends TestCase
         $result = File::addFile($file, $this->directory, has_thumbnails: false);
 
         $this->assertNotNull($result);
-        $this->assertSame(File::MAX_IMAGE_WIDTH, $result->height);
-        $this->assertSame(512, $result->width);
+        $this->assertSame(File::MAX_IMAGE_HEIGHT, $result->height);
+        $this->assertSame(216, $result->width);
     }
 
     public function test_caps_the_largest_dimension_on_horizontal_images(): void
@@ -327,7 +327,7 @@ class FileUploadTest extends TestCase
 
         $this->assertNotNull($result);
         $this->assertSame(File::MAX_IMAGE_WIDTH, $result->width);
-        $this->assertSame(512, $result->height);
+        $this->assertSame(384, $result->height);
     }
 
     public function test_image_smaller_than_max_dimension_is_not_enlarged(): void

@@ -114,6 +114,7 @@ class ImageCropperUpload extends FileUpload
     {
         return $this
             ->imageEditorAspectRatios(['1200:630'])
+            ->imageCropAspectRatio('1200:630')
             ->imageResizeMode('cover')
             ->imageResizeTargetWidth('1200')
             ->imageResizeTargetHeight('630');

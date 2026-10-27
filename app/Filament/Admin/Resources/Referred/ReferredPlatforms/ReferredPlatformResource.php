@@ -7,6 +7,7 @@ namespace App\Filament\Admin\Resources\Referred\ReferredPlatforms;
 use App\Filament\Admin\Resources\Referred\ReferredPlatforms\Pages\CreateReferredPlatform;
 use App\Filament\Admin\Resources\Referred\ReferredPlatforms\Pages\EditReferredPlatform;
 use App\Filament\Admin\Resources\Referred\ReferredPlatforms\Pages\ListReferredPlatforms;
+use App\Filament\Components\ImageCropperUpload;
 use App\Models\Referred\ReferredPlatform;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
@@ -18,6 +19,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -41,6 +43,14 @@ class ReferredPlatformResource extends Resource
     {
         return $schema
             ->components([
+                ImageCropperUpload::makeImage('image_id', 'logotipo')
+                    ->asFileRecord()
+                    ->storeFiles(false)
+                    ->icon(128)
+                    ->directory('referred_platforms')
+                    ->label('Logotipo')
+                    ->columnSpanFull(),
+
                 TextInput::make('name')
                     ->label('Nombre de la plataforma')
                     ->required()
@@ -82,6 +92,10 @@ class ReferredPlatformResource extends Resource
     {
         return $table
             ->columns([
+                ImageColumn::make('image_id')
+                    ->label('Logo')
+                    ->square(),
+
                 TextColumn::make('name')
                     ->label('Nombre')
                     ->searchable()

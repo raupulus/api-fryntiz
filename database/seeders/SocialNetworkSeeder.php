@@ -201,7 +201,8 @@ class SocialNetworkSeeder extends Seeder
         ];
 
         foreach ($networks as $network) {
-            SocialNetwork::firstOrCreate(
+            $network['image'] = 'storage/social-networks/'.$network['slug'].'.webp';
+            SocialNetwork::updateOrCreate(
                 ['slug' => $network['slug']],
                 $network
             );

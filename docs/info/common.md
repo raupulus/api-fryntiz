@@ -123,6 +123,19 @@ Los modelos del proyecto extienden `BaseModel` (o `BaseModel` directamente), que
 Todos son idempotentes (`firstOrCreate` por `slug`) y están registrados en
 `DatabaseSeeder` en el orden correcto.
 
+## Redes Sociales y Plataformas Referidas
+
+### Iconos de Redes Sociales (`social_networks`)
+Las 20 redes sociales cuentan con iconos vectoriales oficiales en WebP (512×512 px) con esquinas redondeadas (`rx="104"`) y color de marca oficial centrado en la paleta:
+- Ubicación en disco: `storage/app/public/social-networks/{slug}.webp` (servidas vía `storage/social-networks/{slug}.webp` por `asset()`).
+- Campo `image` de `social_networks` actualizado con la ruta relativa para consumo uniforme desde `User::profile()` (`url_image`).
+- Seeder `SocialNetworkSeeder` actualizado con `updateOrCreate` asignando automáticamente la ruta del icono a cada red.
+
+### Logos de Plataformas Referidas (`referred_platforms`)
+- Amazon, AliExpress y PcComponentes disponen de logos oficiales vectoriales en WebP (512×512 px).
+- Registrados en el gestor transversal `File` con módulo `referred_platforms` y vinculados a través de `image_id` con miniaturas automáticas.
+- Panel Filament administrable mediante `ImageCropperUpload` con soporte para selección y sustitución en vivo.
+
 ## Rutas Web
 
 | Ruta | Descripción |
@@ -131,4 +144,4 @@ Todos son idempotentes (`firstOrCreate` por `slug`) y están registrados en
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-24
+> Creado: 2026-05-25 · Última revisión: 2026-10-27

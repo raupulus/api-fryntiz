@@ -1,4 +1,5 @@
 *
 !.gitignore
-!smartplant/default.jpg
+!smartplant/
+!smartplant/default.webp
 !icons/file_types/.gitignore

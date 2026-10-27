@@ -36,7 +36,7 @@ echo "==> Comprobación previa"
 # de la base de datos y ejecutan procesos— entraría en la caché y quedaría
 # publicado. `routes/ai.php` sólo se registra fuera de producción, pero esa
 # comprobación se evalúa al cachear, no al servir.
-APP_ENV_ACTUAL="$(php -r 'echo trim((string) (parse_ini_file(".env")["APP_ENV"] ?? ""));')"
+APP_ENV_ACTUAL="$(php -r 'preg_match("/^\\s*APP_ENV\\s*=\\s*[\"'\'']?([^\"'\''\\s#]+)/m", (string) @file_get_contents(".env"), $m); echo $m[1] ?? "";')"
 if [ "$APP_ENV_ACTUAL" != "production" ]; then
     echo "ERROR: APP_ENV es '${APP_ENV_ACTUAL:-vacío}' y debe ser 'production'." >&2
     exit 1

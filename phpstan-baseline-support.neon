@@ -25,12 +25,6 @@ parameters:
 			path: support/helpers/AEMETHelper.php
 
 		-
-			message: '#^Call to static method error\(\) on an unknown class Log\.$#'
-			identifier: class.notFound
-			count: 4
-			path: support/helpers/AEMETHelper.php
-
-		-
 			message: '#^Function extractDateFromUnknownLine not found\.$#'
 			identifier: function.notFound
 			count: 2

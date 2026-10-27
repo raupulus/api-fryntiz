@@ -111,6 +111,7 @@ class ContentAvailableTypesSeeder extends Seeder
         foreach ($datas as $data) {
             $exist = DB::table($this->tableName)
                 ->where('slug', $data['slug'])
+                ->orWhere('name', $data['name'])
                 ->first();
 
             if (! $exist) {

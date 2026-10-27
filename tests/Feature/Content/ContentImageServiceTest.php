@@ -89,11 +89,11 @@ class ContentImageServiceTest extends TestCase
         $originalHash = sha1_file($file->storagePathFile);
         $thumbnails = $this->thumbnailHashes($file);
 
-        $this->images->crop($file, 100, 100, 1500, 900);
+        $this->images->crop($file, 100, 100, 1200, 800);
 
         $file->refresh();
         $this->assertSame($data['file_id'], $file->id);
-        $this->assertSame([1500, 900], [(int) $file->width, (int) $file->height]);
+        $this->assertSame([1200, 800], [(int) $file->width, (int) $file->height]);
         $this->assertNotSame($originalHash, sha1_file($file->storagePathFile));
 
         // Las mismas copias (mismos ids, así que las mismas URLs de los
@@ -128,7 +128,7 @@ class ContentImageServiceTest extends TestCase
         $this->images->replace($file, UploadedFile::fake()->image('otra.png', 1600, 1600));
 
         $file->refresh();
-        $this->assertSame([1600, 1600], [(int) $file->width, (int) $file->height]);
+        $this->assertSame([1080, 1080], [(int) $file->width, (int) $file->height]);
         $this->assertSame('image/webp', $file->fileType?->mime);
         $this->assertSame($thumbnailIds, $file->thumbnails()->pluck('id')->sort()->values()->all());
     }

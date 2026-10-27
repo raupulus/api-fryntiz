@@ -173,11 +173,13 @@ class File extends BaseModel
     public const MAX_FILE_SIZE = 20 * 1024 * 1024;
 
     /**
-     * Dimensión máxima (en su lado más grande, sea ancho o alto) al que se guarda el original de una imagen.
+     * Dimensión máxima al que se guarda el original de una imagen (1080p: máx 1920×1080).
      */
-    public const MAX_IMAGE_WIDTH = 2560;
+    public const MAX_IMAGE_WIDTH = 1920;
 
-    public const MAX_IMAGE_DIMENSION = 2560;
+    public const MAX_IMAGE_HEIGHT = 1080;
+
+    public const MAX_IMAGE_DIMENSION = 1920;
 
     /**
      * Tipos que se enseñan en el navegador al servirlos. El resto se sirve como
@@ -507,8 +509,8 @@ class File extends BaseModel
             // píxeles antes, las fotos de móvil quedan tumbadas para siempre.
             $image->orient();
 
-            // # 2. Acotado al tamaño máximo por su lado mayor.
-            $image->scaleDown(width: self::MAX_IMAGE_WIDTH, height: self::MAX_IMAGE_WIDTH);
+            // # 2. Acotado al tamaño máximo 1080p.
+            $image->scaleDown(width: self::MAX_IMAGE_WIDTH, height: self::MAX_IMAGE_HEIGHT);
 
             // # 3. Limpieza de metadatos. Ver stripMetadata().
             self::stripMetadata($image);
@@ -598,7 +600,7 @@ class File extends BaseModel
             // lo aplica libheif al leerlas.
             $image = self::decodeImage($absolutePath, $mime);
 
-            $image->scaleDown(width: self::MAX_IMAGE_WIDTH, height: self::MAX_IMAGE_WIDTH);
+            $image->scaleDown(width: self::MAX_IMAGE_WIDTH, height: self::MAX_IMAGE_HEIGHT);
 
             self::stripMetadata($image);
 
@@ -635,7 +637,7 @@ class File extends BaseModel
      */
     public function replacePixels(ImageInterface $image): void
     {
-        $image->scaleDown(width: self::MAX_IMAGE_WIDTH, height: self::MAX_IMAGE_WIDTH);
+        $image->scaleDown(width: self::MAX_IMAGE_WIDTH, height: self::MAX_IMAGE_HEIGHT);
 
         self::stripMetadata($image);
 

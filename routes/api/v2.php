@@ -162,7 +162,7 @@ require __DIR__.'/../printers/v2.php';
 | contrato es la pareja método + ruta, y lo que no está en la documentación
 | sencillamente no existe.
 */
-Route::any('{any}', function () {
+Route::match(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], '{any}', function () {
     // Por `JsonHelper`, no a mano: es la puerta estática del mismo envelope que
     // usan los controladores con `ApiResponseTrait`. Ver la nota de cabecera de
     // cualquiera de los dos.

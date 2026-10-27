@@ -10,9 +10,9 @@ use Illuminate\Database\Eloquent\Model;
  * Class BaseModel
  * Modelo mínimo con funciones comunes a todos los modelos.
  *
- * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseModel newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseModel newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|BaseModel query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static> newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static> newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static> query()
  *
  * @mixin \Eloquent
  */

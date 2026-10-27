@@ -9,6 +9,7 @@ use App\Models\Hardware\HardwareEnergy;
 use App\Models\Hardware\HardwareEnergyHistorical;
 use App\Models\Hardware\HardwareEnergyReading;
 use App\Models\Hardware\HardwareEnergyToday;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -102,7 +103,10 @@ class HardwareService
                 // no sabe de `deleted_at`, así que un elemento borrado lógicamente
                 // seguía siendo invisible aquí, se intentaba crear otro igual y
                 // el dispositivo entero se comía un 500 en cada subida.
-                'hardwareEnergy' => static fn ($q) => $q->withTrashed(),
+                'hardwareEnergy' => static function ($q): void {
+                    /** @var Builder<HardwareEnergy> $q */
+                    $q->withTrashed();
+                },
                 'hardwareEnergy.monitorized',
             ])
             ->find($deviceId);

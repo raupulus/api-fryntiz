@@ -36,7 +36,7 @@ class SmartPlantViewsTest extends TestCase
             'name_scientific' => 'Ulmus parvifolia',
             'description' => $description,
             'details' => $details,
-            'image' => 'smartplant/default.jpg',
+            'image' => 'smartplant/default.webp',
             'start_at' => now()->subYear(),
         ]);
     }

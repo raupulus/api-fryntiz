@@ -118,7 +118,8 @@
 usa como primera carga y para los metadatos del SSR. Sin los `*_token`.</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-platforms--platform_slug--categories">
-                                <a href="#endpoints-GETapi-v2-platforms--platform_slug--categories">Categorías disponibles en una plataforma.</a>
+                                <a href="#endpoints-GETapi-v2-platforms--platform_slug--categories">Categorías raíz de una plataforma con sus subcategorías y cuántos
+contenidos publicados tiene cada una.</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-platforms--platform_slug--tags">
                                 <a href="#endpoints-GETapi-v2-platforms--platform_slug--tags">Etiquetas de una plataforma, con cuántos contenidos publicados las usan.</a>
@@ -292,7 +293,7 @@ la primera página. Con `?include=` lo que se pida (`all`, todo).</a>
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: October 5, 2026</li>
+        <li>Last updated: October 27, 2026</li>
     </ul>
 </div>
 
@@ -618,10 +619,10 @@ añade <code>device:{id}</code>. No emite nunca el comodín ni la ability de ses
     --data "{
     \"device_id\": 16,
     \"abilities\": [
-        \"printers:read\"
+        \"airflight:write\"
     ],
     \"name\": \"n\",
-    \"expires_at\": \"2052-10-28\"
+    \"expires_at\": \"2052-11-19\"
 }"
 </code></pre></div>
 
@@ -639,10 +640,10 @@ const headers = {
 let body = {
     "device_id": 16,
     "abilities": [
-        "printers:read"
+        "airflight:write"
     ],
     "name": "n",
-    "expires_at": "2052-10-28"
+    "expires_at": "2052-11-19"
 };
 
 fetch(url, {
@@ -774,10 +775,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="expires_at"                data-endpoint="POSTapi-v2-auth-tokens-devices"
-               value="2052-10-28"
+               value="2052-11-19"
                data-component="body">
     <br>
-<p>Must be a valid date. Must be a date after <code>now</code>. Example: <code>2052-10-28</code></p>
+<p>Must be a valid date. Must be a date after <code>now</code>. Example: <code>2052-11-19</code></p>
         </div>
         </form>
 
@@ -2310,7 +2311,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: max-age=60, public
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 299
+x-ratelimit-remaining: 276
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -2339,7 +2340,7 @@ permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), m
             &quot;title&quot;: &quot;La Gu&iacute;a Linux&quot;,
             &quot;slug&quot;: &quot;laguialinux&quot;,
             &quot;domain&quot;: &quot;laguialinux.com&quot;,
-            &quot;description&quot;: &quot;Web sobre tecnolog&iacute;a, GNU/Linux y software libre&quot;,
+            &quot;description&quot;: &quot;Gu&iacute;as, tutoriales y trucos de GNU/Linux&quot;,
             &quot;image&quot;: {
                 &quot;url&quot;: &quot;http://api.raupulus.dev/file/get/platform/70/KkagiCXwbt9WFNBqTehg2XVEbCdeQXpvNgq55IhW.png&quot;,
                 &quot;width&quot;: 840,
@@ -2350,10 +2351,21 @@ permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), m
                     &quot;micro&quot;: &quot;http://api.raupulus.dev/file/thumbnail/get/platform/311/KkagiCXwbt9WFNBqTehg2XVEbCdeQXpvNgq55IhW.webp&quot;,
                     &quot;small&quot;: &quot;http://api.raupulus.dev/file/thumbnail/get/platform/312/KkagiCXwbt9WFNBqTehg2XVEbCdeQXpvNgq55IhW.webp&quot;,
                     &quot;medium&quot;: &quot;http://api.raupulus.dev/file/thumbnail/get/platform/313/KkagiCXwbt9WFNBqTehg2XVEbCdeQXpvNgq55IhW.webp&quot;,
+                    &quot;normal&quot;: &quot;http://api.raupulus.dev/file/thumbnail/get/platform/314/KkagiCXwbt9WFNBqTehg2XVEbCdeQXpvNgq55IhW.webp&quot;,
                     &quot;large&quot;: &quot;http://api.raupulus.dev/file/thumbnail/get/platform/314/KkagiCXwbt9WFNBqTehg2XVEbCdeQXpvNgq55IhW.webp&quot;
                 }
             },
             &quot;created_at&quot;: &quot;2023-01-31T15:51:31.000000Z&quot;
+        },
+        {
+            &quot;id&quot;: 5,
+            &quot;name&quot;: &quot;Noticias La Gu&iacute;a Linux&quot;,
+            &quot;title&quot;: &quot;Noticias La Gu&iacute;a Linux&quot;,
+            &quot;slug&quot;: &quot;news&quot;,
+            &quot;domain&quot;: &quot;news.laguialinux.com&quot;,
+            &quot;description&quot;: &quot;Portal de Noticias de Linux, distribuciones y ciberseguridad&quot;,
+            &quot;image&quot;: null,
+            &quot;created_at&quot;: &quot;2026-10-12T10:55:04.000000Z&quot;
         },
         {
             &quot;id&quot;: 3,
@@ -2372,6 +2384,7 @@ permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), m
                     &quot;micro&quot;: &quot;http://api.raupulus.dev/file/thumbnail/get/platform/306/yi4p843Sb4pdZoy1BXHDwSSoNlTB7W3FYi8dqZaQ.webp&quot;,
                     &quot;small&quot;: &quot;http://api.raupulus.dev/file/thumbnail/get/platform/307/yi4p843Sb4pdZoy1BXHDwSSoNlTB7W3FYi8dqZaQ.webp&quot;,
                     &quot;medium&quot;: &quot;http://api.raupulus.dev/file/thumbnail/get/platform/308/yi4p843Sb4pdZoy1BXHDwSSoNlTB7W3FYi8dqZaQ.webp&quot;,
+                    &quot;normal&quot;: &quot;http://api.raupulus.dev/file/thumbnail/get/platform/309/yi4p843Sb4pdZoy1BXHDwSSoNlTB7W3FYi8dqZaQ.webp&quot;,
                     &quot;large&quot;: &quot;http://api.raupulus.dev/file/thumbnail/get/platform/310/yi4p843Sb4pdZoy1BXHDwSSoNlTB7W3FYi8dqZaQ.webp&quot;
                 }
             },
@@ -2379,12 +2392,12 @@ permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), m
         }
     ],
     &quot;meta&quot;: {
-        &quot;total&quot;: 3,
+        &quot;total&quot;: 4,
         &quot;per_page&quot;: 25,
         &quot;current_page&quot;: 1,
         &quot;last_page&quot;: 1,
         &quot;from&quot;: 1,
-        &quot;to&quot;: 3
+        &quot;to&quot;: 4
     }
 }</code>
  </pre>
@@ -2510,7 +2523,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 298
+x-ratelimit-remaining: 275
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -2611,7 +2624,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                     </form>
 
-                    <h2 id="endpoints-GETapi-v2-platforms--platform_slug--categories">Categorías disponibles en una plataforma.</h2>
+                    <h2 id="endpoints-GETapi-v2-platforms--platform_slug--categories">Categorías raíz de una plataforma con sus subcategorías y cuántos
+contenidos publicados tiene cada una.</h2>
 
 <p>
 </p>
@@ -2658,7 +2672,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 297
+x-ratelimit-remaining: 274
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -2806,7 +2820,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 296
+x-ratelimit-remaining: 273
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -2958,7 +2972,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 295
+x-ratelimit-remaining: 272
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -3107,7 +3121,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 294
+x-ratelimit-remaining: 271
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -3272,7 +3286,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 293
+x-ratelimit-remaining: 270
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -3488,7 +3502,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 292
+x-ratelimit-remaining: 269
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -3704,7 +3718,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 291
+x-ratelimit-remaining: 268
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -3932,7 +3946,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 290
+x-ratelimit-remaining: 267
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -4148,7 +4162,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 289
+x-ratelimit-remaining: 266
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -4308,7 +4322,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 288
+x-ratelimit-remaining: 265
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -4468,7 +4482,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 287
+x-ratelimit-remaining: 264
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -4628,7 +4642,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 286
+x-ratelimit-remaining: 263
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -6059,7 +6073,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"duration\": 22,
-    \"read_at\": \"2022-10-29\",
+    \"read_at\": \"2022-11-20\",
     \"energy\": []
 }"
 </code></pre></div>
@@ -6078,7 +6092,7 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "duration": 22,
-    "read_at": "2022-10-29",
+    "read_at": "2022-11-20",
     "energy": []
 };
 
@@ -6219,10 +6233,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="read_at"                data-endpoint="POSTapi-v2-energy-readings"
-               value="2022-10-29"
+               value="2022-11-20"
                data-component="body">
     <br>
-<p>Must be a valid date. Must be a date after or equal to <code>2000-01-01</code>. Must be a date before or equal to <code>2026-10-05 13:16:05</code>. Example: <code>2022-10-29</code></p>
+<p>Must be a valid date. Must be a date after or equal to <code>2000-01-01</code>. Must be a date before or equal to <code>2026-10-27 07:15:07</code>. Example: <code>2022-11-20</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>energy</code></b>&nbsp;&nbsp;
@@ -6430,7 +6444,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 30
-x-ratelimit-remaining: 29
+x-ratelimit-remaining: 23
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -7323,8 +7337,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"user_id\": 16,
-    \"start_at\": \"2026-10-05 12:16:05\",
-    \"end_at\": \"2026-10-05 12:16:05\",
+    \"start_at\": \"2026-10-27 06:15:07\",
+    \"end_at\": \"2026-10-27 06:15:07\",
     \"duration\": 16,
     \"pulsations\": 39,
     \"pulsations_special_keys\": 84,
@@ -7348,8 +7362,8 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "user_id": 16,
-    "start_at": "2026-10-05 12:16:05",
-    "end_at": "2026-10-05 12:16:05",
+    "start_at": "2026-10-27 06:15:07",
+    "end_at": "2026-10-27 06:15:07",
     "duration": 16,
     "pulsations": 39,
     "pulsations_special_keys": 84,
@@ -7483,10 +7497,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_at"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="2026-10-05 12:16:05"
+               value="2026-10-27 06:15:07"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-10-05 12:16:05</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-10-27 06:15:07</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_at</code></b>&nbsp;&nbsp;
@@ -7495,10 +7509,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_at"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="2026-10-05 12:16:05"
+               value="2026-10-27 06:15:07"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-10-05 12:16:05</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-10-27 06:15:07</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
@@ -7593,8 +7607,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"user_id\": 16,
-    \"start_at\": \"2026-10-05 12:16:05\",
-    \"end_at\": \"2026-10-05 12:16:05\",
+    \"start_at\": \"2026-10-27 06:15:07\",
+    \"end_at\": \"2026-10-27 06:15:07\",
     \"duration\": 16,
     \"clicks_left\": 39,
     \"clicks_right\": 84,
@@ -7619,8 +7633,8 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "user_id": 16,
-    "start_at": "2026-10-05 12:16:05",
-    "end_at": "2026-10-05 12:16:05",
+    "start_at": "2026-10-27 06:15:07",
+    "end_at": "2026-10-27 06:15:07",
     "duration": 16,
     "clicks_left": 39,
     "clicks_right": 84,
@@ -7755,10 +7769,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_at"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="2026-10-05 12:16:05"
+               value="2026-10-27 06:15:07"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-10-05 12:16:05</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-10-27 06:15:07</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_at</code></b>&nbsp;&nbsp;
@@ -7767,10 +7781,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_at"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="2026-10-05 12:16:05"
+               value="2026-10-27 06:15:07"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-10-05 12:16:05</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-10-27 06:15:07</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
@@ -8038,7 +8052,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 30
-x-ratelimit-remaining: 28
+x-ratelimit-remaining: 22
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -8164,9 +8178,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"humidity\": 4326.41688,
     \"soil_humidity\": 17,
     \"soil_humidity_raw\": 16,
-    \"full_water_tank\": false,
+    \"full_water_tank\": true,
     \"waterpump_enabled\": false,
-    \"vaporizer_enabled\": false
+    \"vaporizer_enabled\": true
 }"
 </code></pre></div>
 
@@ -8190,9 +8204,9 @@ let body = {
     "humidity": 4326.41688,
     "soil_humidity": 17,
     "soil_humidity_raw": 16,
-    "full_water_tank": false,
+    "full_water_tank": true,
     "waterpump_enabled": false,
-    "vaporizer_enabled": false
+    "vaporizer_enabled": true
 };
 
 fetch(url, {
@@ -8418,7 +8432,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>waterpump_enabled</code></b>&nbsp;&nbsp;
@@ -8462,7 +8476,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
         </form>
 
@@ -8485,7 +8499,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"sensors\": [
-        \"lightning\"
+        \"rain\"
     ],
     \"location_type\": \"outdoor\"
 }"
@@ -8504,7 +8518,7 @@ const headers = {
 
 let body = {
     "sensors": [
-        "lightning"
+        "rain"
     ],
     "location_type": "outdoor"
 };
@@ -8663,7 +8677,7 @@ Must be one of:
     --header "Accept: application/json" \
     --data "{
     \"sensors\": [
-        \"wind\"
+        \"humidity\"
     ]
 }"
 </code></pre></div>
@@ -8681,7 +8695,7 @@ const headers = {
 
 let body = {
     "sensors": [
-        "wind"
+        "humidity"
     ]
 };
 
@@ -8872,7 +8886,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 30
-x-ratelimit-remaining: 27
+x-ratelimit-remaining: 21
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -9035,7 +9049,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 30
-x-ratelimit-remaining: 26
+x-ratelimit-remaining: 20
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -9563,7 +9577,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 281
+x-ratelimit-remaining: 258
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -9699,7 +9713,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 280
+x-ratelimit-remaining: 257
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -9847,7 +9861,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 279
+x-ratelimit-remaining: 256
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -9995,7 +10009,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 30
-x-ratelimit-remaining: 25
+x-ratelimit-remaining: 19
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -10155,7 +10169,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 30
-x-ratelimit-remaining: 24
+x-ratelimit-remaining: 18
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff

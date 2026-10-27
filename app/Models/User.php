@@ -556,7 +556,7 @@ class User extends Authenticatable implements FilamentUser
      *
      * Miraba `deleted_at`, que es borrado lógico, no desactivación (N192).
      *
-     * @return Collection<int, User>
+     * @return Collection<int, static>
      */
     public static function getAllActive()
     {
@@ -585,7 +585,7 @@ class User extends Authenticatable implements FilamentUser
      * devolvía **los usuarios vivos**, justo lo contrario de lo que promete el
      * nombre, y nunca filtraba por `is_active` (AR-CODE-01).
      *
-     * @return Collection<int, User>
+     * @return Collection<int, static>
      */
     public static function getAllInactive()
     {

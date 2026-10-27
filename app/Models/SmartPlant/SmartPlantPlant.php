@@ -91,7 +91,7 @@ class SmartPlantPlant extends BaseModel
      */
     public function getUrlImageAttribute()
     {
-        $image = $this->image ?? 'smartplant/default.jpg';
+        $image = $this->image ?? 'smartplant/default.webp';
 
         return asset('storage/'.$image);
     }

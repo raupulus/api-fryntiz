@@ -175,7 +175,7 @@ class HardwareEnergyToday extends BaseModel
         ?int $elementId,
         array $data,
         ?string $date = null
-    ): static {
+    ): self {
         $date = $date ?? Carbon::now('UTC')->format('Y-m-d');
 
         $record = self::lockDaily($deviceId, $elementId, $date);
@@ -240,9 +240,9 @@ class HardwareEnergyToday extends BaseModel
      * Si la fila venía con otro dispositivo se realinea con el que reporta, que
      * es el que el catálogo dice que mide ese elemento.
      */
-    private static function lockDaily(int $deviceId, ?int $elementId, string $date): static
+    private static function lockDaily(int $deviceId, ?int $elementId, string $date): self
     {
-        $buscar = static fn (): ?static => static::query()
+        $buscar = static fn (): ?self => static::query()
             ->when(
                 $elementId !== null,
                 static fn (Builder $q) => $q->where('hardware_energy_id', $elementId),
@@ -262,7 +262,7 @@ class HardwareEnergyToday extends BaseModel
         }
 
         try {
-            return DB::transaction(static fn (): static => static::query()->create([
+            return DB::transaction(static fn (): self => static::query()->create([
                 'hardware_device_id' => $deviceId,
                 'hardware_energy_id' => $elementId,
                 'date' => $date,

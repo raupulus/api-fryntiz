@@ -268,7 +268,7 @@ class HardwareEnergyHistorical extends BaseModel
         int $deviceId,
         ?int $elementId,
         array $data
-    ): static {
+    ): self {
         // La sesión abierta se busca por elemento, igual que el índice único;
         // con el dispositivo por medio una fila mal atribuida quedaba invisible
         // y se abría una sesión nueva encima de la que ya existía.
@@ -544,9 +544,9 @@ class HardwareEnergyHistorical extends BaseModel
      * elemento, sesión y dispositivo: ver {@see HardwareEnergyToday::lockDaily()}
      * para por qué incluir el dispositivo devolvía un 500.
      */
-    private static function lockSession(int $deviceId, ?int $elementId, int $sessionIndex): static
+    private static function lockSession(int $deviceId, ?int $elementId, int $sessionIndex): self
     {
-        $buscar = static fn (): ?static => static::query()
+        $buscar = static fn (): ?self => static::query()
             ->when(
                 $elementId !== null,
                 static fn (Builder $q) => $q->where('hardware_energy_id', $elementId),
@@ -564,7 +564,7 @@ class HardwareEnergyHistorical extends BaseModel
         }
 
         try {
-            return DB::transaction(static fn (): static => static::query()->create([
+            return DB::transaction(static fn (): self => static::query()->create([
                 'hardware_device_id' => $deviceId,
                 'hardware_energy_id' => $elementId,
                 'session_index' => $sessionIndex,

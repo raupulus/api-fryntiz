@@ -73,7 +73,7 @@ class SmartPlantPlantResource extends Resource
                     ->helperText('Admite HTML básico: <p>, <br>, <strong>, <em>, <ul>/<li>, <a href>. El resto se descarta al mostrarla.')
                     ->columnSpanFull(),
                 Textarea::make('image')
-                    ->default('smartplant/default.jpg')
+                    ->default('smartplant/default.webp')
                     ->columnSpanFull(),
                 DateTimePicker::make('start_at')
                     ->required(),
@@ -87,7 +87,7 @@ class SmartPlantPlantResource extends Resource
                 ImageColumn::make('image')
                     ->disk('public')
                     ->square()
-                    ->defaultImageUrl(asset('storage/smartplant/default.jpg'))
+                    ->defaultImageUrl(asset('storage/smartplant/default.webp'))
                     ->label('Imagen'),
                 TextColumn::make('name')->searchable()->sortable()->label('Nombre'),
                 TextColumn::make('name_scientific')->toggleable()->label('Científico'),

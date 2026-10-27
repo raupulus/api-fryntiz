@@ -14,4 +14,12 @@ debe intervenir en el archivo ninguna ia.
 - Las páginas deberían tener un apartado dónde se vean todas las fotos usadas en todos los bloques para editarlas/croppearlas si es necesario manualmente una a una independiente de dónde se use. Así se puede alguien centrar en ver todas las imágenes que se usa en una página y revisar las que necesiten atención sin afectar al sitio dónde las enlacen para usar.
 - Poder descargar página al editarla. Si es editorjs en json y si es markdown en md.
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-15
+
+## Plataformas
+
+- Guardar el esquema de colores de la plataforma (colores principales) para poder reutilizarlos al por ejemplo crear imágenes asociadas al contenido de una plataforma y así lleven un diseño relacionado a esta o su logo.
+
+---
+
+> Creado: 2026-08-30 · Última revisión: 2026-10-14
+
