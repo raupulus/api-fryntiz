@@ -45,7 +45,7 @@ Providers: `app/Providers/Filament/AdminPanelProvider.php` y `TenantPanelProvide
 | Contenido | `TechnologyResource` | `Technology` |
 | Contenido | `PlatformResource` | `Platform` |
 | Contenido | `GalleryResource` | `Gallery` |
-| Contenido | `FileTypeResource` | `FileType` |
+| Configuración | `FileTypeResource` | `FileType` |
 | Gestión | `EmailResource` | `Email` (mensajes de contacto) |
 | Gestión | `CurriculumResource` | `Curriculum` |
 | Gestión | `CurriculumAvailableRepositoryTypeResource` | `CurriculumAvailableRepositoryType` |
@@ -418,7 +418,7 @@ Cobertura parcial; el resto queda pendiente en la fase 09 del roadmap.
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-10-17
+> Creado: 2026-08-30 · Última revisión: 2026-10-27
 
 
 ## Imágenes: por qué el uploader no enseña la que ya hay

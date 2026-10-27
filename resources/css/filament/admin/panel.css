@@ -1859,3 +1859,32 @@
     font-size: 0.8rem;
     color: #6b7280;
 }
+
+/* ── Tipos de Archivos · iconos (FileTypeResource) ───────────────────────── */
+
+.ft-icon-field {
+    width: 100%;
+}
+
+.ft-icon-field .filepond--root,
+.ft-icon-field .filepond--panel-root {
+    max-width: 15rem;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 0.75rem;
+}
+
+.ft-icon-field .filepond--item-panel {
+    border-radius: 0.75rem;
+}
+
+.ft-icon-field .fi-fo-field-wrp-label {
+    justify-content: center;
+    font-weight: 600;
+}
+
+.ft-icon-field .fi-fo-field-wrp-helper-text {
+    text-align: center;
+    font-size: 0.75rem;
+}
+

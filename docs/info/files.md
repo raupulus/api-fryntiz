@@ -62,7 +62,7 @@ Decide si una imagen se **puede reprocesar** (rotar, escalar, generar miniaturas
 | Parámetro | Valor por defecto | Qué hace |
 |---|---|---|
 | `$validate` | `true` | El MIME real tiene que estar en `File::SAFE_MIMES` y el tamaño por debajo de `File::MAX_FILE_SIZE` (20 MB). Valida soporte Imagick para HEIC/AVIF. |
-| `$webpOriginal` | `true` | Convierte cualquier imagen compatible a WebP original (calidad 85), elimina metadatos EXIF/GPS y acota su lado más grande a 2560 px. |
+| `$webpOriginal` | `true` | Convierte cualquier imagen compatible a WebP original (calidad 85), elimina metadatos EXIF/GPS y acota su ancho a `File::MAX_IMAGE_WIDTH` (1920 px) y su alto a `File::MAX_IMAGE_HEIGHT` (1080 px), limitando las imágenes maestras a 1080p. |
 
 ⚠️ **`SAFE_MIMES` no sale de la tabla `file_types`, y no debe salir nunca.** `file_types` es un
 catálogo de metadatos (icono, extensión, tipo legible) que se rellena desde el panel con toda clase
@@ -271,6 +271,24 @@ El módulo File es referenciado por:
   Fijado en `tests/Feature/Filament/ExistingImagePreloadTest.php` (antes
   `CurrentImageTest.php`).
 
+### Gestión de tipos de archivo en Filament (`FileTypeResource`)
+
+`FileTypeResource` (`Configuración → Tipos de Archivos`) permite administrar el catálogo de extensiones, tipos MIME e iconos asociados:
+
+- **Listado (`ListFileTypes`)**: la columna `ImageColumn::make('icon32')` especifica de forma explícita el disco `disk('public')` y una imagen de respaldo `defaultImageUrl(fn (FileType $record) => $record->url_image)`. Al estar el disco por defecto del framework configurado en `local`, omitir el disco provocaba que Filament comprobase la existencia del fichero en `storage/app/` en lugar de `storage/app/public/`, devolviendo `null` y dejando las miniaturas vacías.
+- **Formulario (`EditFileType`, `CreateFileType`)**:
+  - Ambas páginas definen `getMaxContentWidth(): Width|string|null => Width::Full` para ocupar todo el ancho disponible del contenedor.
+  - Las secciones `Identificación` e `Iconos` aplican `columnSpanFull()` y rejillas responsivas de 4 columnas (`columns(['sm' => 2, 'lg' => 4])`) para que los bloques no se compriman al 50% en paralelo.
+  - Los campos de iconos (`icon16`, `icon32`, `icon64`, `icon128`) aplican `itemPanelAspectRatio('1:1')`, `panelAspectRatio('1:1')`, `imagePreviewHeight('150')`, alineación centrada y la clase `.ft-icon-field` (estilizada en `resources/css/filament/admin/panel.css`), manteniendo los contenedores de subida acotados a un ancho limpio y cuadrado con etiquetas centradas.
+- Cobertura de pruebas automatizadas: `tests/Feature/Filament/FileTypeResourceTest.php`.
+
+### Optimización global WebP y límite 1080p
+
+- **Límite máximo de resolución:** se acota el tamaño de los originales en `File` a un estándar de 1080p (`MAX_IMAGE_WIDTH = 1920`, `MAX_IMAGE_HEIGHT = 1080`). Se aplica en `addFile()`, `convertStoredImageToWebp()`, `processStoredImage()` y `replacePixels()`.
+- **Tarjetas sociales (`content_seo`):** `ImageCropperUpload::socialCard()` fuerza el recorte y redimensionado estricto a 1200 × 630 WebP para Open Graph y Twitter Cards (`imageCropAspectRatio('1200:630')`, `imageResizeTargetWidth('1200')`, `imageResizeTargetHeight('630')`).
+- **Migración total a WebP:** el 100% de las imágenes existentes en la plataforma fueron convertidas a WebP y reducidas a ≤ 1080p, liberando más de 312 MB de almacenamiento en el servidor (`odin`) y eliminando el consumo de formatos pesados (PNG/JPEG) en el almacenamiento y frontend.
+- **SmartPlant:** la imagen por defecto `smartplant/default.jpg` fue convertida a WebP optimizado en 1280p (`smartplant/default.webp`), reduciendo su huella de 4.2 MB a 340 KB, y actualizando modelos, recursos de Filament y pruebas automáticas.
+
 ---
 
 ## Estado de las rutas de ficheros
@@ -307,4 +325,4 @@ privada puede llevar dentro la geolocalización.
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-10-07
+> Creado: 2026-05-25 · Última revisión: 2026-10-27

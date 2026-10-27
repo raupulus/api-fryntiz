@@ -46,40 +46,91 @@ class FileTypeResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
-                Section::make('Identificación')->columns(3)->schema([
-                    TextInput::make('type')->required()->maxLength(127)
-                        ->datalist(['imagen', 'documento', 'vídeo', 'audio', 'comprimido', 'código', 'otro'])
-                        ->label('Tipo'),
-                    TextInput::make('mime')->required()->maxLength(127)
-                        ->rule('regex:/^[\w\-.+]+\/[\w\-.+]+$/')
-                        ->unique(ignoreRecord: true)
-                        ->helperText('Ej: image/png, application/pdf')
-                        ->label('MIME'),
-                    TextInput::make('extension')->required()->maxLength(12)
-                        ->rule('regex:/^[a-z0-9]+$/')
-                        ->unique(ignoreRecord: true)
-                        ->prefix('.')->label('Extensión'),
-                    Select::make('user_id')
-                        ->relationship('user', 'name')->default(fn () => auth()->id())
-                        ->searchable()->preload()->label('Owner'),
-                ]),
+                Section::make('Identificación')
+                    ->columnSpanFull()
+                    ->columns(['sm' => 2, 'lg' => 4])
+                    ->schema([
+                        TextInput::make('type')
+                            ->required()
+                            ->maxLength(127)
+                            ->datalist(['imagen', 'documento', 'vídeo', 'audio', 'comprimido', 'código', 'otro'])
+                            ->placeholder('Ej: imagen, documento...')
+                            ->label('Tipo'),
+                        TextInput::make('extension')
+                            ->required()
+                            ->maxLength(12)
+                            ->rule('regex:/^[a-z0-9]+$/')
+                            ->unique(ignoreRecord: true)
+                            ->prefix('.')
+                            ->placeholder('fig, png, pdf...')
+                            ->label('Extensión'),
+                        TextInput::make('mime')
+                            ->required()
+                            ->maxLength(127)
+                            ->rule('regex:/^[\w\-.+]+\/[\w\-.+]+$/')
+                            ->unique(ignoreRecord: true)
+                            ->placeholder('application/x-figma')
+                            ->helperText('Formato tipo/subtipo (ej: image/png)')
+                            ->label('MIME'),
+                        Select::make('user_id')
+                            ->relationship('user', 'name')
+                            ->default(fn () => auth()->id())
+                            ->searchable()
+                            ->preload()
+                            ->label('Propietario'),
+                    ]),
 
                 Section::make('Iconos')
-                    ->description('Cada icono debe ser cuadrado (1:1). Se recortarán automáticamente.')
-                    ->columns(4)->schema([
+                    ->description('Cada icono debe ser cuadrado (1:1). Se optimizan y recortan automáticamente.')
+                    ->columnSpanFull()
+                    ->columns(['sm' => 2, 'lg' => 4])
+                    ->schema([
                         ImageCropperUpload::makeImage('icon16')
                             ->icon(16)
-                            ->directory('file-types/icons/16')->maxSize(256)->label('16×16'),
+                            ->itemPanelAspectRatio('1:1')
+                            ->panelAspectRatio('1:1')
+                            ->imagePreviewHeight('150')
+                            ->directory('file-types/icons/16')
+                            ->maxSize(256)
+                            ->label('16×16')
+                            ->helperText('16×16 px · Minúsculo / Favicon')
+                            ->alignCenter()
+                            ->extraAttributes(['class' => 'ft-icon-field']),
                         ImageCropperUpload::makeImage('icon32')
                             ->icon(32)
-                            ->directory('file-types/icons/32')->maxSize(256)->label('32×32'),
+                            ->itemPanelAspectRatio('1:1')
+                            ->panelAspectRatio('1:1')
+                            ->imagePreviewHeight('150')
+                            ->directory('file-types/icons/32')
+                            ->maxSize(256)
+                            ->label('32×32')
+                            ->helperText('32×32 px · Tablas y listados')
+                            ->alignCenter()
+                            ->extraAttributes(['class' => 'ft-icon-field']),
                         ImageCropperUpload::makeImage('icon64')
                             ->icon(64)
-                            ->directory('file-types/icons/64')->label('64×64'),
+                            ->itemPanelAspectRatio('1:1')
+                            ->panelAspectRatio('1:1')
+                            ->imagePreviewHeight('150')
+                            ->directory('file-types/icons/64')
+                            ->maxSize(512)
+                            ->label('64×64')
+                            ->helperText('64×64 px · Tamaño medio')
+                            ->alignCenter()
+                            ->extraAttributes(['class' => 'ft-icon-field']),
                         ImageCropperUpload::makeImage('icon128')
                             ->icon(128)
-                            ->directory('file-types/icons/128')->maxSize(1024)->label('128×128'),
+                            ->itemPanelAspectRatio('1:1')
+                            ->panelAspectRatio('1:1')
+                            ->imagePreviewHeight('150')
+                            ->directory('file-types/icons/128')
+                            ->maxSize(1024)
+                            ->label('128×128')
+                            ->helperText('128×128 px · Alta resolución')
+                            ->alignCenter()
+                            ->extraAttributes(['class' => 'ft-icon-field']),
                     ]),
             ]);
     }
@@ -88,7 +139,12 @@ class FileTypeResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('icon32')->square()->label('32px'),
+                ImageColumn::make('icon32')
+                    ->disk('public')
+                    ->defaultImageUrl(fn (FileType $record): string => $record->url_image)
+                    ->square()
+                    ->size(32)
+                    ->label('32px'),
                 TextColumn::make('type')->searchable()->sortable()->badge()->label('Tipo'),
                 TextColumn::make('extension')->searchable()->sortable()
                     ->prefix('.')->label('Ext'),
