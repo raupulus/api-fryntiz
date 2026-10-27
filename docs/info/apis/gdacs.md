@@ -54,6 +54,7 @@ Schedule::command('gdacs:sync')->cron('7,17,27,37,47,57 * * * *')
 | Clave | Por defecto | Qué es |
 |---|---|---|
 | `base_url` | `https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH` | Sin API key, es pública |
+| `timeout_seconds` | `30` (`GDACS_TIMEOUT_SECONDS`) | Tiempo máximo de espera HTTP. Subido a 30 s para evitar falsos timeouts con la API europea |
 | `alert_levels` | `green;orange;red` | **Fijo, no configurable a propósito.** Sin esto, GDACS excluye el verde por defecto — ver `docs/future/archived/gdacs-api.md` |
 | `event_types` | Los seis códigos | Qué tipos de desastre se piden |
 | `country` | `Spain` (`GDACS_COUNTRY`) | Filtro de la propia API de GDACS (nombre en inglés, no ISO-3). Sin esto, una ventana de días ya toca el límite de 100 registros/página |
@@ -148,4 +149,4 @@ banner como en el listado — ver el punto 2.
 
 ---
 
-> Creado: 2026-09-15 · Última revisión: 2026-09-17
+> Creado: 2026-09-15 · Última revisión: 2026-10-27

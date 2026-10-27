@@ -16,7 +16,7 @@ return [
 
     'base_url' => env('GDACS_BASE_URL', 'https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH'),
 
-    'timeout_seconds' => 15,
+    'timeout_seconds' => (int) env('GDACS_TIMEOUT_SECONDS', 30),
 
     /*
      * Comprobado en directo (2026-09-15): sin este parámetro, la API excluye

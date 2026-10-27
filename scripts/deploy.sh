@@ -77,6 +77,10 @@ php artisan event:cache
 php artisan filament:optimize
 
 echo "==> Enlace de almacenamiento"
+if [ -d "/var/www/storage/www.api.raupulus.dev" ] && [ ! -L "storage" ]; then
+    rm -rf storage
+    ln -s /var/www/storage/www.api.raupulus.dev storage
+fi
 php artisan storage:link || true
 
 echo "==> Reinicio de los workers de cola"
