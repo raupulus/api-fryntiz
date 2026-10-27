@@ -252,7 +252,7 @@ class GalleryResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['image.fileType', 'user']))
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['image.fileType', 'image.thumbnails', 'user']))
             ->columns([
                 ImageColumn::make('image_id')
                     ->getStateUsing(fn (Gallery $record): ?string => $record->image?->thumbnail('small'))

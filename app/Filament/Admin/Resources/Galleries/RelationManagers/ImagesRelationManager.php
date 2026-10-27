@@ -69,7 +69,7 @@ class ImagesRelationManager extends RelationManager
         $cssRatio = $gallery->aspect_ratio?->cssAspectRatio() ?? '16/9';
 
         return $table
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['image.fileType', 'gallery']))
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['image.fileType', 'image.thumbnails', 'gallery']))
             ->contentGrid([
                 'sm' => 1,
                 'md' => 2,

@@ -268,7 +268,11 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('profile_photo_path')->circular()->disk('public')->label('Foto'),
+                ImageColumn::make('profile_photo_path')
+                    ->circular()
+                    ->disk('public')
+                    ->defaultImageUrl(fn (User $record): string => $record->profile_photo_url)
+                    ->label('Foto'),
                 TextColumn::make('id')->sortable()->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('name')->searchable()->sortable()->label('Nombre'),
                 TextColumn::make('nickname')->searchable()->toggleable()->label('Nick'),

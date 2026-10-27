@@ -26,8 +26,9 @@ Permite a cada usuario que registra su propio hardware administrar uno o múltip
 | **Policy** | `app/Policies/AdminCatalogPolicy.php` | Autorización para la gestión del catálogo de plataformas (solo administradores). |
 | **Policy** | `app/Policies/ReferredThingPolicy.php` | Autorización de enlaces de compra (dueño del hardware o administradores). |
 | **Filament RelationManager** | `app/Filament/Admin/Resources/Hardware/HardwareDevices/RelationManagers/AffiliateLinksRelationManager.php` | Pestaña en la ficha de `HardwareDevice` para administrar todos sus enlaces de compra. |
-| **Recurso Filament** | `app/Filament/Admin/Resources/Referred/ReferredPlatforms/ReferredPlatformResource.php` | Catálogo administrativo de plataformas de afiliación. |
+| **Recurso Filament** | `app/Filament/Admin/Resources/Referred/ReferredPlatforms/ReferredPlatformResource.php` | Catálogo administrativo de plataformas de afiliación con visualización de logotipo optimizada mediante `getStateUsing`. |
 | **Tests de Feature** | `tests/Feature/Referred/ReferredHardwareAffiliatesTest.php` | Suite de pruebas de integración para persistencia, cascada, permisos y panel. |
+| **Tests de Feature** | `tests/Feature/Filament/ReferredPlatformResourceTest.php` | Pruebas de integración del recurso Filament de plataformas y resolución de URL de logotipo. |
 
 ---
 
@@ -104,18 +105,20 @@ Permite a cada usuario que registra su propio hardware administrar uno o múltip
 2. **Catálogo de Plataformas (`ReferredPlatformResource`):**
    - Accesible para administradores en el grupo de navegación *"Configuración"*.
    - Permite dar de alta y editar las plataformas comerciales participantes.
+   - En el listado tabular, la columna `Logo` resuelve dinámicamente la miniatura o URL directa del archivo asociado (`image?->thumbnail('small') ?? image?->url`) y precarga eager loading (`image.fileType`, `image.thumbnails`) para evitar sobrecarga N+1 y excepciones por lazy loading deshabilitado.
 
 ---
 
 ## 6. Pruebas y Validación
 
-La suite `tests/Feature/Referred/ReferredHardwareAffiliatesTest.php` valida:
+La suite `tests/Feature/Referred/ReferredHardwareAffiliatesTest.php` y `tests/Feature/Filament/ReferredPlatformResourceTest.php` valida:
 - Creación de enlaces para el dispositivo completo y para componentes.
 - Discriminación en las relaciones `affiliateLinks`, `deviceAffiliateLinks` y `component->affiliateLinks`.
 - Borrado en cascada (al eliminar un componente se eliminan sus enlaces; al eliminar el dispositivo se eliminan todos sus enlaces).
 - Políticas de autorización (un usuario no puede modificar enlaces del hardware de otro usuario; administradores y dueños sí).
 - Renderizado y creación en Filament RelationManager y acceso restringido al catálogo de plataformas.
+- Resolución de URL de logotipo y manejo seguro de registros sin imagen en el listado de plataformas.
 
 ---
 
-> Creado: 2026-09-18 · Última revisión: 2026-09-18
+> Creado: 2026-09-18 · Última revisión: 2026-10-27

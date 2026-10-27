@@ -27,7 +27,7 @@ class GalleriesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('name')
             ->inverseRelationship('hardwareDevices')
-            ->modifyQueryUsing(fn (Builder $query) => $query->with(['image.fileType']))
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['image.fileType', 'image.thumbnails']))
             ->columns([
                 ImageColumn::make('image_id')
                     ->getStateUsing(fn (Gallery $record): ?string => $record->image?->thumbnail('small'))

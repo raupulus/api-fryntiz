@@ -22,6 +22,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class ReferredPlatformResource extends Resource
 {
@@ -91,9 +92,11 @@ class ReferredPlatformResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['image.fileType', 'image.thumbnails']))
             ->columns([
                 ImageColumn::make('image_id')
                     ->label('Logo')
+                    ->getStateUsing(fn (ReferredPlatform $record): ?string => $record->image?->thumbnail('small') ?? $record->image?->url)
                     ->square(),
 
                 TextColumn::make('name')

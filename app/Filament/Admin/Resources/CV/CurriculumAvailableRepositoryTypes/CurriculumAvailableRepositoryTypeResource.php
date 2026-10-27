@@ -21,6 +21,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class CurriculumAvailableRepositoryTypeResource extends Resource
 {
@@ -72,8 +73,13 @@ class CurriculumAvailableRepositoryTypeResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn (Builder $query) => $query->with(['image.fileType', 'image.thumbnails']))
             ->columns([
-                ImageColumn::make('image_id')->label('Imagen')->sortable()->toggleable(),
+                ImageColumn::make('image_id')
+                    ->label('Imagen')
+                    ->getStateUsing(fn (CurriculumAvailableRepositoryType $record): ?string => $record->image?->thumbnail('small') ?? $record->image?->url)
+                    ->square()
+                    ->toggleable(),
                 TextColumn::make('title')->label('Título')->searchable(),
                 TextColumn::make('name')->label('Nombre')->searchable(),
                 TextColumn::make('created_at')
