@@ -217,6 +217,82 @@ class AiImageProvidersTest extends TestCase
         Http::assertNothingSent();
     }
 
+    // ── MiniMax ─────────────────────────────────────────────────────────────
+
+    #[Test]
+    public function minimax_asks_for_images_with_aspect_ratio_16_9_and_base64_response_format(): void
+    {
+        $provider = $this->provider(AiProviderEnum::MiniMax, 'image-01');
+        $this->fake(['api.minimax.io/*' => Http::response([
+            'data' => [
+                'image_base64' => [
+                    base64_encode($this->png(16, 9)),
+                    base64_encode($this->png(16, 9)),
+                ],
+            ],
+            'base_resp' => ['status_code' => 0, 'status_msg' => 'success'],
+        ])]);
+
+        $images = $provider->imageConnector()->generate($provider, 'Un pingüino', 2);
+
+        $this->assertCount(2, $images);
+        $this->assertSame(['image/png', 16, 9], [$images[0]->mime, $images[0]->width, $images[0]->height]);
+        Http::assertSentCount(1);
+        Http::assertSent(fn (HttpRequest $request): bool => $request->url() === 'https://api.minimax.io/v1/image_generation'
+            && $request->hasHeader('Authorization', 'Bearer test-minimax-key')
+            && ! str_contains($request->url(), 'test-minimax-key')
+            && $request->data() === [
+                'model' => 'image-01',
+                'prompt' => 'Un pingüino',
+                'aspect_ratio' => '16:9',
+                'response_format' => 'base64',
+                'n' => 2,
+            ]);
+    }
+
+    #[Test]
+    public function minimax_image_editing_sends_subject_reference_with_data_uri(): void
+    {
+        $provider = $this->provider(AiProviderEnum::MiniMax, 'image-01');
+        $this->fake(['api.minimax.io/*' => Http::response([
+            'data' => ['image_base64' => [base64_encode($this->png(16, 9))]],
+        ])]);
+
+        $source = GeneratedImage::fromBytes($this->png(8, 8));
+        $images = $provider->imageConnector()->edit($provider, $source, 'Más luz', 1);
+
+        $this->assertCount(1, $images);
+        Http::assertSent(fn (HttpRequest $request): bool => $request->url() === 'https://api.minimax.io/v1/image_generation'
+            && $request['subject_reference'] === [
+                [
+                    'type' => 'character',
+                    'image_file' => $source->dataUri(),
+                ],
+            ]);
+    }
+
+    #[Test]
+    public function minimax_insufficient_balance_in_base_resp_is_reported(): void
+    {
+        $provider = $this->provider(AiProviderEnum::MiniMax, 'image-01');
+        $this->fake(['api.minimax.io/*' => Http::response([
+            'base_resp' => ['status_code' => 1008, 'status_msg' => 'insufficient balance'],
+        ])]);
+
+        $this->assertFailsWith('no tiene saldo', fn () => $provider->imageConnector()->generate($provider, 'Algo', 1));
+    }
+
+    #[Test]
+    public function minimax_sensitive_filter_is_reported(): void
+    {
+        $provider = $this->provider(AiProviderEnum::MiniMax, 'image-01');
+        $this->fake(['api.minimax.io/*' => Http::response([
+            'base_resp' => ['status_code' => 1026, 'status_msg' => 'input sensitive'],
+        ])]);
+
+        $this->assertFailsWith('no pasa sus filtros de contenido', fn () => $provider->imageConnector()->generate($provider, 'Algo', 1));
+    }
+
     // ── Comunes ─────────────────────────────────────────────────────────────
 
     #[Test]

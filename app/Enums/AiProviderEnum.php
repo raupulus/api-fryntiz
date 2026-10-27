@@ -8,6 +8,8 @@ use App\Services\Ai\AiImageProvider;
 use App\Services\Ai\AiTextProvider;
 use App\Services\Ai\Providers\GeminiImageProvider;
 use App\Services\Ai\Providers\GeminiTextProvider;
+use App\Services\Ai\Providers\MiniMaxImageProvider;
+use App\Services\Ai\Providers\MiniMaxTextProvider;
 use App\Services\Ai\Providers\MistralImageProvider;
 use App\Services\Ai\Providers\MistralTextProvider;
 use App\Services\Ai\Providers\OpenAiImageProvider;
@@ -30,6 +32,7 @@ enum AiProviderEnum: string
     case Mistral = 'mistral';
     case Xai = 'xai';
     case OpenAi = 'openai';
+    case MiniMax = 'minimax';
 
     /**
      * El nombre corto, el que sale en los mensajes («Gemini no tiene saldo»).
@@ -41,6 +44,7 @@ enum AiProviderEnum: string
             self::Mistral => 'Mistral',
             self::Xai => 'Grok',
             self::OpenAi => 'OpenAI',
+            self::MiniMax => 'MiniMax',
         };
     }
 
@@ -54,6 +58,7 @@ enum AiProviderEnum: string
             self::Mistral => 'Mistral',
             self::Xai => 'Grok (xAI)',
             self::OpenAi => 'OpenAI',
+            self::MiniMax => 'MiniMax',
         };
     }
 
@@ -66,6 +71,7 @@ enum AiProviderEnum: string
             self::Gemini => GeminiTextProvider::class,
             self::Mistral => MistralTextProvider::class,
             self::Xai, self::OpenAi => ResponsesTextProvider::class,
+            self::MiniMax => MiniMaxTextProvider::class,
         };
     }
 
@@ -76,6 +82,7 @@ enum AiProviderEnum: string
             self::Mistral => 'https://api.mistral.ai/v1',
             self::Xai => 'https://api.x.ai/v1',
             self::OpenAi => 'https://api.openai.com/v1',
+            self::MiniMax => 'https://api.minimax.io/v1',
         };
     }
 
@@ -89,6 +96,7 @@ enum AiProviderEnum: string
             self::Mistral => 'https://docs.mistral.ai/getting-started/models',
             self::Xai => 'https://docs.x.ai/docs/models',
             self::OpenAi => 'https://platform.openai.com/docs/models',
+            self::MiniMax => 'https://platform.minimaxi.com/document/ChatCompletion%20v2',
         };
     }
 
@@ -105,6 +113,7 @@ enum AiProviderEnum: string
             self::Mistral => 'mistral-medium-3-5',
             self::Xai => 'grok-4.7',
             self::OpenAi => null,
+            self::MiniMax => 'MiniMax-M3.1-Flash',
         };
     }
 
@@ -118,6 +127,7 @@ enum AiProviderEnum: string
             self::Mistral => MistralImageProvider::class,
             self::Xai => XaiImageProvider::class,
             self::OpenAi => OpenAiImageProvider::class,
+            self::MiniMax => MiniMaxImageProvider::class,
         };
     }
 
@@ -131,6 +141,7 @@ enum AiProviderEnum: string
             self::Mistral => 'https://docs.mistral.ai/studio-api/agents/agent-tools/image_generation',
             self::Xai => 'https://docs.x.ai/developers/model-capabilities/images/generation',
             self::OpenAi => 'https://developers.openai.com/api/docs/guides/image-generation',
+            self::MiniMax => 'https://platform.minimaxi.com/document/image_generation',
         };
     }
 
@@ -147,6 +158,7 @@ enum AiProviderEnum: string
             self::Mistral => 'mistral-medium-3-5',
             self::Xai => 'grok-imagine-image-2.0',
             self::OpenAi => null,
+            self::MiniMax => 'image-01',
         };
     }
 
@@ -158,6 +170,7 @@ enum AiProviderEnum: string
     {
         return match ($this) {
             self::Gemini, self::Mistral => 1,
+            self::MiniMax => 9,
             self::Xai, self::OpenAi => 10,
         };
     }
@@ -183,7 +196,7 @@ enum AiProviderEnum: string
             self::Gemini => ['1K' => 'Normal (1K, más barata)', '2K' => 'Alta (2K)'],
             self::Xai => ['1k' => 'Normal (1k, más barata)', '2k' => 'Alta (2k)'],
             self::OpenAi => ['low' => 'Baja (más barata)', 'medium' => 'Media', 'high' => 'Alta (más cara)'],
-            self::Mistral => [],
+            self::Mistral, self::MiniMax => [],
         };
     }
 
@@ -197,7 +210,7 @@ enum AiProviderEnum: string
             self::Gemini => '2K',
             self::Xai => '2k',
             self::OpenAi => 'medium',
-            self::Mistral => null,
+            self::Mistral, self::MiniMax => null,
         };
     }
 
@@ -211,6 +224,7 @@ enum AiProviderEnum: string
             self::Mistral => 'la consola de Mistral (https://console.mistral.ai)',
             self::Xai => 'la consola de xAI (https://console.x.ai)',
             self::OpenAi => 'la plataforma de OpenAI (https://platform.openai.com/settings/organization/billing)',
+            self::MiniMax => 'la plataforma de MiniMax (https://platform.minimaxi.com)',
         };
     }
 
@@ -270,7 +284,7 @@ enum AiProviderEnum: string
      */
     public function summarizesReasoningByDefault(): bool
     {
-        return in_array($this, [self::Gemini, self::OpenAi], true);
+        return in_array($this, [self::Gemini, self::OpenAi, self::MiniMax], true);
     }
 
     /**

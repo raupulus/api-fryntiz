@@ -76,7 +76,7 @@ y `ContentApiService` carga exactamente eso (D9).
 | `app/Enums/ContentPageRawTypeEnum.php` | Tipos raw: HTML, Markdown, JSON (sin uso) |
 | `app/Enums/ContentPageFormatEnum.php` | Formatos de edición de una página: `editorjs`, `markdown`, `html` (el tipo en BD de Editor.js es `json`) |
 | `app/Enums/ContentPageVersionReasonEnum.php` | Por qué una versión pasó al historial: `save`, `format_change`, `restore`, `draft_restore`, `emptied` |
-| `app/Enums/AiProviderEnum.php` | Proveedores del asistente IA: `gemini`, `mistral`, `xai` (Grok), `openai`, con su API y su conector |
+| `app/Enums/AiProviderEnum.php` | Proveedores del asistente IA: `gemini`, `mistral`, `xai` (Grok), `openai`, `minimax`, con su API y su conector |
 | `app/Enums/AiReasoningLevelEnum.php` | Razonamiento del asistente: `low`, `medium` (por defecto), `high` |
 | `app/Enums/AiModeEnum.php` | Modos de operación del asistente IA: `create`, `edit`, `correct` |
 
@@ -1344,7 +1344,7 @@ lectura.
 
 - **Proveedores** (Configuración → Proveedores de IA, `AiProviderResource`,
   **sólo superadmin**; tabla `ai_providers`, `AiProviderEnum`): Gemini, Mistral,
-  Grok (xAI) y OpenAI, uno de cada, con su modelo y su clave. Valen para todas
+  Grok (xAI), OpenAI y MiniMax, uno de cada, con su modelo y su clave. Valen para todas
   las plataformas. Ninguna clave va en el `.env` ni en el código: se pegan en el
   panel.
   - **Clave:** cifrada con la `APP_KEY` (cast `EncryptedString`) y fuera de
@@ -1361,29 +1361,31 @@ lectura.
     «Probar», que hace una llamada real mínima: Gemini da 200 en `GET models/…`
     aunque el modelo esté apagado, así que listar modelos no demuestra nada. El
     ejemplo del campo es un modelo comprobado el 2026-10-17
-    (`gemini-3.8-flash`, `mistral-medium-3-5`, `grok-4.7`).
+    (`gemini-3.8-flash`, `mistral-medium-3-5`, `grok-4.7`, `MiniMax-M3.1-Flash`).
   - **Modelo de imágenes** (`image_model`): para generar y mejorar portadas.
     Vacío, el proveedor no hace imágenes. Comprobados con una llamada real el
     2026-10-17: `gemini-nano-banana-2.1` y, en Mistral, `mistral-medium-3-5`
     (es un modelo de texto que usa su herramienta de imágenes). Grok
-    (`grok-imagine-image-2.0`, de su documentación) y OpenAI, sin probar.
+    (`grok-imagine-image-2.0`, de su documentación) y OpenAI, sin probar; MiniMax
+    usa `image-01`.
     «Probar imágenes» genera una de verdad: cuesta unos céntimos y lo pregunta
     antes.
   - **Activo** (sale en el selector) y **predeterminado** (el que sale elegido;
     sólo uno).
   - **Razonamiento:** «Elegir el razonamiento en el asistente» (se manda como
-    `thinkingLevel` en Gemini, `reasoning.effort` en Responses y
-    `reasoning_effort` en Mistral; desmarcado, no se manda nada, porque a un
+    `thinkingLevel` en Gemini, `reasoning.effort` en Responses,
+    `reasoning_effort` en Mistral y MiniMax; desmarcado, no se manda nada, porque a un
     modelo sin razonamiento le da error) y «Pedir el resumen»
     (`includeThoughts` en Gemini, `reasoning.summary: auto` en Responses; de
-    serie en Gemini y OpenAI, no en Grok, que sólo lo admite en algunos
+    serie en Gemini, OpenAI y MiniMax con `reasoning_content`, no en Grok, que sólo lo admite en algunos
     modelos). En Mistral el razonamiento llega solo cuando razona, en
     español.
 - **Conectores** (`app/Services/Ai`, contrato `AiTextProvider`):
   `GeminiTextProvider` (`streamGenerateContent?alt=sse`),
   `ResponsesTextProvider` para OpenAI y Grok (`POST /responses`, con
-  `store: false`; xAI da Chat Completions por obsoleta) y `MistralTextProvider`
-  (`POST /chat/completions`). Lo común (lectura del SSE, errores HTTP y
+  `store: false`; xAI da Chat Completions por obsoleta), `MistralTextProvider`
+  (`POST /chat/completions`) y `MiniMaxTextProvider` (`POST /chat/completions` en streaming
+  con separación de `reasoning_content` y `content`). Lo común (lectura del SSE, errores HTTP y
   «Probar») está en `HttpTextProvider`. Ver D50.
 - **Conectores de imágenes** (contrato `AiImageProvider`, base
   `HttpImageProvider`; los mensajes de error, compartidos con los de texto en
@@ -1402,6 +1404,9 @@ lectura.
   - `XaiImageProvider`: las mismas rutas, sólo JSON, con `n`, `aspect_ratio:
     16:9`, `resolution` y `response_format: b64_json`; la que se mejora, como
     data URI en `image.url`.
+  - `MiniMaxImageProvider`: `POST /image_generation` (modelo `image-01`) con
+    `n`, `aspect_ratio: 16:9` y `response_format: base64`; la imagen a mejorar va
+    en `subject_reference` como data URI.
   - `MistralImageProvider`: no hay API de imágenes; `POST /conversations` con
     la herramienta `image_generation` (beta). La imagen llega como URL firmada
     de un blob de Azure (o como `tool_file`, que se baja de `/files/{id}`), y
@@ -1410,7 +1415,7 @@ lectura.
     mejorar una imagen.
 
   Los filtros de contenido (`IMAGE_SAFETY` de Gemini, `moderation_blocked` de
-  OpenAI…) se dicen como tales. Si de varias peticiones fallan algunas, se
+  OpenAI, `input/output sensitive` de MiniMax…) se dicen como tales. Si de varias peticiones fallan algunas, se
   quedan las imágenes que han llegado.
 - **Gemini:** el 2.0 Flash lo apagó Google el 2026-06-01 y los 2.5 sólo se
   sirven a proyectos que ya los usaban. Gemini 3.8 razona siempre: no hay
@@ -1421,7 +1426,7 @@ lectura.
 - **Modal:** proveedor (selector si hay más de uno) y razonamiento, que se
   elige en cada petición con las opciones del proveedor
   (`AiProviderEnum::reasoningLevels()`, valores de `AiReasoningLevelEnum`):
-  - Gemini, OpenAI y Grok: bajo, medio (por defecto) o alto.
+  - Gemini, OpenAI, Grok y MiniMax: bajo, medio (por defecto) o alto.
   - Mistral: **razonar o no razonar** (por defecto, razonar). Sus modelos sólo
     admiten `reasoning_effort` `high` o `none`: `mistral-medium-3-5` rechaza
     `low` con un 400 (probado). Razonar manda `high`; no razonar no manda
@@ -1580,4 +1585,4 @@ responde, pero la cuenta estaba sin saldo. OpenAI: sin clave todavía.
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-10-17
+> Creado: 2026-05-25 · Última revisión: 2026-10-27

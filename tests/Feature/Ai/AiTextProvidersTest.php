@@ -202,6 +202,69 @@ class AiTextProvidersTest extends TestCase
         $this->assertStringContainsString('se ha cortado por larga', implode(' ', $this->of($this->collect($provider), 'warning')));
     }
 
+    // ── MiniMax ─────────────────────────────────────────────────────────────
+
+    #[Test]
+    public function minimax_gets_chat_completions_with_bearer_token_and_reasoning_effort(): void
+    {
+        $provider = $this->provider(AiProviderEnum::MiniMax, 'MiniMax-M3.1-Flash');
+        $this->fake('api.minimax.io', $this->sseResponse([$this->minimax('Hola')]));
+
+        $this->collect($provider, AiReasoningLevelEnum::High);
+        $this->collect($provider, AiReasoningLevelEnum::Low);
+
+        $requests = Http::recorded()->map(fn (array $pair): HttpRequest => $pair[0]);
+
+        $this->assertTrue($requests->every(fn (HttpRequest $request): bool => $request->url() === 'https://api.minimax.io/v1/chat/completions'
+            && $request->hasHeader('Authorization', 'Bearer test-minimax-key')
+            && ! str_contains($request->url(), 'test-minimax-key')
+            && $request['model'] === 'MiniMax-M3.1-Flash'
+            && $request['messages'] === [['role' => 'system', 'content' => 'Sistema'], ['role' => 'user', 'content' => 'Pregunta']]
+            && $request['stream'] === true));
+
+        $this->assertSame('high', $requests[0]['reasoning_effort']);
+        $this->assertSame('low', $requests[1]['reasoning_effort']);
+    }
+
+    #[Test]
+    public function minimax_stream_separates_reasoning_content_and_content(): void
+    {
+        $provider = $this->provider(AiProviderEnum::MiniMax, 'MiniMax-M3.1-Flash');
+        $this->fake('api.minimax.io', $this->sseResponse([
+            $this->minimax(null, 'Pensando '),
+            $this->minimax(null, 'la solución.'),
+            $this->minimax('Hola, '),
+            $this->minimax('mundo', null, 'stop'),
+        ], done: true));
+
+        $events = $this->collect($provider);
+
+        $this->assertSame('Pensando la solución.', $this->text($events, 'thought'));
+        $this->assertSame('Hola, mundo', $this->text($events, 'content'));
+        $this->assertSame([], $this->of($events, 'error'));
+    }
+
+    #[Test]
+    public function a_cut_minimax_answer_warns(): void
+    {
+        $provider = $this->provider(AiProviderEnum::MiniMax, 'MiniMax-M3.1-Flash');
+        $this->fake('api.minimax.io', $this->sseResponse([$this->minimax('A medias', null, 'length')]));
+
+        $this->assertStringContainsString('se ha cortado por larga', implode(' ', $this->of($this->collect($provider), 'warning')));
+    }
+
+    #[Test]
+    public function minimax_base_resp_error_is_reported(): void
+    {
+        $provider = $this->provider(AiProviderEnum::MiniMax, 'MiniMax-M3.1-Flash');
+        $this->fake('api.minimax.io', $this->sseResponse([
+            ['base_resp' => ['status_code' => 1008, 'status_msg' => 'insufficient balance']],
+        ]));
+
+        $events = $this->collect($provider);
+        $this->assertStringContainsString('MiniMax ha devuelto un error: insufficient balance', $this->of($events, 'error')[0]);
+    }
+
     // ── Prueba de conexión ──────────────────────────────────────────────────
 
     #[Test]
@@ -289,6 +352,19 @@ class AiTextProvidersTest extends TestCase
     private function mistral(string|array $content, ?string $finishReason = null): array
     {
         return ['choices' => [['index' => 0, 'delta' => ['content' => $content], 'finish_reason' => $finishReason]]];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function minimax(?string $content = null, ?string $thought = null, ?string $finishReason = null): array
+    {
+        $delta = array_filter([
+            'content' => $content,
+            'reasoning_content' => $thought,
+        ], fn ($v) => $v !== null);
+
+        return ['choices' => [['index' => 0, 'delta' => $delta, 'finish_reason' => $finishReason]]];
     }
 
     /**

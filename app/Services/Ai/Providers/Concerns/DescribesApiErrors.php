@@ -26,8 +26,10 @@ trait DescribesApiErrors
         $json = $response->json();
         $json = is_array($json) ? $json : [];
         $error = $json['error'] ?? null;
+        $baseResp = $json['base_resp'] ?? null;
 
         $message = match (true) {
+            is_array($baseResp) && isset($baseResp['status_code']) && (int) $baseResp['status_code'] !== 0 => (string) ($baseResp['status_msg'] ?? ''),
             is_array($error) && is_string($error['message'] ?? null) => $error['message'],
             is_string($error) => $error,
             is_string($json['message'] ?? null) => $json['message'],
@@ -35,7 +37,11 @@ trait DescribesApiErrors
             default => Str::limit(strip_tags($response->body()), 300),
         };
 
-        $code = is_array($error) && is_scalar($error['code'] ?? null) ? (string) $error['code'] : null;
+        $code = match (true) {
+            is_array($baseResp) && isset($baseResp['status_code']) && (int) $baseResp['status_code'] !== 0 => (string) $baseResp['status_code'],
+            is_array($error) && is_scalar($error['code'] ?? null) => (string) $error['code'],
+            default => null,
+        };
 
         return [$message, $code];
     }
