@@ -96,7 +96,7 @@ enum AiProviderEnum: string
             self::Mistral => 'https://docs.mistral.ai/getting-started/models',
             self::Xai => 'https://docs.x.ai/docs/models',
             self::OpenAi => 'https://platform.openai.com/docs/models',
-            self::MiniMax => 'https://platform.minimaxi.com/document/ChatCompletion%20v2',
+            self::MiniMax => 'https://platform.minimax.io/docs/guides/models-intro',
         };
     }
 
@@ -141,7 +141,7 @@ enum AiProviderEnum: string
             self::Mistral => 'https://docs.mistral.ai/studio-api/agents/agent-tools/image_generation',
             self::Xai => 'https://docs.x.ai/developers/model-capabilities/images/generation',
             self::OpenAi => 'https://developers.openai.com/api/docs/guides/image-generation',
-            self::MiniMax => 'https://platform.minimaxi.com/document/image_generation',
+            self::MiniMax => 'https://platform.minimax.io/docs/guides/image-generation',
         };
     }
 
@@ -224,7 +224,7 @@ enum AiProviderEnum: string
             self::Mistral => 'la consola de Mistral (https://console.mistral.ai)',
             self::Xai => 'la consola de xAI (https://console.x.ai)',
             self::OpenAi => 'la plataforma de OpenAI (https://platform.openai.com/settings/organization/billing)',
-            self::MiniMax => 'la plataforma de MiniMax (https://platform.minimaxi.com)',
+            self::MiniMax => 'la plataforma de MiniMax (https://platform.minimax.io)',
         };
     }
 
