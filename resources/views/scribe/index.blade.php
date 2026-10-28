@@ -188,6 +188,9 @@ la primera página. Con `?include=` lo que se pida (`all`, todo).</a>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-keycounter-mouse-sessions">
                                 <a href="#endpoints-GETapi-v2-keycounter-mouse-sessions">Sesiones de mouse del usuario autenticado.</a>
                             </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-keycounter-stats">
+                                <a href="#endpoints-GETapi-v2-keycounter-stats">Muestra las estadísticas agregadas de teclado y ratón del usuario autenticado.</a>
+                            </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-keycounter-summary">
                                 <a href="#endpoints-GETapi-v2-keycounter-summary">Acumulado de un periodo.</a>
                             </li>
@@ -293,7 +296,7 @@ la primera página. Con `?include=` lo que se pida (`all`, todo).</a>
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: October 27, 2026</li>
+        <li>Last updated: October 28, 2026</li>
     </ul>
 </div>
 
@@ -619,10 +622,10 @@ añade <code>device:{id}</code>. No emite nunca el comodín ni la ability de ses
     --data "{
     \"device_id\": 16,
     \"abilities\": [
-        \"airflight:write\"
+        \"keycounter:write\"
     ],
     \"name\": \"n\",
-    \"expires_at\": \"2052-11-19\"
+    \"expires_at\": \"2052-11-21\"
 }"
 </code></pre></div>
 
@@ -640,10 +643,10 @@ const headers = {
 let body = {
     "device_id": 16,
     "abilities": [
-        "airflight:write"
+        "keycounter:write"
     ],
     "name": "n",
-    "expires_at": "2052-11-19"
+    "expires_at": "2052-11-21"
 };
 
 fetch(url, {
@@ -775,10 +778,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="expires_at"                data-endpoint="POSTapi-v2-auth-tokens-devices"
-               value="2052-11-19"
+               value="2052-11-21"
                data-component="body">
     <br>
-<p>Must be a valid date. Must be a date after <code>now</code>. Example: <code>2052-11-19</code></p>
+<p>Must be a valid date. Must be a date after <code>now</code>. Example: <code>2052-11-21</code></p>
         </div>
         </form>
 
@@ -1171,7 +1174,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"email\": \"zbailey@example.net\",
     \"subject\": \"i\",
     \"message\": \"y\",
-    \"privacity\": true,
+    \"privacity\": false,
     \"contactme\": true,
     \"attributes\": [
         \"v\"
@@ -1199,7 +1202,7 @@ let body = {
     "email": "zbailey@example.net",
     "subject": "i",
     "message": "y",
-    "privacity": true,
+    "privacity": false,
     "contactme": true,
     "attributes": [
         "v"
@@ -1360,7 +1363,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>contactme</code></b>&nbsp;&nbsp;
@@ -2311,7 +2314,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: max-age=60, public
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 276
+x-ratelimit-remaining: 299
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -2523,7 +2526,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 275
+x-ratelimit-remaining: 298
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -2672,7 +2675,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 274
+x-ratelimit-remaining: 297
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -2820,7 +2823,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 273
+x-ratelimit-remaining: 296
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -2972,7 +2975,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 272
+x-ratelimit-remaining: 295
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -3121,7 +3124,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 271
+x-ratelimit-remaining: 294
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -3286,7 +3289,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 270
+x-ratelimit-remaining: 293
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -3502,7 +3505,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 269
+x-ratelimit-remaining: 292
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -3718,7 +3721,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 268
+x-ratelimit-remaining: 291
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -3946,7 +3949,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 267
+x-ratelimit-remaining: 290
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -4162,7 +4165,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 266
+x-ratelimit-remaining: 289
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -4322,7 +4325,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 265
+x-ratelimit-remaining: 288
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -4482,7 +4485,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 264
+x-ratelimit-remaining: 287
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -4642,7 +4645,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 263
+x-ratelimit-remaining: 286
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -6073,7 +6076,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"duration\": 22,
-    \"read_at\": \"2022-11-20\",
+    \"read_at\": \"2022-11-22\",
     \"energy\": []
 }"
 </code></pre></div>
@@ -6092,7 +6095,7 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "duration": 22,
-    "read_at": "2022-11-20",
+    "read_at": "2022-11-22",
     "energy": []
 };
 
@@ -6233,10 +6236,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="read_at"                data-endpoint="POSTapi-v2-energy-readings"
-               value="2022-11-20"
+               value="2022-11-22"
                data-component="body">
     <br>
-<p>Must be a valid date. Must be a date after or equal to <code>2000-01-01</code>. Must be a date before or equal to <code>2026-10-27 07:15:07</code>. Example: <code>2022-11-20</code></p>
+<p>Must be a valid date. Must be a date after or equal to <code>2000-01-01</code>. Must be a date before or equal to <code>2026-10-28 22:08:44</code>. Example: <code>2022-11-22</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>energy</code></b>&nbsp;&nbsp;
@@ -6444,7 +6447,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 30
-x-ratelimit-remaining: 23
+x-ratelimit-remaining: 29
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -7146,6 +7149,139 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                         </form>
 
+                    <h2 id="endpoints-GETapi-v2-keycounter-stats">Muestra las estadísticas agregadas de teclado y ratón del usuario autenticado.</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-v2-keycounter-stats">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "https://api.raupulus.dev/api/v2/keycounter/stats" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "https://api.raupulus.dev/api/v2/keycounter/stats"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v2-keycounter-stats">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+content-language: en
+vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Unauthenticated&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v2-keycounter-stats" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v2-keycounter-stats"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v2-keycounter-stats"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v2-keycounter-stats" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v2-keycounter-stats">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v2-keycounter-stats" data-method="GET"
+      data-path="api/v2/keycounter/stats"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-keycounter-stats', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v2-keycounter-stats"
+                    onclick="tryItOut('GETapi-v2-keycounter-stats');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v2-keycounter-stats"
+                    onclick="cancelTryOut('GETapi-v2-keycounter-stats');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v2-keycounter-stats"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v2/keycounter/stats</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v2-keycounter-stats"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v2-keycounter-stats"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        </form>
+
                     <h2 id="endpoints-GETapi-v2-keycounter-summary">Acumulado de un periodo.</h2>
 
 <p>
@@ -7337,8 +7473,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"user_id\": 16,
-    \"start_at\": \"2026-10-27 06:15:07\",
-    \"end_at\": \"2026-10-27 06:15:07\",
+    \"start_at\": \"2026-10-28 21:08:44\",
+    \"end_at\": \"2026-10-28 21:08:44\",
     \"duration\": 16,
     \"pulsations\": 39,
     \"pulsations_special_keys\": 84,
@@ -7362,8 +7498,8 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "user_id": 16,
-    "start_at": "2026-10-27 06:15:07",
-    "end_at": "2026-10-27 06:15:07",
+    "start_at": "2026-10-28 21:08:44",
+    "end_at": "2026-10-28 21:08:44",
     "duration": 16,
     "pulsations": 39,
     "pulsations_special_keys": 84,
@@ -7497,10 +7633,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_at"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="2026-10-27 06:15:07"
+               value="2026-10-28 21:08:44"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-10-27 06:15:07</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-10-28 21:08:44</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_at</code></b>&nbsp;&nbsp;
@@ -7509,10 +7645,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_at"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="2026-10-27 06:15:07"
+               value="2026-10-28 21:08:44"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-10-27 06:15:07</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-10-28 21:08:44</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
@@ -7607,8 +7743,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"user_id\": 16,
-    \"start_at\": \"2026-10-27 06:15:07\",
-    \"end_at\": \"2026-10-27 06:15:07\",
+    \"start_at\": \"2026-10-28 21:08:44\",
+    \"end_at\": \"2026-10-28 21:08:44\",
     \"duration\": 16,
     \"clicks_left\": 39,
     \"clicks_right\": 84,
@@ -7633,8 +7769,8 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "user_id": 16,
-    "start_at": "2026-10-27 06:15:07",
-    "end_at": "2026-10-27 06:15:07",
+    "start_at": "2026-10-28 21:08:44",
+    "end_at": "2026-10-28 21:08:44",
     "duration": 16,
     "clicks_left": 39,
     "clicks_right": 84,
@@ -7769,10 +7905,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_at"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="2026-10-27 06:15:07"
+               value="2026-10-28 21:08:44"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-10-27 06:15:07</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-10-28 21:08:44</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_at</code></b>&nbsp;&nbsp;
@@ -7781,10 +7917,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_at"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="2026-10-27 06:15:07"
+               value="2026-10-28 21:08:44"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-10-27 06:15:07</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-10-28 21:08:44</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
@@ -8052,7 +8188,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 30
-x-ratelimit-remaining: 22
+x-ratelimit-remaining: 28
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -8178,7 +8314,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"humidity\": 4326.41688,
     \"soil_humidity\": 17,
     \"soil_humidity_raw\": 16,
-    \"full_water_tank\": true,
+    \"full_water_tank\": false,
     \"waterpump_enabled\": false,
     \"vaporizer_enabled\": true
 }"
@@ -8204,7 +8340,7 @@ let body = {
     "humidity": 4326.41688,
     "soil_humidity": 17,
     "soil_humidity_raw": 16,
-    "full_water_tank": true,
+    "full_water_tank": false,
     "waterpump_enabled": false,
     "vaporizer_enabled": true
 };
@@ -8432,7 +8568,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>waterpump_enabled</code></b>&nbsp;&nbsp;
@@ -8499,9 +8635,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"sensors\": [
-        \"rain\"
+        \"humidity\"
     ],
-    \"location_type\": \"outdoor\"
+    \"location_type\": \"indoor\"
 }"
 </code></pre></div>
 
@@ -8518,9 +8654,9 @@ const headers = {
 
 let body = {
     "sensors": [
-        "rain"
+        "humidity"
     ],
-    "location_type": "outdoor"
+    "location_type": "indoor"
 };
 
 fetch(url, {
@@ -8650,10 +8786,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="location_type"                data-endpoint="GETapi-v2-weather-stations"
-               value="outdoor"
+               value="indoor"
                data-component="body">
     <br>
-<p>Example: <code>outdoor</code></p>
+<p>Example: <code>indoor</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>indoor</code></li> <li><code>outdoor</code></li></ul>
         </div>
@@ -8677,7 +8813,7 @@ Must be one of:
     --header "Accept: application/json" \
     --data "{
     \"sensors\": [
-        \"humidity\"
+        \"wind\"
     ]
 }"
 </code></pre></div>
@@ -8695,7 +8831,7 @@ const headers = {
 
 let body = {
     "sensors": [
-        "humidity"
+        "wind"
     ]
 };
 
@@ -8886,7 +9022,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 30
-x-ratelimit-remaining: 21
+x-ratelimit-remaining: 27
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -9049,7 +9185,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 30
-x-ratelimit-remaining: 20
+x-ratelimit-remaining: 26
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -9577,7 +9713,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 258
+x-ratelimit-remaining: 281
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -9713,7 +9849,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 257
+x-ratelimit-remaining: 280
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -9861,7 +9997,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 300
-x-ratelimit-remaining: 256
+x-ratelimit-remaining: 279
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -10009,7 +10145,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 30
-x-ratelimit-remaining: 19
+x-ratelimit-remaining: 25
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -10169,7 +10305,7 @@ fetch(url, {
             <pre><code class="language-http">cache-control: no-cache, private
 content-type: application/json
 x-ratelimit-limit: 30
-x-ratelimit-remaining: 18
+x-ratelimit-remaining: 24
 content-language: en
 vary: Accept-Language, Origin
 x-content-type-options: nosniff
@@ -11386,7 +11522,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"is_favorite\": true
+    \"is_favorite\": false
 }"
 </code></pre></div>
 
@@ -11402,7 +11538,7 @@ const headers = {
 };
 
 let body = {
-    "is_favorite": true
+    "is_favorite": false
 };
 
 fetch(url, {
@@ -11520,7 +11656,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
         </form>
 
@@ -11804,7 +11940,7 @@ de la ejecución del ticket.</p>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"status\": \"failed\",
+    \"status\": \"out_of_paper\",
     \"error_message\": \"b\"
 }"
 </code></pre></div>
@@ -11821,7 +11957,7 @@ const headers = {
 };
 
 let body = {
-    "status": "failed",
+    "status": "out_of_paper",
     "error_message": "b"
 };
 
@@ -11927,10 +12063,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="status"                data-endpoint="PATCHapi-v2-printers-jobs--job_id--status"
-               value="failed"
+               value="out_of_paper"
                data-component="body">
     <br>
-<p>Example: <code>failed</code></p>
+<p>Example: <code>out_of_paper</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>completed</code></li> <li><code>failed</code></li> <li><code>out_of_paper</code></li></ul>
         </div>

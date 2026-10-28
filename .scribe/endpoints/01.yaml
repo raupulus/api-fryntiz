@@ -477,14 +477,14 @@ endpoints:
         name: is_favorite
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      is_favorite: true
+      is_favorite: false
     fileParameters: []
     responses: []
     responseFields: []
@@ -631,7 +631,7 @@ endpoints:
         name: status
         description: ''
         required: true
-        example: failed
+        example: out_of_paper
         type: string
         enumValues:
           - completed
@@ -663,7 +663,7 @@ endpoints:
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      status: failed
+      status: out_of_paper
       error_message: b
     fileParameters: []
     responses: []

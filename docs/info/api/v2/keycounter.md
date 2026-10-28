@@ -369,6 +369,62 @@ UTC y el corte se hace en UTC.
 
 ---
 
+## Estadísticas acumuladas de usuario (`/keycounter/stats`)
+
+### `GET /keycounter/stats` — Métricas globales de usuario
+
+**Nuevo el 2026-10-28.** Proporciona las métricas acumuladas de pulsaciones y clicks
+de todas las sesiones del usuario autenticado, **sumando todos sus dispositivos
+hardware**. Pensado para paneles externos, displays de escritorio o agregadores
+(como contenedores Docker locales) que necesitan totales en conjunto sin filtrar
+por dispositivo individual.
+
+- **Auth**: `auth:sanctum` + `ability:keycounter:read`.
+- **Restricción de usuario**: Exige usuario autenticado y activo (`is_active = true`).
+- **Rate limit**: `api` — 60 peticiones/min por token.
+- **Query params**: Ninguno (las estadísticas se calculan para el usuario dueño del token).
+
+- **Respuesta 200**:
+
+```json
+{
+  "success": true,
+  "message": "Operación exitosa",
+  "data": {
+    "user_id": 1,
+    "lifetime_pulsations": 12845620,
+    "today_pulsations": 15420,
+    "last_hour_pulsations": 1850,
+    "lifetime_clicks": 450120,
+    "today_clicks": 1200,
+    "last_hour_clicks": 150,
+    "today_from": "2026-10-28T00:00:00.000000Z",
+    "last_hour_from": "2026-10-28T21:00:00.000000Z",
+    "generated_at": "2026-10-28T22:00:00.000000Z"
+  }
+}
+```
+
+| Campo | Tipo | Qué es |
+|---|---|---|
+| `user_id` | int | ID del usuario autenticado |
+| `lifetime_pulsations` | int | Suma total histórica de pulsaciones de teclado en todos los dispositivos del usuario |
+| `today_pulsations` | int | Suma de pulsaciones de teclado registradas en el día actual (desde las 00:00:00 UTC) |
+| `last_hour_pulsations` | int | Suma de pulsaciones de teclado en la última hora móvil (últimos 60 minutos UTC) |
+| `lifetime_clicks` | int | Suma total histórica de clicks de ratón en todos los dispositivos del usuario |
+| `today_clicks` | int | Suma de clicks de ratón registrados en el día actual (desde las 00:00:00 UTC) |
+| `last_hour_clicks` | int | Suma de clicks de ratón en la última hora móvil (últimos 60 minutos UTC) |
+| `today_from` | string | Marca temporal ISO 8601 (UTC) del inicio del día actual |
+| `last_hour_from` | string | Marca temporal ISO 8601 (UTC) de inicio de la ventana de última hora |
+| `generated_at` | string | Marca temporal ISO 8601 (UTC) de la generación de la respuesta |
+
+- **Errores**:
+  - `401` sin token o con usuario desactivado / token revocado.
+  - `403` token sin la ability `keycounter:read`.
+  - `429` al superar 60 peticiones por minuto.
+
+---
+
 ## Lo que ya no existe, y por qué
 
 | Ruta antigua | Qué pasó |
@@ -381,7 +437,7 @@ Antes el módulo solo tenía escritura; los `GET` (`keyboard-sessions` /
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-07
+> Creado: 2026-08-30 · Última revisión: 2026-10-28
 
 
 ## El día de la semana: `0` es domingo (2026-09-11)

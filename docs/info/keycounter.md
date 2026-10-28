@@ -14,14 +14,16 @@ Módulo IoT para registrar pulsaciones de teclado y clicks/movimientos de ratón
 ### Controladores
 | Archivo | Versión | Descripción |
 |---------|---------|-------------|
-| `app/Http/Controllers/Api/KeyCounter/V2/KeyboardController.php` | API V2 | Store registro de teclado |
-| `app/Http/Controllers/Api/KeyCounter/V2/MouseController.php` | API V2 | Store registro de ratón |
+| `app/Http/Controllers/Api/KeyCounter/V2/KeyboardController.php` | API V2 | Store registro de teclado y listado de sesiones |
+| `app/Http/Controllers/Api/KeyCounter/V2/MouseController.php` | API V2 | Store registro de ratón y listado de sesiones |
+| `app/Http/Controllers/Api/KeyCounter/V2/SummaryController.php` | API V2 | Resumen acumulado de un dispositivo para reanudar |
+| `app/Http/Controllers/Api/KeyCounter/V2/StatsController.php` | API V2 | Estadísticas acumuladas globales del usuario (lifetime, today, last hour) |
 | `app/Http/Controllers/KeyCounter/KeyCounterController.php` | Web | Frontend público |
 
 ### Servicios
 | Archivo | Descripción |
 |---------|-------------|
-| `app/Services/KeyCounter/KeyCounterService.php` | Ingesta: store de teclado/ratón y resumen para reanudar |
+| `app/Services/KeyCounter/KeyCounterService.php` | Ingesta: store de teclado/ratón, resumen para reanudar y stats agregadas de usuario |
 | `app/Services/KeyCounter/KeyCounterStatisticsService.php` | Todo lo que enseña la web: gráfica, resúmenes, widgets y totales anuales. Lo comparten el controlador (que sólo lee caché) y `keycounter:warm_cache` (que la escribe) |
 
 ### Resources API V2
@@ -29,6 +31,7 @@ Módulo IoT para registrar pulsaciones de teclado y clicks/movimientos de ratón
 |---------|-------------|
 | `app/Http/Resources/V2/KeyCounter/KeyboardResource.php` | Resource JSON teclado |
 | `app/Http/Resources/V2/KeyCounter/MouseResource.php` | Resource JSON ratón |
+| `app/Http/Resources/V2/KeyCounter/KeyCounterStatsResource.php` | Resource JSON estadísticas agregadas del usuario |
 
 ### FormRequests V2
 | Archivo | Descripción |
@@ -99,6 +102,7 @@ Ambos FormRequests calculan automáticamente en `prepareForValidation()`:
 | GET | `/api/v2/keycounter/keyboard-sessions` | `ability:keycounter:read` | `api` | Listar sesiones de teclado |
 | GET | `/api/v2/keycounter/mouse-sessions` | `ability:keycounter:read` | `api` | Listar sesiones de ratón |
 | GET | `/api/v2/keycounter/summary` | `ability:keycounter:read` | `keycounter-summary` (20/min) | Acumulado de un periodo, de un dispositivo |
+| GET | `/api/v2/keycounter/stats` | `ability:keycounter:read` | `api` | Métricas acumuladas del usuario (lifetime, today, last hour) agrupando todo su hardware |
 | POST | `/api/v2/keycounter/keyboard-sessions` | `ability:keycounter:write` | `api-store` | Registrar una sesión de teclado |
 | POST | `/api/v2/keycounter/mouse-sessions` | `ability:keycounter:write` | `api-store` | Registrar una sesión de ratón |
 
@@ -499,4 +503,4 @@ reportado el primer día del mes le caía la rama del `else` y se quedaba sin
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-13 (corrección: `weekday` es 0 = domingo, no 0 = lunes)
+> Creado: 2026-05-25 · Última revisión: 2026-10-28

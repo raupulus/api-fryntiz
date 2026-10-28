@@ -115,6 +115,55 @@ class KeyCounterService
     }
 
     /**
+     * Estadísticas acumuladas de pulsaciones y clicks para un usuario en conjunto,
+     * sumando todos sus dispositivos de hardware.
+     *
+     * @param  int  $userId  ID del usuario.
+     * @return array<string, mixed>
+     */
+    public function userStats(int $userId): array
+    {
+        $now = CarbonImmutable::now('UTC');
+        $todayStart = $now->startOfDay();
+        $lastHourStart = $now->subHour();
+
+        $keyboard = Keyboard::query()
+            ->where('user_id', $userId)
+            ->toBase()
+            ->selectRaw(
+                'COALESCE(SUM(pulsations), 0) AS lifetime_pulsations, '.
+                'COALESCE(SUM(CASE WHEN created_at >= ? THEN pulsations ELSE 0 END), 0) AS today_pulsations, '.
+                'COALESCE(SUM(CASE WHEN created_at >= ? THEN pulsations ELSE 0 END), 0) AS last_hour_pulsations',
+                [$todayStart, $lastHourStart]
+            )
+            ->first();
+
+        $mouse = Mouse::query()
+            ->where('user_id', $userId)
+            ->toBase()
+            ->selectRaw(
+                'COALESCE(SUM(total_clicks), 0) AS lifetime_clicks, '.
+                'COALESCE(SUM(CASE WHEN created_at >= ? THEN total_clicks ELSE 0 END), 0) AS today_clicks, '.
+                'COALESCE(SUM(CASE WHEN created_at >= ? THEN total_clicks ELSE 0 END), 0) AS last_hour_clicks',
+                [$todayStart, $lastHourStart]
+            )
+            ->first();
+
+        return [
+            'user_id' => $userId,
+            'lifetime_pulsations' => (int) ($keyboard->lifetime_pulsations ?? 0),
+            'today_pulsations' => (int) ($keyboard->today_pulsations ?? 0),
+            'last_hour_pulsations' => (int) ($keyboard->last_hour_pulsations ?? 0),
+            'lifetime_clicks' => (int) ($mouse->lifetime_clicks ?? 0),
+            'today_clicks' => (int) ($mouse->today_clicks ?? 0),
+            'last_hour_clicks' => (int) ($mouse->last_hour_clicks ?? 0),
+            'today_from' => $todayStart->toISOString(),
+            'last_hour_from' => $lastHourStart->toISOString(),
+            'generated_at' => $now->toISOString(),
+        ];
+    }
+
+    /**
      * Calcula las estadísticas agregadas de teclado de un usuario en los últimos días.
      *
      * @param  int  $userId  ID del usuario.

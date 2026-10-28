@@ -148,7 +148,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - 'airflight:write'
+          - 'keycounter:write'
         type: 'string[]'
         enumValues:
           - 'hardware:read'
@@ -184,7 +184,7 @@ endpoints:
         name: expires_at
         description: 'Must be a valid date. Must be a date after <code>now</code>.'
         required: false
-        example: '2052-11-19'
+        example: '2052-11-21'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -193,9 +193,9 @@ endpoints:
     cleanBodyParameters:
       device_id: 16
       abilities:
-        - 'airflight:write'
+        - 'keycounter:write'
       name: 'n'
-      expires_at: '2052-11-19'
+      expires_at: '2052-11-21'
     fileParameters: []
     responses: []
     responseFields: []
@@ -394,7 +394,7 @@ endpoints:
         name: privacity
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -472,7 +472,7 @@ endpoints:
       email: zbailey@example.net
       subject: i
       message: 'y'
-      privacity: true
+      privacity: false
       contactme: true
       attributes:
         - v
@@ -824,7 +824,7 @@ endpoints:
           cache-control: 'max-age=60, public'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '276'
+          x-ratelimit-remaining: '299'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -885,7 +885,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '275'
+          x-ratelimit-remaining: '298'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -946,7 +946,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '274'
+          x-ratelimit-remaining: '297'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -1005,7 +1005,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '273'
+          x-ratelimit-remaining: '296'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -1069,7 +1069,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '272'
+          x-ratelimit-remaining: '295'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -1130,7 +1130,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '271'
+          x-ratelimit-remaining: '294'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -1247,7 +1247,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '270'
+          x-ratelimit-remaining: '293'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -1357,7 +1357,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '269'
+          x-ratelimit-remaining: '292'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -1479,7 +1479,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '268'
+          x-ratelimit-remaining: '291'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -1601,7 +1601,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '267'
+          x-ratelimit-remaining: '290'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -1672,7 +1672,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '266'
+          x-ratelimit-remaining: '289'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -1743,7 +1743,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '265'
+          x-ratelimit-remaining: '288'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -1814,7 +1814,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '264'
+          x-ratelimit-remaining: '287'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -1885,7 +1885,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '263'
+          x-ratelimit-remaining: '286'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -2735,9 +2735,9 @@ endpoints:
       read_at:
         custom: []
         name: read_at
-        description: 'Must be a valid date. Must be a date after or equal to <code>2000-01-01</code>. Must be a date before or equal to <code>2026-10-27 07:15:07</code>.'
+        description: 'Must be a valid date. Must be a date after or equal to <code>2000-01-01</code>. Must be a date before or equal to <code>2026-10-28 22:08:44</code>.'
         required: false
-        example: '2022-11-20'
+        example: '2022-11-22'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2757,7 +2757,7 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       duration: 22
-      read_at: '2022-11-20'
+      read_at: '2022-11-22'
       energy: []
     fileParameters: []
     responses: []
@@ -2872,7 +2872,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '30'
-          x-ratelimit-remaining: '23'
+          x-ratelimit-remaining: '29'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -3185,6 +3185,51 @@ endpoints:
     custom: []
     httpMethods:
       - GET
+    uri: api/v2/keycounter/stats
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Muestra las estadísticas agregadas de teclado y ratón del usuario autenticado.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"success":false,"message":"Unauthenticated"}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          content-language: en
+          vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
     uri: api/v2/keycounter/summary
     metadata:
       custom: []
@@ -3316,7 +3361,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-10-27 06:15:07'
+        example: '2026-10-28 21:08:44'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3327,7 +3372,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-10-27 06:15:07'
+        example: '2026-10-28 21:08:44'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3402,8 +3447,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-10-27 06:15:07'
-      end_at: '2026-10-27 06:15:07'
+      start_at: '2026-10-28 21:08:44'
+      end_at: '2026-10-28 21:08:44'
       duration: 16
       pulsations: 39
       pulsations_special_keys: 84
@@ -3478,7 +3523,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-10-27 06:15:07'
+        example: '2026-10-28 21:08:44'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3489,7 +3534,7 @@ endpoints:
         name: end_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-10-27 06:15:07'
+        example: '2026-10-28 21:08:44'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3575,8 +3620,8 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-10-27 06:15:07'
-      end_at: '2026-10-27 06:15:07'
+      start_at: '2026-10-28 21:08:44'
+      end_at: '2026-10-28 21:08:44'
       duration: 16
       clicks_left: 39
       clicks_right: 84
@@ -3682,7 +3727,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '30'
-          x-ratelimit-remaining: '22'
+          x-ratelimit-remaining: '28'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -3834,7 +3879,7 @@ endpoints:
         name: full_water_tank
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -3871,7 +3916,7 @@ endpoints:
       humidity: 4326.41688
       soil_humidity: 17
       soil_humidity_raw: 16
-      full_water_tank: true
+      full_water_tank: false
       waterpump_enabled: false
       vaporizer_enabled: true
     fileParameters: []
@@ -3912,7 +3957,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - rain
+          - humidity
         type: 'string[]'
         enumValues:
           - temperature
@@ -3931,7 +3976,7 @@ endpoints:
         name: location_type
         description: ''
         required: false
-        example: outdoor
+        example: indoor
         type: string
         enumValues:
           - indoor
@@ -3941,8 +3986,8 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - rain
-      location_type: outdoor
+        - humidity
+      location_type: indoor
     fileParameters: []
     responses:
       -
@@ -4005,7 +4050,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - humidity
+          - wind
         type: 'string[]'
         enumValues:
           - temperature
@@ -4021,7 +4066,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - humidity
+        - wind
     fileParameters: []
     responses:
       -
@@ -4108,7 +4153,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '30'
-          x-ratelimit-remaining: '21'
+          x-ratelimit-remaining: '27'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -4183,7 +4228,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '30'
-          x-ratelimit-remaining: '20'
+          x-ratelimit-remaining: '26'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -4405,7 +4450,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '258'
+          x-ratelimit-remaining: '281'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -4466,7 +4511,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '257'
+          x-ratelimit-remaining: '280'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -4525,7 +4570,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '300'
-          x-ratelimit-remaining: '256'
+          x-ratelimit-remaining: '279'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -4596,7 +4641,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '30'
-          x-ratelimit-remaining: '19'
+          x-ratelimit-remaining: '25'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff
@@ -4660,7 +4705,7 @@ endpoints:
           cache-control: 'no-cache, private'
           content-type: application/json
           x-ratelimit-limit: '30'
-          x-ratelimit-remaining: '18'
+          x-ratelimit-remaining: '24'
           content-language: en
           vary: 'Accept-Language, Origin'
           x-content-type-options: nosniff

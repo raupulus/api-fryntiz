@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Api\KeyCounter\V2\KeyboardController;
 use App\Http\Controllers\Api\KeyCounter\V2\MouseController;
+use App\Http\Controllers\Api\KeyCounter\V2\StatsController;
 use App\Http\Controllers\Api\KeyCounter\V2\SummaryController;
 use App\Support\Auth\TokenAbilities;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +29,7 @@ Route::prefix('keycounter')->group(function () {
     Route::middleware(['auth:sanctum', 'ability:'.TokenAbilities::KEYCOUNTER_READ, 'throttle:api'])->group(function () {
         Route::get('/keyboard-sessions', [KeyboardController::class, 'index'])->name('api.v2.keycounter.keyboard_sessions.index');
         Route::get('/mouse-sessions', [MouseController::class, 'index'])->name('api.v2.keycounter.mouse_sessions.index');
+        Route::get('/stats', [StatsController::class, 'show'])->name('api.v2.keycounter.stats');
     });
 
     // # Resumen acumulado de un periodo.

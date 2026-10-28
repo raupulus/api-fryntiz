@@ -10,7 +10,7 @@
     ],
     "info": {
         "name": "Api Raupulus API Documentation",
-        "_postman_id": "ddff120a-2f78-40b1-9301-e2747cf9441c",
+        "_postman_id": "6f621067-8f23-4085-9ee6-9b3cfe29f6d9",
         "description": "",
         "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json"
     },
@@ -140,7 +140,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"device_id\":16,\"abilities\":[\"airflight:write\"],\"name\":\"n\",\"expires_at\":\"2052-11-19\"}"
+                            "raw": "{\"device_id\":16,\"abilities\":[\"keycounter:write\"],\"name\":\"n\",\"expires_at\":\"2052-11-21\"}"
                         },
                         "description": "Va por `DeviceTokenService`, que es la fuente \u00fanica: comprueba que las\nabilities est\u00e1n en el cat\u00e1logo, que el dispositivo es del usuario, y\na\u00f1ade `device:{id}`. No emite nunca el comod\u00edn ni la ability de sesi\u00f3n.",
                         "auth": {
@@ -303,7 +303,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"name\":\"b\",\"email\":\"zbailey@example.net\",\"subject\":\"i\",\"message\":\"y\",\"privacity\":true,\"contactme\":true,\"attributes\":[\"v\"],\"g-recaptcha-response\":\"architecto\",\"recaptcha_token\":\"architecto\",\"cf-turnstile-response\":\"architecto\",\"turnstile_token\":\"architecto\"}"
+                            "raw": "{\"name\":\"b\",\"email\":\"zbailey@example.net\",\"subject\":\"i\",\"message\":\"y\",\"privacity\":false,\"contactme\":true,\"attributes\":[\"v\"],\"g-recaptcha-response\":\"architecto\",\"recaptcha_token\":\"architecto\",\"cf-turnstile-response\":\"architecto\",\"turnstile_token\":\"architecto\"}"
                         },
                         "description": "",
                         "auth": {
@@ -593,7 +593,7 @@
                                 },
                                 {
                                     "key": "x-ratelimit-remaining",
-                                    "value": "276"
+                                    "value": "299"
                                 },
                                 {
                                     "key": "content-language",
@@ -677,7 +677,7 @@
                                 },
                                 {
                                     "key": "x-ratelimit-remaining",
-                                    "value": "275"
+                                    "value": "298"
                                 },
                                 {
                                     "key": "content-language",
@@ -761,7 +761,7 @@
                                 },
                                 {
                                     "key": "x-ratelimit-remaining",
-                                    "value": "274"
+                                    "value": "297"
                                 },
                                 {
                                     "key": "content-language",
@@ -845,7 +845,7 @@
                                 },
                                 {
                                     "key": "x-ratelimit-remaining",
-                                    "value": "273"
+                                    "value": "296"
                                 },
                                 {
                                     "key": "content-language",
@@ -929,7 +929,7 @@
                                 },
                                 {
                                     "key": "x-ratelimit-remaining",
-                                    "value": "272"
+                                    "value": "295"
                                 },
                                 {
                                     "key": "content-language",
@@ -1013,7 +1013,7 @@
                                 },
                                 {
                                     "key": "x-ratelimit-remaining",
-                                    "value": "271"
+                                    "value": "294"
                                 },
                                 {
                                     "key": "content-language",
@@ -1106,7 +1106,7 @@
                                 },
                                 {
                                     "key": "x-ratelimit-remaining",
-                                    "value": "270"
+                                    "value": "293"
                                 },
                                 {
                                     "key": "content-language",
@@ -1199,7 +1199,7 @@
                                 },
                                 {
                                     "key": "x-ratelimit-remaining",
-                                    "value": "269"
+                                    "value": "292"
                                 },
                                 {
                                     "key": "content-language",
@@ -1298,7 +1298,7 @@
                                 },
                                 {
                                     "key": "x-ratelimit-remaining",
-                                    "value": "268"
+                                    "value": "291"
                                 },
                                 {
                                     "key": "content-language",
@@ -1397,7 +1397,7 @@
                                 },
                                 {
                                     "key": "x-ratelimit-remaining",
-                                    "value": "267"
+                                    "value": "290"
                                 },
                                 {
                                     "key": "content-language",
@@ -1487,7 +1487,7 @@
                                 },
                                 {
                                     "key": "x-ratelimit-remaining",
-                                    "value": "266"
+                                    "value": "289"
                                 },
                                 {
                                     "key": "content-language",
@@ -1577,7 +1577,7 @@
                                 },
                                 {
                                     "key": "x-ratelimit-remaining",
-                                    "value": "265"
+                                    "value": "288"
                                 },
                                 {
                                     "key": "content-language",
@@ -1667,7 +1667,7 @@
                                 },
                                 {
                                     "key": "x-ratelimit-remaining",
-                                    "value": "264"
+                                    "value": "287"
                                 },
                                 {
                                     "key": "content-language",
@@ -1757,7 +1757,7 @@
                                 },
                                 {
                                     "key": "x-ratelimit-remaining",
-                                    "value": "263"
+                                    "value": "286"
                                 },
                                 {
                                     "key": "content-language",
@@ -2078,7 +2078,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"hardware_device_id\":16,\"duration\":22,\"read_at\":\"2022-11-20\",\"energy\":[]}"
+                            "raw": "{\"hardware_device_id\":16,\"duration\":22,\"read_at\":\"2022-11-22\",\"energy\":[]}"
                         },
                         "description": "Requiere ability `energy:write`. Procesa subsistemas de generador, bater\u00eda y consumos.",
                         "auth": {
@@ -2209,7 +2209,7 @@
                                 },
                                 {
                                     "key": "x-ratelimit-remaining",
-                                    "value": "23"
+                                    "value": "29"
                                 },
                                 {
                                     "key": "content-language",
@@ -2418,6 +2418,74 @@
                     ]
                 },
                 {
+                    "name": "Muestra las estad\u00edsticas agregadas de teclado y rat\u00f3n del usuario autenticado.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v2\/keycounter\/stats",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v2\/keycounter\/stats"
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "content-language",
+                                    "value": "en"
+                                },
+                                {
+                                    "key": "vary",
+                                    "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                }
+                            ],
+                            "code": 401,
+                            "body": "{\"success\":false,\"message\":\"Unauthenticated\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
                     "name": "Acumulado de un periodo.",
                     "request": {
                         "url": {
@@ -2510,7 +2578,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"hardware_device_id\":16,\"user_id\":16,\"start_at\":\"2026-10-27 06:15:07\",\"end_at\":\"2026-10-27 06:15:07\",\"duration\":16,\"pulsations\":39,\"pulsations_special_keys\":84,\"pulsation_average\":12,\"score\":77,\"weekday\":5}"
+                            "raw": "{\"hardware_device_id\":16,\"user_id\":16,\"start_at\":\"2026-10-28 21:08:44\",\"end_at\":\"2026-10-28 21:08:44\",\"duration\":16,\"pulsations\":39,\"pulsations_special_keys\":84,\"pulsation_average\":12,\"score\":77,\"weekday\":5}"
                         },
                         "description": "",
                         "auth": {
@@ -2541,7 +2609,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"hardware_device_id\":16,\"user_id\":16,\"start_at\":\"2026-10-27 06:15:07\",\"end_at\":\"2026-10-27 06:15:07\",\"duration\":16,\"clicks_left\":39,\"clicks_right\":84,\"clicks_middle\":12,\"total_clicks\":77,\"clicks_average\":8,\"weekday\":1}"
+                            "raw": "{\"hardware_device_id\":16,\"user_id\":16,\"start_at\":\"2026-10-28 21:08:44\",\"end_at\":\"2026-10-28 21:08:44\",\"duration\":16,\"clicks_left\":39,\"clicks_right\":84,\"clicks_middle\":12,\"total_clicks\":77,\"clicks_average\":8,\"weekday\":1}"
                         },
                         "description": "",
                         "auth": {
@@ -2669,7 +2737,7 @@
                                 },
                                 {
                                     "key": "x-ratelimit-remaining",
-                                    "value": "22"
+                                    "value": "28"
                                 },
                                 {
                                     "key": "content-language",
@@ -2732,7 +2800,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"plant_id\":4326.41688,\"hardware_device_id\":4326.41688,\"uv\":16,\"pressure\":4326.41688,\"temperature\":4326.41688,\"humidity\":4326.41688,\"soil_humidity\":17,\"soil_humidity_raw\":16,\"full_water_tank\":true,\"waterpump_enabled\":false,\"vaporizer_enabled\":true}"
+                            "raw": "{\"plant_id\":4326.41688,\"hardware_device_id\":4326.41688,\"uv\":16,\"pressure\":4326.41688,\"temperature\":4326.41688,\"humidity\":4326.41688,\"soil_humidity\":17,\"soil_humidity_raw\":16,\"full_water_tank\":false,\"waterpump_enabled\":false,\"vaporizer_enabled\":true}"
                         },
                         "description": "",
                         "auth": {
@@ -2763,7 +2831,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"sensors\":[\"rain\"],\"location_type\":\"outdoor\"}"
+                            "raw": "{\"sensors\":[\"humidity\"],\"location_type\":\"indoor\"}"
                         },
                         "description": "?zone=chipiona\n  ?location_type=indoor|outdoor",
                         "auth": {
@@ -2842,7 +2910,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"sensors\":[\"humidity\"]}"
+                            "raw": "{\"sensors\":[\"wind\"]}"
                         },
                         "description": "",
                         "auth": {
@@ -2948,7 +3016,7 @@
                                 },
                                 {
                                     "key": "x-ratelimit-remaining",
-                                    "value": "21"
+                                    "value": "27"
                                 },
                                 {
                                     "key": "content-language",
@@ -3038,7 +3106,7 @@
                                 },
                                 {
                                     "key": "x-ratelimit-remaining",
-                                    "value": "20"
+                                    "value": "26"
                                 },
                                 {
                                     "key": "content-language",
@@ -3198,7 +3266,7 @@
                                 },
                                 {
                                     "key": "x-ratelimit-remaining",
-                                    "value": "258"
+                                    "value": "281"
                                 },
                                 {
                                     "key": "content-language",
@@ -3282,7 +3350,7 @@
                                 },
                                 {
                                     "key": "x-ratelimit-remaining",
-                                    "value": "257"
+                                    "value": "280"
                                 },
                                 {
                                     "key": "content-language",
@@ -3366,7 +3434,7 @@
                                 },
                                 {
                                     "key": "x-ratelimit-remaining",
-                                    "value": "256"
+                                    "value": "279"
                                 },
                                 {
                                     "key": "content-language",
@@ -3456,7 +3524,7 @@
                                 },
                                 {
                                     "key": "x-ratelimit-remaining",
-                                    "value": "19"
+                                    "value": "25"
                                 },
                                 {
                                     "key": "content-language",
@@ -3540,7 +3608,7 @@
                                 },
                                 {
                                     "key": "x-ratelimit-remaining",
-                                    "value": "18"
+                                    "value": "24"
                                 },
                                 {
                                     "key": "content-language",
@@ -4059,7 +4127,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"is_favorite\":true}"
+                            "raw": "{\"is_favorite\":false}"
                         },
                         "description": "",
                         "auth": {
@@ -4173,7 +4241,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"status\":\"failed\",\"error_message\":\"b\"}"
+                            "raw": "{\"status\":\"out_of_paper\",\"error_message\":\"b\"}"
                         },
                         "description": "Consumido por el microcontrolador para reportar el \u00e9xito ('completed') o fallo ('failed')\nde la ejecuci\u00f3n del ticket.",
                         "auth": {
