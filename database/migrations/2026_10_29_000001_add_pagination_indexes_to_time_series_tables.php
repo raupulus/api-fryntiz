@@ -21,6 +21,13 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
+     * Se desactiva la transacción única para que cada `CREATE INDEX` libere el
+     * bloqueo sobre su tabla inmediatamente y no provoque un deadlock cruzado
+     * con las ingestas IoT concurrentes de varios sensores en producción.
+     */
+    public $withinTransaction = false;
+
+    /**
      * Tablas de sensores meteorológicos con patrón `(hardware_device_id, created_at, id)`.
      *
      * @var list<string>
@@ -43,19 +50,26 @@ return new class extends Migration
     {
         foreach ($this->sensorTables as $tableName) {
             Schema::table($tableName, function (Blueprint $table) use ($tableName): void {
-                $table->index(
-                    ['created_at', 'id'],
-                    "{$tableName}_created_at_id_idx"
-                );
-                $table->index(
-                    ['hardware_device_id', 'created_at', 'id'],
-                    "{$tableName}_device_created_at_id_idx"
-                );
+                if (! Schema::hasIndex($tableName, "{$tableName}_created_at_id_idx")) {
+                    $table->index(
+                        ['created_at', 'id'],
+                        "{$tableName}_created_at_id_idx"
+                    );
+                }
+
+                if (! Schema::hasIndex($tableName, "{$tableName}_device_created_at_id_idx")) {
+                    $table->index(
+                        ['hardware_device_id', 'created_at', 'id'],
+                        "{$tableName}_device_created_at_id_idx"
+                    );
+                }
             });
         }
 
         Schema::table('gdacs_events', function (Blueprint $table): void {
-            $table->index(['from_date', 'id'], 'gdacs_events_from_date_id_idx');
+            if (! Schema::hasIndex('gdacs_events', 'gdacs_events_from_date_id_idx')) {
+                $table->index(['from_date', 'id'], 'gdacs_events_from_date_id_idx');
+            }
         });
     }
 
