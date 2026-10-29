@@ -30,7 +30,7 @@ Disallow: /cv/s/
 
 # Paginación de sensores: evita agotar el presupuesto de rastreo (crawl budget)
 # en decenas de miles de páginas con el histórico de lecturas.
-Disallow: /weatherstation/*?*page=
+Disallow: /weatherstation*?*page=
 
 # La API se consume con un cliente, no se lee en un buscador.
 #

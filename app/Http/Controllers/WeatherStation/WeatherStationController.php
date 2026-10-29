@@ -441,11 +441,16 @@ class WeatherStationController extends Controller
 
         $cellsInfo = $model::getTableCellsInfo();
 
+        $page = (int) $request->query('page', 1);
+        if ($page > 100) {
+            abort(404, 'Página fuera de rango.');
+        }
+
         $records = $model::whereNotNull($primaryField)
             ->when($stationId, fn ($q) => $q->where('hardware_device_id', $stationId))
             ->orderByDesc('created_at')
             ->select(array_merge(array_keys($columns), ['created_at']))
-            ->paginate(25)
+            ->simplePaginate(25)
             ->withQueryString();
 
         if (isset($sensor['convertFields'], $sensor['convertMethod'])) {
