@@ -658,13 +658,14 @@
                             <div class="relative flex-1 flex items-center justify-center overflow-hidden p-2 sm:p-4"
                                  @wheel.prevent="handleWheel($event)">
 
-                                {{-- Botón Anterior --}}
+                                {{-- Botón Anterior (Lateral izquierdo) --}}
                                 <button type="button"
                                         x-show="totalImages > 1"
-                                        @click="prev()"
-                                        class="absolute left-4 z-20 w-11 h-11 rounded-full bg-black/60 hover:bg-black/90 border border-white/20 flex items-center justify-center text-white shadow-xl transition-transform hover:scale-110 active:scale-95"
+                                        @click.stop="prev()"
+                                        class="absolute z-40 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-black/75 hover:bg-black/95 active:scale-90 text-white border-2 border-white/30 backdrop-blur-md shadow-2xl flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 group focus:outline-none"
+                                        style="top: 50%; transform: translateY(-50%); left: clamp(0.75rem, 2.5vw, 2.5rem);"
                                         title="Foto anterior (←)">
-                                    <span class="material-symbols-outlined text-2xl">chevron_left</span>
+                                    <span class="material-symbols-outlined text-4xl sm:text-5xl text-white group-hover:scale-110 transition-transform">chevron_left</span>
                                 </button>
 
                                 {{-- Contenedor de la Imagen con Zoom y Paneo --}}
@@ -683,13 +684,14 @@
                                          draggable="false">
                                 </div>
 
-                                {{-- Botón Siguiente --}}
+                                {{-- Botón Siguiente (Lateral derecho) --}}
                                 <button type="button"
                                         x-show="totalImages > 1"
-                                        @click="next()"
-                                        class="absolute right-4 z-20 w-11 h-11 rounded-full bg-black/60 hover:bg-black/90 border border-white/20 flex items-center justify-center text-white shadow-xl transition-transform hover:scale-110 active:scale-95"
+                                        @click.stop="next()"
+                                        class="absolute z-40 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-black/75 hover:bg-black/95 active:scale-90 text-white border-2 border-white/30 backdrop-blur-md shadow-2xl flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 group focus:outline-none"
+                                        style="top: 50%; transform: translateY(-50%); right: clamp(0.75rem, 2.5vw, 2.5rem);"
                                         title="Foto siguiente (→)">
-                                    <span class="material-symbols-outlined text-2xl">chevron_right</span>
+                                    <span class="material-symbols-outlined text-4xl sm:text-5xl text-white group-hover:scale-110 transition-transform">chevron_right</span>
                                 </button>
                             </div>
 

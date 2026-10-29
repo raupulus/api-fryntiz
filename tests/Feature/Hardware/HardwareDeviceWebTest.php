@@ -500,7 +500,7 @@ class HardwareDeviceWebTest extends TestCase
         $gallery = Gallery::create([
             'user_id' => $user->id,
             'name' => 'Estudio Raspberry Pi 2',
-            'description' => 'Fotografía de estudio Obsidian Flux',
+            'description' => 'Fotografía de estudio y macro del hardware',
             'aspect_ratio' => GalleryAspectRatioEnum::Wide16x9,
         ]);
 
@@ -518,7 +518,7 @@ class HardwareDeviceWebTest extends TestCase
         $response->assertSuccessful();
         $response->assertSee('Galerías de imágenes');
         $response->assertSee('Estudio Raspberry Pi 2');
-        $response->assertSee('Fotografía de estudio Obsidian Flux');
+        $response->assertSee('Fotografía de estudio y macro del hardware');
         $response->assertSee('Primer plano del procesador');
         $response->assertSee('16:9');
         $response->assertSee('1 foto');
