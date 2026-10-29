@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\DTO\Hardware;
 
+use App\Models\Gallery;
+use App\Models\GalleryImage;
 use App\Models\Hardware\HardwareDevice;
 use Carbon\Carbon;
 use Illuminate\Support\Carbon as SupportCarbon;
 
+use function blank;
 use function intdiv;
 
 /**
@@ -21,6 +24,7 @@ readonly class PublicHardwareDeviceData
 {
     /**
      * @param  array<int, array{name: string, brand: ?string, model: ?string, quantity: ?string, power: ?string, description: ?string, available_name: ?string, available_type: ?string}>  $components
+     * @param  array<int, array{id: int, name: string, description: ?string, aspect_ratio: string, aspect_ratio_label: string, cover_image_url: ?string, images: array<int, array{id: int, order: int, caption: ?string, title: ?string, alt: ?string, url: string, thumbnail_url: string}>}>  $galleries
      */
     public function __construct(
         public int $id,
@@ -55,6 +59,7 @@ readonly class PublicHardwareDeviceData
         public ?string $batteryType,
         public ?int $batteryNominalCapacity,
         public array $components,
+        public array $galleries = [],
     ) {}
 
     public static function fromModel(HardwareDevice $device): self
@@ -91,6 +96,40 @@ readonly class PublicHardwareDeviceData
             ];
         })->values()->all();
 
+        $galleries = $device->relationLoaded('galleries')
+            ? $device->galleries->map(static function (Gallery $gallery) {
+                $images = $gallery->relationLoaded('images')
+                    ? $gallery->images->map(static function (GalleryImage $gImg) {
+                        $file = $gImg->image;
+                        $url = $file?->url ?: '';
+                        if (blank($url)) {
+                            return null;
+                        }
+
+                        return [
+                            'id' => (int) $gImg->id,
+                            'order' => (int) $gImg->order,
+                            'caption' => $gImg->caption ?: ($file?->title ?: null),
+                            'title' => $file?->title ?: $gImg->caption,
+                            'alt' => $file?->alt ?: ($gImg->caption ?: 'Imagen de galería'),
+                            'url' => $url,
+                            'thumbnail_url' => $file ? $file->thumbnail('medium') : $url,
+                        ];
+                    })->filter()->values()->all()
+                    : [];
+
+                return [
+                    'id' => (int) $gallery->id,
+                    'name' => (string) $gallery->name,
+                    'description' => $gallery->description,
+                    'aspect_ratio' => $gallery->aspect_ratio->value,
+                    'aspect_ratio_label' => $gallery->aspect_ratio->label(),
+                    'cover_image_url' => $gallery->image?->url,
+                    'images' => $images,
+                ];
+            })->filter(static fn (array $g): bool => ! empty($g['images']))->values()->all()
+            : [];
+
         return new self(
             id: (int) $device->id,
             name: (string) $device->name,
@@ -124,6 +163,7 @@ readonly class PublicHardwareDeviceData
             batteryType: $device->battery_type,
             batteryNominalCapacity: $device->battery_nominal_capacity !== null ? (int) $device->battery_nominal_capacity : null,
             components: $components,
+            galleries: $galleries,
         );
     }
 

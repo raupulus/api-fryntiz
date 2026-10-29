@@ -421,6 +421,11 @@ Tanto los dispositivos hardware (`HardwareDevice`) como sus componentes instalad
    - Almacenamiento universal mediante `galleryable_type` (`App\Models\Hardware\HardwareDevice` o `App\Models\Hardware\HardwareComponent`), `galleryable_id` y `order`.
    - Para la documentación completa del módulo de galerías, ver [galleries.md](galleries.md).
 
+4. **Visualización en Frontend Web (`hardware.show`):**
+   - En la ficha pública de detalle del dispositivo (`/hardware/{device:slug}`), inmediatamente debajo de «Componentes y sensores conectados», se muestran todas las galerías de imágenes asociadas (`$device->galleries`).
+   - Cada galería se presenta en una tarjeta independiente con su nombre, proporción (`16:9`), contador de fotos, descripción y cuadrícula responsive con miniaturas WebP y pies de foto.
+   - **Visor interactivo Lightbox con Zoom (Alpine.js):** Al hacer clic sobre cualquier fotografía, se abre un visor modal a pantalla completa con navegación por teclado (`Esc` para cerrar, flechas `←`/`→` para navegar), controles de zoom progresivo (`+`/`-`/`0` para acercar, alejar o restablecer), zoom con rueda del ratón (`wheel`), desplazamiento y arrastre táctil/ratón (`pan & drag`) cuando la escala supera 1.0, y carrusel inferior de miniaturas para salto inmediato.
+
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-19
+> Creado: 2026-05-25 · Última revisión: 2026-10-29

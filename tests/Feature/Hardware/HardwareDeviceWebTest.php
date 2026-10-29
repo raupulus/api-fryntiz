@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Hardware;
 
+use App\Enums\GalleryAspectRatioEnum;
+use App\Models\File;
+use App\Models\Gallery;
+use App\Models\GalleryImage;
 use App\Models\Hardware\HardwareAvailableComponent;
 use App\Models\Hardware\HardwareComponent;
 use App\Models\Hardware\HardwareDevice;
@@ -467,5 +471,72 @@ class HardwareDeviceWebTest extends TestCase
 
         $response->assertSuccessful();
         $response->assertDontSee('Monitorización de energía (Últimos 7 días)');
+    }
+
+    #[Test]
+    public function show_displays_galleries_and_zoom_lightbox_when_device_has_galleries(): void
+    {
+        $user = User::factory()->create();
+
+        $device = HardwareDevice::create([
+            'user_id' => $user->id,
+            'name' => 'Raspberry Pi 2 Test',
+            'is_public' => true,
+        ]);
+
+        $file = File::create([
+            'user_id' => $user->id,
+            'module' => 'hardware-devices',
+            'path' => 'hardware-devices',
+            'name' => 'rpi2_detail.webp',
+            'width' => 1376,
+            'height' => 768,
+            'size' => 10240,
+            'is_private' => false,
+            'title' => 'Detalle del SoC BCM2836',
+            'alt' => 'SoC BCM2836',
+        ]);
+
+        $gallery = Gallery::create([
+            'user_id' => $user->id,
+            'name' => 'Estudio Raspberry Pi 2',
+            'description' => 'Fotografía de estudio Obsidian Flux',
+            'aspect_ratio' => GalleryAspectRatioEnum::Wide16x9,
+        ]);
+
+        GalleryImage::create([
+            'gallery_id' => $gallery->id,
+            'image_id' => $file->id,
+            'order' => 1,
+            'caption' => 'Primer plano del procesador',
+        ]);
+
+        $device->galleries()->attach($gallery->id, ['order' => 1]);
+
+        $response = $this->get(route('hardware.show', $device));
+
+        $response->assertSuccessful();
+        $response->assertSee('Galerías de imágenes');
+        $response->assertSee('Estudio Raspberry Pi 2');
+        $response->assertSee('Fotografía de estudio Obsidian Flux');
+        $response->assertSee('Primer plano del procesador');
+        $response->assertSee('16:9');
+        $response->assertSee('1 foto');
+        $response->assertSee('hardwareGalleryLightbox()', false);
+    }
+
+    #[Test]
+    public function show_does_not_display_gallery_section_when_device_has_no_galleries(): void
+    {
+        $device = HardwareDevice::create([
+            'name' => 'Device Without Gallery',
+            'is_public' => true,
+        ]);
+
+        $response = $this->get(route('hardware.show', $device));
+
+        $response->assertSuccessful();
+        $response->assertDontSee('Galerías de imágenes');
+        $response->assertDontSee('hardwareGalleryLightbox()', false);
     }
 }

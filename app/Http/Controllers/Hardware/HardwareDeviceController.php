@@ -87,6 +87,9 @@ class HardwareDeviceController extends Controller
             'type',
             'components.availableComponent',
             'image.fileType',
+            'galleries.image.fileType',
+            'galleries.images.image.fileType',
+            'galleries.images.image.thumbnails',
         ]);
 
         $deviceDto = PublicHardwareDeviceData::fromModel($device);

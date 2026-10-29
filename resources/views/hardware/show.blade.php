@@ -503,6 +503,337 @@
                 @endif
             </section>
 
+            {{-- 5. Galerías de Imágenes con Visor Zoom Interactivo --}}
+            @if(!empty($device->galleries))
+                <section x-data="hardwareGalleryLightbox()"
+                         @keydown.window.escape="if(isOpen) close()"
+                         @keydown.window.arrow-right="if(isOpen) next()"
+                         @keydown.window.arrow-left="if(isOpen) prev()"
+                         @keydown.window.equal="if(isOpen) zoomIn()"
+                         @keydown.window.plus="if(isOpen) zoomIn()"
+                         @keydown.window.minus="if(isOpen) zoomOut()"
+                         @keydown.window.digit0="if(isOpen) resetZoom()"
+                         class="space-y-6">
+
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <h2 class="text-2xl font-bold text-on-surface">Galerías de imágenes</h2>
+                            <p class="text-xs text-on-surface-variant">
+                                Fotografía de estudio e imágenes de detalle en alta resolución con zoom interactivo.
+                            </p>
+                        </div>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-surface-container border border-outline-variant/20 text-on-surface-variant self-start sm:self-auto">
+                            <span class="material-symbols-outlined text-sm text-primary-container">photo_library</span>
+                            {{ count($device->galleries) }} {{ count($device->galleries) === 1 ? 'galería' : 'galerías' }}
+                        </span>
+                    </div>
+
+                    @foreach($device->galleries as $gIdx => $gallery)
+                        <div class="bg-surface-container-lowest p-6 rounded-xl shadow border border-outline-variant/15 space-y-5">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-outline-variant/15 pb-4">
+                                <div>
+                                    <h3 class="font-bold text-lg text-on-surface flex items-center gap-2">
+                                        {{ $gallery['name'] }}
+                                    </h3>
+                                    @if(filled($gallery['description']))
+                                        <p class="text-xs text-on-surface-variant mt-1 leading-relaxed">
+                                            {{ $gallery['description'] }}
+                                        </p>
+                                    @endif
+                                </div>
+                                <div class="flex items-center gap-2 self-start sm:self-auto">
+                                    <span class="bg-surface-container px-2.5 py-0.5 rounded-full text-xs text-on-surface-variant font-medium">
+                                        {{ count($gallery['images']) }} {{ count($gallery['images']) === 1 ? 'foto' : 'fotos' }}
+                                    </span>
+                                    <span class="bg-surface-container px-2.5 py-0.5 rounded-full text-xs text-on-surface-variant font-medium">
+                                        {{ $gallery['aspect_ratio'] }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            {{-- Grid de fotografías --}}
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                @foreach($gallery['images'] as $iIdx => $img)
+                                    <div @click="open({{ $gIdx }}, {{ $iIdx }})"
+                                         class="group flex flex-col cursor-pointer">
+                                        <div class="aspect-video relative rounded-xl overflow-hidden bg-surface-container border border-outline-variant/20 shadow-sm transition-all duration-300 group-hover:shadow-lg group-hover:border-primary-container/40">
+                                            <img src="{{ $img['thumbnail_url'] }}"
+                                                 alt="{{ $img['alt'] }}"
+                                                 loading="lazy"
+                                                 class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105">
+
+                                            {{-- Overlay en hover --}}
+                                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-3.5">
+                                                <div class="flex justify-end">
+                                                    <span class="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow">
+                                                        <span class="material-symbols-outlined text-base">zoom_in</span>
+                                                    </span>
+                                                </div>
+                                                <span class="text-xs font-semibold text-white truncate drop-shadow">
+                                                    {{ $img['caption'] ?: $img['title'] }}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        @if(filled($img['caption']))
+                                            <p class="mt-2 text-xs text-on-surface-variant font-medium line-clamp-2 leading-snug group-hover:text-on-surface transition-colors"
+                                               title="{{ $img['caption'] }}">
+                                                {{ $img['caption'] }}
+                                            </p>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endforeach
+
+                    {{-- Visor Lightbox con Zoom (Teleport al body) --}}
+                    <template x-teleport="body">
+                        <div x-show="isOpen"
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0"
+                             x-transition:enter-end="opacity-100"
+                             x-transition:leave="transition ease-in duration-150"
+                             x-transition:leave-start="opacity-100"
+                             x-transition:leave-end="opacity-0"
+                             class="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col justify-between select-none"
+                             style="display: none;">
+
+                            {{-- Barra Superior --}}
+                            <div class="flex items-center justify-between px-4 py-3 bg-black/50 border-b border-white/10 text-white z-20">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <span class="font-bold text-sm truncate" x-text="currentGallery?.name"></span>
+                                    <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full font-mono shrink-0"
+                                          x-text="(activeImageIdx + 1) + ' / ' + totalImages"></span>
+                                    <span class="text-xs text-white/70 hidden md:inline truncate"
+                                          x-text="currentImage?.caption || currentImage?.title"></span>
+                                </div>
+
+                                {{-- Controles de Zoom y Acciones --}}
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    {{-- Nivel de zoom --}}
+                                    <span class="text-xs font-mono px-2 py-1 bg-white/10 rounded-md text-white/80"
+                                          x-text="Math.round(scale * 100) + '%'"></span>
+
+                                    {{-- Alejar --}}
+                                    <button type="button"
+                                            @click="zoomOut()"
+                                            :disabled="scale <= 1.0"
+                                            class="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-white/20 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                                            title="Alejar (-)">
+                                        <span class="material-symbols-outlined text-xl">zoom_out</span>
+                                    </button>
+
+                                    {{-- Acercar --}}
+                                    <button type="button"
+                                            @click="zoomIn()"
+                                            :disabled="scale >= 3.0"
+                                            class="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-white/20 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                                            title="Acercar (+)">
+                                        <span class="material-symbols-outlined text-xl">zoom_in</span>
+                                    </button>
+
+                                    {{-- Reset Zoom --}}
+                                    <button type="button"
+                                            @click="resetZoom()"
+                                            :disabled="scale === 1.0 && panX === 0 && panY === 0"
+                                            class="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-white/20 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                                            title="Restablecer zoom (0)">
+                                        <span class="material-symbols-outlined text-xl">restart_alt</span>
+                                    </button>
+
+                                    <div class="h-5 w-px bg-white/20 mx-1"></div>
+
+                                    {{-- Cerrar --}}
+                                    <button type="button"
+                                            @click="close()"
+                                            class="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-white/20 transition-colors"
+                                            title="Cerrar (Esc)">
+                                        <span class="material-symbols-outlined text-2xl">close</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            {{-- Área Central del Visor --}}
+                            <div class="relative flex-1 flex items-center justify-center overflow-hidden p-2 sm:p-4"
+                                 @wheel.prevent="handleWheel($event)">
+
+                                {{-- Botón Anterior --}}
+                                <button type="button"
+                                        x-show="totalImages > 1"
+                                        @click="prev()"
+                                        class="absolute left-4 z-20 w-11 h-11 rounded-full bg-black/60 hover:bg-black/90 border border-white/20 flex items-center justify-center text-white shadow-xl transition-transform hover:scale-110 active:scale-95"
+                                        title="Foto anterior (←)">
+                                    <span class="material-symbols-outlined text-2xl">chevron_left</span>
+                                </button>
+
+                                {{-- Contenedor de la Imagen con Zoom y Paneo --}}
+                                <div class="w-full h-full flex items-center justify-center overflow-hidden"
+                                     @mousedown="startDrag($event)"
+                                     @mousemove.window="onDrag($event)"
+                                     @mouseup.window="endDrag()"
+                                     @touchstart="startDrag($event)"
+                                     @touchmove.window="onDrag($event)"
+                                     @touchend.window="endDrag()">
+                                    <img :src="currentImage?.url"
+                                         :alt="currentImage?.alt"
+                                         @dblclick="toggleZoom()"
+                                         :style="'transform: translate(' + panX + 'px, ' + panY + 'px) scale(' + scale + '); cursor: ' + (scale > 1.0 ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in') + '; transition: ' + (isDragging ? 'none' : 'transform 0.2s ease-out')"
+                                         class="max-w-full max-h-full object-contain select-none shadow-2xl rounded-sm"
+                                         draggable="false">
+                                </div>
+
+                                {{-- Botón Siguiente --}}
+                                <button type="button"
+                                        x-show="totalImages > 1"
+                                        @click="next()"
+                                        class="absolute right-4 z-20 w-11 h-11 rounded-full bg-black/60 hover:bg-black/90 border border-white/20 flex items-center justify-center text-white shadow-xl transition-transform hover:scale-110 active:scale-95"
+                                        title="Foto siguiente (→)">
+                                    <span class="material-symbols-outlined text-2xl">chevron_right</span>
+                                </button>
+                            </div>
+
+                            {{-- Barra Inferior: Pie de foto y Carrusel de Miniaturas --}}
+                            <div class="px-4 py-3 bg-black/60 border-t border-white/10 text-white z-20 space-y-2">
+                                <div class="text-center" x-show="currentImage?.caption">
+                                    <p class="text-xs sm:text-sm text-white/90 font-medium max-w-3xl mx-auto drop-shadow"
+                                       x-text="currentImage?.caption"></p>
+                                </div>
+
+                                {{-- Tira de miniaturas --}}
+                                <div x-show="totalImages > 1" class="flex items-center justify-center gap-2 overflow-x-auto py-1">
+                                    <template x-for="(img, idx) in currentImages" :key="img.id || idx">
+                                        <button type="button"
+                                                @click="selectImage(idx)"
+                                                :class="idx === activeImageIdx
+                                                    ? 'ring-2 ring-primary-container scale-105 opacity-100'
+                                                    : 'opacity-50 hover:opacity-100 border border-white/20'"
+                                                class="w-16 sm:w-20 aspect-video rounded overflow-hidden shrink-0 transition-all duration-200">
+                                            <img :src="img.thumbnail_url"
+                                                 :alt="img.alt"
+                                                 class="w-full h-full object-cover">
+                                        </button>
+                                    </template>
+                                </div>
+                            </div>
+
+                        </div>
+                    </template>
+
+                    @push('scripts')
+                    <script>
+                        function hardwareGalleryLightbox() {
+                            return {
+                                isOpen: false,
+                                galleries: @json($device->galleries),
+                                activeGalleryIdx: 0,
+                                activeImageIdx: 0,
+                                scale: 1,
+                                panX: 0,
+                                panY: 0,
+                                isDragging: false,
+                                startX: 0,
+                                startY: 0,
+
+                                get currentGallery() {
+                                    return this.galleries[this.activeGalleryIdx] || null;
+                                },
+                                get currentImages() {
+                                    return this.currentGallery?.images || [];
+                                },
+                                get currentImage() {
+                                    return this.currentImages[this.activeImageIdx] || null;
+                                },
+                                get totalImages() {
+                                    return this.currentImages.length;
+                                },
+
+                                open(gIdx, iIdx) {
+                                    this.activeGalleryIdx = gIdx;
+                                    this.activeImageIdx = iIdx;
+                                    this.resetZoom();
+                                    this.isOpen = true;
+                                    document.body.classList.add('overflow-hidden');
+                                },
+                                close() {
+                                    this.isOpen = false;
+                                    this.resetZoom();
+                                    document.body.classList.remove('overflow-hidden');
+                                },
+                                next() {
+                                    if (this.totalImages <= 1) return;
+                                    this.activeImageIdx = (this.activeImageIdx + 1) % this.totalImages;
+                                    this.resetZoom();
+                                },
+                                prev() {
+                                    if (this.totalImages <= 1) return;
+                                    this.activeImageIdx = (this.activeImageIdx - 1 + this.totalImages) % this.totalImages;
+                                    this.resetZoom();
+                                },
+                                selectImage(idx) {
+                                    this.activeImageIdx = idx;
+                                    this.resetZoom();
+                                },
+                                zoomIn() {
+                                    if (this.scale < 3.0) {
+                                        this.scale = Math.min(3.0, +(this.scale + 0.5).toFixed(1));
+                                    }
+                                },
+                                zoomOut() {
+                                    if (this.scale > 1.0) {
+                                        this.scale = Math.max(1.0, +(this.scale - 0.5).toFixed(1));
+                                        if (this.scale === 1.0) {
+                                            this.panX = 0;
+                                            this.panY = 0;
+                                        }
+                                    }
+                                },
+                                toggleZoom() {
+                                    if (this.scale === 1.0) {
+                                        this.scale = 2.0;
+                                    } else {
+                                        this.resetZoom();
+                                    }
+                                },
+                                resetZoom() {
+                                    this.scale = 1.0;
+                                    this.panX = 0;
+                                    this.panY = 0;
+                                    this.isDragging = false;
+                                },
+                                handleWheel(e) {
+                                    if (e.deltaY < 0) {
+                                        this.zoomIn();
+                                    } else {
+                                        this.zoomOut();
+                                    }
+                                },
+                                startDrag(e) {
+                                    if (this.scale <= 1.0) return;
+                                    this.isDragging = true;
+                                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                                    this.startX = clientX - this.panX;
+                                    this.startY = clientY - this.panY;
+                                },
+                                onDrag(e) {
+                                    if (!this.isDragging) return;
+                                    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                                    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                                    this.panX = clientX - this.startX;
+                                    this.panY = clientY - this.startY;
+                                },
+                                endDrag() {
+                                    this.isDragging = false;
+                                },
+                            };
+                        }
+                    </script>
+                    @endpush
+
+                </section>
+            @endif
+
         </div>
     </div>
 @endsection
