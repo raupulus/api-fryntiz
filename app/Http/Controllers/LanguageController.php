@@ -20,13 +20,20 @@ class LanguageController extends Controller
 
     public function ajaxGetLanguages(Request $request)
     {
-        $page = $request->json('page') ?? 1;
-        $size = $request->json('size') ?? 10;
-        $orderBy = $request->json('orderBy') ?? 'created_at';
-        $orderDirection = $request->json('orderDirection') ?? 'DESC';
+        $page = max(1, (int) ($request->json('page') ?? $request->input('page', 1)));
+        $size = min(100, max(1, (int) ($request->json('size') ?? $request->input('size', 10))));
 
         $tableHeads = Language::getTableHeads($page);
         $columns = array_keys($tableHeads);
+
+        $requestedOrderBy = (string) ($request->json('orderBy') ?? $request->input('orderBy', 'created_at'));
+        $orderBy = in_array($requestedOrderBy, array_merge($columns, ['id', 'created_at']), true)
+            ? $requestedOrderBy
+            : 'created_at';
+
+        $requestedDirection = strtoupper((string) ($request->json('orderDirection') ?? $request->input('orderDirection', 'DESC')));
+        $orderDirection = $requestedDirection === 'ASC' ? 'ASC' : 'DESC';
+
         $tableRows = Language::getTableRowsByPage($size, $page, $columns, $orderBy, $orderDirection);
         $totalElements = Language::count();
 

@@ -2,6 +2,7 @@
 
 @section('title', $title . ' | Weather Station | Api Raupulus')
 @section('description', 'Datos del sensor de ' . $title . ' de la estación meteorológica de Chipiona')
+@section('canonical', route('weather_station.sensor', array_filter(['type' => $type, 'station' => $stationId ?? null])))
 
 @section('content')
     {{-- Hero --}}

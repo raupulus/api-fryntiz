@@ -54,7 +54,7 @@
     @endif
 
     {{-- Canonical --}}
-    <link rel="canonical" href="{{ url()->current() }}"/>
+    <link rel="canonical" href="@yield('canonical', url()->current())"/>
 
     @yield('meta')
 

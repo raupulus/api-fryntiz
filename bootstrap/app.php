@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Exceptions\JsonAuthorizationException;
 use App\Exceptions\JsonValidationException;
+use App\Http\Middleware\EnsurePaginationIsSameOrigin;
 use App\Http\Middleware\EnsureRequestIsSameOrigin;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetLocale;
@@ -114,6 +115,11 @@ return Application::configure(basePath: dirname(__DIR__))
             // airflight) a quien no pide desde su propia página. Ver el
             // docblock de la clase.
             'same-origin' => EnsureRequestIsSameOrigin::class,
+
+            // Protege la navegación de páginas profundas (?page > 1) y filtros
+            // históricos en las vistas web públicas exigiendo origen propio,
+            // dejando abierta la página 1 para usuarios directos y buscadores.
+            'same-origin-pagination' => EnsurePaginationIsSameOrigin::class,
         ]);
 
         // El idioma de la respuesta sale de `Accept-Language` (o de `?lang=`).

@@ -725,4 +725,4 @@ cuyo caso sí son un duplicado exacto, tengan o no posición.
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-19
+> Creado: 2026-05-25 · Última revisión: 2026-10-29

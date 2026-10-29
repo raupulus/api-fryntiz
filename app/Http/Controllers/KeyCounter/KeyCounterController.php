@@ -34,8 +34,13 @@ class KeyCounterController extends Controller
      */
     public function index(Request $request)
     {
+        $currentYear = (int) date('Y');
         $month = (int) ($request->get('month') ?? date('m'));
-        $year = (int) ($request->get('year') ?? date('Y'));
+        $year = (int) ($request->get('year') ?? $currentYear);
+
+        if ($month < 1 || $month > 12 || $year < KeyCounterStatisticsService::FIRST_STATS_YEAR || $year > $currentYear) {
+            abort(404, 'Periodo fuera de rango.');
+        }
 
         // Lo más caro de la página: agrega todas las rachas del mes por día y
         // por dispositivo. Un mes cerrado se guarda para siempre —no va a

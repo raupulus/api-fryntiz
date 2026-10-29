@@ -26,6 +26,7 @@ use App\Models\WeatherStation\Tvoc;
 use App\Models\WeatherStation\Wind;
 use App\Models\WeatherStation\WindDirection;
 use App\Services\WeatherStation\WeatherStationService;
+use App\Support\Pagination\DeferredPaginator;
 use App\Support\WeatherStation\MoonPhase;
 use App\Support\WeatherStation\SeaStateExtractor;
 use Illuminate\Http\JsonResponse;
@@ -369,17 +370,19 @@ class WeatherStationController extends Controller
 
     /**
      * Indica si un tipo de sensor tiene al menos un registro, opcionalmente
-     * filtrado por estación.
+     * filtrado por estación. Se cachea 10 minutos para evitar una consulta
+     * `EXISTS` por sensor en cada petición de detalle (`nextTypeWithData`).
      */
     private function sensorHasData(string $type, ?int $stationId): bool
     {
         $config = self::SENSOR_MAP[$type];
         $model = $config['model'];
         $primaryField = $config['primary']['field'];
+        $cacheKey = 'weather:sensor_has_data:'.$type.':'.($stationId ?? 'all');
 
-        return $model::whereNotNull($primaryField)
+        return (bool) Cache::remember($cacheKey, 600, static fn (): bool => $model::whereNotNull($primaryField)
             ->when($stationId, fn ($q) => $q->where('hardware_device_id', $stationId))
-            ->exists();
+            ->exists());
     }
 
     /**
@@ -441,17 +444,19 @@ class WeatherStationController extends Controller
 
         $cellsInfo = $model::getTableCellsInfo();
 
-        $page = (int) $request->query('page', 1);
-        if ($page > 100) {
-            abort(404, 'Página fuera de rango.');
-        }
+        $baseQuery = $model::whereNotNull($primaryField)
+            ->when($stationId, fn ($q) => $q->where('hardware_device_id', $stationId));
 
-        $records = $model::whereNotNull($primaryField)
-            ->when($stationId, fn ($q) => $q->where('hardware_device_id', $stationId))
-            ->orderByDesc('created_at')
-            ->select(array_merge(array_keys($columns), ['created_at']))
-            ->simplePaginate(25)
-            ->withQueryString();
+        $countCacheKey = 'weather:sensor_count:'.$type.':'.($stationId ?? 'all');
+
+        $records = DeferredPaginator::paginate(
+            baseQuery: $baseQuery,
+            perPage: 25,
+            cacheKey: $countCacheKey,
+            columns: array_merge(array_keys($columns), ['created_at']),
+            orderColumn: 'created_at',
+            countTtlSeconds: 3600,
+        );
 
         if (isset($sensor['convertFields'], $sensor['convertMethod'])) {
             $records->getCollection()->transform(function ($record) use ($sensor) {
@@ -473,6 +478,7 @@ class WeatherStationController extends Controller
             'icon' => $sensor['icon'],
             'columns' => $columns,
             'cellsInfo' => $cellsInfo,
+            'stationId' => $stationId,
             'stationName' => $station?->display_name,
             'nextTitle' => self::SENSOR_MAP[$nextType]['title'],
             'nextUrl' => route('weather_station.sensor', array_filter([

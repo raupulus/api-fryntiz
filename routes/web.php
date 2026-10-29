@@ -155,6 +155,7 @@ Route::middleware(['auth', 'can:access-youtube-search'])
 Route::group(['prefix' => '/languages'], function () {
     Route::group(['prefix' => '/ajax'], function () {
         Route::match(['get', 'post'], '/get/languages', [LanguageController::class, 'ajaxGetLanguages'])
+            ->middleware('same-origin')
             ->name('language.ajax.get.languages');
     });
 });

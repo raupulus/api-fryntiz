@@ -44,6 +44,7 @@ class RobotsTxtTest extends TestCase
     {
         $robots = File::get(public_path('robots.txt'));
 
-        $this->assertStringContainsString('Disallow: /weatherstation/*?*page=', $robots);
+        $this->assertStringContainsString('Disallow: /weatherstation*?*page=', $robots);
+        $this->assertStringContainsString('Disallow: /airflight*?*page=', $robots);
     }
 }

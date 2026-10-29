@@ -13,6 +13,8 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Cache;
 
 /**
@@ -137,24 +139,36 @@ class AirFlightController extends Controller
     public function index()
     {
         $lastHour = Carbon::now()->subHour();
+        $perPage = 20;
+        $page = max(1, Paginator::resolveCurrentPage('page'));
 
-        $planes = app(AirFlightService::class)->getDetectedQuery($lastHour)->paginate(20);
+        // Se cachea durante 20 s la colección agregada de la última hora: evita
+        // ejecutar dos veces (COUNT + SELECT con JOIN, GROUP BY y 5 array_agg)
+        // en cada petición o al cambiar de página en la tabla.
+        $allPlanes = Cache::remember(
+            'airflight:web:detected_collection_1h',
+            20,
+            fn () => app(AirFlightService::class)->getDetectedQuery($lastHour)
+                ->get()
+                ->map(function ($plane) {
+                    $plane->seen_last_at = $this->seenLastAtAsUtcIso($plane->seen_last_at);
+                    $plane->altitude = $this->roundOrNull($plane->altitude);
+                    $plane->speed = $this->toKmh($plane->speed);
 
-        // `getDetectedQuery()` no es Eloquent: `seen_last_at` llega tal cual
-        // lo guarda Postgres, "2026-09-08 09:29:34" sin marca de zona. El
-        // frontend lo convierte a la hora local del navegador (con Madrid de
-        // respaldo); para eso necesita un ISO-8601 sin ambigüedad, no esa
-        // cadena — algunos navegadores la interpretan como hora local en vez
-        // de UTC.
-        $planes->getCollection()->transform(function ($plane) {
-            $plane->seen_last_at = $this->seenLastAtAsUtcIso($plane->seen_last_at);
-            // Igual que en detected(): altitude ya está en metros (sólo se
-            // redondea), speed se pasa de m/s a km/h.
-            $plane->altitude = $this->roundOrNull($plane->altitude);
-            $plane->speed = $this->toKmh($plane->speed);
+                    return $plane;
+                })
+        );
 
-            return $plane;
-        });
+        $planes = (new LengthAwarePaginator(
+            $allPlanes->forPage($page, $perPage)->values(),
+            $allPlanes->count(),
+            $perPage,
+            $page,
+            [
+                'path' => Paginator::resolveCurrentPath(),
+                'pageName' => 'page',
+            ]
+        ))->withQueryString();
 
         $airFlightService = app(AirFlightService::class);
         $stats = $airFlightService->getAirFlightStats();

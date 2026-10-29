@@ -503,4 +503,4 @@ reportado el primer día del mes le caía la rama del `else` y se quedaba sin
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-10-28
+> Creado: 2026-05-25 · Última revisión: 2026-10-29

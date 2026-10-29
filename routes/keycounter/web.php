@@ -10,4 +10,6 @@ declare(strict_types=1);
 use App\Http\Controllers\KeyCounter\KeyCounterController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [KeyCounterController::class, 'index'])->name('keycounter.index');
+Route::get('/', [KeyCounterController::class, 'index'])
+    ->middleware('same-origin-pagination')
+    ->name('keycounter.index');

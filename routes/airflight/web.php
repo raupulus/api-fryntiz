@@ -10,7 +10,9 @@ declare(strict_types=1);
 use App\Http\Controllers\AirFlight\AirFlightController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [AirFlightController::class, 'index'])->name('airflight.index');
+Route::get('/', [AirFlightController::class, 'index'])
+    ->middleware('same-origin-pagination')
+    ->name('airflight.index');
 
 // # Datos del mapa de esta misma web.
 //

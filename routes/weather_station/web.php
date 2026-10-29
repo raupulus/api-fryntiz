@@ -18,10 +18,12 @@ Route::group(['prefix' => '/'], function () {
 
     // # Muestra los datos de un sensor individual
     Route::get('/sensor/{type}', 'App\Http\Controllers\WeatherStation\WeatherStationController@sensor')
+        ->middleware('same-origin-pagination')
         ->name('weather_station.sensor');
 
     // # Listado paginado de alertas GDACS cerca de Chipiona
     Route::get('/gdacs', [GdacsController::class, 'index'])
+        ->middleware('same-origin-pagination')
         ->name('weather_station.gdacs.index');
 
     // # Datos del widget del clima de esta misma web.

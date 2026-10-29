@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Gdacs;
 
 use App\Http\Controllers\Controller;
 use App\Models\Gdacs\GdacsEvent;
+use App\Support\Pagination\DeferredPaginator;
 use Illuminate\View\View;
 
 /**
@@ -19,10 +20,14 @@ class GdacsController extends Controller
 {
     public function index(): View
     {
-        $events = GdacsEvent::query()
-            ->orderByDesc('from_date')
-            ->paginate(50)
-            ->withQueryString();
+        $events = DeferredPaginator::paginate(
+            baseQuery: GdacsEvent::query(),
+            perPage: 50,
+            cacheKey: 'gdacs:web:total_count',
+            columns: ['*'],
+            orderColumn: 'from_date',
+            countTtlSeconds: 3600,
+        );
 
         return view('gdacs.index', compact('events'));
     }
