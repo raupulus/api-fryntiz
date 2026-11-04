@@ -78,23 +78,24 @@ suelto, cada producto tiene el suyo.
 ### Controladores
 | Archivo | Versión | Descripción |
 |---------|---------|-------------|
-| `app/Http/Controllers/Api/WeatherStation/V2/StationController.php` | API V2 | Estación por id (`/station/{id?}`) y por zona (`/zone/{zone}`), datos formateados |
-| `app/Http/Controllers/Api/WeatherStation/V2/GenericController.php` | API V2 | Store genérico multi-sensor |
-| `app/Http/Controllers/Api/WeatherStation/V2/TemperatureController.php` | API V2 | CRUD temperatura |
-| `app/Http/Controllers/Api/WeatherStation/V2/HumidityController.php` | API V2 | CRUD humedad |
-| `app/Http/Controllers/Api/WeatherStation/V2/PressureController.php` | API V2 | CRUD presión |
+| `app/Http/Controllers/Api/WeatherStation/V2/WeatherStationController.php` | API V2 | Estación por id (`/weather-stations/{station}`) y por zona (`/weather-stations/zone/{zone}`), datos formateados |
+| `app/Http/Controllers/Api/WeatherStation/V2/SensorReadingController.php` | API V2 | Lecturas e ingesta de los 11 sensores |
+| `app/Http/Controllers/Api/WeatherStation/V2/OfficialWeatherController.php` | API V2 | Parte meteorológico y mareas de fuentes oficiales por ciudad/provincia (`/weather-station-official/*`) |
 | `app/Http/Controllers/WeatherStation/WeatherStationController.php` | Web | Frontend público |
 
 ### Servicios
 | Archivo | Descripción |
 |---------|-------------|
 | `app/Services/WeatherStation/WeatherStationService.php` | Lógica de negocio: store, consultas, resúmenes |
+| `app/Services/WeatherStation/OfficialWeatherService.php` | Compilación cacheada del parte oficial (AEMET + estación local + mareas Open-Meteo Marine) |
 | `app/Services/WeatherStation/AEMETService.php` | Integración con API de AEMET |
+| `app/Services/WeatherStation/OpenMeteoMarineService.php` | Petición de nivel del mar a Open-Meteo Marine |
 
 ### Resources API V2
 | Archivo | Descripción |
 |---------|-------------|
 | `app/Http/Resources/V2/WeatherStation/WeatherStationResource.php` | Resource JSON de estación (datos formateados + selección de sensores) |
+| `app/Http/Resources/V2/WeatherStation/OfficialWeatherResource.php` | Resource JSON del parte meteorológico y mareas oficiales |
 | `app/Http/Resources/V2/WeatherStation/TemperatureResource.php` | Resource JSON temperatura |
 | `app/Http/Resources/V2/WeatherStation/HumidityResource.php` | Resource JSON humedad |
 | `app/Http/Resources/V2/WeatherStation/PressureResource.php` | Resource JSON presión |
@@ -180,6 +181,8 @@ Todos los sensores heredan estos campos:
 | GET | `/api/v2/weather-stations/{station}/{sensor}` | `ability:weatherstation:read` |
 | POST | `/api/v2/weather-stations/{station}/readings` | `ability:weatherstation:write` |
 | POST | `/api/v2/weather-stations/{station}/{sensor}` | `ability:weatherstation:write` |
+| GET | `/api/v2/weather-station-official/cities/{city}` | `ability:weatherstation:read` |
+| GET | `/api/v2/weather-station-official/provinces/{province}` | `ability:weatherstation:read` |
 
 Las escrituras usan `throttle:api-store` y un token IoT ligado a su estación
 (`device:{id}`). Admiten la clave opcional `hardware_device_info` con el estado
@@ -455,4 +458,4 @@ Para permitir navegar a cualquier página del histórico (~3,4M de registros por
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-10-29
+> Creado: 2026-05-25 · Última revisión: 2026-11-04

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Api\WeatherStation\V2\OfficialWeatherController;
 use App\Http\Controllers\Api\WeatherStation\V2\SensorReadingController;
 use App\Http\Controllers\Api\WeatherStation\V2\WeatherStationController;
 use App\Support\Auth\TokenAbilities;
@@ -83,3 +84,28 @@ Route::prefix('weather-stations')->group(function () use ($sensors) {
                 ->name('api.v2.weather_stations.readings.store');
         });
 });
+
+/*
+|--------------------------------------------------------------------------
+| API V2 — Información meteorológica y mareas de entidades oficiales
+|--------------------------------------------------------------------------
+|
+| Grupo de rutas `/api/v2/weather-station-official` reservado para los datos
+| procedentes de entidades y servicios meteorológicos/marinos dedicados (AEMET,
+| Open-Meteo Marine, etc.) que ya se sincronizan en el servidor.
+|
+| No se usa `/aemet` como prefijo porque el origen de datos puede cambiar o
+| combinar varios proveedores (ej. Open-Meteo para mareas + AEMET para meteo)
+| manteniendo siempre el mismo contrato REST para todos los proyectos
+| consumidores (como desdechipiona.es) sin duplicar peticiones salientes.
+|
+*/
+Route::prefix('weather-station-official')
+    ->middleware(['auth:sanctum', 'ability:'.TokenAbilities::WEATHERSTATION_READ, 'throttle:api'])
+    ->group(function () {
+        Route::get('/cities/{city}', [OfficialWeatherController::class, 'city'])
+            ->name('api.v2.weather_station_official.cities.show');
+
+        Route::get('/provinces/{province}', [OfficialWeatherController::class, 'province'])
+            ->name('api.v2.weather_station_official.provinces.show');
+    });

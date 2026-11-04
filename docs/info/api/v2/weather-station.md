@@ -477,6 +477,91 @@ batería, donde cada petición de radio tiene coste.
 
 ---
 
+## Parte meteorológico y mareas de fuentes oficiales (`/weather-station-official`)
+
+Grupo de rutas para consultar el parte meteorológico oficial combinado y la tabla diaria de mareas de una ciudad o provincia, pensado para alimentar portales externos (como `desdechipiona.es`) sin que cada proyecto realice sus propias peticiones a AEMET u Open-Meteo.
+
+El prefijo es `/weather-station-official` (y no `/aemet`) porque la plataforma abstrae el proveedor subyacente (actualmente combina AEMET OpenData, Open-Meteo Marine y las lecturas de las estaciones locales).
+
+### `GET /weather-station-official/cities/{city}` — Parte por ciudad/municipio
+### `GET /weather-station-official/provinces/{province}` — Parte por provincia
+
+- **Auth**: `auth:sanctum` + `ability:weatherstation:read`.
+- **Rate limit**: `throttle:api` (60/min por token). Respuesta cacheada en servidor durante 5 minutos.
+- **Parámetros de ruta**:
+  - `{city}`: slug del municipio (actualmente soportado: `chipiona`).
+  - `{province}`: slug de la provincia, insensible a mayúsculas y tildes (actualmente soportado: `cadiz` / `cádiz`).
+- **Respuesta 200** (ejemplo para `/api/v2/weather-station-official/cities/chipiona`):
+
+```json
+{
+  "success": true,
+  "message": "Operación exitosa",
+  "data": {
+    "municipality": "Chipiona (Cádiz)",
+    "province": "Cádiz",
+    "aemet_code": "11015",
+    "updated_at": "04/11/2026 16:30",
+    "updated_at_iso": "2026-11-04T15:30:00.000000Z",
+    "weather": {
+      "source": "Estación Meteorológica Chipiona + AEMET OpenData (11015)",
+      "current_temp": 20.8,
+      "temp_max": 23,
+      "temp_min": 15,
+      "sky_state": "Despejado con brisa atlántica de Poniente",
+      "wind_direction": "Poniente (OSO)",
+      "wind_speed_kmh": 18,
+      "uv_max": 6,
+      "rain_prob": 0,
+      "sea_temp": 19
+    },
+    "tides": {
+      "coefficient": 91,
+      "is_aguaje": true,
+      "type_label": "Marea Viva / Aguaje Grande (Ideal para ver los corrales en bajamar)",
+      "lunar_day": 14,
+      "events": [
+        {
+          "type": "pleamar",
+          "label": "1.ª Pleamar (Marea llena)",
+          "time": "03:45",
+          "height_m": 3.42,
+          "corrales_note": "Corrales cubiertos por el Atlántico."
+        },
+        {
+          "type": "bajamar",
+          "label": "1.ª Bajamar (Marea vacía)",
+          "time": "09:58",
+          "height_m": 0.52,
+          "corrales_note": "Momento óptimo para observar la piedra ostionera sin pisar el escaramujo."
+        },
+        {
+          "type": "pleamar",
+          "label": "2.ª Pleamar (Marea llena)",
+          "time": "16:10",
+          "height_m": 3.35,
+          "corrales_note": "Entrada de pescado y marisco a los corrales."
+        },
+        {
+          "type": "bajamar",
+          "label": "2.ª Bajamar (Marea vacía)",
+          "time": "22:25",
+          "height_m": 0.61,
+          "corrales_note": "Descubierta la restinga de Salmedina y muros de pesca."
+        }
+      ]
+    }
+  }
+}
+```
+
+- **Errores**:
+  - `401` sin token o token inválido.
+  - `403` token sin la ability `weatherstation:read`.
+  - `404` si la ciudad o provincia no está dada de alta en `OfficialWeatherLocationCatalog`.
+
+---
+
 ## Lo que existió y ya no tiene ruta (no lo reimplementes igual)
 
 | Ruta antigua | Qué pasó |
@@ -487,4 +572,4 @@ batería, donde cada petición de radio tiene coste.
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-09-06
+> Creado: 2026-08-30 · Última revisión: 2026-11-04
