@@ -236,6 +236,34 @@ class OfficialWeatherTest extends ApiTestCase
     }
 
     #[Test]
+    public function deduplicates_close_tide_extremes_from_successive_forecasts(): void
+    {
+        $today = Carbon::today();
+
+        // Dos ejecuciones de marine:sync que ajustaron 2 minutos la misma bajamar
+        OpenMeteoMarineTide::create([
+            'type' => TideExtremeTypeEnum::LowTide,
+            'happens_at' => $today->copy()->setTime(4, 42),
+            'height_m' => -1.01,
+            'forecast_generated_at' => now()->subHours(8),
+        ]);
+        OpenMeteoMarineTide::create([
+            'type' => TideExtremeTypeEnum::LowTide,
+            'happens_at' => $today->copy()->setTime(4, 44),
+            'height_m' => -1.03,
+            'forecast_generated_at' => now(),
+        ]);
+
+        $response = $this->getJson($this->apiUrl('weather-station-official/cities/chipiona'), $this->readHeaders());
+
+        $this->assertSuccessResponse($response);
+        $events = $response->json('data.tides.events');
+        $this->assertCount(1, $events);
+        $this->assertSame('04:44', $events[0]['time']);
+        $this->assertSame('1.ª Bajamar (Marea vacía)', $events[0]['label']);
+    }
+
+    #[Test]
     public function unknown_city_or_province_returns_404(): void
     {
         $cityResponse = $this->getJson($this->apiUrl('weather-station-official/cities/unknown-city'), $this->readHeaders());

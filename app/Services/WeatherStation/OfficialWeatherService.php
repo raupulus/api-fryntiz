@@ -389,10 +389,12 @@ class OfficialWeatherService
         $moon = MoonPhase::forDate($date);
         $lunarDay = max(1, min(30, (int) floor($moon['age_days']) + 1));
 
-        $dayExtremes = OpenMeteoMarineTide::query()
-            ->whereDate('happens_at', $date->toDateString())
-            ->orderBy('happens_at')
-            ->get();
+        $dayExtremes = $this->deduplicateDayExtremes(
+            OpenMeteoMarineTide::query()
+                ->whereDate('happens_at', $date->toDateString())
+                ->orderBy('happens_at')
+                ->get()
+        );
 
         $coefficient = $this->calculateTideCoefficient($dayExtremes, (float) $moon['age_days']);
         $isAguaje = $coefficient >= 85;
@@ -407,6 +409,47 @@ class OfficialWeatherService
             'lunar_day' => $lunarDay,
             'events' => $events,
         ];
+    }
+
+    /**
+     * Funde extremos consecutivos del mismo tipo separados por menos de 3 horas
+     * (producidos por sucesivas ejecuciones de `marine:sync` cuando el modelo de
+     * Open-Meteo ajusta 1 o 2 minutos el instante de una marea). En empate de
+     * ventana, conserva la predicción generada más recientemente.
+     *
+     * @param  Collection<int, OpenMeteoMarineTide>  $extremes
+     * @return Collection<int, OpenMeteoMarineTide>
+     */
+    private function deduplicateDayExtremes(Collection $extremes): Collection
+    {
+        $minMinutes = (int) round((float) config('open_meteo_marine.min_hours_between_same_type', 3) * 60);
+        $merged = [];
+
+        foreach ($extremes as $extreme) {
+            $lastIndex = array_key_last($merged);
+            $last = $lastIndex !== null ? $merged[$lastIndex] : null;
+
+            if ($last !== null
+                && $last->type === $extreme->type
+                && abs($extreme->happens_at->diffInMinutes($last->happens_at)) < $minMinutes
+            ) {
+                $extremeForecastAt = $extreme->forecast_generated_at?->getTimestamp() ?? 0;
+                $lastForecastAt = $last->forecast_generated_at?->getTimestamp() ?? 0;
+
+                if ($extremeForecastAt >= $lastForecastAt) {
+                    $merged[$lastIndex] = $extreme;
+                }
+
+                continue;
+            }
+
+            $merged[] = $extreme;
+        }
+
+        /** @var Collection<int, OpenMeteoMarineTide> $collection */
+        $collection = new Collection(array_values($merged));
+
+        return $collection;
     }
 
     /**
