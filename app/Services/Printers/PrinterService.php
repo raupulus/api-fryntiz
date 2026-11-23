@@ -7,6 +7,7 @@ namespace App\Services\Printers;
 use App\Enums\PrinterStatusEnum;
 use App\Enums\PrintJobFormatEnum;
 use App\Enums\PrintJobStatusEnum;
+use App\Enums\UserRoleEnum;
 use App\Events\Printers\PrintJobCreated;
 use App\Events\Printers\PrintJobStatusUpdated;
 use App\Models\Printer;
@@ -25,13 +26,16 @@ use RuntimeException;
 class PrinterService
 {
     /**
-     * Obtiene el listado de impresoras paginadas, opcionalmente filtradas por propietario o atributos.
+     * Consulta base de impresoras filtradas por propietario y dispositivos alcanzables.
      *
-     * @param  array<string, mixed>  $filters
-     * @return LengthAwarePaginator<int, mixed>
+     * @param  array<int, int>  $allowedDeviceIds
+     * @return Builder<Printer>
      */
-    public function getPrinters(?int $userId = null, array $filters = [], int $perPage = 15): LengthAwarePaginator
-    {
+    public function printersQuery(
+        ?int $userId = null,
+        array $allowedDeviceIds = [],
+        bool $excludeSuperAdminOwned = false
+    ): Builder {
         $query = Printer::query()
             ->with(['hardwareDevice'])
             ->withCount([
@@ -40,7 +44,32 @@ class PrinterService
 
         if ($userId !== null) {
             $query->whereHas('hardwareDevice', fn (Builder $q) => $q->where('user_id', $userId));
+        } elseif ($excludeSuperAdminOwned) {
+            $query->whereHas('hardwareDevice.user', fn (Builder $q) => $q->where('role_id', '!=', UserRoleEnum::SuperAdmin->value));
         }
+
+        if ($allowedDeviceIds !== []) {
+            $query->whereIn('hardware_device_id', $allowedDeviceIds);
+        }
+
+        return $query;
+    }
+
+    /**
+     * Obtiene el listado de impresoras paginadas, opcionalmente filtradas por propietario, dispositivos permitidos o atributos.
+     *
+     * @param  array<string, mixed>  $filters
+     * @param  array<int, int>  $allowedDeviceIds
+     * @return LengthAwarePaginator<int, mixed>
+     */
+    public function getPrinters(
+        ?int $userId = null,
+        array $filters = [],
+        int $perPage = 15,
+        array $allowedDeviceIds = [],
+        bool $excludeSuperAdminOwned = false
+    ): LengthAwarePaginator {
+        $query = $this->printersQuery($userId, $allowedDeviceIds, $excludeSuperAdminOwned);
 
         if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
@@ -76,6 +105,28 @@ class PrinterService
     }
 
     /**
+     * Consulta base del historial/cola de trabajos de una impresora.
+     *
+     * @return Builder<PrinterStack>
+     */
+    public function jobsQueryForPrinter(Printer $printer): Builder
+    {
+        return PrinterStack::query()->where('printer_id', $printer->id);
+    }
+
+    /**
+     * Consulta base de plantillas favoritas de una impresora.
+     *
+     * @return Builder<PrinterStack>
+     */
+    public function favoritesQueryForPrinter(Printer $printer): Builder
+    {
+        return PrinterStack::query()
+            ->where('printer_id', $printer->id)
+            ->favorites();
+    }
+
+    /**
      * Obtiene el historial o cola de trabajos de una impresora.
      *
      * @param  array<string, mixed>  $filters
@@ -83,9 +134,7 @@ class PrinterService
      */
     public function getJobsForPrinter(Printer $printer, array $filters = [], int $perPage = 20): LengthAwarePaginator
     {
-        $query = PrinterStack::query()
-            ->where('printer_id', $printer->id)
-            ->with(['user']);
+        $query = $this->jobsQueryForPrinter($printer);
 
         if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
@@ -111,10 +160,7 @@ class PrinterService
      */
     public function getFavoritesForPrinter(Printer $printer, int $perPage = 20): LengthAwarePaginator
     {
-        return PrinterStack::query()
-            ->where('printer_id', $printer->id)
-            ->with(['user'])
-            ->favorites()
+        return $this->favoritesQueryForPrinter($printer)
             ->orderByDesc('updated_at')
             ->paginate($perPage);
     }
@@ -203,7 +249,7 @@ class PrinterService
                 ->where('status', PrintJobStatusEnum::Pending)
                 ->orderByDesc('priority')
                 ->orderBy('created_at')
-                ->lockForUpdate()
+                ->lock(DB::getDriverName() === 'pgsql' ? 'for update skip locked' : true)
                 ->first();
 
             if (! $nextJob) {
@@ -214,11 +260,15 @@ class PrinterService
             $nextJob->attempts = $nextJob->attempts + 1;
             $nextJob->save();
 
+            Printer::query()
+                ->whereKey($printer->id)
+                ->update(['last_seen_at' => Carbon::now()]);
+
             return $nextJob;
         });
 
         if ($job !== null) {
-            $printer->update(['last_seen_at' => Carbon::now()]);
+            $printer->refresh();
             broadcast(new PrintJobStatusUpdated($job));
         }
 
@@ -229,7 +279,7 @@ class PrinterService
      * Actualiza el estado de un trabajo de impresión tras la ejecución física.
      *
      * Si `status` es `completed`, incrementa el contador de impresiones del trabajo
-     * y el odómetro global de la impresora.
+     * y el odómetro global de la impresora de forma idempotente bajo bloqueo pesimista.
      * Si `status` es `out_of_paper`, reencola el trabajo a `pending` y actualiza la impresora.
      */
     public function updateJobStatus(PrinterStack $job, PrintJobStatusEnum|PrinterStatusEnum|string $status, ?string $errorMessage = null): PrinterStack
@@ -239,26 +289,51 @@ class PrinterService
             ? null
             : ($status instanceof PrintJobStatusEnum ? $status : PrintJobStatusEnum::from((string) $status));
 
-        DB::transaction(function () use ($job, $statusEnum, $isOutOfPaper, $errorMessage) {
-            $printer = $job->printer;
+        $changed = false;
+
+        $lockedJob = DB::transaction(function () use ($job, $statusEnum, $isOutOfPaper, $errorMessage, &$changed): PrinterStack {
+            /** @var PrinterStack $lockedJob */
+            $lockedJob = PrinterStack::query()
+                ->whereKey($job->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            // Reintento idempotente de confirmación final: no duplicar el odómetro ni rebroadcast.
+            if ($lockedJob->status === PrintJobStatusEnum::Completed && $statusEnum === PrintJobStatusEnum::Completed) {
+                return $lockedJob;
+            }
+
+            if (in_array($lockedJob->status, [
+                PrintJobStatusEnum::Completed,
+                PrintJobStatusEnum::Failed,
+                PrintJobStatusEnum::Cancelled,
+            ], true)) {
+                throw new RuntimeException('No se puede modificar el estado de un trabajo ya finalizado o cancelado.');
+            }
+
+            /** @var Printer $printer */
+            $printer = Printer::query()
+                ->whereKey($lockedJob->printer_id)
+                ->lockForUpdate()
+                ->firstOrFail();
 
             if ($isOutOfPaper) {
-                $job->status = PrintJobStatusEnum::Pending;
+                $lockedJob->status = PrintJobStatusEnum::Pending;
                 if ($errorMessage !== null) {
-                    $job->error_message = $errorMessage;
+                    $lockedJob->error_message = $errorMessage;
                 }
-                $job->save();
+                $lockedJob->save();
 
                 $printer->update([
                     'status' => PrinterStatusEnum::OutOfPaper,
                     'last_seen_at' => Carbon::now(),
                 ]);
             } elseif ($statusEnum === PrintJobStatusEnum::Completed) {
-                $job->status = PrintJobStatusEnum::Completed;
-                $job->print_count = $job->print_count + 1;
-                $job->printed_at = Carbon::now();
-                $job->error_message = null;
-                $job->save();
+                $lockedJob->status = PrintJobStatusEnum::Completed;
+                $lockedJob->print_count = $lockedJob->print_count + 1;
+                $lockedJob->printed_at = Carbon::now();
+                $lockedJob->error_message = null;
+                $lockedJob->save();
 
                 $printer->increment('total_prints_count');
                 $printer->update([
@@ -266,20 +341,29 @@ class PrinterService
                     'last_seen_at' => Carbon::now(),
                 ]);
             } elseif ($statusEnum === PrintJobStatusEnum::Failed) {
-                $job->status = PrintJobStatusEnum::Failed;
-                $job->error_message = $errorMessage;
-                $job->save();
+                $lockedJob->status = PrintJobStatusEnum::Failed;
+                $lockedJob->error_message = $errorMessage;
+                $lockedJob->save();
 
                 $printer->update(['last_seen_at' => Carbon::now()]);
             } else {
-                $job->status = $statusEnum;
-                $job->save();
+                $lockedJob->status = $statusEnum;
+                $lockedJob->save();
             }
+
+            $changed = true;
+
+            return $lockedJob;
         });
 
-        broadcast(new PrintJobStatusUpdated($job));
+        $job->setRawAttributes($lockedJob->getAttributes(), true);
+        $job->syncOriginal();
 
-        return $job;
+        if ($changed) {
+            broadcast(new PrintJobStatusUpdated($lockedJob));
+        }
+
+        return $lockedJob;
     }
 
     /**
@@ -332,20 +416,42 @@ class PrinterService
     }
 
     /**
-     * Cancela un trabajo en cola si aún no ha sido completado.
+     * Cancela un trabajo en cola si aún no ha sido completado ni fallado.
      */
     public function cancelJob(PrinterStack $job): PrinterStack
     {
-        if ($job->status === PrintJobStatusEnum::Completed) {
-            throw new RuntimeException('No se puede cancelar un trabajo que ya ha sido completado con éxito.');
+        $changed = false;
+
+        $lockedJob = DB::transaction(function () use ($job, &$changed): PrinterStack {
+            /** @var PrinterStack $lockedJob */
+            $lockedJob = PrinterStack::query()
+                ->whereKey($job->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($lockedJob->status === PrintJobStatusEnum::Cancelled) {
+                return $lockedJob;
+            }
+
+            if (in_array($lockedJob->status, [PrintJobStatusEnum::Completed, PrintJobStatusEnum::Failed], true)) {
+                throw new RuntimeException('No se puede cancelar un trabajo que ya ha finalizado.');
+            }
+
+            $lockedJob->status = PrintJobStatusEnum::Cancelled;
+            $lockedJob->save();
+            $changed = true;
+
+            return $lockedJob;
+        });
+
+        $job->setRawAttributes($lockedJob->getAttributes(), true);
+        $job->syncOriginal();
+
+        if ($changed) {
+            broadcast(new PrintJobStatusUpdated($lockedJob));
         }
 
-        $job->status = PrintJobStatusEnum::Cancelled;
-        $job->save();
-
-        broadcast(new PrintJobStatusUpdated($job));
-
-        return $job;
+        return $lockedJob;
     }
 
     /**

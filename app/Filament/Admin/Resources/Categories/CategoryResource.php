@@ -82,8 +82,8 @@ class CategoryResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')->searchable()->sortable()->label('Nombre'),
-                TextColumn::make('parentCategory.name')->label('Padre')->toggleable(),
+                TextColumn::make('name')->searchable()->sortable()->limit(40)->tooltip(fn (?string $state): ?string => $state)->label('Nombre'),
+                TextColumn::make('parentCategory.name')->label('Padre')->limit(30)->tooltip(fn (?string $state): ?string => $state)->toggleable(),
                 ColorColumn::make('color')->label('Color'),
                 TextColumn::make('priority')->label('Prioridad')->sortable()->toggleable(),
                 TextColumn::make('slug')->label('Slug')->toggleable(),

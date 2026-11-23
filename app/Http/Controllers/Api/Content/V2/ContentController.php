@@ -16,6 +16,7 @@ use App\Models\Content\ContentAvailableType;
 use App\Models\Platform;
 use App\Services\Content\ContentApiService;
 use App\Support\ApiCacheVersion;
+use App\Support\Http\ApiEnvelope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -67,7 +68,7 @@ class ContentController extends BaseApiController
         ksort($query);
         $key = sprintf('api:contents:%d:%d:%s:%s', $platform->id, ApiCacheVersion::current(), now()->format('YmdH'), md5((string) json_encode($query)));
 
-        $payload = Cache::remember($key, now()->addHours(2), function () use ($request, $platform, $typeId): array {
+        $cached = Cache::remember($key, now()->addHours(2), function () use ($request, $platform, $typeId): array {
             $query = $this->service->publishedQuery()->where('platform_id', $platform->id);
 
             if ($request->boolean('featured')) {
@@ -88,10 +89,26 @@ class ContentController extends BaseApiController
                 sinkColumn: 'is_obsolete',
             );
 
-            return $this->paginatedResponse($collectionQuery->paginate($query, $request), ContentResource::class)->getData(true);
+            $paginator = $collectionQuery->paginate($query, $request);
+
+            return [
+                'items' => ContentResource::collection($paginator->getCollection())->resolve($request),
+                'meta' => [
+                    'current_page' => $paginator->currentPage(),
+                    'last_page' => $paginator->lastPage(),
+                    'per_page' => $paginator->perPage(),
+                    'total' => $paginator->total(),
+                    'from' => $paginator->firstItem(),
+                    'to' => $paginator->lastItem(),
+                ],
+            ];
         });
 
-        return response()->json($payload);
+        return response()->json(ApiEnvelope::success(
+            $cached['items'],
+            'Operación exitosa',
+            ['meta' => $cached['meta']]
+        ));
     }
 
     /**

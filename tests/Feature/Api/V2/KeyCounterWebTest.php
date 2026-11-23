@@ -8,6 +8,7 @@ use App\Models\Hardware\HardwareDevice;
 use App\Models\Hardware\HardwareType;
 use App\Models\KeyCounter\Keyboard;
 use App\Models\User;
+use App\Services\KeyCounter\KeyCounterService;
 use App\Support\KeyCounter\KeyCounterCache;
 use Illuminate\Support\Facades\Cache;
 use Tests\Feature\Api\ApiTestCase;
@@ -93,6 +94,48 @@ class KeyCounterWebTest extends ApiTestCase
         $this->assertStringNotContainsString($antiguo->name_friendly, $tarjeta);
     }
 
+    public function test_chart_dataset_escapes_script_tags_in_device_names(): void
+    {
+        $user = User::factory()->create(['role_id' => 1]);
+        $type = HardwareType::create(['name' => 'Generic', 'description' => 'Tipo de prueba']);
+        $device = HardwareDevice::create([
+            'user_id' => $user->id,
+            'hardware_type_id' => $type->id,
+            'name' => 'xss-device',
+            'name_friendly' => '</script><script>alert(1)</script>',
+            'slug' => 'xss-device',
+        ]);
+
+        Keyboard::create([
+            'user_id' => $user->id,
+            'hardware_device_id' => $device->id,
+            'start_at' => now()->subMinutes(5),
+            'end_at' => now(),
+            'duration' => 300,
+            'pulsations' => 420,
+            'pulsations_special_keys' => 5,
+            'pulsation_average' => 1.4,
+            'score' => 42,
+            'weekday' => 1,
+            'created_at' => now(),
+        ]);
+
+        $html = $this->get('/keycounter')->assertStatus(200)->getContent();
+
+        $this->assertStringNotContainsString('</script><script>alert(1)</script>', $html);
+    }
+
+    public function test_keycounter_service_calculates_user_keyboard_stats(): void
+    {
+        [$top] = $this->crearDispositivosConPulsaciones();
+
+        $stats = app(KeyCounterService::class)->getUserKeyboardStats($top->user_id, 30);
+
+        $this->assertSame(1500, $stats['total_keystrokes']);
+        $this->assertSame(2, $stats['records_count']);
+        $this->assertSame(50.0, $stats['average_per_day']);
+    }
+
     /**
      * Devuelve el HTML de la única tarjeta destacada de la rejilla.
      */
@@ -100,13 +143,13 @@ class KeyCounterWebTest extends ApiTestCase
     {
         $html = $this->get('/keycounter')->assertStatus(200)->getContent();
 
-        $this->assertSame(1, substr_count($html, 'bg-purple-50'));
+        $this->assertSame(1, substr_count($html, 'border-primary/40'));
 
         // Se recorta en el arranque de la tarjeta siguiente para no arrastrar
         // el contenido de los demás dispositivos.
-        $inicio = (int) strpos($html, 'bg-purple-50');
-        $propia = (int) strpos($html, 'rounded-lg p-4 text-center shadow', $inicio);
-        $siguiente = strpos($html, 'rounded-lg p-4 text-center shadow', $propia + 1);
+        $inicio = (int) strpos($html, 'border-primary/40');
+        $propia = (int) strpos($html, 'rounded-xl p-4 text-center shadow', $inicio);
+        $siguiente = strpos($html, 'rounded-xl p-4 text-center shadow', $propia + 1);
 
         return $siguiente === false
             ? substr($html, $inicio)

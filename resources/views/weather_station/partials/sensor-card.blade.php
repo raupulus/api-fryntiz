@@ -10,9 +10,10 @@
                     class="material-symbols-outlined text-on-tertiary-container inline-block"
                     style="transform: rotate({{ $section['rotate'] }}deg)"
                     title="{{ $section['rotate'] }}º"
+                    aria-hidden="true"
                 >navigation</span>
             @else
-                <span class="material-symbols-outlined text-on-tertiary-container">{{ $section['icon'] }}</span>
+                <span class="material-symbols-outlined text-on-tertiary-container" aria-hidden="true">{{ $section['icon'] }}</span>
             @endif
         </div>
         @if($section['primary'])

@@ -110,13 +110,17 @@ trait EditsOwnProfile
 
             Section::make('Cambiar contraseña')->columns(2)->collapsed()->schema([
                 TextInput::make('current_password')->password()->revealable()
-                    ->dehydrated(false)->label('Contraseña actual'),
+                    ->requiredWith('new_password')
+                    ->label('Contraseña actual'),
                 TextInput::make('new_password')->password()->revealable()
+                    ->nullable()
                     ->rule(Password::defaults())
-                    ->dehydrated(false)->same('new_password_confirmation')
+                    ->same('new_password_confirmation')
                     ->label('Nueva contraseña'),
-                TextInput::make('new_password_confirmation')->password()
-                    ->dehydrated(false)->label('Repetir nueva contraseña'),
+                TextInput::make('new_password_confirmation')->password()->revealable()
+                    ->requiredWith('new_password')
+                    ->dehydrated(false)
+                    ->label('Repetir nueva contraseña'),
             ]),
         ]);
     }
@@ -129,13 +133,13 @@ trait EditsOwnProfile
         $user = Auth::user();
 
         if (! empty($data['new_password'])) {
-            if (! Hash::check($data['current_password'] ?? '', $user->password)) {
+            if (! Hash::check((string) ($data['current_password'] ?? ''), $user->password)) {
                 Notification::make()->title('Contraseña actual incorrecta')->danger()->send();
 
                 return;
             }
 
-            $user->password = Hash::make($data['new_password']);
+            $user->password = Hash::make((string) $data['new_password']);
         }
 
         // Sin `email`: aunque llegara en los datos, aquí no se escribe (D91).
@@ -156,6 +160,10 @@ trait EditsOwnProfile
             'send_notification' => (bool) ($data['send_notification'] ?? true),
             'send_notification_push' => (bool) ($data['send_notification_push'] ?? true),
         ]);
+
+        $this->data['current_password'] = null;
+        $this->data['new_password'] = null;
+        $this->data['new_password_confirmation'] = null;
 
         Notification::make()->title('Perfil actualizado')->success()->send();
     }

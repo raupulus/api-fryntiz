@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\Printers\V2;
 
 use App\Enums\PrintJobStatusEnum;
+use App\Http\Api\CollectionQuery;
 use App\Http\Controllers\Api\Hardware\V2\Concerns\HandlesHardwareDeviceInfo;
 use App\Http\Controllers\Api\V2\BaseApiController;
 use App\Http\Requests\Api\Printers\V2\PrinterHeartbeatRequest;
@@ -13,6 +14,7 @@ use App\Models\Printer;
 use App\Models\User;
 use App\Services\Hardware\HardwareService;
 use App\Services\Printers\PrinterService;
+use App\Support\Auth\TokenAbilities;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -40,12 +42,29 @@ class PrinterController extends BaseApiController
         /** @var User $user */
         $user = $request->user();
 
-        $userId = $user->isAdmin() ? null : (int) $user->id;
-        $filters = $request->only(['status', 'printer_type', 'is_active']);
+        $isDeviceToken = TokenAbilities::deviceRequest($user);
+        $userId = ($user->isAdmin() && ! $isDeviceToken) ? null : (int) $user->id;
+        $excludeSuperAdminOwned = $userId === null && ! $user->isSuperAdmin();
+        $allowedDeviceIds = TokenAbilities::devicesReachableBy($user);
 
-        $paginator = $this->printerService->getPrinters($userId, $filters);
+        $collectionQuery = new CollectionQuery(
+            filterable: ['status', 'printer_type', 'is_active', 'created_at'],
+            sortable: ['name', 'status', 'created_at', 'last_seen_at'],
+            defaultSortColumn: 'name',
+            defaultSortDescending: false,
+        );
 
-        return $this->paginatedResponse($paginator, PrinterResource::class, 'Impresoras obtenidas exitosamente');
+        $query = $this->printerService->printersQuery(
+            $userId,
+            $allowedDeviceIds,
+            $excludeSuperAdminOwned
+        );
+
+        return $this->paginatedResponse(
+            $collectionQuery->paginate($query, $request),
+            PrinterResource::class,
+            'Impresoras obtenidas exitosamente'
+        );
     }
 
     /**

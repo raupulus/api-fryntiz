@@ -112,7 +112,7 @@ Este módulo fue diseñado para ser copiado y reutilizado fácilmente en cualqui
 
 ## 5. Pruebas y Validación
 
-La funcionalidad está cubierta por la suite de pruebas automatizadas [`tests/Feature/YouTube/YouTubeSearchTest.php`](file:///Users/fryntiz/git/3-Fryntiz/api-fryntiz/tests/Feature/YouTube/YouTubeSearchTest.php) (7 tests, 19 aserciones):
+La funcionalidad está cubierta por la suite de pruebas automatizadas [`tests/Feature/YouTube/YouTubeSearchTest.php`](../../tests/Feature/YouTube/YouTubeSearchTest.php) (7 tests, 19 aserciones):
 - Bloqueo de usuarios no autenticados (401).
 - Bloqueo de usuarios estándar sin permisos de edición (403).
 - Búsqueda exitosa con administrador mediante simulación `Http::fake()`.
@@ -122,4 +122,4 @@ La funcionalidad está cubierta por la suite de pruebas automatizadas [`tests/Fe
 
 ---
 
-> Creado: 2026-09-19 · Última revisión: 2026-09-19
+> Creado: 2026-09-19 · Última revisión: 2026-11-23

@@ -316,13 +316,11 @@ recorta, genera las miniaturas y deja la propiedad asignada. Un `POST /file/uplo
 genérico tendría que replicar todo eso o quedarse corto. Cuando haga falta subir
 por HTTP se escribirá entera, con su contrato y sus límites.
 
-### Lo que queda pendiente
+### Endurecimiento y control de caché (2026-11-23)
 
-`resizeAndGet()` no cachea
-el resultado —reprocesa la imagen en cada petición— y `File` no borra los
-metadatos EXIF de los ficheros privados, que es un asunto de privacidad: una foto
-privada puede llevar dentro la geolocalización.
+- **Mitigación de Pixel Flood / Decompression Bombs:** `File::exceedsPixelLimit()` inspecciona las dimensiones antes de decodificar píxeles en RAM (`Imagick::pingImage()` para HEIC/AVIF y `getimagesize()` para el resto) rechazando imágenes `> 8192×8192 px` o `> 25 MP` en `File::addFile()`, `ContentFileService::store()` y `FileController::resizeAndGet()`. `File::configureImagickLimits()` y `docker/app/imagemagick-policy.xml` acotan memoria/área/tiempo y bloquean coders/delegates de riesgo.
+- **Caché y privacidad:** `FileController::resizeAndGet()` cachea las variantes del catálogo en disco y aplica `File::cacheHeaders((bool) $file->is_private)` junto a `->setPrivate()` + `Vary: Cookie` cuando el fichero es privado. Las denegaciones de acceso responden `403 Forbidden` con `Cache-Control: no-store, private`. `File::stripMetadata()` retira EXIF/GPS y perfiles ICC en las imágenes procesadas (públicas y privadas).
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-10-27
+> Creado: 2026-05-25 · Última revisión: 2026-11-23

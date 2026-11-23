@@ -1,46 +1,69 @@
 @extends('layouts.app')
 
-@section('title', 'Sobre el proyecto | Api Raupulus')
-@section('description', 'Qué es Api Raupulus: una plataforma multi-API en Laravel que centraliza los proyectos IoT personales de Raúl Caro Pastorino.')
+@section('title', 'Sobre el proyecto e IoT | Api Raupulus')
+@section('description', 'Qué es Api Raupulus: una plataforma multi-API en Laravel que centraliza los proyectos IoT personales de Raúl Caro Pastorino (@raupulus).')
 @section('keywords', 'sobre, about, api raupulus, Raúl Caro Pastorino, raupulus, proyecto, IoT, laravel, arquitectura')
 
-@section('rs-title', 'Sobre Api Raupulus')
+@section('rs-title', 'Sobre el proyecto e IoT | Api Raupulus')
 @section('rs-sitename', 'Api Raupulus')
-@section('rs-description', 'Qué es Api Raupulus y qué proyectos centraliza')
+@section('rs-description', 'Qué es Api Raupulus y qué proyectos IoT y herramientas personales centraliza.')
 @section('rs-image', asset('images/social-thumbnail.jpg'))
 @section('rs-url', route('about'))
 
+@push('json-ld')
+    @php
+        $aboutSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'AboutPage',
+            'name' => 'Sobre el proyecto Api Raupulus',
+            'url' => route('about'),
+            'inLanguage' => 'es-ES',
+            'mainEntity' => [
+                '@type' => 'Person',
+                'name' => 'Raúl Caro Pastorino',
+                'alternateName' => 'raupulus',
+                'url' => 'https://raupulus.dev',
+                'email' => 'mailto:public@raupulus.dev',
+            ],
+        ];
+    @endphp
+    <script type="application/ld+json">@json($aboutSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG)</script>
+@endpush
+
 @section('content')
     {{-- Hero --}}
-    <section class="hero-gradient min-h-[40vh] flex items-center pt-20">
-        <div class="max-w-7xl mx-auto px-6 text-white">
+    <section class="hero-gradient min-h-[40svh] flex items-center pt-20 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 text-on-primary">
             <h1 class="text-4xl md:text-6xl font-bold tracking-tighter mb-4">Sobre el proyecto</h1>
-            <p class="text-xl text-white/80 max-w-3xl">Una plataforma multi-API que centraliza todos mis proyectos personales: módulos IoT, un CMS, currículum y newsletter, todo bajo un mismo tejado.</p>
+            <p class="text-xl text-on-primary/85 max-w-3xl">Una plataforma multi-API que centraliza todos mis proyectos personales: módulos IoT, un CMS, currículum y newsletter, todo bajo un mismo tejado.</p>
         </div>
     </section>
 
     {{-- Qué es --}}
     <section class="py-12 bg-surface">
-        <div class="max-w-5xl mx-auto px-6">
-            <h2 class="text-3xl text-on-surface font-bold leading-none mb-4">Qué es Api Raupulus</h2>
-            <p class="text-on-surface-variant mb-3">
-                Api Raupulus es una plataforma en <strong>Laravel</strong> donde centralizo los proyectos personales que voy montando en casa: sensores, dispositivos IoT, radares, contadores... Cada gadget sube sus lecturas aquí, y esta misma API las sirve tanto a la web pública como a mis propias herramientas de depuración.
-            </p>
-            <p class="text-on-surface-variant mb-3">
-                El contenido puede ser poco preciso o irreal: lo utilizo como herramienta para desarrollar y depurar, no como un servicio de cara a terceros. Aun así busco afinar la entrada de datos y tratarlo como parte real de la aplicación, con datos y comportamiento fiables.
-            </p>
-            <p class="text-on-surface-variant mb-3">
-                El objetivo de fondo es una solución robusta, escalable, segura y <strong>fácil de gestionar desde la intranet</strong>: casi todo lo que hace la plataforma se puede administrar desde el panel de control sin tener que abrir una terminal.
-            </p>
-            <p class="text-on-surface-variant mb-3">
-                Código público en GitLab:
-                <a href="https://gitlab.com/raupulus/api-fryntiz/tree/master"
-                   class="underline text-on-tertiary-container font-bold text-xs"
-                   target="_blank"
-                   title="Api Raupulus en GitLab">
-                    https://gitlab.com/raupulus/api-fryntiz
-                </a>
-            </p>
+        <div class="max-w-5xl mx-auto px-4 sm:px-6">
+            <div class="max-w-prose">
+                <h2 class="text-3xl text-on-surface font-bold leading-none mb-4">Qué es Api Raupulus</h2>
+                <p class="text-on-surface-variant mb-3">
+                    Api Raupulus es una plataforma en <strong>Laravel</strong> donde centralizo los proyectos personales que voy montando en casa: sensores, dispositivos IoT, radares, contadores... Cada gadget sube sus lecturas aquí, y esta misma API las sirve tanto a la web pública como a mis propias herramientas de depuración.
+                </p>
+                <p class="text-on-surface-variant mb-3">
+                    El contenido puede ser poco preciso o irreal: lo utilizo como herramienta para desarrollar y depurar, no como un servicio de cara a terceros. Aun así busco afinar la entrada de datos y tratarlo como parte real de la aplicación, con datos y comportamiento fiables.
+                </p>
+                <p class="text-on-surface-variant mb-3">
+                    El objetivo de fondo es una solución robusta, escalable, segura y <strong>fácil de gestionar desde la intranet</strong>: casi todo lo que hace la plataforma se puede administrar desde el panel de control sin tener que abrir una terminal.
+                </p>
+                <p class="text-on-surface-variant mb-3">
+                    Código público en GitLab:
+                    <a href="https://gitlab.com/raupulus/api-fryntiz"
+                       class="underline text-on-tertiary-container font-bold text-xs"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       title="Api Raupulus en GitLab">
+                        https://gitlab.com/raupulus/api-fryntiz
+                    </a>
+                </p>
+            </div>
         </div>
     </section>
 
@@ -102,7 +125,7 @@
                     <a href="{{ $module['url'] }}"
                        class="bg-surface-container-lowest rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow flex flex-col group">
                         <div class="w-12 h-12 bg-surface-container rounded-lg flex items-center justify-center mb-4">
-                            <span class="material-symbols-outlined text-primary">{{ $module['icon'] }}</span>
+                            <span class="material-symbols-outlined text-primary" aria-hidden="true">{{ $module['icon'] }}</span>
                         </div>
                         <h3 class="text-lg font-bold text-on-surface mb-2 group-hover:underline underline-offset-2">{{ $module['title'] }}</h3>
                         <p class="text-on-surface-variant text-sm flex-1">{{ $module['description'] }}</p>
@@ -125,7 +148,7 @@
     {{-- Stack tecnológico --}}
     <section class="bg-surface-dim/30 py-24">
         <div class="max-w-7xl mx-auto px-6 text-center">
-            <p class="text-secondary font-bold text-xs uppercase tracking-widest mb-12">Construido con</p>
+            <p class="text-on-surface-variant font-bold text-xs uppercase tracking-widest mb-12">Construido con</p>
             <div class="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
                 <span class="font-bold text-2xl text-on-surface">Laravel</span>
                 <span class="font-bold text-2xl text-on-surface">Vue.js</span>
@@ -143,12 +166,13 @@
             <p class="text-on-surface-variant mb-6 max-w-2xl mx-auto">
                 Todo esto lo mantiene <strong>Raúl Caro Pastorino</strong> (@raupulus) en su tiempo libre, como terreno de pruebas y como forma de tener sus propios proyectos IoT bajo un mismo techo.
             </p>
-            <a href="https://raupulus.dev"
-               target="_blank"
-               title="Web de Raúl Caro Pastorino (raupulus)"
-               class="inline-block gradient text-white font-bold rounded-full py-4 px-8 shadow-lg hover:scale-105 transition-transform duration-300">
+            <x-button href="https://raupulus.dev"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="Web de Raúl Caro Pastorino (raupulus)"
+                      size="lg">
                 Ir a raupulus.dev
-            </a>
+            </x-button>
         </div>
     </section>
 @endsection

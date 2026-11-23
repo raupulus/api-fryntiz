@@ -34,9 +34,9 @@ use Illuminate\Support\Facades\Schedule;
 /**
  * Deja constancia de una tarea que falla, con su nombre.
  */
-$warnOnFailure = static function (string $tarea): callable {
-    return static function () use ($tarea): void {
-        Log::error("Planificador: la tarea «{$tarea}» ha terminado con error.");
+$warnOnFailure = static function (string $task): callable {
+    return static function () use ($task): void {
+        Log::error("Scheduler: task '{$task}' exited with failure.");
     };
 };
 
@@ -285,6 +285,7 @@ Schedule::command('cv:regenerate-pdfs')
 // mirarlos, y se limpian solos.
 Schedule::command('queue:prune-failed', ['--hours=336'])
     ->daily()
+    ->withoutOverlapping()
     ->onFailure($warnOnFailure('queue:prune-failed'));
 
 // ── Tokens ───────────────────────────────────────────────────────────────────
@@ -298,7 +299,17 @@ Schedule::command('queue:prune-failed', ['--hours=336'])
 // `personal_access_tokens` y `GET /auth/tokens` las paginaba (auditoría AR-R02).
 Schedule::command('sanctum:prune-expired', ['--hours=720'])
     ->daily()
+    ->withoutOverlapping()
     ->onFailure($warnOnFailure('sanctum:prune-expired'));
+
+// ── Impresoras ───────────────────────────────────────────────────────────────
+
+// Reencola o marca como fallidos trabajos atascados en `processing` y pasa a
+// `offline` impresoras cuyo heartbeat ha expirado.
+Schedule::command('printers:cleanup-stale-jobs')
+    ->everyFiveMinutes()
+    ->withoutOverlapping()
+    ->onFailure($warnOnFailure('printers:cleanup-stale-jobs'));
 
 // ── Energía ──────────────────────────────────────────────────────────────────
 

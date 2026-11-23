@@ -5,22 +5,30 @@ declare(strict_types=1);
 namespace App\Policies;
 
 use App\Models\User;
+use App\Policies\Concerns\GuardsAdminAndDeviceAccess;
+use App\Support\Auth\TokenAbilities;
 
 class UserPolicy
 {
+    use GuardsAdminAndDeviceAccess;
+
     public function viewAny(User $user): bool
     {
-        return $user->isAdmin();
+        return $this->isHumanAdmin($user);
     }
 
     public function view(User $user, User $model): bool
     {
-        return $user->isAdmin() || $user->id === $model->id;
+        if (TokenAbilities::deviceRequest($user)) {
+            return false;
+        }
+
+        return $user->isAdmin() || (int) $user->id === (int) $model->id;
     }
 
     public function create(User $user): bool
     {
-        return $user->isAdmin();
+        return $this->isHumanAdmin($user);
     }
 
     /**
@@ -67,6 +75,10 @@ class UserPolicy
         // Un SuperAdmin sí llega, pero no por aquí: `Gate::before` le concede
         // todo antes de evaluar esta policy. Y en su caso no hay nada que
         // escalar, ya está arriba del todo.
+        if (TokenAbilities::deviceRequest($user)) {
+            return false;
+        }
+
         if ((int) $user->id === (int) $model->id) {
             return false;
         }
@@ -75,7 +87,7 @@ class UserPolicy
             return false;
         }
 
-        return $user->isAdmin();
+        return $this->isHumanAdmin($user);
     }
 
     public function delete(User $user, User $model): bool
@@ -84,7 +96,7 @@ class UserPolicy
             return false;
         }
 
-        return $user->isSuperAdmin() && $user->id !== $model->id;
+        return $this->isHumanSuperAdmin($user) && (int) $user->id !== (int) $model->id;
     }
 
     public function forceDelete(User $user, User $model): bool
@@ -93,7 +105,7 @@ class UserPolicy
             return false;
         }
 
-        return $user->isSuperAdmin() && $user->id !== $model->id;
+        return $this->isHumanSuperAdmin($user) && (int) $user->id !== (int) $model->id;
     }
 
     /**
@@ -116,7 +128,7 @@ class UserPolicy
             return false;
         }
 
-        return $user->isAdmin();
+        return $this->isHumanAdmin($user);
     }
 
     /**
@@ -134,16 +146,16 @@ class UserPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->isSuperAdmin();
+        return $this->isHumanSuperAdmin($user);
     }
 
     public function forceDeleteAny(User $user): bool
     {
-        return $user->isSuperAdmin();
+        return $this->isHumanSuperAdmin($user);
     }
 
     public function restoreAny(User $user): bool
     {
-        return $user->isSuperAdmin();
+        return $this->isHumanSuperAdmin($user);
     }
 }

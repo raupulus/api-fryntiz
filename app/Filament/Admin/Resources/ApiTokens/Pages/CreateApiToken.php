@@ -31,7 +31,7 @@ class CreateApiToken extends CreateRecord
         // de tokens de dispositivo: valida que las abilities están en el
         // catálogo, comprueba el propietario y añade "device:{id}". Antes esta
         // página llamaba a `createToken()` a pelo con "*" por defecto.
-        $device = HardwareDevice::query()->findOrFail($data['device_id']);
+        $device = HardwareDevice::query()->with('user')->findOrFail($data['device_id']);
 
         if ((int) $device->user_id !== (int) $data['tokenable_id']) {
             throw ValidationException::withMessages([
@@ -39,9 +39,17 @@ class CreateApiToken extends CreateRecord
             ]);
         }
 
+        $actor = auth()->user();
+
+        if ($device->user?->isSuperAdmin() && $actor?->isSuperAdmin() !== true) {
+            throw ValidationException::withMessages([
+                'tokenable_id' => 'Sólo un Super Administrador puede emitir tokens para un Super Administrador.',
+            ]);
+        }
+
         $expiresAt = ! empty($data['expires_at']) ? Carbon::parse($data['expires_at']) : null;
 
-        $token = app(DeviceTokenService::class)->issue($device, $data['abilities'] ?? [], $expiresAt);
+        $token = app(DeviceTokenService::class)->issue($device, $data['abilities'] ?? [], $expiresAt, $actor);
 
         // El nombre que escribió el administrador manda sobre el que pone el
         // servicio, para poder distinguir dos tokens del mismo cacharro.

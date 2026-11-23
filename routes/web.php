@@ -9,8 +9,11 @@ use App\Http\Controllers\Admin\EditorJsController;
 use App\Http\Controllers\Admin\YouTubeSearchController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\FileThumbnailController;
-use App\Http\Controllers\LanguageController;
+use App\Http\Controllers\Web\FallbackController;
+use App\Http\Controllers\Web\LegalController;
 use App\Http\Controllers\Web\Newsletter\NewsletterPageController;
+use App\Http\Controllers\Web\ScribeDocsController;
+use App\Http\Middleware\NoIndex;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,16 +27,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('home');
-})->name('home');
+Route::view('/', 'home')->name('home');
 
 // La página vive en `resources/views/about.blade.php` como contenido
 // estático escrito a mano. En el futuro se dinamizará desde una plataforma de
 // contenidos propia del backend de la API (ver `docs/future/about-page-cms.md`).
-Route::get('/about', function () {
-    return view('about');
-})->name('about');
+Route::view('/about', 'about')->name('about');
 
 /*
 |--------------------------------------------------------------------------
@@ -59,24 +58,12 @@ Route::get('/about', function () {
 // Sólo 'auth': `withRouting(web: ...)` ya aplica el grupo 'web' a este fichero
 // entero, y repetirlo aquí ejecutaba `StartSession` dos veces por petición, lo
 // que dejaba la sesión inservible y devolvía al login a quien ya había entrado.
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'active'])->group(function () {
     // La vista viaja en el repositorio, así que aquí no hay nada que comprobar.
     // Los dos ficheros de abajo sí viven en `storage/` y pueden no estar.
-    Route::get('/docs', fn () => view('scribe.index'))->name('scribe');
-
-    Route::get('/docs.openapi', function () {
-        $path = storage_path('app/scribe/openapi.yaml');
-        abort_unless(is_file($path), 404, 'La especificación OpenAPI no está generada.');
-
-        return response()->file($path, ['Content-Type' => 'application/yaml']);
-    })->name('scribe.openapi');
-
-    Route::get('/docs.postman', function () {
-        $path = storage_path('app/scribe/collection.json');
-        abort_unless(is_file($path), 404, 'La colección de Postman no está generada.');
-
-        return response()->file($path, ['Content-Type' => 'application/json']);
-    })->name('scribe.postman');
+    Route::get('/docs', [ScribeDocsController::class, 'index'])->name('scribe');
+    Route::get('/docs.openapi', [ScribeDocsController::class, 'openapi'])->name('scribe.openapi');
+    Route::get('/docs.postman', [ScribeDocsController::class, 'postman'])->name('scribe.postman');
 });
 
 /*
@@ -96,7 +83,7 @@ Route::middleware('auth')->group(function () {
 | minuto y usuario) acota lo segundo, que un editor podría usar para escanear
 | la red interna aunque la comprobación de IP privada ya lo impida.
 */
-Route::middleware(['auth', 'can:access-editorjs', 'can:update,content', 'throttle:content-editor'])
+Route::middleware(['auth', 'active', 'can:access-editorjs', 'can:update,content', 'throttle:content-editor'])
     ->prefix('admin/contents/{content}/editor')
     ->name('admin.contents.editor.')
     ->group(function () {
@@ -110,7 +97,7 @@ Route::middleware(['auth', 'can:access-editorjs', 'can:update,content', 'throttl
 | antes de cada subida y soltar el bloqueo al cerrar la pestaña. Sin el límite
 | del editor: no suben nada ni salen a la red.
 */
-Route::middleware(['auth', 'can:access-editorjs', 'can:update,content'])
+Route::middleware(['auth', 'active', 'can:access-editorjs', 'can:update,content'])
     ->prefix('admin/contents/{content}')
     ->name('admin.contents.')
     ->group(function () {
@@ -124,7 +111,7 @@ Route::middleware(['auth', 'can:access-editorjs', 'can:update,content'])
 | (`content-ai`, holgado para no cortar a quien redacta; ver
 | config/rate_limits.php).
 */
-Route::middleware(['auth', 'can:access-editorjs', 'can:update,content', 'throttle:content-ai'])
+Route::middleware(['auth', 'active', 'can:access-editorjs', 'can:update,content', 'throttle:content-ai'])
     ->prefix('admin/contents/{content}')
     ->name('admin.contents.')
     ->group(function () {
@@ -141,7 +128,7 @@ Route::middleware(['auth', 'can:access-editorjs', 'can:update,content', 'throttl
 | no exponer la GOOGLE_API_KEY en el cliente, aplicar caché y rate limiting.
 |
 */
-Route::middleware(['auth', 'can:access-youtube-search'])
+Route::middleware(['auth', 'active', 'can:access-youtube-search'])
     ->prefix('admin/youtube')
     ->name('admin.youtube.')
     ->group(function () {
@@ -152,13 +139,9 @@ Route::middleware(['auth', 'can:access-youtube-search'])
 
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::group(['prefix' => '/languages'], function () {
-    Route::group(['prefix' => '/ajax'], function () {
-        Route::match(['get', 'post'], '/get/languages', [LanguageController::class, 'ajaxGetLanguages'])
-            ->middleware('same-origin')
-            ->name('language.ajax.get.languages');
-    });
-});
+Route::get('/aviso-legal', [LegalController::class, 'notice'])->name('legal.notice');
+Route::get('/privacidad', [LegalController::class, 'privacy'])->name('legal.privacy');
+Route::get('/cookies', [LegalController::class, 'cookies'])->name('legal.cookies');
 
 Route::group(['prefix' => '/file'], function () {
 
@@ -189,7 +172,7 @@ Route::group(['prefix' => '/file'], function () {
     // barrer los ficheros de otro pasando su id. La comprobación de propiedad
     // va dentro del controlador; el middleware sólo cierra la puerta de la calle.
     Route::post('/delete/{id}', [FileController::class, 'delete'])
-        ->middleware('auth')
+        ->middleware(['auth', 'active'])
         ->name('file.delete');
 
 });
@@ -224,15 +207,15 @@ Route::any('/panel/register/{any}', fn () => abort(404))->where('any', '.*');
 | gente que no lo había pedido.
 |
 */
-Route::prefix('newsletter')->group(function () {
-    Route::get('/{token}', [NewsletterPageController::class, 'show'])
-        ->name('newsletter.manage');
-    Route::post('/{token}/confirmation', [NewsletterPageController::class, 'confirm'])
-        ->name('newsletter.confirm');
-    Route::post('/{token}/unsubscription', [NewsletterPageController::class, 'unsubscribe'])
-        ->name('newsletter.unsubscribe');
-});
+Route::prefix('newsletter')
+    ->middleware(['throttle:api-auth', NoIndex::class])
+    ->group(function () {
+        Route::get('/{token}', [NewsletterPageController::class, 'show'])
+            ->name('newsletter.manage');
+        Route::post('/{token}/confirmation', [NewsletterPageController::class, 'confirm'])
+            ->name('newsletter.confirm');
+        Route::post('/{token}/unsubscription', [NewsletterPageController::class, 'unsubscribe'])
+            ->name('newsletter.unsubscribe');
+    });
 
-Route::fallback(function () {
-    return abort(404); // default 404
-});
+Route::fallback(FallbackController::class);

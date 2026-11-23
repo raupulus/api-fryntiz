@@ -8,6 +8,9 @@ Integración que expone el framework Laravel y el contexto del proyecto a modelo
 - **Servidor MCP:** [app/Mcp/Servers/ApiRaupulusServer.php](../../app/Mcp/Servers/ApiRaupulusServer.php)
 - **Herramientas (Tools):**
   - [app/Mcp/Tools/GetSystemStatusTool.php](../../app/Mcp/Tools/GetSystemStatusTool.php): Obtiene información sobre el estado de la aplicación, variables de entorno y base de datos.
+  - [app/Mcp/Tools/GetModelInfoTool.php](../../app/Mcp/Tools/GetModelInfoTool.php): Inspecciona modelos Eloquent, relaciones y atributos.
+  - [app/Mcp/Tools/InspectDatabaseSchemaTool.php](../../app/Mcp/Tools/InspectDatabaseSchemaTool.php): Lista tablas, columnas e índices en PostgreSQL.
+  - [app/Mcp/Tools/RunSpecificTestTool.php](../../app/Mcp/Tools/RunSpecificTestTool.php): Ejecuta tests concretos de la suite PHPUnit.
 
 ## Rutas y Endpoints
 
@@ -64,4 +67,4 @@ Para mejorar la seguridad y consistencia con el ecosistema de este proyecto (que
 
 ---
 
-> Creado: 2026-06-17 · Última revisión: 2026-08-19
+> Creado: 2026-06-17 · Última revisión: 2026-11-23

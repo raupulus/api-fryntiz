@@ -149,7 +149,7 @@ class RecaptchaLoginTest extends TestCase
     {
         $this->mock(RecaptchaService::class, function ($mock) {
             $mock->shouldReceive('verify')
-                ->with('request-token', \Mockery::any(), \Mockery::any())
+                ->with('request-token', \Mockery::any(), \Mockery::any(), 'login')
                 ->once()
                 ->andReturn(new CaptchaResult(valid: true, score: 0.9, configured: true));
         });
@@ -180,7 +180,7 @@ class RecaptchaLoginTest extends TestCase
     {
         $this->mock(RecaptchaService::class, function ($mock) {
             $mock->shouldReceive('verify')
-                ->with('nested-token', \Mockery::any(), \Mockery::any())
+                ->with('nested-token', \Mockery::any(), \Mockery::any(), 'login')
                 ->once()
                 ->andReturn(new CaptchaResult(valid: true, score: 0.9, configured: true));
         });

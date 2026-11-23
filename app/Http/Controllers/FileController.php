@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\File;
+use Illuminate\Http\RedirectResponse;
 use Intervention\Image\Laravel\Facades\Image;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -45,7 +46,7 @@ class FileController extends Controller
 
         // # Compruebo si es un archivo privado.
         if ($file->is_private && ! $this->canAccess($file)) {
-            return response()->file(File::genericImagePath('not_authorized'));
+            return $this->forbidden();
         }
 
         return $this->serve($file);
@@ -90,7 +91,7 @@ class FileController extends Controller
 
         // # Compruebo si es un archivo privado.
         if ($file->is_private && ! $this->canAccess($file)) {
-            return response()->file(File::genericImagePath('not_authorized'));
+            return $this->forbidden();
         }
 
         $resolvedWidth = $this->resolveWidth($width);
@@ -99,17 +100,27 @@ class FileController extends Controller
             return response()->file(File::genericImagePath('not_found'));
         }
 
+        $headers = File::cacheHeaders((bool) $file->is_private);
+
         // # Si la miniatura ya existe se sirve del disco. Es el caso normal:
         // createThumbnails() escribe justo en esta ruta, así que para los
         // anchos del catálogo no hay que tocar la librería de imagen.
         $cachedPath = $this->cachedPath($file, $resolvedWidth);
 
         if ($cachedPath && is_file($cachedPath)) {
-            return response()->file($cachedPath);
+            $response = response()->file($cachedPath, $headers);
+
+            return $file->is_private ? $response->setPrivate() : $response;
         }
 
         if (! $this->existsOnDisk($file)) {
             return $this->missing();
+        }
+
+        if (File::exceedsPixelLimit($file->storagePathFile, (string) ($file->fileType?->mime ?? ''))) {
+            return response()->file(File::genericImagePath('not_image'), [
+                'Cache-Control' => 'no-store, private',
+            ])->setPrivate()->setStatusCode(422);
         }
 
         $image = Image::decodePath($file->storagePathFile);
@@ -126,13 +137,16 @@ class FileController extends Controller
 
             $image->save($cachedPath);
 
-            return response()->file($cachedPath);
+            $response = response()->file($cachedPath, $headers);
+
+            return $file->is_private ? $response->setPrivate() : $response;
         }
 
         $encoded = $image->encodeUsingMediaType($file->fileType->mime ?: 'image/jpeg');
 
-        return response($encoded->toString())
-            ->header('Content-Type', $encoded->mediaType());
+        return response($encoded->toString(), 200, $headers + [
+            'Content-Type' => $encoded->mediaType(),
+        ]);
     }
 
     /**
@@ -149,14 +163,13 @@ class FileController extends Controller
      */
     private function canAccess(File $file): bool
     {
-        $userId = auth()->id();
+        $user = auth()->user();
 
-        if ($userId === null) {
+        if ($user === null) {
             return false;
         }
 
-        return (int) $file->user_id === (int) $userId
-            || (bool) auth()->user()?->isAdmin();
+        return $user->can('delete', $file);
     }
 
     /**
@@ -222,7 +235,7 @@ class FileController extends Controller
         }
 
         if ($file->is_private && ! $this->canAccess($file)) {
-            return response()->file(File::genericImagePath('not_authorized'));
+            return $this->forbidden();
         }
 
         if (! $this->existsOnDisk($file)) {
@@ -291,10 +304,27 @@ class FileController extends Controller
         // fichero (D13), y un HTML o un SVG servido en línea desde el dominio
         // de la API ejecutaría su código con ese origen. El resto, descarga.
         if (! in_array($file->fileType?->mime, File::INLINE_MIMES, true)) {
-            return response()->download($file->storagePathFile, $file->original_name ?: $file->name, $headers);
+            $response = response()->download($file->storagePathFile, $file->original_name ?: $file->name, $headers);
+
+            return $file->is_private ? $response->setPrivate() : $response;
         }
 
-        return response()->file($file->storagePathFile, $headers);
+        $response = response()->file($file->storagePathFile, $headers);
+
+        return $file->is_private ? $response->setPrivate() : $response;
+    }
+
+    /**
+     * Imagen genérica de «no autorizado», con código 403 y sin caché.
+     */
+    private function forbidden(): BinaryFileResponse
+    {
+        $path = File::genericImagePath('not_authorized');
+
+        return response()->file($path, [
+            'Content-Type' => mime_content_type($path) ?: 'image/webp',
+            'Cache-Control' => 'no-store, private',
+        ])->setPrivate()->setStatusCode(403);
     }
 
     /**
@@ -310,16 +340,17 @@ class FileController extends Controller
      */
     private function missing(): BinaryFileResponse
     {
-        return response()->file(File::genericImagePath('not_found'))->setStatusCode(404);
+        $path = File::genericImagePath('not_found');
+
+        return response()->file($path, [
+            'Content-Type' => mime_content_type($path) ?: 'image/webp',
+        ])->setStatusCode(404);
     }
 
     /**
      * Elimina un archivo.
-     *
-     *
-     * @return void
      */
-    public function delete(int $id)
+    public function delete(int $id): RedirectResponse
     {
         // N27: no se comprobaba nada. `safeDeleteById()` borra el fichero del
         // disco, sus miniaturas y la fila — con sólo pasarle un id. Cualquiera

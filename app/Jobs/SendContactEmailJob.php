@@ -27,6 +27,8 @@ class SendContactEmailJob implements ShouldQueue
 
     public int $tries = 3;
 
+    public int $timeout = 45;
+
     /** @var array<int, int> */
     public array $backoff = [60, 300];
 
@@ -46,7 +48,7 @@ class SendContactEmailJob implements ShouldQueue
         $destination = $email->user->email ?? config('mail.admin_address') ?? config('mail.from.address');
 
         if (empty($destination)) {
-            Log::error('Contacto: no hay buzón de destino configurado', ['email_id' => $email->id]);
+            Log::error('Contact email job: no destination address configured', ['email_id' => $email->id]);
 
             return;
         }

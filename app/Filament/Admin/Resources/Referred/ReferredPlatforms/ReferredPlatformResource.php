@@ -9,6 +9,7 @@ use App\Filament\Admin\Resources\Referred\ReferredPlatforms\Pages\EditReferredPl
 use App\Filament\Admin\Resources\Referred\ReferredPlatforms\Pages\ListReferredPlatforms;
 use App\Filament\Components\ImageCropperUpload;
 use App\Models\Referred\ReferredPlatform;
+use App\Support\FilamentValidationRules;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -38,6 +39,8 @@ class ReferredPlatformResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Plataformas de afiliados';
 
+    protected static ?string $navigationLabel = 'Plataformas de afiliados';
+
     protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Schema $schema): Schema
@@ -56,11 +59,14 @@ class ReferredPlatformResource extends Resource
                     ->label('Nombre de la plataforma')
                     ->required()
                     ->maxLength(255)
+                    ->unique(ignoreRecord: true)
                     ->placeholder('Ej: Amazon, AliExpress'),
 
                 TextInput::make('slug')
                     ->label('Slug')
                     ->maxLength(255)
+                    ->unique(ignoreRecord: true)
+                    ->rules(FilamentValidationRules::optionalSlug())
                     ->placeholder('amazon')
                     ->helperText('Identificador amigable. Se genera automáticamente si se deja vacío'),
 
@@ -101,6 +107,8 @@ class ReferredPlatformResource extends Resource
 
                 TextColumn::make('name')
                     ->label('Nombre')
+                    ->limit(35)
+                    ->tooltip(fn (?string $state): ?string => $state)
                     ->searchable()
                     ->sortable(),
 
@@ -112,6 +120,8 @@ class ReferredPlatformResource extends Resource
 
                 TextColumn::make('url')
                     ->label('Enlace web')
+                    ->limit(40)
+                    ->tooltip(fn (?string $state): ?string => $state)
                     ->url(fn (ReferredPlatform $record): ?string => $record->url, true)
                     ->openUrlInNewTab()
                     ->icon('heroicon-m-arrow-top-right-on-square')
@@ -127,7 +137,7 @@ class ReferredPlatformResource extends Resource
                 EditAction::make(),
                 DeleteAction::make(),
             ])
-            ->bulkActions([
+            ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),

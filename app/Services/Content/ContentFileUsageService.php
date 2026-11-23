@@ -150,7 +150,7 @@ class ContentFileUsageService
             if ($file->safeDelete()) {
                 $deleted++;
             } else {
-                Log::warning("content:purge-unused-files: no se ha podido borrar el fichero {$fileId}.");
+                Log::warning("content:purge-unused-files: failed to delete file {$fileId}.");
             }
         }
 

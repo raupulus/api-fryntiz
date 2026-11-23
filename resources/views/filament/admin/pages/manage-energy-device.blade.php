@@ -8,36 +8,36 @@
 --}}
 <x-filament-panels::page>
     @php
-        $aparato = $this->aparato();
-        $elementos = $this->elementos();
-        $activo = $this->elementoActivo();
-        $senas = $this->senasDelAparato();
+        $device = $this->device();
+        $elements = $this->elements();
+        $active = $this->activeElement();
+        $details = $this->deviceDetails();
     @endphp
 
     {{--
-        Quién es este aparato. Los estilos `ed-aparato__…` están en
+        Quién es este aparato. Los estilos `ed-device__…` están en
         resources/css/filament/admin/panel.css: en el panel no hay utilidades de
         Tailwind, y los estilos propios van ahí y no en un <style> suelto.
     --}}
     <x-filament::section>
-        <div class="ed-aparato">
-            @if ($miniatura = $this->miniatura())
-                <img src="{{ $miniatura }}" alt="{{ $aparato->display_name }}" class="ed-aparato__foto">
+        <div class="ed-device">
+            @if ($thumbnail = $this->thumbnail())
+                <img src="{{ $thumbnail }}" alt="{{ $device->display_name }}" class="ed-device__photo">
             @else
-                <div class="ed-aparato__foto">
-                    <x-filament::icon icon="heroicon-o-cpu-chip" class="ed-aparato__icono" />
+                <div class="ed-device__photo">
+                    <x-filament::icon icon="heroicon-o-cpu-chip" class="ed-device__icon" />
                 </div>
             @endif
 
-            <div class="ed-aparato__datos">
-                <h2 class="ed-aparato__nombre">{{ $aparato->display_name }}</h2>
+            <div class="ed-device__details">
+                <h2 class="ed-device__name">{{ $device->display_name }}</h2>
 
-                @if ($senas !== [])
-                    <dl class="ed-aparato__senas">
-                        @foreach ($senas as $etiqueta => $valor)
-                            <div class="ed-aparato__sena">
-                                <dt class="ed-aparato__etiqueta">{{ $etiqueta }}</dt>
-                                <dd class="ed-aparato__valor">{{ $valor }}</dd>
+                @if ($details !== [])
+                    <dl class="ed-device__specs">
+                        @foreach ($details as $label => $value)
+                            <div class="ed-device__spec">
+                                <dt class="ed-device__label">{{ $label }}</dt>
+                                <dd class="ed-device__value">{{ $value }}</dd>
                             </div>
                         @endforeach
                     </dl>
@@ -46,11 +46,11 @@
         </div>
     </x-filament::section>
 
-    @if ($elementos->isEmpty())
+    @if ($elements->isEmpty())
         <x-filament::section>
             <x-slot name="heading">Este aparato no mide energía todavía</x-slot>
 
-            <p class="ed-vacio">
+            <p class="ed-empty">
                 Dale de alta su primer papel con los botones de arriba: generador
                 si produce, batería si almacena y consumo si gasta. Puede tener
                 los tres a la vez.
@@ -58,40 +58,40 @@
         </x-filament::section>
     @else
         {{-- Cómo ha ido cada papel esta semana --}}
-        @foreach ($elementos->pluck('role')->unique() as $papel)
+        @foreach ($elements->pluck('role')->unique() as $role)
             @livewire(
                 \App\Filament\Admin\Widgets\EnergyRoleTrendChart::class,
-                ['deviceId' => $aparato->getKey(), 'papel' => $papel],
-                key('grafica-' . $papel . '-' . $aparato->getKey())
+                ['deviceId' => $device->getKey(), 'role' => $role],
+                key('chart-' . $role . '-' . $device->getKey())
             )
         @endforeach
 
         {{-- Una pestaña por fila de hardware_energy --}}
         <x-filament::tabs>
-            @foreach ($elementos as $elemento)
+            @foreach ($elements as $element)
                 <x-filament::tabs.item
-                    :active="$activo?->getKey() === $elemento->getKey()"
-                    :badge="$elemento->is_active ? null : 'inactivo'"
+                    :active="$active?->getKey() === $element->getKey()"
+                    :badge="$element->is_active ? null : 'inactivo'"
                     badge-color="danger"
-                    wire:click="$set('elementoId', {{ $elemento->getKey() }})"
-                    wire:key="pestana-{{ $elemento->getKey() }}"
+                    wire:click="$set('elementId', {{ $element->getKey() }})"
+                    wire:key="tab-{{ $element->getKey() }}"
                 >
-                    {{ $this->etiquetaDe($elemento) }}
+                    {{ $this->labelFor($element) }}
                 </x-filament::tabs.item>
             @endforeach
         </x-filament::tabs>
 
-        @if ($activo)
+        @if ($active)
             {{-- Lo que mide este canal, y cómo --}}
             <x-filament::section
-                :heading="'Configuración · ' . $this->etiquetaDe($activo)"
+                :heading="'Configuración · ' . $this->labelFor($active)"
                 description="Lo que define este canal. Los papeles del mismo aparato no comparten nada de esto: cada uno mide una cosa, a su tensión."
-                wire:key="configuracion-{{ $activo->getKey() }}"
+                wire:key="configuration-{{ $active->getKey() }}"
             >
-                <form wire:submit="guardar">
-                    {{ $this->configuracion }}
+                <form wire:submit="save">
+                    {{ $this->configuration }}
 
-                    <div class="mt-6">
+                    <div class="ed-actions">
                         <x-filament::button type="submit">
                             Guardar configuración
                         </x-filament::button>
@@ -102,20 +102,20 @@
             {{-- Y lo que ha ido midiendo --}}
             @livewire(
                 \App\Filament\Admin\Resources\Hardware\HardwareEnergies\RelationManagers\ReadingsRelationManager::class,
-                ['ownerRecord' => $activo, 'pageClass' => static::class],
-                key('lecturas-' . $activo->getKey())
+                ['ownerRecord' => $active, 'pageClass' => static::class],
+                key('readings-' . $active->getKey())
             )
 
             @livewire(
                 \App\Filament\Admin\Resources\Hardware\HardwareEnergies\RelationManagers\TodayRelationManager::class,
-                ['ownerRecord' => $activo, 'pageClass' => static::class],
-                key('diarios-' . $activo->getKey())
+                ['ownerRecord' => $active, 'pageClass' => static::class],
+                key('today-' . $active->getKey())
             )
 
             @livewire(
                 \App\Filament\Admin\Resources\Hardware\HardwareEnergies\RelationManagers\HistoricalRelationManager::class,
-                ['ownerRecord' => $activo, 'pageClass' => static::class],
-                key('historico-' . $activo->getKey())
+                ['ownerRecord' => $active, 'pageClass' => static::class],
+                key('historical-' . $active->getKey())
             )
         @endif
     @endif

@@ -79,6 +79,15 @@ class ContentPageAiStreamController extends Controller
 
         $pageTitle = $page?->title;
 
+        // Liberar el bloqueo de sesión antes de abrir el stream largo (hasta 200 s)
+        // para no bloquear otras peticiones Livewire del mismo editor.
+        if ($request->hasSession()) {
+            $request->session()->save();
+        }
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_write_close();
+        }
+
         return response()->stream(function () use ($assistant, $provider, $systemInstruction, $fullPrompt, $level, $mode, $format, $current, $pageTitle): void {
             if (function_exists('set_time_limit')) {
                 @set_time_limit(200);
@@ -91,31 +100,54 @@ class ContentPageAiStreamController extends Controller
                 }
             }
 
-            $send = function (string $event, array $data): void {
-                echo "event: {$event}\n";
-                echo 'data: '.json_encode($data, JSON_UNESCAPED_UNICODE)."\n\n";
+            $flush = function (): void {
                 if (! app()->runningUnitTests() && ob_get_level() > 0) {
                     ob_flush();
                 }
                 flush();
             };
 
+            $send = function (string $event, array $data) use ($flush): void {
+                echo "event: {$event}\n";
+                echo 'data: '.json_encode($data, JSON_UNESCAPED_UNICODE)."\n\n";
+                $flush();
+            };
+
+            // Latido inicial SSE para evitar cortes por proxy_read_timeout en modelos lentos.
+            echo ": ping\n\n";
+            $flush();
+
             $text = '';
             $warnings = [];
             $error = null;
+            $lastActivity = microtime(true);
 
-            $assistant->streamGenerateContent($provider, $systemInstruction, $fullPrompt, $level, function (string $type, string $chunk) use ($send, &$text, &$warnings, &$error): void {
+            $assistant->streamGenerateContent($provider, $systemInstruction, $fullPrompt, $level, function (string $type, string $chunk) use ($send, $flush, &$text, &$warnings, &$error, &$lastActivity): void {
+                if (connection_aborted() === 1) {
+                    return;
+                }
+
                 if ($type === 'thought') {
                     $send('thought', ['text' => $chunk]);
+                    $lastActivity = microtime(true);
                 } elseif ($type === 'content') {
                     $text .= $chunk;
                     $send('content', ['text' => $chunk]);
+                    $lastActivity = microtime(true);
                 } elseif ($type === 'warning') {
                     $warnings[] = $chunk;
                 } elseif ($type === 'error') {
                     $error = $chunk;
+                } elseif (microtime(true) - $lastActivity >= 10.0) {
+                    echo ": ping\n\n";
+                    $flush();
+                    $lastActivity = microtime(true);
                 }
             });
+
+            if (connection_aborted() === 1) {
+                return;
+            }
 
             if ($error === null && trim($text) === '') {
                 $error = $warnings[0] ?? $provider->provider->label().' no ha devuelto ningún texto. Vuelve a intentarlo o cambia la instrucción.';
@@ -132,7 +164,7 @@ class ContentPageAiStreamController extends Controller
                     ? $assistant->parseCreatedPage($text, $format)
                     : $assistant->convertResultToFormat($text, $format, $mode, $current['placeholders'], $pageTitle);
             } catch (Throwable $e) {
-                Log::error('Asistente IA: no se ha podido adaptar el resultado: '.$e->getMessage(), ['exception' => $e]);
+                Log::error('AI assistant: failed to adapt generated output', ['message' => $e->getMessage(), 'exception' => $e]);
                 $send('error', ['message' => 'No se ha podido adaptar el resultado al formato de la página.']);
 
                 return;

@@ -35,17 +35,9 @@ class StoreRegisterRequest extends BaseFormRequest
             $mergeData['plant_id'] = (int) $this->route('plant');
         }
 
-        if ($this->route('plant') === null && $this->has('plant_id')) {
-            $mergeData['plant_id'] = (int) $this->plant_id;
+        if ($mergeData !== []) {
+            $this->merge($mergeData);
         }
-        if ($this->has('hardware_device_id')) {
-            $mergeData['hardware_device_id'] = (int) $this->hardware_device_id;
-        }
-        if ($this->has('soil_humidity')) {
-            $mergeData['soil_humidity'] = (int) $this->soil_humidity;
-        }
-
-        $this->merge($mergeData);
     }
 
     public function rules(): array
@@ -55,18 +47,17 @@ class StoreRegisterRequest extends BaseFormRequest
             // `HardwareService::updateDeviceStatus()`. El servicio filtra las
             // claves, pero no los valores.
             'hardware_device_info' => ['nullable', new DeviceStatusPayload],
-            'plant_id' => ['required', 'numeric', 'exists:smartplant_plants,id', new OwnedSmartPlant],
-            'hardware_device_id' => ['required', 'numeric', 'exists:hardware_devices,id', new OwnedHardwareDevice],
+            'plant_id' => ['required', 'integer', 'exists:smartplant_plants,id', new OwnedSmartPlant],
+            'hardware_device_id' => ['required', 'integer', 'exists:hardware_devices,id', new OwnedHardwareDevice],
             // AD-T01: `uv`, `soil_humidity` y `soil_humidity_raw` son `integer`
             // en BD; `numeric` admitía decimales que revientan el INSERT con un
-            // 500. `soil_humidity` además lleva rango 0-100 (comentario de
-            // columna: "rango 1-100", pero 0 es un valor de sensor legítimo).
-            'uv' => ['nullable', 'integer'],
-            'pressure' => ['nullable', 'numeric'],
-            'temperature' => ['nullable', 'numeric'],
-            'humidity' => ['nullable', 'numeric'],
+            // 500. Se acotan además a rangos físicos plausibles.
+            'uv' => ['nullable', 'integer', 'between:0,20'],
+            'pressure' => ['nullable', 'numeric', 'between:800,1100'],
+            'temperature' => ['nullable', 'numeric', 'between:-50,80'],
+            'humidity' => ['nullable', 'numeric', 'between:0,100'],
             'soil_humidity' => ['required', 'integer', 'min:0', 'max:100'],
-            'soil_humidity_raw' => ['nullable', 'integer'],
+            'soil_humidity_raw' => ['nullable', 'integer', 'min:0', 'max:65535'],
             'full_water_tank' => ['nullable', 'boolean'],
             'waterpump_enabled' => ['nullable', 'boolean'],
             'vaporizer_enabled' => ['nullable', 'boolean'],

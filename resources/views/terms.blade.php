@@ -3,9 +3,9 @@
 @section('title', 'Términos de Servicio')
 
 @section('content')
-    <div class="min-h-screen flex flex-col items-center pt-6 sm:pt-0 bg-surface">
-        <div class="w-full sm:max-w-2xl mt-6 p-6 bg-surface-container overflow-hidden sm:rounded-lg prose dark:prose-invert">
-            {!! $terms !!}
+    <section class="min-h-[60svh] pt-28 pb-16 px-4 sm:px-6 bg-surface">
+        <div class="max-w-3xl mx-auto p-6 sm:p-8 bg-surface-container-lowest rounded-xl shadow-lg prose-basic text-on-surface">
+            {!! \App\Helpers\HtmlHelper::safeBasic((string) $terms) !!}
         </div>
-    </div>
+    </section>
 @endsection

@@ -24,7 +24,8 @@ class OpenMeteoMarineService
         $reference = config('open_meteo_marine.reference');
 
         try {
-            $response = Http::timeout((int) config('open_meteo_marine.timeout_seconds', 15))
+            $response = Http::connectTimeout(5)
+                ->timeout((int) config('open_meteo_marine.timeout_seconds', 15))
                 ->retry(2, 2000, function (\Throwable $exception) {
                     if ($exception instanceof RequestException) {
                         $status = $exception->response?->status();
@@ -42,7 +43,7 @@ class OpenMeteoMarineService
                     'timezone' => config('open_meteo_marine.timezone'),
                 ]);
         } catch (\Throwable $e) {
-            Log::error('Open-Meteo Marine: excepción al pedir la altura del mar', [
+            Log::error('Open-Meteo Marine: exception fetching sea level heights', [
                 'message' => $e->getMessage(),
             ]);
 
@@ -50,7 +51,7 @@ class OpenMeteoMarineService
         }
 
         if (! $response->successful()) {
-            Log::warning('Open-Meteo Marine: respuesta no exitosa', [
+            Log::warning('Open-Meteo Marine: unsuccessful response', [
                 'status' => $response->status(),
             ]);
 

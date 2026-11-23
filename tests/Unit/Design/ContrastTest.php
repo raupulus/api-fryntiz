@@ -50,6 +50,8 @@ class ContrastTest extends TestCase
         return [
             // SmartPlant: estados encendidos (riego activo, tanque lleno…).
             'estado encendido' => ['success-container', 'on-success-container'],
+            'telemetría óptima sobre contenedor' => ['surface-container', 'success'],
+            'badge sólido success' => ['success', 'on-success'],
 
             // SmartPlant: badges e icono de «Hardware del proyecto».
             'badge de tecnología' => ['tertiary-fixed', 'on-tertiary-fixed'],

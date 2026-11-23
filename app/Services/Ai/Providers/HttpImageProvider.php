@@ -141,14 +141,14 @@ abstract class HttpImageProvider implements AiImageProvider
         $label = $provider->provider->label();
 
         if (! $response instanceof Response) {
-            Log::error("{$label}: fallo de conexión al pedir una imagen", ['exception' => $response instanceof Throwable ? $response->getMessage() : null]);
+            Log::error("{$label}: connection failure requesting image", ['exception' => $response instanceof Throwable ? $response->getMessage() : null]);
 
             throw new AiImageException("No se ha podido conectar con {$label}. Vuelve a intentarlo en un momento.");
         }
 
         if ($response->failed()) {
             [$message, $code] = $this->apiError($response);
-            Log::warning("{$label}: error de la API de imágenes", ['status' => $response->status(), 'code' => $code, 'error' => $message]);
+            Log::warning("{$label}: image API error", ['status' => $response->status(), 'code' => $code, 'error' => $message]);
 
             throw new AiImageException($this->isContentFilter($message, $code)
                 ? $this->filteredMessage($provider)

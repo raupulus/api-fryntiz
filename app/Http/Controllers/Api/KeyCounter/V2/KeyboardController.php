@@ -12,6 +12,7 @@ use App\Http\Resources\V2\KeyCounter\KeyboardResource;
 use App\Models\KeyCounter\Keyboard;
 use App\Services\Hardware\HardwareService;
 use App\Services\KeyCounter\KeyCounterService;
+use App\Support\Auth\TokenAbilities;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -46,6 +47,11 @@ class KeyboardController extends BaseApiController
         );
 
         $query = Keyboard::query()->where('user_id', $request->user()->id);
+
+        $declaredDevices = TokenAbilities::devicesReachableBy($request->user());
+        if ($declaredDevices !== []) {
+            $query->whereIn('hardware_device_id', $declaredDevices);
+        }
 
         return $this->paginatedResponse(
             $collectionQuery->paginate($query, $request),

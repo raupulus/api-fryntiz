@@ -9,6 +9,7 @@ use App\Models\File;
 use App\Models\Platform;
 use App\Services\Ai\GeneratedImage;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Intervention\Image\Encoders\JpegEncoder;
 use Intervention\Image\Laravel\Facades\Image;
@@ -97,10 +98,16 @@ class ContentAiImageService
             $width = min($image->width, self::MAX_WIDTH, (int) floor($image->height * 16 / 9));
             $height = (int) round($width * 9 / 16);
 
-            $bytes = (string) Image::decodeBinary($image->bytes)->cover($width, $height)->encode(new JpegEncoder(quality: 92));
+            $decoded = Image::decodeBinary($image->bytes)->cover($width, $height);
+            File::stripMetadata($decoded);
+            $bytes = (string) $decoded->encode(new JpegEncoder(quality: 92, strip: true));
 
             return GeneratedImage::fromBytes($bytes) ?? $image;
-        } catch (Throwable) {
+        } catch (Throwable $e) {
+            Log::warning('ContentAiImageService: failed to crop generated cover image', [
+                'error' => $e->getMessage(),
+            ]);
+
             return $image;
         }
     }
@@ -171,8 +178,15 @@ class ContentAiImageService
         }
 
         try {
-            $bytes = (string) Image::decodeBinary($bytes)->scaleDown(self::SOURCE_MAX_SIDE, self::SOURCE_MAX_SIDE)->encode(new JpegEncoder(quality: 90));
-        } catch (Throwable) {
+            $decoded = Image::decodeBinary($bytes)->scaleDown(self::SOURCE_MAX_SIDE, self::SOURCE_MAX_SIDE);
+            File::stripMetadata($decoded);
+            $bytes = (string) $decoded->encode(new JpegEncoder(quality: 90, strip: true));
+        } catch (Throwable $e) {
+            Log::warning('ContentAiImageService: failed to decode source image', [
+                'content_id' => $content->id,
+                'error' => $e->getMessage(),
+            ]);
+
             return null;
         }
 

@@ -14,6 +14,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Collection as ImageCollection;
 use Intervention\Image\Encoders\WebpEncoder;
 use Intervention\Image\Interfaces\ImageInterface;
@@ -93,6 +94,14 @@ class File extends BaseModel
     use HasGenericImages;
 
     /**
+     * Rutas relativas en disco `local` pendientes de purga física tras confirmar
+     * el borrado en BD (mapa `file_id => list<string>`).
+     *
+     * @var array<int, list<string>>
+     */
+    private static array $pendingStorageDeletions = [];
+
+    /**
      * Cambiar un fichero (textos, recorte, sustitución) cambia lo que la API
      * sirve de los contenidos que lo usan (F9).
      */
@@ -101,7 +110,36 @@ class File extends BaseModel
         $touch = static fn (File $file) => Content::markChanged(Content::idsUsingFile((int) $file->id));
 
         static::updated($touch);
-        static::deleting($touch);
+
+        static::deleting(static function (File $file) use ($touch): void {
+            $touch($file);
+
+            $paths = [];
+
+            foreach ($file->thumbnails()->get() as $thumbnail) {
+                /** @var FileThumbnail $thumbnail */
+                if (filled($thumbnail->storage_path) && filled($thumbnail->name)) {
+                    $paths[] = trim((string) $thumbnail->storage_path, '/').'/'.ltrim((string) $thumbnail->name, '/');
+                }
+
+                $thumbnail->delete();
+            }
+
+            if (filled($file->storage_path) && filled($file->name)) {
+                $paths[] = trim((string) $file->storage_path, '/').'/'.ltrim((string) $file->name, '/');
+            }
+
+            self::$pendingStorageDeletions[(int) $file->id] = $paths;
+        });
+
+        static::deleted(static function (File $file): void {
+            $paths = self::$pendingStorageDeletions[(int) $file->id] ?? [];
+            unset(self::$pendingStorageDeletions[(int) $file->id]);
+
+            if ($paths !== []) {
+                Storage::disk('local')->delete($paths);
+            }
+        });
     }
 
     public static $thumbnailsSizeWidth = [
@@ -171,6 +209,15 @@ class File extends BaseModel
      * según para qué se vaya a usar; esto sólo corta lo absurdo.
      */
     public const MAX_FILE_SIZE = 20 * 1024 * 1024;
+
+    /**
+     * Límite máximo de megapíxeles y dimensión por lado de la imagen de entrada
+     * antes de decodificar píxeles en RAM (mitigación de decompression bombs /
+     * pixel floods en GD e Imagick).
+     */
+    public const MAX_IMAGE_PIXELS = 25_000_000;
+
+    public const MAX_IMAGE_SOURCE_DIMENSION = 8192;
 
     /**
      * Dimensión máxima al que se guarda el original de una imagen (1080p: máx 1920×1080).
@@ -279,6 +326,14 @@ class File extends BaseModel
     }
 
     /**
+     * Propietario que subió el archivo.
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    /**
      * Devuelve la url de una imagen genérica.
      */
     public static function urlDefaultImage($size = 'medium'): string
@@ -353,7 +408,18 @@ class File extends BaseModel
         $mime = $uploadedFile->getMimeType() ?: $uploadedFile->getClientMimeType();
         $originalName = $uploadedFile->getClientOriginalName();
         $originalExtension = self::sanitizeExtension($uploadedFile->getClientOriginalExtension());
-        [$width, $height] = @getimagesize($uploadedFile->getRealPath()) ?: [null, null];
+        $realPath = (string) $uploadedFile->getRealPath();
+
+        if ($realPath !== '' && str_starts_with((string) $mime, 'image/') && self::exceedsPixelLimit($realPath, (string) $mime)) {
+            Log::warning('File: image dimensions exceed maximum allowed pixels', [
+                'mime' => $mime,
+                'original_name' => $originalName,
+            ]);
+
+            return null;
+        }
+
+        [$width, $height] = ($realPath !== '' ? @getimagesize($realPath) : false) ?: [null, null];
 
         // # La validación va ANTES de store(): si se comprueba después, el
         // archivo rechazado ya está escrito en el disco.
@@ -445,7 +511,7 @@ class File extends BaseModel
     protected static function passesValidation(?string $mime, ?int $size, ?string $originalName): bool
     {
         if (! $mime || ! in_array($mime, self::SAFE_MIMES, true)) {
-            Log::warning('File: tipo de archivo no aceptado', [
+            Log::warning('File: unsupported file type', [
                 'mime' => $mime,
                 'original_name' => $originalName,
             ]);
@@ -454,7 +520,7 @@ class File extends BaseModel
         }
 
         if (in_array($mime, self::IMAGICK_ONLY_MIMES, true) && ! self::canReadWithImagick($mime)) {
-            Log::warning('File: servidor sin soporte Imagick para formato de imagen (HEIC/AVIF)', [
+            Log::warning('File: server lacks Imagick support for HEIC/AVIF image format', [
                 'mime' => $mime,
                 'original_name' => $originalName,
             ]);
@@ -463,7 +529,7 @@ class File extends BaseModel
         }
 
         if ($size !== null && $size > self::MAX_FILE_SIZE) {
-            Log::warning('File: archivo por encima del tamaño máximo', [
+            Log::warning('File: file exceeds maximum allowed size', [
                 'size' => $size,
                 'max' => self::MAX_FILE_SIZE,
                 'original_name' => $originalName,
@@ -518,7 +584,7 @@ class File extends BaseModel
             // # Se guarda con `strip`, que es la segunda capa de lo mismo.
             $image->save($absolutePath, ...self::stripEncoderOptions($absolutePath));
         } catch (\Throwable $e) {
-            Log::warning('File: no se ha podido procesar la imagen', [
+            Log::warning('File: failed to process stored image', [
                 'path' => $absolutePath,
                 'message' => $e->getMessage(),
             ]);
@@ -546,7 +612,13 @@ class File extends BaseModel
      */
     public static function cacheHeaders(bool $private): array
     {
-        return ['Cache-Control' => ($private ? 'private' : 'public').', max-age=300, must-revalidate'];
+        $headers = ['Cache-Control' => ($private ? 'private' : 'public').', max-age=300, must-revalidate'];
+
+        if ($private) {
+            $headers['Vary'] = 'Cookie';
+        }
+
+        return $headers;
     }
 
     /**
@@ -606,7 +678,7 @@ class File extends BaseModel
 
             $image->encode(new WebpEncoder(quality: self::WEBP_QUALITY, strip: true))->save($target);
         } catch (\Throwable $e) {
-            Log::warning('File: no se ha podido pasar la imagen a WebP', [
+            Log::warning('File: failed to convert image to WebP', [
                 'path' => $absolutePath,
                 'message' => $e->getMessage(),
             ]);
@@ -752,11 +824,71 @@ class File extends BaseModel
     }
 
     /**
+     * Comprueba las dimensiones de la imagen ANTES de decodificar píxeles en memoria.
+     */
+    public static function exceedsPixelLimit(string $absolutePath, string $mime = ''): bool
+    {
+        if ($absolutePath === '' || ! is_file($absolutePath)) {
+            return false;
+        }
+
+        $width = 0;
+        $height = 0;
+
+        if (in_array($mime, self::IMAGICK_ONLY_MIMES, true) && class_exists(\Imagick::class)) {
+            try {
+                self::configureImagickLimits();
+                $imagick = new \Imagick;
+                $imagick->pingImage($absolutePath);
+                $width = $imagick->getImageWidth();
+                $height = $imagick->getImageHeight();
+                $imagick->clear();
+            } catch (\Throwable) {
+                return false;
+            }
+        } else {
+            $info = @getimagesize($absolutePath);
+
+            if (! is_array($info)) {
+                return false;
+            }
+
+            $width = (int) ($info[0] ?? 0);
+            $height = (int) ($info[1] ?? 0);
+        }
+
+        if ($width <= 0 || $height <= 0) {
+            return false;
+        }
+
+        return $width > self::MAX_IMAGE_SOURCE_DIMENSION
+            || $height > self::MAX_IMAGE_SOURCE_DIMENSION
+            || ($width * $height) > self::MAX_IMAGE_PIXELS;
+    }
+
+    /**
+     * Limita memoria, área, disco y tiempo de CPU de Imagick en tiempo de ejecución.
+     */
+    protected static function configureImagickLimits(): void
+    {
+        if (! class_exists(\Imagick::class)) {
+            return;
+        }
+
+        \Imagick::setResourceLimit(\Imagick::RESOURCETYPE_AREA, self::MAX_IMAGE_PIXELS);
+        \Imagick::setResourceLimit(\Imagick::RESOURCETYPE_MEMORY, 128 * 1024 * 1024);
+        \Imagick::setResourceLimit(\Imagick::RESOURCETYPE_MAP, 256 * 1024 * 1024);
+        \Imagick::setResourceLimit(\Imagick::RESOURCETYPE_DISK, 256 * 1024 * 1024);
+        \Imagick::setResourceLimit(\Imagick::RESOURCETYPE_TIME, 15);
+    }
+
+    /**
      * Abre una imagen para trabajar con ella, también HEIC y AVIF (con Imagick).
      */
     public static function decodeImage(string $absolutePath, string $mime): ImageInterface
     {
         if (in_array($mime, self::IMAGICK_ONLY_MIMES, true)) {
+            self::configureImagickLimits();
             $imagick = new \Imagick($absolutePath);
             $imagick->setImageFormat('png');
             $image = Image::decodeBinary($imagick->getImageBlob());
@@ -843,7 +975,7 @@ class File extends BaseModel
         // cadena de 500 MB no debe llegar a materializarse en memoria ni en el
         // disco sólo para descubrir después que sobraba.
         if ($validate && (int) (strlen($payload) * 3 / 4) > self::MAX_FILE_SIZE) {
-            Log::warning('File: base64 por encima del tamaño máximo', [
+            Log::warning('File: base64 payload exceeds maximum allowed size', [
                 'approx_size' => (int) (strlen($payload) * 3 / 4),
                 'max' => self::MAX_FILE_SIZE,
             ]);
@@ -1132,22 +1264,6 @@ class File extends BaseModel
             return false;
         }
 
-        // # Elimino las miniaturas si tuviera.
-        $thumbnails = $file->thumbnails;
-
-        foreach ($thumbnails as $thumbnail) {
-            if (file_exists($thumbnail->storagePathFile)) {
-                unlink($thumbnail->storagePathFile);
-            }
-
-            $thumbnail->delete();
-        }
-
-        // # Borro el archivo.
-        if (file_exists($file->storagePathFile)) {
-            unlink($file->storagePathFile);
-        }
-
-        return $file->delete();
+        return (bool) $file->delete();
     }
 }

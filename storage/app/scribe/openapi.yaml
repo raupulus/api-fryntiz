@@ -100,7 +100,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - 'keycounter:write'
+                    - 'smartplant:read'
                   items:
                     type: string
                     enum:
@@ -126,7 +126,7 @@ paths:
                 expires_at:
                   type: string
                   description: 'Must be a valid date. Must be a date after <code>now</code>.'
-                  example: '2052-11-21'
+                  example: '2052-12-16'
                   nullable: true
               required:
                 - device_id
@@ -220,12 +220,12 @@ paths:
                   example: 'y'
                 privacity:
                   type: boolean
-                  description: ''
-                  example: false
+                  description: 'Must be accepted.'
+                  example: true
                 contactme:
                   type: boolean
                   description: ''
-                  example: true
+                  example: false
                 attributes:
                   type: array
                   description: 'Must not be greater than 255 characters.'
@@ -259,6 +259,7 @@ paths:
                 - email
                 - subject
                 - message
+                - privacity
       security: []
   /api/v2/newsletter/subscriptions:
     post:
@@ -282,16 +283,41 @@ paths:
                   example: gbailey@example.net
                 name:
                   type: string
-                  description: 'Must not be greater than 255 characters.'
+                  description: 'Must not be greater than 100 characters.'
                   example: m
                   nullable: true
                 platform_id:
                   type: integer
                   description: 'Must match an existing stored value.'
                   example: 16
+                privacy_accepted:
+                  type: boolean
+                  description: 'Must be accepted.'
+                  example: true
+                g-recaptcha-response:
+                  type: string
+                  description: ''
+                  example: architecto
+                  nullable: true
+                recaptcha_token:
+                  type: string
+                  description: ''
+                  example: architecto
+                  nullable: true
+                cf-turnstile-response:
+                  type: string
+                  description: ''
+                  example: architecto
+                  nullable: true
+                turnstile_token:
+                  type: string
+                  description: ''
+                  example: architecto
+                  nullable: true
               required:
                 - email
                 - platform_id
+                - privacy_accepted
       security: []
   /api/v2/newsletter/subscriptions/stats:
     get:
@@ -343,6 +369,26 @@ paths:
                   type: integer
                   description: 'Must match an existing stored value.'
                   example: 16
+                g-recaptcha-response:
+                  type: string
+                  description: ''
+                  example: architecto
+                  nullable: true
+                recaptcha_token:
+                  type: string
+                  description: ''
+                  example: architecto
+                  nullable: true
+                cf-turnstile-response:
+                  type: string
+                  description: ''
+                  example: architecto
+                  nullable: true
+                turnstile_token:
+                  type: string
+                  description: ''
+                  example: architecto
+                  nullable: true
               required:
                 - email
                 - platform_id
@@ -1675,8 +1721,8 @@ paths:
                   nullable: true
                 read_at:
                   type: string
-                  description: 'Must be a valid date. Must be a date after or equal to <code>2000-01-01</code>. Must be a date before or equal to <code>2026-10-28 22:08:44</code>.'
-                  example: '2022-11-22'
+                  description: 'Must be a valid date. Must be a date after or equal to <code>2000-01-01</code>. Must be a date before or equal to <code>2026-11-23 12:29:21</code>.'
+                  example: '2022-12-17'
                   nullable: true
                 energy:
                   type: object
@@ -1786,28 +1832,28 @@ paths:
                   example: 16
                 temp:
                   type: number
-                  description: ''
-                  example: 4326.41688
+                  description: 'Must be between -100 and 200.'
+                  example: -99
                   nullable: true
                 voltage:
                   type: number
-                  description: ''
-                  example: 4326.41688
+                  description: 'Must be between 0 and 1000.'
+                  example: 0
                   nullable: true
                 battery_level:
                   type: integer
                   description: 'Must be between 0 and 100.'
-                  example: 0
+                  example: 1
                   nullable: true
                 battery_voltage:
                   type: number
-                  description: ''
-                  example: 4326.41688
+                  description: 'Must be between 0 and 1000.'
+                  example: 0
                   nullable: true
                 software_version:
                   type: string
                   description: 'Must not be greater than 50 characters.'
-                  example: m
+                  example: i
                   nullable: true
                 cpu:
                   type: number
@@ -1817,7 +1863,7 @@ paths:
                 disk:
                   type: number
                   description: 'Must be between 0 and 100.'
-                  example: 0
+                  example: 1
                   nullable: true
                 ram:
                   type: number
@@ -1827,7 +1873,7 @@ paths:
                 uptime:
                   type: integer
                   description: 'Must be at least 0.'
-                  example: 42
+                  example: 37
                   nullable: true
                 ip_local:
                   type: string
@@ -1915,35 +1961,35 @@ paths:
                 start_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-10-28 21:08:44'
+                  example: '2026-11-23 11:29:21'
                 end_at:
                   type: string
-                  description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-10-28 21:08:44'
+                  description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>. Must be a date after or equal to <code>start_at</code>.'
+                  example: '2052-12-16'
                 duration:
-                  type: integer
-                  description: ''
-                  example: 16
-                pulsations:
                   type: integer
                   description: 'Must be at least 0.'
                   example: 39
-                pulsations_special_keys:
+                pulsations:
                   type: integer
                   description: 'Must be at least 0.'
                   example: 84
+                pulsations_special_keys:
+                  type: integer
+                  description: 'Must be at least 0.'
+                  example: 12
                 pulsation_average:
                   type: number
                   description: 'Must be at least 0.'
-                  example: 12
+                  example: 77
                 score:
                   type: integer
                   description: 'Must be at least 0.'
-                  example: 77
+                  example: 8
                 weekday:
                   type: integer
                   description: 'Must be at least 0. Must not be greater than 6.'
-                  example: 5
+                  example: 1
               required:
                 - hardware_device_id
                 - user_id
@@ -2013,39 +2059,39 @@ paths:
                 start_at:
                   type: string
                   description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-10-28 21:08:44'
+                  example: '2026-11-23 11:29:21'
                 end_at:
                   type: string
-                  description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
-                  example: '2026-10-28 21:08:44'
+                  description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>. Must be a date after or equal to <code>start_at</code>.'
+                  example: '2052-12-16'
                 duration:
-                  type: integer
-                  description: ''
-                  example: 16
-                clicks_left:
                   type: integer
                   description: 'Must be at least 0.'
                   example: 39
-                clicks_right:
+                clicks_left:
                   type: integer
                   description: 'Must be at least 0.'
                   example: 84
-                clicks_middle:
+                clicks_right:
                   type: integer
                   description: 'Must be at least 0.'
                   example: 12
-                total_clicks:
+                clicks_middle:
                   type: integer
                   description: 'Must be at least 0.'
                   example: 77
-                clicks_average:
+                total_clicks:
                   type: integer
                   description: 'Must be at least 0.'
                   example: 8
+                clicks_average:
+                  type: integer
+                  description: 'Must be at least 0.'
+                  example: 76
                 weekday:
                   type: integer
                   description: 'Must be at least 0. Must not be greater than 6.'
-                  example: 1
+                  example: 4
               required:
                 - hardware_device_id
                 - user_id
@@ -2202,41 +2248,41 @@ paths:
                   example: null
                   nullable: true
                 plant_id:
-                  type: number
+                  type: integer
                   description: 'Must match an existing stored value.'
-                  example: 4326.41688
+                  example: 16
                 hardware_device_id:
-                  type: number
+                  type: integer
                   description: 'Must match an existing stored value.'
-                  example: 4326.41688
+                  example: 16
                 uv:
                   type: integer
-                  description: ''
-                  example: 16
+                  description: 'Must be between 0 and 20.'
+                  example: 1
                   nullable: true
                 pressure:
                   type: number
-                  description: ''
-                  example: 4326.41688
+                  description: 'Must be between 800 and 1100.'
+                  example: 800
                   nullable: true
                 temperature:
                   type: number
-                  description: ''
-                  example: 4326.41688
+                  description: 'Must be between -50 and 80.'
+                  example: -49
                   nullable: true
                 humidity:
                   type: number
-                  description: ''
-                  example: 4326.41688
+                  description: 'Must be between 0 and 100.'
+                  example: 0
                   nullable: true
                 soil_humidity:
                   type: integer
                   description: 'Must be at least 0. Must not be greater than 100.'
-                  example: 17
+                  example: 15
                 soil_humidity_raw:
                   type: integer
-                  description: ''
-                  example: 16
+                  description: 'Must be at least 0. Must not be greater than 65535.'
+                  example: 8
                   nullable: true
                 full_water_tank:
                   type: boolean
@@ -2246,7 +2292,7 @@ paths:
                 waterpump_enabled:
                   type: boolean
                   description: ''
-                  example: false
+                  example: true
                   nullable: true
                 vaporizer_enabled:
                   type: boolean
@@ -2303,7 +2349,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - humidity
+                    - pressure
                   items:
                     type: string
                     enum:
@@ -2360,7 +2406,7 @@ paths:
                   type: array
                   description: ''
                   example:
-                    - wind
+                    - pressure
                   items:
                     type: string
                     enum:
@@ -2536,7 +2582,7 @@ paths:
                   example: 16
                 data:
                   type: array
-                  description: 'Must have at least 1 items.'
+                  description: 'Must have at least 1 items. Must not have more than 500 items.'
                   example:
                     - []
                   items:
@@ -2551,6 +2597,76 @@ paths:
         name: station
         description: ''
         example: '564'
+        required: true
+        schema:
+          type: string
+  '/api/v2/weather-station-official/cities/{id}':
+    get:
+      summary: 'Parte meteorológico y tabla de mareas del día para una ciudad/municipio.'
+      operationId: parteMeteorolgicoYTablaDeMareasDelDaParaUnaCiudadmunicipio
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: Unauthenticated
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Unauthenticated
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the city.'
+        example: architecto
+        required: true
+        schema:
+          type: string
+  '/api/v2/weather-station-official/provinces/{id}':
+    get:
+      summary: 'Parte meteorológico y tabla de mareas del día para una provincia.'
+      operationId: parteMeteorolgicoYTablaDeMareasDelDaParaUnaProvincia
+      description: ''
+      parameters: []
+      responses:
+        401:
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                example:
+                  success: false
+                  message: Unauthenticated
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Unauthenticated
+      tags:
+        - Endpoints
+      security: []
+    parameters:
+      -
+        in: path
+        name: id
+        description: 'The ID of the province.'
+        example: architecto
         required: true
         schema:
           type: string
@@ -2785,7 +2901,7 @@ paths:
         in: path
         name: id
         description: 'The ID of the printer.'
-        example: 16
+        example: 2
         required: true
         schema:
           type: integer
@@ -2868,7 +2984,7 @@ paths:
         in: path
         name: printer_id
         description: 'The ID of the printer.'
-        example: 16
+        example: 2
         required: true
         schema:
           type: integer
@@ -2903,7 +3019,7 @@ paths:
         in: path
         name: printer_id
         description: 'The ID of the printer.'
-        example: 16
+        example: 2
         required: true
         schema:
           type: integer
@@ -3001,7 +3117,7 @@ paths:
                 is_favorite:
                   type: boolean
                   description: ''
-                  example: false
+                  example: true
                   nullable: true
       security: []
     parameters:
@@ -3040,7 +3156,7 @@ paths:
         in: path
         name: printer_id
         description: 'The ID of the printer.'
-        example: 16
+        example: 2
         required: true
         schema:
           type: integer
@@ -3063,7 +3179,7 @@ paths:
                 status:
                   type: string
                   description: ''
-                  example: out_of_paper
+                  example: completed
                   enum:
                     - completed
                     - failed
@@ -3071,7 +3187,7 @@ paths:
                 error_message:
                   type: string
                   description: 'This field is required when <code>status</code> is <code>failed</code>. Must not be greater than 1000 characters.'
-                  example: b
+                  example: v
                   nullable: true
                 hardware_device_info:
                   type: string
@@ -3130,7 +3246,7 @@ paths:
         in: path
         name: printer_id
         description: 'The ID of the printer.'
-        example: 16
+        example: 2
         required: true
         schema:
           type: integer

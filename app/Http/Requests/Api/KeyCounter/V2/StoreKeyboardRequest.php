@@ -25,28 +25,24 @@ class StoreKeyboardRequest extends BaseFormRequest
 
         // `device_id` era el nombre en V1.
         $device = $this->input('hardware_device_id') ?? $this->input('device_id');
-        if ($device !== null) {
-            $merge['hardware_device_id'] = (int) $device;
+        if ($device !== null && $this->input('hardware_device_id') === null) {
+            $merge['hardware_device_id'] = $device;
         }
 
-        // `duration` se calcula, pero sólo si vienen las dos fechas: `new
-        // Carbon(null)` es "ahora", y sin esta guarda una petición sin fechas
-        // se guardaba con duración 0 en vez de dar 422.
-        if ($this->filled('start_at') && $this->filled('end_at')) {
-            $merge['duration'] = (new Carbon($this->start_at))->diffInSeconds(new Carbon($this->end_at));
-        }
-
-        // Castear a ciegas convierte "no tengo dato" en 0 y **anula el
-        // `required` de las reglas**: `(int) null` es 0, y 0 pasa la validación.
-        // Por eso una petición sin `score` respondía 201 con un score inventado.
-        foreach (['pulsations', 'pulsations_special_keys', 'score', 'weekday'] as $field) {
-            if ($this->filled($field)) {
-                $merge[$field] = (int) $this->input($field);
+        // `duration` se calcula solo cuando ambas fechas cumplen el formato
+        // exacto Y-m-d H:i:s; si llegan mal formadas, las reglas devuelven 422
+        // en lugar de lanzar Carbon InvalidFormatException (500).
+        if (
+            is_string($this->input('start_at'))
+            && is_string($this->input('end_at'))
+            && Carbon::hasFormat($this->input('start_at'), 'Y-m-d H:i:s')
+            && Carbon::hasFormat($this->input('end_at'), 'Y-m-d H:i:s')
+        ) {
+            $start = Carbon::createFromFormat('Y-m-d H:i:s', $this->input('start_at'));
+            $end = Carbon::createFromFormat('Y-m-d H:i:s', $this->input('end_at'));
+            if ($start !== null && $end !== null) {
+                $merge['duration'] = (int) $start->diffInSeconds($end, false);
             }
-        }
-
-        if ($this->filled('pulsation_average')) {
-            $merge['pulsation_average'] = (float) $this->input('pulsation_average');
         }
 
         $this->merge($merge);
@@ -62,8 +58,8 @@ class StoreKeyboardRequest extends BaseFormRequest
             'hardware_device_id' => ['required', 'integer', 'exists:hardware_devices,id', new OwnedHardwareDevice],
             'user_id' => ['required', 'integer', 'exists:users,id'],
             'start_at' => ['required', 'date_format:Y-m-d H:i:s'],
-            'end_at' => ['required', 'date_format:Y-m-d H:i:s'],
-            'duration' => ['required', 'integer'],
+            'end_at' => ['required', 'date_format:Y-m-d H:i:s', 'after_or_equal:start_at'],
+            'duration' => ['required', 'integer', 'min:0'],
             'pulsations' => ['required', 'integer', 'min:0'],
             'pulsations_special_keys' => ['required', 'integer', 'min:0'],
             'pulsation_average' => ['required', 'numeric', 'min:0'],

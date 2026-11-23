@@ -8,6 +8,7 @@ use App\Enums\UserRoleEnum;
 use App\Http\Traits\ImageTrait;
 use App\Models\Content\Content;
 use App\Support\ApiCacheVersion;
+use App\Support\Auth\TokenAbilities;
 use Carbon\Carbon;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -20,12 +21,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\DatabaseNotificationCollection;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Encoders\WebpEncoder;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -125,8 +126,38 @@ class User extends Authenticatable implements FilamentUser
             if ($user->wasChanged(['name', 'surname', 'nickname', 'profile_photo_path'])) {
                 ApiCacheVersion::bump();
             }
+
+            if ($user->wasChanged('is_active') && ! $user->is_active) {
+                $user->tokens()->whereJsonContains('abilities', TokenAbilities::SESSION)->delete();
+
+                if (Schema::hasTable('sessions')) {
+                    DB::table('sessions')->where('user_id', $user->id)->delete();
+                }
+            }
+        });
+
+        static::forceDeleting(static function (User $user): void {
+            if (filled($user->profile_photo_path)) {
+                Storage::disk('public')->delete((string) $user->profile_photo_path);
+            }
+
+            $user->tokens()->delete();
+
+            if (Schema::hasTable('sessions')) {
+                DB::table('sessions')->where('user_id', $user->id)->delete();
+            }
+
+            // Purga física RGPD de los ficheros propios que no estén vinculados a contenidos editoriales.
+            File::query()
+                ->where('user_id', $user->id)
+                ->whereNotIn('id', DB::table('content_files')->select('file_id'))
+                ->each(static fn (File $file) => $file->delete());
         });
     }
+
+    protected $attributes = [
+        'is_active' => true,
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -291,6 +322,7 @@ class User extends Authenticatable implements FilamentUser
             $mime = (string) (@mime_content_type($absolutePath) ?: 'image/jpeg');
             $image = File::decodeImage($absolutePath, $mime);
             $image->scaleDown(width: 512, height: 512);
+            File::stripMetadata($image);
 
             $targetRelative = (string) preg_replace('/\.[^.\/]*$/', '', $path).'.webp';
             $targetAbsolute = $disk->path($targetRelative);
@@ -298,12 +330,12 @@ class User extends Authenticatable implements FilamentUser
             $image->encode(new WebpEncoder(quality: 85, strip: true))->save($targetAbsolute);
 
             if ($targetAbsolute !== $absolutePath) {
-                @unlink($absolutePath);
+                $disk->delete($path);
             }
 
             $this->profile_photo_path = $targetRelative;
         } catch (\Throwable $e) {
-            Log::warning('User: no se ha podido convertir el avatar a WebP', [
+            Log::warning('User: failed to convert profile avatar to WebP', [
                 'path' => $absolutePath,
                 'message' => $e->getMessage(),
             ]);
@@ -455,49 +487,6 @@ class User extends Authenticatable implements FilamentUser
         */
 
         return $this->delete();
-    }
-
-    /**
-     * Rellena los datos en el modelo de usuario y lo devuelve.
-     *
-     *
-     * @return mixed
-     */
-    public function createModel(Request $request)
-    {
-        $user = $this->create($request->only([
-            'name',
-            'surname',
-            'email',
-        ]) + [
-            'password' => Hash::make($request->get('password')),
-        ]);
-
-        return $user;
-    }
-
-    /**
-     * Actualiza los datos para en el modelo de usuario y lo devuelve.
-     *
-     *
-     * @return $this
-     */
-    public function updateModel($request)
-    {
-        $this->update($request->only([
-            'name',
-            'surname',
-            'email',
-        ])
-        );
-
-        if ($request->has('password')) {
-            $this->update([
-                'password' => Hash::make($request->password),
-            ]);
-        }
-
-        return $this;
     }
 
     /**

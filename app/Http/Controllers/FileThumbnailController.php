@@ -48,7 +48,7 @@ class FileThumbnailController extends Controller
         }
 
         if ($file->is_private && ! $this->canAccess($file)) {
-            return response()->file(FileThumbnail::genericImagePath('not_authorized'));
+            return $this->forbidden();
         }
 
         return $this->serve($thumbnail, $file);
@@ -66,14 +66,13 @@ class FileThumbnailController extends Controller
      */
     private function canAccess(File $file): bool
     {
-        $userId = auth()->id();
+        $user = auth()->user();
 
-        if ($userId === null) {
+        if ($user === null) {
             return false;
         }
 
-        return (int) $file->user_id === (int) $userId
-            || (bool) auth()->user()?->isAdmin();
+        return $user->can('delete', $file);
     }
 
     /**
@@ -100,7 +99,22 @@ class FileThumbnailController extends Controller
         }
 
         // Una miniatura siempre es una imagen generada aquí: se enseña.
-        return response()->file($path, File::cacheHeaders((bool) $file->is_private));
+        $response = response()->file($path, File::cacheHeaders((bool) $file->is_private));
+
+        return $file->is_private ? $response->setPrivate() : $response;
+    }
+
+    /**
+     * Imagen genérica de «no autorizado», con código 403 y sin caché.
+     */
+    private function forbidden(): BinaryFileResponse
+    {
+        $path = FileThumbnail::genericImagePath('not_authorized');
+
+        return response()->file($path, [
+            'Content-Type' => mime_content_type($path) ?: 'image/webp',
+            'Cache-Control' => 'no-store, private',
+        ])->setPrivate()->setStatusCode(403);
     }
 
     /**
@@ -111,6 +125,10 @@ class FileThumbnailController extends Controller
      */
     private function missing(): BinaryFileResponse
     {
-        return response()->file(FileThumbnail::genericImagePath('not_found'))->setStatusCode(404);
+        $path = FileThumbnail::genericImagePath('not_found');
+
+        return response()->file($path, [
+            'Content-Type' => mime_content_type($path) ?: 'image/webp',
+        ])->setStatusCode(404);
     }
 }

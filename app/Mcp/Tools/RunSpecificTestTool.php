@@ -40,8 +40,14 @@ class RunSpecificTestTool extends Tool
         }
 
         $command = ['php', 'artisan', 'test', '--filter', $testName];
-        $result = Process::path(base_path())->run($command);
+        $result = Process::path(base_path())->timeout(60)->run($command);
 
-        return Response::text($result->output()."\n".$result->errorOutput());
+        $output = trim($result->output()."\n".$result->errorOutput());
+
+        if (mb_strlen($output) > 16384) {
+            $output = mb_substr($output, 0, 16384)."\n... [output truncated to 16384 characters]";
+        }
+
+        return Response::text($output);
     }
 }

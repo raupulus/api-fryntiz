@@ -73,6 +73,7 @@ class SmartPlantRegister extends BaseModel
     public function setUpdatedAt($value)
     {
         // Desactivo el updated_at
+        return $this;
     }
 
     public function plant(): BelongsTo

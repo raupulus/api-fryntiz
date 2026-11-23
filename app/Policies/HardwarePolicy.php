@@ -6,6 +6,7 @@ namespace App\Policies;
 
 use App\Models\Hardware\HardwareDevice;
 use App\Models\User;
+use App\Policies\Concerns\GuardsAdminAndDeviceAccess;
 use App\Support\Auth\TokenAbilities;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -23,6 +24,7 @@ use Illuminate\Auth\Access\HandlesAuthorization;
  */
 class HardwarePolicy
 {
+    use GuardsAdminAndDeviceAccess;
     use HandlesAuthorization;
 
     public function viewAny(User $user): bool
@@ -48,8 +50,12 @@ class HardwarePolicy
     public function delete(User $user, HardwareDevice $device): bool
     {
         // Borrar un dispositivo no es tarea de un dispositivo.
-        return ! TokenAbilities::deviceRequest($user)
-            && ((int) $device->user_id === (int) $user->id || $user->isAdmin());
+        if (TokenAbilities::deviceRequest($user)) {
+            return false;
+        }
+
+        return (int) $device->user_id === (int) $user->id
+            || $this->adminCanManageOwner($user, $device->user_id !== null ? (int) $device->user_id : null);
     }
 
     public function restore(User $user, HardwareDevice $device): bool
@@ -59,7 +65,7 @@ class HardwarePolicy
 
     public function forceDelete(User $user, HardwareDevice $device): bool
     {
-        return $this->delete($user, $device);
+        return $this->isHumanSuperAdmin($user);
     }
 
     /**
@@ -92,6 +98,7 @@ class HardwarePolicy
                 && TokenAbilities::tokenReachesDevice($user, (int) $device->id);
         }
 
-        return (int) $device->user_id === (int) $user->id || $user->isAdmin();
+        return (int) $device->user_id === (int) $user->id
+            || $this->adminCanManageOwner($user, $device->user_id !== null ? (int) $device->user_id : null);
     }
 }

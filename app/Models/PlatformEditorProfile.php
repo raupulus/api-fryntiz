@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\BaseModels\BaseModel;
 use App\Models\Content\Content;
 use Database\Factories\PlatformEditorProfileFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
@@ -27,7 +27,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-class PlatformEditorProfile extends Model
+class PlatformEditorProfile extends BaseModel
 {
     /** @use HasFactory<PlatformEditorProfileFactory> */
     use HasFactory;

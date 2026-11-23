@@ -9,6 +9,7 @@ use App\Filament\Admin\Resources\CV\CurriculumAvailableRepositoryTypes\Pages\Edi
 use App\Filament\Admin\Resources\CV\CurriculumAvailableRepositoryTypes\Pages\ListCurriculumAvailableRepositoryTypes;
 use App\Filament\Components\ImageCropperUpload;
 use App\Models\CV\CurriculumAvailableRepositoryType;
+use App\Support\FilamentValidationRules;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -37,6 +38,12 @@ class CurriculumAvailableRepositoryTypeResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Tipos de repositorios';
 
+    protected static ?string $navigationLabel = 'Tipos de repositorios';
+
+    protected static ?string $recordTitleAttribute = 'name';
+
+    protected static ?string $slug = 'repository-types';
+
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -54,17 +61,23 @@ class CurriculumAvailableRepositoryTypeResource extends Resource
                 Section::make('Detalles')->schema([
                     TextInput::make('name')
                         ->label('Nombre')
+                        ->maxLength(255)
                         ->columnSpanFull(),
                     TextInput::make('title')
                         ->label('Título')
+                        ->maxLength(255)
                         ->columnSpanFull(),
                     TextInput::make('slug')
                         ->label('Slug')
                         ->required()
+                        ->maxLength(255)
+                        ->unique(ignoreRecord: true)
+                        ->rules(FilamentValidationRules::slug())
                         ->columnSpanFull(),
                     TextInput::make('url')
                         ->label('URL')
                         ->url()
+                        ->maxLength(255)
                         ->columnSpanFull(),
                 ])->columnSpanFull(),
             ]);
@@ -80,8 +93,8 @@ class CurriculumAvailableRepositoryTypeResource extends Resource
                     ->getStateUsing(fn (CurriculumAvailableRepositoryType $record): ?string => $record->image?->thumbnail('small') ?? $record->image?->url)
                     ->square()
                     ->toggleable(),
-                TextColumn::make('title')->label('Título')->searchable(),
-                TextColumn::make('name')->label('Nombre')->searchable(),
+                TextColumn::make('title')->label('Título')->limit(40)->tooltip(fn (?string $state): ?string => $state)->searchable(),
+                TextColumn::make('name')->label('Nombre')->limit(40)->tooltip(fn (?string $state): ?string => $state)->searchable(),
                 TextColumn::make('created_at')
                     ->label('Creado el')
                     ->dateTime()

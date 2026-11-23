@@ -43,38 +43,38 @@ class FilamentPanelCssTest extends TestCase
      * avisa antes de que pase en producción.
      */
     #[Test]
-    public function la_entrada_esta_compilada_en_el_manifest(): void
+    public function entry_is_compiled_in_manifest(): void
     {
         $manifest = json_decode((string) file_get_contents(public_path('build/manifest.json')), true);
 
         $this->assertIsArray($manifest);
         $this->assertArrayHasKey(
-            FilamentPanelCss::ENTRADA,
+            FilamentPanelCss::ENTRY,
             $manifest,
-            'panel.css no está en public/build/manifest.json: falta `npm run build`.',
+            'panel.css no está en public/build/manifest.json: falta `pnpm build`.',
         );
     }
 
     #[Test]
-    public function la_entrada_esta_en_vite_config(): void
+    public function entry_is_declared_in_vite_config(): void
     {
         $this->assertStringContainsString(
-            FilamentPanelCss::ENTRADA,
+            FilamentPanelCss::ENTRY,
             (string) file_get_contents(base_path('vite.config.js')),
         );
     }
 
     #[Test]
-    public function la_etiqueta_es_un_link_a_la_hoja_compilada(): void
+    public function tag_renders_stylesheet_link_to_compiled_asset(): void
     {
         $this->assertMatchesRegularExpression(
             '/<link[^>]+rel="stylesheet"[^>]+build\/assets\/panel-[^"]+\.css/',
-            FilamentPanelCss::etiqueta(),
+            FilamentPanelCss::tag(),
         );
     }
 
     #[Test]
-    public function el_panel_de_administracion_la_carga(): void
+    public function admin_panel_loads_panel_css(): void
     {
         (new RolesTableSeeder)->run();
         $this->actingAs(User::factory()->create(['role_id' => 1, 'is_active' => true]));
@@ -88,7 +88,7 @@ class FilamentPanelCssTest extends TestCase
      * El formulario de acceso también es del panel y también tiene que llevarla.
      */
     #[Test]
-    public function el_panel_de_usuario_la_carga(): void
+    public function tenant_panel_loads_panel_css(): void
     {
         $this->get('/panel/login')
             ->assertSuccessful()
@@ -100,11 +100,11 @@ class FilamentPanelCssTest extends TestCase
      * recompilaría y pisaría los estilos de Filament en todo el panel.
      */
     #[Test]
-    public function panel_css_no_es_tailwind(): void
+    public function panel_css_is_not_tailwind(): void
     {
         // Sin comentarios: la cabecera del fichero explica, precisamente, que
         // no lleva ninguna de las dos cosas.
-        $css = (string) preg_replace('#/\*.*?\*/#s', '', (string) file_get_contents(base_path(FilamentPanelCss::ENTRADA)));
+        $css = (string) preg_replace('#/\*.*?\*/#s', '', (string) file_get_contents(base_path(FilamentPanelCss::ENTRY)));
 
         $this->assertStringNotContainsString('@import "tailwindcss"', $css);
         $this->assertStringNotContainsString('@apply', $css);

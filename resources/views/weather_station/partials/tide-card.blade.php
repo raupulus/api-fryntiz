@@ -6,7 +6,7 @@
 <div class="bg-surface-container-lowest rounded-xl p-6 shadow-lg">
     <div class="flex items-center justify-between mb-4">
         <div class="w-12 h-12 bg-surface-container rounded-lg flex items-center justify-center">
-            <span class="material-symbols-outlined text-on-tertiary-container">waves</span>
+            <span class="material-symbols-outlined text-on-tertiary-container" aria-hidden="true">waves</span>
         </div>
         @if($nextTide)
             <div class="text-right">

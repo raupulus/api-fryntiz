@@ -239,7 +239,7 @@ class AEMETService
         if ($this->apiKey === '') {
             // Sin clave AEMET devuelve 200 con el cuerpo VACÍO, no un 401: si no
             // se comprueba aquí, el fallo es indistinguible de "no hay datos".
-            Log::warning('AEMET: no se ha configurado AEMET_API_KEY.');
+            Log::warning('AEMET: AEMET_API_KEY is not configured.');
 
             return null;
         }
@@ -248,7 +248,7 @@ class AEMETService
         $endpoint = $isFromAemet ? substr($url, strlen($this->baseUrl)) : $url;
 
         if ($isFromAemet && $this->withoutQuota($endpoint)) {
-            Log::info('AEMET: endpoint en pausa por cuota agotada', ['endpoint' => $endpoint]);
+            Log::info('AEMET: endpoint paused due to quota exhaustion', ['endpoint' => $endpoint]);
 
             return null;
         }
@@ -274,7 +274,7 @@ class AEMETService
 
             return $this->decodeJson($response, $endpoint);
         } catch (\Throwable $e) {
-            Log::error('AEMET: excepción durante la petición', [
+            Log::error('AEMET: exception during request', [
                 'endpoint' => $endpoint,
                 'message' => $e->getMessage(),
             ]);
@@ -301,7 +301,7 @@ class AEMETService
         $endpoint = $isFromAemet ? substr($url, strlen($this->baseUrl)) : $url;
 
         if ($isFromAemet && $this->apiKey === '') {
-            Log::warning('AEMET: no se ha configurado AEMET_API_KEY.');
+            Log::warning('AEMET: AEMET_API_KEY is not configured.');
 
             return null;
         }
@@ -322,7 +322,7 @@ class AEMETService
             $body = $response->body();
 
             if ($body === '') {
-                Log::warning('AEMET: descarga binaria vacía', ['endpoint' => $endpoint]);
+                Log::warning('AEMET: empty binary download', ['endpoint' => $endpoint]);
 
                 return null;
             }
@@ -330,7 +330,7 @@ class AEMETService
             // AEMET responde 200 con una página de error HTML más a menudo de lo
             // que parece. Un binario nunca empieza por `<`.
             if (str_starts_with($body, '<')) {
-                Log::warning('AEMET: la descarga binaria es HTML de error, no datos', [
+                Log::warning('AEMET: binary download returned HTML error instead of data', [
                     'endpoint' => $endpoint,
                     'status' => $response->status(),
                 ]);
@@ -340,7 +340,7 @@ class AEMETService
 
             return $body;
         } catch (\Throwable $e) {
-            Log::error('AEMET: excepción durante la descarga binaria', [
+            Log::error('AEMET: exception during binary download', [
                 'endpoint' => $endpoint,
                 'message' => $e->getMessage(),
             ]);
@@ -362,13 +362,13 @@ class AEMETService
         $body = $response->body();
 
         if (trim($body) === '') {
-            Log::warning('AEMET: respuesta vacía (revisa AEMET_API_KEY)', ['endpoint' => $endpoint]);
+            Log::warning('AEMET: empty response (check AEMET_API_KEY)', ['endpoint' => $endpoint]);
 
             return null;
         }
 
         if (str_starts_with(ltrim($body), '<')) {
-            Log::warning('AEMET: la respuesta es HTML de error, no datos', [
+            Log::warning('AEMET: response returned HTML error instead of data', [
                 'endpoint' => $endpoint,
                 'status' => $response->status(),
             ]);
@@ -394,13 +394,13 @@ class AEMETService
         if ($this->apiKey === '') {
             // Sin clave, AEMET devuelve 200 con el cuerpo VACÍO — no un 401.
             // Si no se comprueba aquí, el fallo es indistinguible de "no hay datos".
-            Log::warning('AEMET: no se ha configurado AEMET_API_KEY.');
+            Log::warning('AEMET: AEMET_API_KEY is not configured.');
 
             return null;
         }
 
         if ($this->withoutQuota($endpoint)) {
-            Log::info('AEMET: endpoint en pausa por cuota agotada', ['endpoint' => $endpoint]);
+            Log::info('AEMET: endpoint paused due to quota exhaustion', ['endpoint' => $endpoint]);
 
             return null;
         }
@@ -437,7 +437,7 @@ class AEMETService
             }
 
             if (! isset($envelope['datos']) || ! is_string($envelope['datos'])) {
-                Log::warning('AEMET: sobre con estado 200 y sin URL de datos', [
+                Log::warning('AEMET: envelope status 200 without data URL', [
                     'endpoint' => $endpoint,
                 ]);
 
@@ -449,7 +449,7 @@ class AEMETService
             $data = $this->httpWithRetry()->get($envelope['datos']);
 
             if (! $data->successful()) {
-                Log::warning('AEMET: la URL de datos no responde', [
+                Log::warning('AEMET: data URL did not respond', [
                     'endpoint' => $endpoint,
                     'status' => $data->status(),
                 ]);
@@ -473,7 +473,7 @@ class AEMETService
 
             return $payload;
         } catch (\Throwable $e) {
-            Log::error('AEMET: excepción durante la petición', [
+            Log::error('AEMET: exception during request', [
                 'endpoint' => $endpoint,
                 'message' => $e->getMessage(),
             ]);
@@ -505,14 +505,14 @@ class AEMETService
 
         // Cuerpo vacío: o falta la clave, o el periodo pedido no existe.
         if (trim($body) === '') {
-            Log::warning('AEMET: respuesta vacía (revisa AEMET_API_KEY)', ['endpoint' => $endpoint]);
+            Log::warning('AEMET: empty response (check AEMET_API_KEY)', ['endpoint' => $endpoint]);
 
             return null;
         }
 
         // Una ruta inexistente devuelve HTML de Tomcat, no JSON.
         if (str_starts_with(ltrim($body), '<')) {
-            Log::warning('AEMET: la respuesta es HTML de error, no JSON', [
+            Log::warning('AEMET: response returned HTML error instead of JSON', [
                 'endpoint' => $endpoint,
                 'status' => $response->status(),
             ]);
@@ -533,7 +533,7 @@ class AEMETService
         $data = json_decode($body, true);
 
         if (! is_array($data)) {
-            Log::warning('AEMET: el payload no es JSON', [
+            Log::warning('AEMET: payload is not valid JSON', [
                 'endpoint' => $endpoint,
                 'charset' => $charset,
                 'json_error' => json_last_error_msg(),
@@ -601,7 +601,7 @@ class AEMETService
         $days = $date->diffInDays(now());
 
         if ($days > (int) config('aemet.max_age_days', 3)) {
-            Log::warning('AEMET: el contenido está rancio', [
+            Log::warning('AEMET: stale response content detected', [
                 'endpoint' => $endpoint,
                 'elaborado' => $built,
                 'days' => $days,
@@ -666,7 +666,8 @@ class AEMETService
      */
     private function httpWithRetry(): PendingRequest
     {
-        return Http::timeout((int) config('aemet.timeout_seconds', 30))
+        return Http::connectTimeout(5)
+            ->timeout((int) config('aemet.timeout_seconds', 30))
             ->retry(
                 $this->retryAttempts,
                 $this->retryBaseDelayMs,

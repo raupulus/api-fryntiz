@@ -89,7 +89,7 @@
 
                 <iframe
                     x-show="videoPlaying"
-                    :src="videoPlaying && state ? ('https://www.youtube.com/embed/' + state + '?autoplay=1') : ''"
+                    :src="videoPlaying && state ? ('https://www.youtube-nocookie.com/embed/' + state + '?autoplay=1') : ''"
                     class="field-preview-iframe-youtube-video-search"
                     frameborder="0"
                     allow="autoplay; encrypted-media; picture-in-picture"

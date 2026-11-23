@@ -24,9 +24,9 @@ class AirFlight extends Cluster
         return auth()->user()?->isAdmin() ?? false;
     }
 
-    protected static ?string $clusterBreadcrumb = 'Airflights';
+    protected static ?string $clusterBreadcrumb = 'Vuelos ADS-B';
 
-    protected static ?string $title = 'Airflights';
+    protected static ?string $title = 'Vuelos ADS-B';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPaperAirplane;
 

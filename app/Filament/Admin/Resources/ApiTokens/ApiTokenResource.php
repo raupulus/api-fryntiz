@@ -44,9 +44,11 @@ class ApiTokenResource extends Resource
 
     protected static ?int $navigationSort = 20;
 
-    protected static ?string $modelLabel = 'API Token';
+    protected static ?string $modelLabel = 'Token de API';
 
-    protected static ?string $pluralModelLabel = 'API Tokens';
+    protected static ?string $pluralModelLabel = 'Tokens de API';
+
+    protected static ?string $navigationLabel = 'Tokens de API';
 
     protected static ?string $recordTitleAttribute = 'name';
 
@@ -59,7 +61,8 @@ class ApiTokenResource extends Resource
                     // Un Admin no emite tokens a nombre de un SuperAdmin: sería
                     // fabricarse su identidad, que es la escalada que
                     // `UserRoleEnum::assignableRoles()` impide en los roles.
-                    ->options(fn () => static::usuariosAdministrables()->pluck('name', 'id'))
+                    ->options(fn () => static::manageableUsers()->pluck('name', 'id'))
+                    ->in(fn () => static::manageableUsers()->pluck('id')->all())
                     ->searchable()->required()->columnSpanFull(),
                 Hidden::make('tokenable_type')->default(User::class),
                 TextInput::make('name')->required()->maxLength(255)
@@ -105,9 +108,9 @@ class ApiTokenResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('id')->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('id')->label('ID')->sortable()->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('user_name')->label('Usuario')->searchable(),
-                TextColumn::make('name')->searchable()->label('Nombre'),
+                TextColumn::make('name')->searchable()->limit(40)->tooltip(fn (?string $state): ?string => $state)->label('Nombre'),
                 TextColumn::make('abilities')->formatStateUsing(fn ($state) => is_array($state) ? implode(', ', $state) : (string) $state)
                     ->limit(40)->label('Scopes')->toggleable(),
                 TextColumn::make('last_used_at')->dateTime('d/m/Y H:i')
@@ -120,7 +123,7 @@ class ApiTokenResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('tokenable_id')
-                    ->options(fn () => static::usuariosAdministrables()->pluck('name', 'id'))
+                    ->options(fn () => static::manageableUsers()->pluck('name', 'id'))
                     ->label('Usuario'),
                 Filter::make('expired')
                     ->query(fn ($q) => $q->whereNotNull('expires_at')->where('expires_at', '<', now()))
@@ -138,14 +141,9 @@ class ApiTokenResource extends Resource
                         ->icon('heroicon-o-shield-exclamation')->color('danger')
                         ->requiresConfirmation()
                         ->action(function ($records) {
-                            // La acción barría por `tokenable_id` sin mirar a
-                            // quién pertenece cada uno: bastaba seleccionar un
-                            // token cualquiera para dejar sin tokens al dueño
-                            // entero, `SuperAdmin` incluido. Se acota a los
-                            // usuarios que quien ejecuta puede administrar.
-                            $alcanzables = static::usuariosAdministrables()->pluck('id');
+                            $reachableUserIds = static::manageableUsers()->pluck('id');
 
-                            $users = $records->pluck('tokenable_id')->unique()->intersect($alcanzables);
+                            $users = $records->pluck('tokenable_id')->unique()->intersect($reachableUserIds);
 
                             if ($users->isEmpty()) {
                                 Notification::make()
@@ -172,7 +170,7 @@ class ApiTokenResource extends Resource
      *
      * @return Collection<int, User>
      */
-    protected static function usuariosAdministrables(): Collection
+    protected static function manageableUsers(): Collection
     {
         $query = User::query()->orderBy('name');
 

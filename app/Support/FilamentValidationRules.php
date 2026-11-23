@@ -12,11 +12,23 @@ use Illuminate\Validation\Rules\Password;
 class FilamentValidationRules
 {
     /**
-     * Slug alfanumérico con guiones.
+     * Slug alfanumérico con guiones (obligatorio).
+     *
+     * @return list<string>
      */
-    public static function slug(): array
+    public static function slug(int $max = 255): array
     {
-        return ['required', 'string', 'max:255', 'regex:/^[a-z0-9\-]+$/'];
+        return ['required', 'string', "max:{$max}", 'alpha_dash'];
+    }
+
+    /**
+     * Slug alfanumérico con guiones (opcional).
+     *
+     * @return list<string>
+     */
+    public static function optionalSlug(int $max = 255): array
+    {
+        return ['nullable', 'string', "max:{$max}", 'alpha_dash'];
     }
 
     /**

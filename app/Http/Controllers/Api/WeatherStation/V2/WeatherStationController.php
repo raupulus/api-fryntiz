@@ -69,7 +69,7 @@ class WeatherStationController extends BaseApiController
         $device = $this->service->resolveStation($station);
 
         if (! $device) {
-            return $this->notFoundResponse('Estacion meteorologica no encontrada');
+            return $this->notFoundResponse('Estación meteorológica no encontrada');
         }
 
         return $this->successResponse(
@@ -93,7 +93,7 @@ class WeatherStationController extends BaseApiController
         $readings = $this->service->getZoneReadings($zone, $locationType);
 
         if ($readings === null) {
-            return $this->notFoundResponse('Zona sin estaciones meteorologicas');
+            return $this->notFoundResponse('Zona sin estaciones meteorológicas');
         }
 
         return $this->successResponse(new WeatherStationResource($readings));

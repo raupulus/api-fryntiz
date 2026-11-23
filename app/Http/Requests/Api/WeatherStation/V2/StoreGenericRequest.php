@@ -61,21 +61,21 @@ class StoreGenericRequest extends BaseFormRequest
             // claves, pero no los valores.
             'hardware_device_info' => ['nullable', new DeviceStatusPayload],
             'hardware_device_id' => ['required', 'integer', 'exists:hardware_devices,id', new OwnedHardwareDevice],
-            'data' => ['required', 'array', 'min:1'],
+            'data' => ['required', 'array', 'min:1', 'max:'.count($catalog)],
 
             // Un sensor que no esté en la lista se rechaza en vez de tirarse en
             // silencio: `WeatherStationService::resolveSensorModel()` devuelve
             // null para los desconocidos y el lote se aceptaba igual.
-            'data.*' => ['required', 'array', 'min:1'],
+            'data.*' => ['required', 'array', 'min:1', 'max:'.StoreSensorReadingsRequest::MAX_PER_BATCH],
         ];
 
-        $recibidos = $this->input('data');
+        $received = $this->input('data');
 
-        if (! is_array($recibidos)) {
+        if (! is_array($received)) {
             return $rules;
         }
 
-        foreach (array_keys($recibidos) as $sensor) {
+        foreach (array_keys($received) as $sensor) {
             if (! is_string($sensor) || ! isset($catalog[$sensor])) {
                 // Deja que falle la regla de abajo con un mensaje entendible.
                 $rules["data.{$sensor}"] = ['array', new KnownSensor(array_keys($catalog))];

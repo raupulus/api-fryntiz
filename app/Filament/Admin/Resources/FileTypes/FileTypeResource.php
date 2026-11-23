@@ -41,6 +41,8 @@ class FileTypeResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Tipos de archivos';
 
+    protected static ?string $navigationLabel = 'Tipos de archivos';
+
     protected static ?string $recordTitleAttribute = 'extension';
 
     public static function form(Schema $schema): Schema
@@ -148,9 +150,9 @@ class FileTypeResource extends Resource
                 TextColumn::make('type')->searchable()->sortable()->badge()->label('Tipo'),
                 TextColumn::make('extension')->searchable()->sortable()
                     ->prefix('.')->label('Ext'),
-                TextColumn::make('mime')->searchable()->copyable()->label('MIME'),
-                TextColumn::make('user.name')->toggleable()->label('Owner'),
-                TextColumn::make('created_at')->dateTime('d/m/Y')->toggleable(),
+                TextColumn::make('mime')->searchable()->copyable()->limit(35)->tooltip(fn (?string $state): ?string => $state)->label('MIME'),
+                TextColumn::make('user.name')->toggleable(isToggledHiddenByDefault: true)->label('Propietario'),
+                TextColumn::make('created_at')->label('Creado el')->dateTime('d/m/Y')->toggleable(),
             ])
             ->filters([
                 SelectFilter::make('type')->options(fn () => FileType::query()->distinct()->pluck('type', 'type')->all()

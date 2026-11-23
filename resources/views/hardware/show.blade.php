@@ -3,28 +3,73 @@
 @use('App\Support\Format\Figures')
 
 @section('title', $device->displayName.' | Hardware | Api Raupulus')
-@section('description', 'Ficha técnica y estado en tiempo real del dispositivo '.$device->displayName.' ('.$device->typeName.')')
+@section('description', 'Ficha técnica, especificaciones y telemetría de salud en tiempo real del dispositivo '.$device->displayName.' ('.$device->typeName.').')
 @section('keywords', 'hardware, '.$device->displayName.', '.$device->typeName.', '.$device->brand.', telemetría, raupulus')
 
-@section('rs-title', $device->displayName.' - Hardware')
+@section('rs-title', $device->displayName.' | Hardware | Api Raupulus')
 @section('rs-sitename', 'Api Raupulus')
-@section('rs-description', 'Ficha técnica y estado en tiempo real del dispositivo '.$device->displayName)
+@section('rs-description', 'Ficha técnica y telemetría en tiempo real del dispositivo '.$device->displayName)
 @if($device->imageUrl)
     @section('rs-image', $device->imageUrl)
 @endif
 @section('rs-url', route('hardware.show', $device->slug))
 
+@push('json-ld')
+    @php
+        $hardwareSchema = [
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                [
+                    '@type' => 'TechArticle',
+                    'headline' => $device->displayName,
+                    'description' => 'Ficha técnica y monitorización del dispositivo '.$device->displayName.' ('.$device->typeName.').',
+                    'url' => route('hardware.show', $device->slug),
+                    'author' => [
+                        '@type' => 'Person',
+                        'name' => 'Raúl Caro Pastorino',
+                        'url' => 'https://raupulus.dev',
+                    ],
+                ],
+                [
+                    '@type' => 'BreadcrumbList',
+                    'itemListElement' => [
+                        [
+                            '@type' => 'ListItem',
+                            'position' => 1,
+                            'name' => 'Portada',
+                            'item' => route('home'),
+                        ],
+                        [
+                            '@type' => 'ListItem',
+                            'position' => 2,
+                            'name' => 'Hardware',
+                            'item' => route('hardware.index'),
+                        ],
+                        [
+                            '@type' => 'ListItem',
+                            'position' => 3,
+                            'name' => $device->displayName,
+                            'item' => route('hardware.show', $device->slug),
+                        ],
+                    ],
+                ],
+            ],
+        ];
+    @endphp
+    <script type="application/ld+json">@json($hardwareSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG)</script>
+@endpush
+
 @section('content')
     {{-- Hero --}}
-    <section class="hero-gradient min-h-[30vh] flex items-center pt-20">
-        <div class="max-w-7xl mx-auto px-6 text-white w-full">
+    <section class="hero-gradient min-h-[30svh] flex items-center pt-20 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 text-on-primary w-full">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                     {{-- Migas de pan / Volver --}}
                     <div class="mb-3">
                         <a href="{{ route('hardware.index') }}"
-                           class="inline-flex items-center gap-1 text-xs text-white/80 hover:text-white transition-colors">
-                            <span class="material-symbols-outlined text-sm">arrow_back</span>
+                           class="inline-flex items-center gap-1 text-xs text-on-primary/85 hover:text-on-primary transition-colors">
+                            <span class="material-symbols-outlined text-sm" aria-hidden="true">arrow_back</span>
                             Volver al catálogo de hardware
                         </a>
                     </div>
@@ -35,29 +80,29 @@
 
                     <div class="flex flex-wrap items-center gap-3 mt-2">
                         @if($device->typeName)
-                            <span class="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold">
+                            <span class="bg-on-primary/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold">
                                 {{ $device->typeName }}
                             </span>
                         @endif
 
                         @if($device->locationTypeLabel)
-                            <span class="bg-white/10 backdrop-blur-md px-3 py-1 rounded-full text-xs">
+                            <span class="bg-on-primary/10 backdrop-blur-md px-3 py-1 rounded-full text-xs">
                                 {{ $device->locationTypeLabel }}
                             </span>
                         @endif
 
                         {{-- Estado de conexión --}}
                         @if($device->isOnline)
-                            <span class="inline-flex items-center gap-1.5 bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-200 px-3 py-1 rounded-full text-xs font-semibold border border-emerald-300 dark:border-emerald-800">
-                                <span class="relative flex h-2 w-2">
-                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 dark:bg-emerald-400 opacity-75"></span>
-                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 dark:bg-emerald-500"></span>
+                            <span class="inline-flex items-center gap-1.5 bg-surface-container-lowest/95 text-success px-3 py-1 rounded-full text-xs font-semibold border border-success/40">
+                                <span class="relative flex h-2 w-2" aria-hidden="true">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-success"></span>
                                 </span>
                                 En línea
                             </span>
                         @else
-                            <span class="inline-flex items-center gap-1.5 bg-white/10 text-white/70 px-3 py-1 rounded-full text-xs font-medium">
-                                <span class="h-2 w-2 rounded-full bg-white/40"></span>
+                            <span class="inline-flex items-center gap-1.5 bg-on-primary/10 text-on-primary/80 px-3 py-1 rounded-full text-xs font-medium">
+                                <span class="h-2 w-2 rounded-full bg-on-primary/50" aria-hidden="true"></span>
                                 Desconectado
                             </span>
                         @endif
@@ -65,12 +110,12 @@
                 </div>
 
                 {{-- Última conexión / Uptime --}}
-                <div class="text-right text-white/80 text-xs hidden md:block">
+                <div class="text-right text-on-primary/85 text-xs hidden md:block">
                     @if($device->lastSeenDiff)
-                        <p class="mb-1">Última señal: <strong class="text-white">{{ $device->lastSeenDiff }}</strong></p>
+                        <p class="mb-1">Última señal: <strong class="text-on-primary">{{ $device->lastSeenDiff }}</strong></p>
                     @endif
                     @if($device->uptimeFormatted)
-                        <p>Tiempo en marcha: <strong class="text-white">{{ $device->uptimeFormatted }}</strong></p>
+                        <p>Tiempo en marcha: <strong class="text-on-primary">{{ $device->uptimeFormatted }}</strong></p>
                     @endif
                 </div>
             </div>
@@ -160,14 +205,14 @@
                         </div>
 
                         {{-- Enlace del fabricante si existe --}}
-                        @if($device->urlCompany)
+                        @if($device->urlCompany && \App\Services\Content\ContentBlockValidator::isSafeUrl($device->urlCompany, false))
                             <div class="pt-6 mt-6 border-t border-outline-variant/15">
                                 <a href="{{ $device->urlCompany }}"
                                    target="_blank"
                                    rel="noopener noreferrer"
                                    class="inline-flex items-center gap-1.5 text-xs font-semibold text-primary-container hover:underline"
                                    title="Sitio web oficial externo del fabricante">
-                                    <span class="material-symbols-outlined text-sm">open_in_new</span>
+                                    <span class="material-symbols-outlined text-sm" aria-hidden="true">open_in_new</span>
                                     Web oficial del fabricante <span class="text-xs text-on-surface-variant font-normal">(sitio externo)</span>
                                 </a>
                             </div>
@@ -188,9 +233,9 @@
                             <div class="bg-surface-container-lowest p-5 rounded-xl shadow border border-outline-variant/15">
                                 <div class="flex items-center justify-between mb-2">
                                     <span class="text-xs uppercase tracking-wider text-on-surface-variant font-bold">Temperatura</span>
-                                    <span class="material-symbols-outlined text-lg {{ $device->tempColor === 'emerald' ? 'text-emerald-600 dark:text-emerald-400' : ($device->tempColor === 'amber' ? 'text-amber-600 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400') }}">thermostat</span>
+                                    <span class="material-symbols-outlined text-lg {{ $device->tempColor === 'emerald' ? 'text-success' : ($device->tempColor === 'amber' ? 'text-on-warning-container' : 'text-error') }}" aria-hidden="true">thermostat</span>
                                 </div>
-                                <div class="text-3xl font-extrabold {{ $device->tempColor === 'emerald' ? 'text-emerald-600 dark:text-emerald-400' : ($device->tempColor === 'amber' ? 'text-amber-600 dark:text-amber-400' : 'text-rose-600 dark:text-rose-400') }}">
+                                <div class="text-3xl font-extrabold {{ $device->tempColor === 'emerald' ? 'text-success' : ($device->tempColor === 'amber' ? 'text-on-warning-container' : 'text-error') }}">
                                     {{ number_format($device->temp, 1) }} <span class="text-base font-medium">°C</span>
                                 </div>
                                 <span class="text-xs text-on-surface-variant mt-1 block">Temperatura del SoC / placa</span>
@@ -202,13 +247,13 @@
                             <div class="bg-surface-container-lowest p-5 rounded-xl shadow border border-outline-variant/15">
                                 <div class="flex items-center justify-between mb-2">
                                     <span class="text-xs uppercase tracking-wider text-on-surface-variant font-bold">Carga CPU</span>
-                                    <span class="material-symbols-outlined text-lg text-sky-600 dark:text-sky-400">developer_board</span>
+                                    <span class="material-symbols-outlined text-lg text-primary" aria-hidden="true">developer_board</span>
                                 </div>
                                 <div class="text-3xl font-extrabold text-on-surface">
                                     {{ number_format($device->cpu, 0) }} <span class="text-base font-medium">%</span>
                                 </div>
                                 <div class="w-full bg-surface-container rounded-full h-2 mt-3 overflow-hidden">
-                                    <div class="bg-sky-600 dark:bg-sky-400 h-2 rounded-full" style="width: {{ min(100, max(0, $device->cpu)) }}%"></div>
+                                    <div class="bg-primary-container h-2 rounded-full" style="width: {{ min(100, max(0, $device->cpu)) }}%"></div>
                                 </div>
                             </div>
                         @endif
@@ -218,13 +263,13 @@
                             <div class="bg-surface-container-lowest p-5 rounded-xl shadow border border-outline-variant/15">
                                 <div class="flex items-center justify-between mb-2">
                                     <span class="text-xs uppercase tracking-wider text-on-surface-variant font-bold">Memoria RAM</span>
-                                    <span class="material-symbols-outlined text-lg text-violet-600 dark:text-violet-400">memory</span>
+                                    <span class="material-symbols-outlined text-lg text-tertiary" aria-hidden="true">memory</span>
                                 </div>
                                 <div class="text-3xl font-extrabold text-on-surface">
                                     {{ number_format($device->ram, 0) }} <span class="text-base font-medium">%</span>
                                 </div>
                                 <div class="w-full bg-surface-container rounded-full h-2 mt-3 overflow-hidden">
-                                    <div class="bg-violet-600 dark:bg-violet-400 h-2 rounded-full" style="width: {{ min(100, max(0, $device->ram)) }}%"></div>
+                                    <div class="bg-tertiary h-2 rounded-full" style="width: {{ min(100, max(0, $device->ram)) }}%"></div>
                                 </div>
                             </div>
                         @endif
@@ -234,13 +279,13 @@
                             <div class="bg-surface-container-lowest p-5 rounded-xl shadow border border-outline-variant/15">
                                 <div class="flex items-center justify-between mb-2">
                                     <span class="text-xs uppercase tracking-wider text-on-surface-variant font-bold">Almacenamiento</span>
-                                    <span class="material-symbols-outlined text-lg text-indigo-600 dark:text-indigo-400">storage</span>
+                                    <span class="material-symbols-outlined text-lg text-secondary" aria-hidden="true">storage</span>
                                 </div>
                                 <div class="text-3xl font-extrabold text-on-surface">
                                     {{ number_format($device->disk, 0) }} <span class="text-base font-medium">%</span>
                                 </div>
                                 <div class="w-full bg-surface-container rounded-full h-2 mt-3 overflow-hidden">
-                                    <div class="bg-indigo-600 dark:bg-indigo-400 h-2 rounded-full" style="width: {{ min(100, max(0, $device->disk)) }}%"></div>
+                                    <div class="bg-secondary h-2 rounded-full" style="width: {{ min(100, max(0, $device->disk)) }}%"></div>
                                 </div>
                             </div>
                         @endif
@@ -250,9 +295,9 @@
                             <div class="bg-surface-container-lowest p-5 rounded-xl shadow border border-outline-variant/15">
                                 <div class="flex items-center justify-between mb-2">
                                     <span class="text-xs uppercase tracking-wider text-on-surface-variant font-bold">Batería</span>
-                                    <span class="material-symbols-outlined text-lg text-emerald-600 dark:text-emerald-400">battery_charging_full</span>
+                                    <span class="material-symbols-outlined text-lg text-success" aria-hidden="true">battery_charging_full</span>
                                 </div>
-                                <div class="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400">
+                                <div class="text-3xl font-extrabold text-success">
                                     {{ $device->batteryLevel }} <span class="text-base font-medium">%</span>
                                 </div>
                                 @if($device->batteryVoltage !== null)
@@ -266,7 +311,7 @@
                             <div class="bg-surface-container-lowest p-5 rounded-xl shadow border border-outline-variant/15">
                                 <div class="flex items-center justify-between mb-2">
                                     <span class="text-xs uppercase tracking-wider text-on-surface-variant font-bold">Alimentación</span>
-                                    <span class="material-symbols-outlined text-lg text-amber-600 dark:text-amber-400">bolt</span>
+                                    <span class="material-symbols-outlined text-lg text-on-warning-container" aria-hidden="true">bolt</span>
                                 </div>
                                 <div class="text-3xl font-extrabold text-on-surface">
                                     {{ number_format($device->voltage, 2) }} <span class="text-base font-medium">V</span>
@@ -280,7 +325,7 @@
                             <div class="bg-surface-container-lowest p-5 rounded-xl shadow border border-outline-variant/15">
                                 <div class="flex items-center justify-between mb-2">
                                     <span class="text-xs uppercase tracking-wider text-on-surface-variant font-bold">Uptime</span>
-                                    <span class="material-symbols-outlined text-lg text-teal-600 dark:text-teal-400">timer</span>
+                                    <span class="material-symbols-outlined text-lg text-primary" aria-hidden="true">timer</span>
                                 </div>
                                 <div class="text-2xl font-bold text-on-surface">
                                     {{ $device->uptimeFormatted }}
@@ -308,7 +353,7 @@
                         <div class="flex flex-wrap items-center gap-3 text-xs text-on-surface-variant font-medium">
                             @if($energyData['has_generator'])
                                 <div class="flex items-center gap-1.5">
-                                    <span class="w-3 h-3 rounded-full bg-amber-500 dark:bg-amber-400"></span>
+                                    <span class="w-3 h-3 rounded-full bg-warning-container border border-on-warning-container/40"></span>
                                     <span>Generación</span>
                                 </div>
                             @endif
@@ -326,11 +371,11 @@
                     <div class="bg-surface-container-lowest p-6 rounded-xl shadow border border-outline-variant/15 space-y-6">
 
                         {{-- KPIs de resumen del periodo --}}
-                        <div class="grid grid-cols-2 {{ $energyData['has_generator'] ? 'sm:grid-cols-3' : (count($energyData['load_channels']) > 1 ? 'sm:grid-cols-3' : 'sm:grid-cols-2') }} gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 {{ $energyData['has_generator'] ? 'md:grid-cols-3' : (count($energyData['load_channels']) > 1 ? 'md:grid-cols-3' : 'md:grid-cols-2') }} gap-4">
                             {{-- Total Consumido --}}
                             <div class="bg-surface-container/60 p-4 rounded-lg border border-outline-variant/10">
                                 <div class="flex items-center gap-2 mb-1">
-                                    <span class="material-symbols-outlined text-base text-sky-600 dark:text-sky-400">bolt</span>
+                                    <span class="material-symbols-outlined text-base text-primary" aria-hidden="true">bolt</span>
                                     <span class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Consumo Total</span>
                                 </div>
                                 <div class="text-2xl font-extrabold text-on-surface font-mono">
@@ -342,10 +387,10 @@
                                 {{-- Total Generado --}}
                                 <div class="bg-surface-container/60 p-4 rounded-lg border border-outline-variant/10">
                                     <div class="flex items-center gap-2 mb-1">
-                                        <span class="material-symbols-outlined text-base text-amber-600 dark:text-amber-400">solar_power</span>
+                                        <span class="material-symbols-outlined text-base text-on-warning-container" aria-hidden="true">solar_power</span>
                                         <span class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Generación Total</span>
                                     </div>
-                                    <div class="text-2xl font-extrabold text-amber-600 dark:text-amber-400 font-mono">
+                                    <div class="text-2xl font-extrabold text-on-warning-container font-mono">
                                         {{ Figures::rounded($energyData['total_generated_wh']) }} <span class="text-xs font-sans text-on-surface-variant font-normal">Wh</span>
                                     </div>
                                 </div>
@@ -356,10 +401,10 @@
                                 @endphp
                                 <div class="bg-surface-container/60 p-4 rounded-lg border border-outline-variant/10">
                                     <div class="flex items-center gap-2 mb-1">
-                                        <span class="material-symbols-outlined text-base text-teal-600 dark:text-teal-400">balance</span>
+                                        <span class="material-symbols-outlined text-base text-primary" aria-hidden="true">balance</span>
                                         <span class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Balance Neto</span>
                                     </div>
-                                    <div class="text-2xl font-extrabold font-mono {{ $netBalance >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400' }}">
+                                    <div class="text-2xl font-extrabold font-mono {{ $netBalance >= 0 ? 'text-success' : 'text-error' }}">
                                         {{ ($netBalance > 0 ? '+' : '').Figures::rounded($netBalance) }} <span class="text-xs font-sans text-on-surface-variant font-normal">Wh</span>
                                     </div>
                                 </div>
@@ -367,7 +412,7 @@
                                 {{-- Media diaria --}}
                                 <div class="bg-surface-container/60 p-4 rounded-lg border border-outline-variant/10">
                                     <div class="flex items-center gap-2 mb-1">
-                                        <span class="material-symbols-outlined text-base text-teal-600 dark:text-teal-400">trending_up</span>
+                                        <span class="material-symbols-outlined text-base text-primary" aria-hidden="true">trending_up</span>
                                         <span class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Media Diaria</span>
                                     </div>
                                     <div class="text-2xl font-extrabold text-on-surface font-mono">
@@ -379,7 +424,7 @@
                                 @if(count($energyData['load_channels']) > 1)
                                     <div class="bg-surface-container/60 p-4 rounded-lg border border-outline-variant/10">
                                         <div class="flex items-center gap-2 mb-1">
-                                            <span class="material-symbols-outlined text-base text-violet-600 dark:text-violet-400">tune</span>
+                                            <span class="material-symbols-outlined text-base text-tertiary" aria-hidden="true">tune</span>
                                             <span class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Canales activos</span>
                                         </div>
                                         <div class="text-sm font-semibold text-on-surface">
@@ -391,55 +436,58 @@
                         </div>
 
                         {{-- Área gráfica de barras --}}
-                        <div class="pt-6">
-                            <div class="h-64 sm:h-72 w-full grid grid-cols-7 gap-1.5 sm:gap-4 items-end pb-8 border-b border-outline-variant/20">
-                                @foreach($energyData['days'] as $day)
+                        <div class="pt-6 overflow-x-auto" x-data="{ activeDay: null }">
+                            <div class="h-64 sm:h-72 min-w-[420px] w-full grid grid-cols-7 gap-2 sm:gap-4 items-end pb-10 border-b border-outline-variant/20 pt-14">
+                                @foreach($energyData['days'] as $dayIdx => $day)
                                     <div class="group relative flex flex-col items-center justify-end h-full">
+                                        <button type="button"
+                                                @click="activeDay = activeDay === {{ $dayIdx }} ? null : {{ $dayIdx }}"
+                                                @blur="if (activeDay === {{ $dayIdx }}) activeDay = null"
+                                                aria-label="Detalle energía {{ $day['date'] }}: consumo {{ Figures::rounded($day['consumed_wh']) }} Wh"
+                                                class="w-full h-full flex items-end justify-center gap-1 sm:gap-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-t">
+                                            {{-- Tooltip flotante interactivo --}}
+                                            <span :class="activeDay === {{ $dayIdx }} ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'"
+                                                  class="absolute -top-14 z-20 transition-opacity pointer-events-none bg-surface-container-highest text-on-surface text-xs font-semibold py-1.5 px-2.5 rounded-lg shadow-xl border border-outline-variant/30 whitespace-nowrap text-center">
+                                                <span class="block text-on-surface-variant font-normal">{{ $day['date'] }}</span>
+                                                @if($energyData['has_generator'])
+                                                    <span class="block text-on-warning-container">Gen: {{ Figures::rounded($day['generated_wh']) }} Wh</span>
+                                                @endif
+                                                @if(count($day['channels']) > 1)
+                                                    @foreach($day['channels'] as $ch)
+                                                        <span class="block {{ $ch['color_text'] }}">{{ $ch['name'] }}: {{ Figures::rounded($ch['wh']) }} Wh</span>
+                                                    @endforeach
+                                                @endif
+                                                <span class="block text-on-surface font-bold">Consumo: {{ Figures::rounded($day['consumed_wh']) }} Wh</span>
+                                            </span>
 
-                                        {{-- Tooltip flotante interactivo --}}
-                                        <div class="absolute -top-14 z-20 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none bg-surface-container-highest text-on-surface text-[10px] sm:text-xs font-semibold py-1.5 px-2.5 rounded-lg shadow-xl border border-outline-variant/30 whitespace-nowrap text-center">
-                                            <span class="block text-on-surface-variant font-normal">{{ $day['date'] }}</span>
-                                            @if($energyData['has_generator'])
-                                                <span class="block text-amber-600 dark:text-amber-400">Gen: {{ Figures::rounded($day['generated_wh']) }} Wh</span>
-                                            @endif
-                                            @if(count($day['channels']) > 1)
-                                                @foreach($day['channels'] as $ch)
-                                                    <span class="block {{ $ch['color_text'] }}">{{ $ch['name'] }}: {{ Figures::rounded($ch['wh']) }} Wh</span>
-                                                @endforeach
-                                            @endif
-                                            <span class="block text-on-surface font-bold">Consumo: {{ Figures::rounded($day['consumed_wh']) }} Wh</span>
-                                        </div>
-
-                                        {{-- Columnas de barras --}}
-                                        <div class="flex items-end justify-center gap-1 sm:gap-1.5 h-full w-full">
                                             {{-- Barra Generación si aplica --}}
                                             @if($energyData['has_generator'])
-                                                <div style="height: {{ $day['generated_pct'] }}%"
-                                                     class="w-full max-w-[18px] sm:max-w-[24px] bg-amber-500 dark:bg-amber-400 rounded-t-sm transition-all duration-300 hover:brightness-110"
-                                                     title="Generado: {{ Figures::rounded($day['generated_wh']) }} Wh">
-                                                </div>
+                                                <span style="height: {{ $day['generated_pct'] }}%"
+                                                      class="block w-full max-w-[18px] sm:max-w-[24px] bg-on-warning-container rounded-t-sm transition-all duration-300 hover:brightness-110"
+                                                      title="Generado: {{ Figures::rounded($day['generated_wh']) }} Wh">
+                                                </span>
                                             @endif
 
                                             {{-- Barras de consumo --}}
                                             @if(count($day['channels']) > 1)
                                                 @foreach($day['channels'] as $ch)
-                                                    <div style="height: {{ $ch['pct'] }}%"
-                                                         class="w-full max-w-[14px] sm:max-w-[18px] {{ $ch['color_bar'] }} rounded-t-sm transition-all duration-300 hover:brightness-110"
-                                                         title="{{ $ch['name'] }}: {{ Figures::rounded($ch['wh']) }} Wh">
-                                                    </div>
+                                                    <span style="height: {{ $ch['pct'] }}%"
+                                                          class="block w-full max-w-[14px] sm:max-w-[18px] {{ $ch['color_bar'] }} rounded-t-sm transition-all duration-300 hover:brightness-110"
+                                                          title="{{ $ch['name'] }}: {{ Figures::rounded($ch['wh']) }} Wh">
+                                                    </span>
                                                 @endforeach
                                             @else
-                                                <div style="height: {{ $day['consumed_pct'] }}%"
-                                                     class="w-full max-w-[24px] sm:max-w-[32px] bg-sky-500 dark:bg-sky-400 rounded-t-sm transition-all duration-300 hover:brightness-110"
-                                                     title="Consumo: {{ Figures::rounded($day['consumed_wh']) }} Wh">
-                                                </div>
+                                                <span style="height: {{ $day['consumed_pct'] }}%"
+                                                      class="block w-full max-w-[24px] sm:max-w-[32px] bg-primary-container rounded-t-sm transition-all duration-300 hover:brightness-110"
+                                                      title="Consumo: {{ Figures::rounded($day['consumed_wh']) }} Wh">
+                                                </span>
                                             @endif
-                                        </div>
+                                        </button>
 
                                         {{-- Etiquetas del eje inferior --}}
-                                        <div class="absolute -bottom-8 text-center w-full">
-                                            <span class="block text-[11px] sm:text-xs font-semibold text-on-surface leading-tight">{{ $day['label'] }}</span>
-                                            <span class="block text-[9px] sm:text-[10px] text-on-surface-variant font-mono leading-tight">{{ Figures::rounded($day['consumed_wh']) }} Wh</span>
+                                        <div class="absolute -bottom-9 text-center w-full">
+                                            <span class="block text-xs font-semibold text-on-surface leading-tight">{{ $day['label'] }}</span>
+                                            <span class="block text-xs text-on-surface-variant font-mono leading-tight">{{ Figures::rounded($day['consumed_wh']) }} Wh</span>
                                         </div>
                                     </div>
                                 @endforeach
@@ -497,7 +545,7 @@
                     </div>
                 @else
                     <div class="bg-surface-container-lowest p-8 rounded-xl shadow border border-outline-variant/15 text-center text-on-surface-variant">
-                        <span class="material-symbols-outlined text-4xl text-outline-variant mb-2 block">extension_off</span>
+                        <span class="material-symbols-outlined text-4xl text-outline-variant mb-2 block" aria-hidden="true">extension_off</span>
                         <p class="text-sm">Este dispositivo no tiene sensores ni componentes adicionales registrados.</p>
                     </div>
                 @endif
@@ -523,7 +571,7 @@
                             </p>
                         </div>
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-surface-container border border-outline-variant/20 text-on-surface-variant self-start sm:self-auto">
-                            <span class="material-symbols-outlined text-sm text-primary-container">photo_library</span>
+                            <span class="material-symbols-outlined text-sm text-primary-container" aria-hidden="true">photo_library</span>
                             {{ count($device->galleries) }} {{ count($device->galleries) === 1 ? 'galería' : 'galerías' }}
                         </span>
                     </div>
@@ -554,34 +602,37 @@
                             {{-- Grid de fotografías --}}
                             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                                 @foreach($gallery['images'] as $iIdx => $img)
-                                    <div @click="open({{ $gIdx }}, {{ $iIdx }})"
-                                         class="group flex flex-col cursor-pointer">
-                                        <div class="aspect-video relative rounded-xl overflow-hidden bg-surface-container border border-outline-variant/20 shadow-sm transition-all duration-300 group-hover:shadow-lg group-hover:border-primary-container/40">
+                                    <figure class="flex flex-col">
+                                        <button type="button"
+                                                @click="open({{ $gIdx }}, {{ $iIdx }})"
+                                                aria-label="Ampliar fotografía {{ $img['caption'] ?: ($img['title'] ?: '#'.($iIdx + 1)) }}"
+                                                class="group w-full text-left aspect-video relative rounded-xl overflow-hidden bg-surface-container border border-outline-variant/20 shadow-sm transition-all duration-300 hover:shadow-lg hover:border-primary-container/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary cursor-pointer">
                                             <img src="{{ $img['thumbnail_url'] }}"
                                                  alt="{{ $img['alt'] }}"
                                                  loading="lazy"
+                                                 decoding="async"
                                                  class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105">
 
                                             {{-- Overlay en hover --}}
                                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-between p-3.5">
                                                 <div class="flex justify-end">
                                                     <span class="w-8 h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/20 flex items-center justify-center text-white shadow">
-                                                        <span class="material-symbols-outlined text-base">zoom_in</span>
+                                                        <span class="material-symbols-outlined text-base" aria-hidden="true">zoom_in</span>
                                                     </span>
                                                 </div>
                                                 <span class="text-xs font-semibold text-white truncate drop-shadow">
                                                     {{ $img['caption'] ?: $img['title'] }}
                                                 </span>
                                             </div>
-                                        </div>
+                                        </button>
 
                                         @if(filled($img['caption']))
-                                            <p class="mt-2 text-xs text-on-surface-variant font-medium line-clamp-2 leading-snug group-hover:text-on-surface transition-colors"
-                                               title="{{ $img['caption'] }}">
+                                            <figcaption class="mt-2 text-xs text-on-surface-variant font-medium line-clamp-2 leading-snug"
+                                                        title="{{ $img['caption'] }}">
                                                 {{ $img['caption'] }}
-                                            </p>
+                                            </figcaption>
                                         @endif
-                                    </div>
+                                    </figure>
                                 @endforeach
                             </div>
                         </div>
@@ -589,15 +640,20 @@
 
                     {{-- Visor Lightbox con Zoom (Teleport al body) --}}
                     <template x-teleport="body">
-                        <div x-show="isOpen"
+                        <div x-ref="lightboxDialog"
+                             x-show="isOpen"
+                             x-cloak
+                             @keydown.window="handleKeydown($event)"
+                             role="dialog"
+                             aria-modal="true"
+                             aria-label="Visor de galería de imágenes"
                              x-transition:enter="transition ease-out duration-200"
                              x-transition:enter-start="opacity-0"
                              x-transition:enter-end="opacity-100"
                              x-transition:leave="transition ease-in duration-150"
                              x-transition:leave-start="opacity-100"
                              x-transition:leave-end="opacity-0"
-                             class="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col justify-between select-none"
-                             style="display: none;">
+                             class="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex flex-col justify-between select-none">
 
                             {{-- Barra Superior --}}
                             <div class="flex items-center justify-between px-4 py-3 bg-black/50 border-b border-white/10 text-white z-20">
@@ -619,37 +675,42 @@
                                     <button type="button"
                                             @click="zoomOut()"
                                             :disabled="scale <= 1.0"
-                                            class="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-white/20 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                                            aria-label="Alejar imagen"
+                                            class="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-white/20 disabled:opacity-30 disabled:hover:bg-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                                             title="Alejar (-)">
-                                        <span class="material-symbols-outlined text-xl">zoom_out</span>
+                                        <span class="material-symbols-outlined text-xl" aria-hidden="true">zoom_out</span>
                                     </button>
 
                                     {{-- Acercar --}}
                                     <button type="button"
                                             @click="zoomIn()"
                                             :disabled="scale >= 3.0"
-                                            class="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-white/20 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                                            aria-label="Acercar imagen"
+                                            class="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-white/20 disabled:opacity-30 disabled:hover:bg-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                                             title="Acercar (+)">
-                                        <span class="material-symbols-outlined text-xl">zoom_in</span>
+                                        <span class="material-symbols-outlined text-xl" aria-hidden="true">zoom_in</span>
                                     </button>
 
                                     {{-- Reset Zoom --}}
                                     <button type="button"
                                             @click="resetZoom()"
                                             :disabled="scale === 1.0 && panX === 0 && panY === 0"
-                                            class="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-white/20 disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                                            aria-label="Restablecer zoom"
+                                            class="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-white/20 disabled:opacity-30 disabled:hover:bg-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                                             title="Restablecer zoom (0)">
-                                        <span class="material-symbols-outlined text-xl">restart_alt</span>
+                                        <span class="material-symbols-outlined text-xl" aria-hidden="true">restart_alt</span>
                                     </button>
 
                                     <div class="h-5 w-px bg-white/20 mx-1"></div>
 
                                     {{-- Cerrar --}}
                                     <button type="button"
+                                            x-ref="closeButton"
                                             @click="close()"
-                                            class="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-white/20 transition-colors"
+                                            aria-label="Cerrar visor de imágenes"
+                                            class="w-10 h-10 rounded-lg flex items-center justify-center hover:bg-white/20 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                                             title="Cerrar (Esc)">
-                                        <span class="material-symbols-outlined text-2xl">close</span>
+                                        <span class="material-symbols-outlined text-2xl" aria-hidden="true">close</span>
                                     </button>
                                 </div>
                             </div>
@@ -662,22 +723,28 @@
                                 <button type="button"
                                         x-show="totalImages > 1"
                                         @click.stop="prev()"
-                                        class="absolute z-40 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-black/75 hover:bg-black/95 active:scale-90 text-white border-2 border-white/30 backdrop-blur-md shadow-2xl flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 group focus:outline-none"
+                                        aria-label="Fotografía anterior"
+                                        class="absolute z-40 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-black/75 hover:bg-black/95 active:scale-90 text-white border-2 border-white/30 backdrop-blur-md shadow-2xl flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                                         style="top: 50%; transform: translateY(-50%); left: clamp(0.75rem, 2.5vw, 2.5rem);"
                                         title="Foto anterior (←)">
-                                    <span class="material-symbols-outlined text-4xl sm:text-5xl text-white group-hover:scale-110 transition-transform">chevron_left</span>
+                                    <span class="material-symbols-outlined text-4xl sm:text-5xl text-white group-hover:scale-110 transition-transform" aria-hidden="true">chevron_left</span>
                                 </button>
 
                                 {{-- Contenedor de la Imagen con Zoom y Paneo --}}
-                                <div class="w-full h-full flex items-center justify-center overflow-hidden"
+                                <div class="w-full h-full flex items-center justify-center overflow-hidden relative"
                                      @mousedown="startDrag($event)"
                                      @mousemove.window="onDrag($event)"
                                      @mouseup.window="endDrag()"
-                                     @touchstart="startDrag($event)"
-                                     @touchmove.window="onDrag($event)"
+                                     @touchstart.passive="startDrag($event)"
+                                     @touchmove.window.passive="onDrag($event)"
                                      @touchend.window="endDrag()">
+                                    <p x-show="loadingImage" class="absolute text-white/80 text-sm" role="status" aria-live="polite">Cargando imagen…</p>
+                                    <p x-show="imageError" class="absolute text-error-container bg-black/80 px-4 py-2 rounded-lg text-sm" role="alert">No se pudo cargar la imagen.</p>
                                     <img :src="currentImage?.url"
-                                         :alt="currentImage?.alt"
+                                         :alt="currentImage?.alt || 'Fotografía de galería'"
+                                         x-show="!imageError"
+                                         x-on:load="loadingImage = false; imageError = false"
+                                         x-on:error="loadingImage = false; imageError = true"
                                          @dblclick="toggleZoom()"
                                          :style="'transform: translate(' + panX + 'px, ' + panY + 'px) scale(' + scale + '); cursor: ' + (scale > 1.0 ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in') + '; transition: ' + (isDragging ? 'none' : 'transform 0.2s ease-out')"
                                          class="max-w-full max-h-full object-contain select-none shadow-2xl rounded-sm"
@@ -688,10 +755,11 @@
                                 <button type="button"
                                         x-show="totalImages > 1"
                                         @click.stop="next()"
-                                        class="absolute z-40 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-black/75 hover:bg-black/95 active:scale-90 text-white border-2 border-white/30 backdrop-blur-md shadow-2xl flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 group focus:outline-none"
+                                        aria-label="Fotografía siguiente"
+                                        class="absolute z-40 w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-black/75 hover:bg-black/95 active:scale-90 text-white border-2 border-white/30 backdrop-blur-md shadow-2xl flex items-center justify-center cursor-pointer transition-all duration-200 hover:scale-110 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
                                         style="top: 50%; transform: translateY(-50%); right: clamp(0.75rem, 2.5vw, 2.5rem);"
                                         title="Foto siguiente (→)">
-                                    <span class="material-symbols-outlined text-4xl sm:text-5xl text-white group-hover:scale-110 transition-transform">chevron_right</span>
+                                    <span class="material-symbols-outlined text-4xl sm:text-5xl text-white group-hover:scale-110 transition-transform" aria-hidden="true">chevron_right</span>
                                 </button>
                             </div>
 
@@ -727,6 +795,9 @@
                         function hardwareGalleryLightbox() {
                             return {
                                 isOpen: false,
+                                loadingImage: false,
+                                imageError: false,
+                                previousFocus: null,
                                 galleries: @json($device->galleries),
                                 activeGalleryIdx: 0,
                                 activeImageIdx: 0,
@@ -751,29 +822,69 @@
                                 },
 
                                 open(gIdx, iIdx) {
+                                    this.previousFocus = document.activeElement;
                                     this.activeGalleryIdx = gIdx;
                                     this.activeImageIdx = iIdx;
+                                    this.loadingImage = true;
+                                    this.imageError = false;
                                     this.resetZoom();
                                     this.isOpen = true;
                                     document.body.classList.add('overflow-hidden');
+                                    this.$nextTick(() => this.$refs.closeButton?.focus());
                                 },
                                 close() {
                                     this.isOpen = false;
                                     this.resetZoom();
                                     document.body.classList.remove('overflow-hidden');
+                                    this.$nextTick(() => {
+                                        if (this.previousFocus && typeof this.previousFocus.focus === 'function') {
+                                            this.previousFocus.focus();
+                                        }
+                                    });
+                                },
+                                handleKeydown(event) {
+                                    if (!this.isOpen) return;
+                                    if (event.key === 'Escape') { this.close(); return; }
+                                    if (event.key === 'Tab' && this.$refs.lightboxDialog) {
+                                        const focusables = [...this.$refs.lightboxDialog.querySelectorAll('button:not([disabled])')];
+                                        if (focusables.length) {
+                                            const first = focusables[0];
+                                            const last = focusables[focusables.length - 1];
+                                            if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+                                            else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+                                        }
+                                        return;
+                                    }
+                                    if (this.scale > 1.0 && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
+                                        event.preventDefault();
+                                        const step = 40;
+                                        if (event.key === 'ArrowLeft') this.panX += step;
+                                        if (event.key === 'ArrowRight') this.panX -= step;
+                                        if (event.key === 'ArrowUp') this.panY += step;
+                                        if (event.key === 'ArrowDown') this.panY -= step;
+                                        return;
+                                    }
+                                    if (event.key === 'ArrowRight') this.next();
+                                    if (event.key === 'ArrowLeft') this.prev();
                                 },
                                 next() {
                                     if (this.totalImages <= 1) return;
                                     this.activeImageIdx = (this.activeImageIdx + 1) % this.totalImages;
+                                    this.loadingImage = true;
+                                    this.imageError = false;
                                     this.resetZoom();
                                 },
                                 prev() {
                                     if (this.totalImages <= 1) return;
                                     this.activeImageIdx = (this.activeImageIdx - 1 + this.totalImages) % this.totalImages;
+                                    this.loadingImage = true;
+                                    this.imageError = false;
                                     this.resetZoom();
                                 },
                                 selectImage(idx) {
                                     this.activeImageIdx = idx;
+                                    this.loadingImage = true;
+                                    this.imageError = false;
                                     this.resetZoom();
                                 },
                                 zoomIn() {

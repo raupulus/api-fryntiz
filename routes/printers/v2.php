@@ -18,10 +18,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::prefix('printers')->group(function () {
-    // ── Lectura de impresoras y colas (Dashboard / Clientes / Sesión) ────────
+    // ── Lectura de impresoras y colas (exige `printers:read`) ────────────────
     Route::middleware([
         'auth:sanctum',
-        'ability:'.TokenAbilities::PRINTERS_READ.','.TokenAbilities::SESSION.','.TokenAbilities::PRINTERS_WRITE,
+        'ability:'.TokenAbilities::PRINTERS_READ,
         'throttle:api',
     ])->group(function () {
         Route::get('/', [PrinterController::class, 'index'])->name('api.v2.printers.index');
@@ -42,10 +42,10 @@ Route::prefix('printers')->group(function () {
             ->name('api.v2.printers.jobs.show');
     });
 
-    // ── Encolado y gestión de trabajos (Emisores / Sesión) ───────────────────
+    // ── Encolado y gestión de trabajos (exige `printers:write`) ──────────────
     Route::middleware([
         'auth:sanctum',
-        'ability:'.TokenAbilities::PRINTERS_WRITE.','.TokenAbilities::SESSION,
+        'ability:'.TokenAbilities::PRINTERS_WRITE,
         'throttle:api-store',
     ])->group(function () {
         Route::post('/{printer}/jobs', [PrintJobController::class, 'store'])
@@ -57,10 +57,10 @@ Route::prefix('printers')->group(function () {
             ->name('api.v2.printers.jobs.reprint');
     });
 
-    // ── Modificación de favoritos y cancelación de trabajos ─────────────────
+    // ── Modificación de favoritos y cancelación de trabajos (`printers:write`) ─
     Route::middleware([
         'auth:sanctum',
-        'ability:'.TokenAbilities::PRINTERS_WRITE.','.TokenAbilities::SESSION,
+        'ability:'.TokenAbilities::PRINTERS_WRITE,
         'throttle:api',
     ])->group(function () {
         Route::patch('/jobs/{job}/favorite', [PrintJobController::class, 'toggleFavorite'])

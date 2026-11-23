@@ -58,6 +58,10 @@ class CollectionQuery
 
     public const MAX_PER_PAGE = 100;
 
+    public const MAX_PAGE = 1000;
+
+    public const MAX_LIST_ITEMS = 50;
+
     /** Operadores admitidos en los filtros de rango. */
     private const OPERATORS = [
         'gte' => '>=',
@@ -74,10 +78,10 @@ class CollectionQuery
      * PostgreSQL: ISO 8601, `2026-09-02`, `2026-09-02 14:30:00`.
      */
     private const TYPE_RULES = [
-        'date' => 'date',
-        'integer' => 'integer',
-        'boolean' => 'boolean',
-        'string' => 'string',
+        'date' => ['date'],
+        'integer' => ['integer', 'min:-9223372036854775808', 'max:9223372036854775807'],
+        'boolean' => ['boolean'],
+        'string' => ['string'],
     ];
 
     /**
@@ -137,6 +141,8 @@ class CollectionQuery
         $data = [];
         $rules = [];
 
+        $isPublicRequest = $request->user() === null;
+
         // `from`/`to` son el alias histórico del rango sobre created_at.
         foreach (['from', 'to'] as $parameter) {
             if ($this->present($request, $parameter) && in_array('created_at', $this->filterable, true)) {
@@ -151,31 +157,31 @@ class CollectionQuery
             }
 
             $value = $request->query($field);
-            $rule = self::TYPE_RULES[$this->typeOf($field)];
+            $fieldRules = self::TYPE_RULES[$this->typeOf($field)];
 
             // ?campo[gte]=…&campo[lte]=…
             //
             // El array se pasa al validador tal cual y las reglas se declaran
             // con la notación de punto, que es como Laravel baja un nivel.
             if (is_array($value)) {
-                $operadores = array_intersect_key($value, self::OPERATORS);
+                $operators = array_intersect_key($value, self::OPERATORS);
 
-                if ($operadores === []) {
+                if ($operators === []) {
                     // Sólo operadores desconocidos: se ignora entero, igual que
                     // un campo que no está en la lista blanca.
                     continue;
                 }
 
-                $data[$field] = $operadores;
+                $data[$field] = $operators;
 
-                foreach (array_keys($operadores) as $operador) {
+                foreach (array_keys($operators) as $operator) {
                     // `?campo[gte][]=1` metía un array como tercer argumento de
                     // `where()`, que revienta antes incluso de llegar a los
                     // tipos de PostgreSQL. `prohibited` da un 422 con un mensaje
                     // en vez de un 500 con un stack trace.
-                    $rules["{$field}.{$operador}"] = is_array($operadores[$operador])
+                    $rules["{$field}.{$operator}"] = is_array($operators[$operator])
                         ? ['prohibited']
-                        : [$rule];
+                        : $fieldRules;
                 }
 
                 continue;
@@ -184,22 +190,30 @@ class CollectionQuery
             // ?campo=a,b,c  →  WHERE campo IN (a, b, c)
             if (is_string($value) && str_contains($value, ',')) {
                 $data[$field] = $this->splitList($value);
-                $rules["{$field}.*"] = [$rule];
+                if ($isPublicRequest) {
+                    $rules[$field] = ['array', 'max:'.self::MAX_LIST_ITEMS];
+                }
+                $rules["{$field}.*"] = $fieldRules;
 
                 continue;
             }
 
             $data[$field] = $value;
-            $rules[$field] = [$rule];
+            $rules[$field] = $fieldRules;
         }
 
         // La paginación también: `?per_page=abc` no debe pasar por bueno en
-        // silencio y devolver la página por defecto como si nada.
-        foreach (['page', 'per_page'] as $parameter) {
-            if ($this->present($request, $parameter)) {
-                $data[$parameter] = $request->query($parameter);
-                $rules[$parameter] = ['integer', 'min:1'];
-            }
+        // silencio. La cota de `page` solo aplica a peticiones públicas sin
+        // autenticar; los clientes con token API pueden recorrer históricos
+        // completos sin límites artificiales (solo el rango int4 de PostgreSQL).
+        if ($this->present($request, 'page')) {
+            $data['page'] = $request->query('page');
+            $rules['page'] = ['integer', 'min:1', 'max:'.($isPublicRequest ? self::MAX_PAGE : 2147483647)];
+        }
+
+        if ($this->present($request, 'per_page')) {
+            $data['per_page'] = $request->query('per_page');
+            $rules['per_page'] = ['integer', 'min:1', 'max:2147483647'];
         }
 
         if ($rules === []) {
@@ -210,8 +224,8 @@ class CollectionQuery
         // caso real es `?campo[gte][]=1`, o sea una lista donde va un valor.
         $messages = [];
 
-        foreach (array_keys($rules) as $atributo) {
-            $messages[$atributo.'.prohibited'] = 'El filtro «:attribute» admite un solo valor, no una lista.';
+        foreach (array_keys($rules) as $attribute) {
+            $messages[$attribute.'.prohibited'] = 'El filtro «:attribute» admite un solo valor, no una lista.';
         }
 
         $validator = Validator::make($data, $rules, $messages);

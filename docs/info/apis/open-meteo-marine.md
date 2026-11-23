@@ -143,4 +143,4 @@ la atribución de AEMET, en el mismo pie de la fila de datos ambientales.
 
 ---
 
-> Creado: 2026-09-16
+> Creado: 2026-09-16 · Última revisión: 2026-11-23

@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
+use App\Models\Hardware\HardwareDevice;
 use App\Models\Referred\ReferredThing;
 use App\Models\User;
+use App\Policies\Concerns\GuardsAdminAndDeviceAccess;
 use App\Support\Auth\TokenAbilities;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -13,15 +15,17 @@ use Illuminate\Auth\Access\HandlesAuthorization;
  * Autorización sobre enlaces de compra de afiliados.
  *
  * Un enlace de compra pertenece al hardware del que forma parte. Puede gestionarlo
- * el propietario del dispositivo hardware o un administrador con sesión.
+ * el propietario del dispositivo hardware o un administrador con sesión (sin
+ * cruzar la frontera Admin → SuperAdmin).
  */
 class ReferredThingPolicy
 {
+    use GuardsAdminAndDeviceAccess;
     use HandlesAuthorization;
 
     public function viewAny(User $user): bool
     {
-        return true;
+        return ! TokenAbilities::deviceRequest($user);
     }
 
     public function view(User $user, ReferredThing $thing): bool
@@ -51,7 +55,7 @@ class ReferredThingPolicy
 
     public function forceDelete(User $user, ReferredThing $thing): bool
     {
-        return $this->canManage($user, $thing);
+        return $this->isHumanSuperAdmin($user);
     }
 
     private function canManage(User $user, ReferredThing $thing): bool
@@ -60,12 +64,16 @@ class ReferredThingPolicy
             return false;
         }
 
-        if ($user->isAdmin()) {
+        $rawOwnerId = $thing->relationLoaded('device')
+            ? $thing->device?->user_id
+            : HardwareDevice::query()->whereKey($thing->hardware_device_id)->value('user_id');
+
+        $ownerId = $rawOwnerId !== null ? (int) $rawOwnerId : null;
+
+        if ($ownerId !== null && $ownerId === (int) $user->id) {
             return true;
         }
 
-        $device = $thing->device;
-
-        return $device !== null && (int) $device->user_id === (int) $user->id;
+        return $this->adminCanManageOwner($user, $ownerId);
     }
 }

@@ -41,6 +41,49 @@ Disallow: /airflight*?*page=
 # consecuencia de la autenticación, no de este fichero.
 Disallow: /api/
 
+# Política explícita para motores de búsqueda e indexadores IA (GEO).
+# Se permite contenido público de divulgación, CV y telemetría abierta,
+# manteniendo protegidas las rutas privadas y administrativas.
+User-agent: GPTBot
+Allow: /
+Disallow: /admin
+Disallow: /panel
+Disallow: /api/
+Disallow: /newsletter/
+Disallow: /cv/s/
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /admin
+Disallow: /panel
+Disallow: /api/
+Disallow: /newsletter/
+Disallow: /cv/s/
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /admin
+Disallow: /panel
+Disallow: /api/
+Disallow: /newsletter/
+Disallow: /cv/s/
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /admin
+Disallow: /panel
+Disallow: /api/
+Disallow: /newsletter/
+Disallow: /cv/s/
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /admin
+Disallow: /panel
+Disallow: /api/
+Disallow: /newsletter/
+Disallow: /cv/s/
+
 # El sitemap vive en ESTE mismo host (los vhosts de `docs/deploys/vhosts/`
 # sirven la aplicación en `api.raupulus.dev`, no en `raupulus.dev`): apuntar a
 # otro dominio deja el sitemap sin descubrir para cualquier rastreador que siga

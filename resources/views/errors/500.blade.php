@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Error 500 · Algo se ha roto por nuestra parte')
+@section('noindex', '1')
 
 @section('content')
     @include('errors._page', [

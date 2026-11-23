@@ -38,7 +38,7 @@ class ShowZoneRequest extends BaseFormRequest
         return [
             'sensors' => ['sometimes', 'array'],
             'sensors.*' => [Rule::in(WeatherStationResource::SENSORS)],
-            'location_type' => ['sometimes', 'nullable', Rule::in(array_column(HardwareLocationTypeEnum::cases(), 'value'))],
+            'location_type' => ['sometimes', 'nullable', Rule::enum(HardwareLocationTypeEnum::class)],
         ];
     }
 

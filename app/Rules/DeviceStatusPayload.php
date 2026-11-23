@@ -53,10 +53,10 @@ class DeviceStatusPayload implements ValidationRule
     public static function rules(): array
     {
         return [
-            'temp' => ['nullable', 'numeric'],
-            'voltage' => ['nullable', 'numeric'],
+            'temp' => ['nullable', 'numeric', 'between:-100,200'],
+            'voltage' => ['nullable', 'numeric', 'between:0,1000'],
             'battery_level' => ['nullable', 'integer', 'between:0,100'],
-            'battery_voltage' => ['nullable', 'numeric'],
+            'battery_voltage' => ['nullable', 'numeric', 'between:0,1000'],
             'software_version' => ['nullable', 'string', 'max:50'],
             'cpu' => ['nullable', 'numeric', 'between:0,100'],
             'disk' => ['nullable', 'numeric', 'between:0,100'],

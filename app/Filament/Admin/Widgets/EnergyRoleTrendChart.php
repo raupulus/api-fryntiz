@@ -37,13 +37,13 @@ class EnergyRoleTrendChart extends ChartWidget
     /**
      * Qué papel de ese aparato: `generator`, `battery` o `load`.
      */
-    public string $papel = HardwareEnergy::ROLE_GENERATOR;
+    public string $role = HardwareEnergy::ROLE_GENERATOR;
 
     protected int|string|array $columnSpan = 'full';
 
     protected ?string $maxHeight = '260px';
 
-    private const DIAS = 7;
+    private const DAYS = 7;
 
     public static function canView(): bool
     {
@@ -52,14 +52,14 @@ class EnergyRoleTrendChart extends ChartWidget
 
     public function getHeading(): string
     {
-        $etiqueta = HardwareEnergy::ROLE_LABELS[$this->papel] ?? $this->papel;
+        $label = HardwareEnergy::ROLE_LABELS[$this->role] ?? $this->role;
 
-        return $etiqueta.' — potencia media por hora, últimos 7 días';
+        return $label.' — potencia media por hora, últimos 7 días';
     }
 
     public function getDescription(): ?string
     {
-        return match ($this->papel) {
+        return match ($this->role) {
             HardwareEnergy::ROLE_GENERATOR => 'Lo que ha entrado del generador. Los valles de la noche son normales.',
             HardwareEnergy::ROLE_BATTERY => 'Positivo mientras se carga, negativo mientras se descarga.',
             default => 'Lo que han gastado los consumos de este aparato.',
@@ -73,27 +73,27 @@ class EnergyRoleTrendChart extends ChartWidget
 
     protected function getData(): array
     {
-        $desde = Carbon::now('UTC')->startOfHour()->subHours(self::DIAS * 24 - 1);
+        $since = Carbon::now('UTC')->startOfHour()->subHours(self::DAYS * 24 - 1);
 
-        $medido = $this->potenciaPorHora($desde);
+        $measured = $this->hourlyPower($since);
 
-        $horas = [];
-        $valores = [];
+        $hours = [];
+        $values = [];
 
-        for ($hora = $desde->copy(); $hora <= Carbon::now('UTC')->startOfHour(); $hora->addHour()) {
-            $clave = $hora->format('Y-m-d H');
+        for ($hour = $since->copy(); $hour <= Carbon::now('UTC')->startOfHour(); $hour->addHour()) {
+            $key = $hour->format('Y-m-d H');
 
-            $horas[] = $hora->format('H:00') === '00:00'
-                ? $hora->format('d/m')
-                : $hora->format('H').'h';
+            $hours[] = $hour->format('H:00') === '00:00'
+                ? $hour->format('d/m')
+                : $hour->format('H').'h';
 
             // `null` y no 0: una hora sin lecturas es un hueco en la serie, no
             // una hora en la que se midieron cero vatios. Con 0 la gráfica
             // dibujaría un desplome que nunca pasó.
-            $valores[] = array_key_exists($clave, $medido) ? round($medido[$clave], 1) : null;
+            $values[] = array_key_exists($key, $measured) ? round($measured[$key], 1) : null;
         }
 
-        [$borde, $fondo] = match ($this->papel) {
+        [$border, $background] = match ($this->role) {
             HardwareEnergy::ROLE_GENERATOR => ['rgb(34,197,94)', 'rgba(34,197,94,0.15)'],
             HardwareEnergy::ROLE_BATTERY => ['rgb(245,158,11)', 'rgba(245,158,11,0.15)'],
             default => ['rgb(59,130,246)', 'rgba(59,130,246,0.15)'],
@@ -102,16 +102,16 @@ class EnergyRoleTrendChart extends ChartWidget
         return [
             'datasets' => [[
                 'label' => 'Potencia media (W)',
-                'data' => $valores,
-                'borderColor' => $borde,
-                'backgroundColor' => $fondo,
+                'data' => $values,
+                'borderColor' => $border,
+                'backgroundColor' => $background,
                 'fill' => true,
                 'tension' => 0.3,
                 'pointRadius' => 0,
                 'borderWidth' => 2,
                 'spanGaps' => false,
             ]],
-            'labels' => $horas,
+            'labels' => $hours,
         ];
     }
 
@@ -124,34 +124,34 @@ class EnergyRoleTrendChart extends ChartWidget
      *
      * @return array<string, float>
      */
-    private function potenciaPorHora(Carbon $desde): array
+    private function hourlyPower(Carbon $since): array
     {
         if ($this->deviceId === null) {
             return [];
         }
 
-        $elementos = HardwareEnergy::query()
+        $elements = HardwareEnergy::query()
             ->where('hardware_device_id', $this->deviceId)
-            ->where('role', $this->papel)
+            ->where('role', $this->role)
             ->pluck('id');
 
-        if ($elementos->isEmpty()) {
+        if ($elements->isEmpty()) {
             return [];
         }
 
-        /** @var array<string, float> $filas */
-        $filas = HardwareEnergyReading::query()
-            ->whereIn('hardware_energy_id', $elementos)
-            ->where('created_at', '>=', $desde)
+        /** @var array<string, float> $rows */
+        $rows = HardwareEnergyReading::query()
+            ->whereIn('hardware_energy_id', $elements)
+            ->where('created_at', '>=', $since)
             ->reliable()
             ->whereNotNull('power')
             ->toBase()
-            ->selectRaw("to_char(date_trunc('hour', created_at), 'YYYY-MM-DD HH24') AS hora, avg(power) AS media")
-            ->groupBy('hora')
-            ->pluck('media', 'hora')
-            ->map(static fn ($media): float => (float) $media)
+            ->selectRaw("to_char(date_trunc('hour', created_at), 'YYYY-MM-DD HH24') AS hour_bucket, avg(power) AS avg_power")
+            ->groupBy('hour_bucket')
+            ->pluck('avg_power', 'hour_bucket')
+            ->map(static fn ($average): float => (float) $average)
             ->all();
 
-        return $filas;
+        return $rows;
     }
 }

@@ -39,13 +39,13 @@ class TenantPanelProvider extends PanelProvider
             // comiera la cabecera, la directiva sigue en el HTML.
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
-                fn (): string => '<meta name="robots" content="'.NoIndex::VALOR.'">',
+                fn (): string => '<meta name="robots" content="'.NoIndex::VALUE.'">',
             )
             // El CSS propio de los paneles, el mismo que carga el de
             // administración. Ver `FilamentPanelCss`.
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
-                fn (): string => FilamentPanelCss::etiqueta(),
+                fn (): string => FilamentPanelCss::tag(),
             )
             ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,
@@ -60,6 +60,7 @@ class TenantPanelProvider extends PanelProvider
             ->pages([
                 Dashboard::class,
             ])
+            ->unsavedChangesAlerts()
             // El perfil se abre desde el menú de usuario, como en el panel de
             // administración.
             ->userMenuItems([
@@ -67,6 +68,15 @@ class TenantPanelProvider extends PanelProvider
                     ->label('Mis datos')
                     ->icon(Heroicon::OutlinedUserCircle)
                     ->url(fn () => EditProfile::getUrl()),
+                'admin_panel' => MenuItem::make()
+                    ->label('Panel de administración')
+                    ->icon(Heroicon::OutlinedShieldCheck)
+                    ->url(fn () => url('/admin'))
+                    ->visible(fn (): bool => auth()->user()?->canAccessPanel(filament()->getPanel('admin')) ?? false),
+                'public_site' => MenuItem::make()
+                    ->label('Ir a la web pública')
+                    ->icon(Heroicon::OutlinedGlobeAlt)
+                    ->url(fn () => url('/')),
             ])
             ->middleware([
                 // Que ni el panel ni su formulario de acceso acaben en un

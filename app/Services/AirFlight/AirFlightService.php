@@ -49,90 +49,74 @@ class AirFlightService
     public function addAircraft(array $data, ?int $userId = null, ?int $hardwareDeviceId = null): AirFlightAirPlane
     {
         $icao = isset($data['icao']) ? trim((string) $data['icao']) : '';
-
-        $aircraft = AirFlightAirPlane::query()->firstOrNew(
-            $icao !== '' ? ['icao' => $icao] : ['icao' => null]
-        );
-
-        if (! $aircraft->exists) {
-            $aircraft->user_id = $userId;
-            $aircraft->hardware_device_id = $hardwareDeviceId;
-            $aircraft->seen_first_at = now();
-        }
-
-        // Matrícula, tipo y categoría: datos fijos del aparato (no de la
-        // posición), que pueden llegar en cualquier sondeo — a diferencia de
-        // `user_id`/`hardware_device_id`, no son "quién lo vio la primera
-        // vez", así que se aplican tanto en alta como en avión ya existente.
-        // Solo si vienen con valor: igual que `routeFieldsOnly()`, nunca se
-        // borra un dato ya guardado con uno vacío.
-        foreach (['registration', 'aircraft_type', 'category', 'wtc', 'aircraft_desc'] as $field) {
-            if (array_key_exists($field, $data) && $data[$field] !== null && trim((string) $data[$field]) !== '') {
-                $aircraft->{$field} = trim((string) $data[$field]);
-            }
-        }
-
-        // País y bandera: a diferencia de lo anterior, no dependen de nada
-        // que mande el receptor — se calculan del propio ICAO (rango OACI),
-        // igual que hacía `airflight:fix` a mano. Se resuelven aquí para no
-        // depender de ese comando: nada los mantenía al día desde que se
-        // dejó de ejecutar (último avión con `country` en producción: el
-        // 2026-09-02).
-        if ($icao !== '' && ($aircraft->country === null || $aircraft->flag === null)) {
-            $hex = AirFlightAirPlane::searchHex($icao);
-
-            if ($hex) {
-                $aircraft->country ??= $hex['country'];
-                $aircraft->flag ??= $hex['flag_image'];
-            }
-        }
-
-        $aircraft->seen_last_at = now();
-
-        $isNew = ! $aircraft->exists;
+        $isNew = false;
 
         try {
-            $aircraft->save();
+            return DB::transaction(function () use ($data, $icao, $userId, $hardwareDeviceId, &$isNew): AirFlightAirPlane {
+                $aircraft = AirFlightAirPlane::query()->firstOrNew(
+                    $icao !== '' ? ['icao' => $icao] : ['icao' => null]
+                );
+
+                $isNew = ! $aircraft->exists;
+
+                if ($isNew) {
+                    $aircraft->user_id = $userId;
+                    $aircraft->hardware_device_id = $hardwareDeviceId;
+                    $aircraft->seen_first_at = now();
+                }
+
+                // Matrícula, tipo y categoría: datos fijos del aparato (no de la
+                // posición), que pueden llegar en cualquier sondeo — a diferencia de
+                // `user_id`/`hardware_device_id`, no son "quién lo vio la primera
+                // vez", así que se aplican tanto en alta como en avión ya existente.
+                // Solo si vienen con valor: igual que `routeFieldsOnly()`, nunca se
+                // borra un dato ya guardado con uno vacío.
+                foreach (['registration', 'aircraft_type', 'category', 'wtc', 'aircraft_desc'] as $field) {
+                    if (array_key_exists($field, $data) && $data[$field] !== null && trim((string) $data[$field]) !== '') {
+                        $aircraft->{$field} = trim((string) $data[$field]);
+                    }
+                }
+
+                // País y bandera: se calculan del propio ICAO (rango OACI).
+                if ($icao !== '' && ($aircraft->country === null || $aircraft->flag === null)) {
+                    $hex = AirFlightAirPlane::searchHex($icao);
+
+                    if ($hex) {
+                        $aircraft->country ??= $hex['country'];
+                        $aircraft->flag ??= $hex['flag_image'];
+                    }
+                }
+
+                $aircraft->seen_last_at = now();
+                $aircraft->save();
+
+                $path = $this->routeFieldsOnly($data);
+
+                if ($path !== []) {
+                    $newRoute = $this->mergeOrCreateRoute($aircraft, $path, $userId, $hardwareDeviceId);
+
+                    $aircraft->setRelation('latestRoute', $newRoute);
+
+                    if ($newRoute->lat !== null && $newRoute->lon !== null) {
+                        $aircraft->setRelation('latestPosition', $newRoute);
+                        $aircraft->route_last_at = $newRoute->seen_at;
+                        $aircraft->save();
+                    }
+                }
+
+                return $aircraft;
+            });
         } catch (UniqueConstraintViolationException $e) {
             // `icao` es único: otra petición (un reintento del receptor)
             // dio de alta este mismo avión entre el `firstOrNew()` y el
-            // `save()`. Se repite entera para que ahora lo encuentre y
-            // aplique estos datos sobre la fila que ya existe.
+            // `save()`. Se captura FUERA de la transacción para que PostgreSQL
+            // haya hecho ROLLBACK completo antes de reintentar.
             if (! $isNew) {
                 throw $e;
             }
 
             return $this->addAircraft($data, $userId, $hardwareDeviceId);
         }
-
-        $path = $this->routeFieldsOnly($data);
-
-        if ($path !== []) {
-            $newRoute = $this->mergeOrCreateRoute($aircraft, $path, $userId, $hardwareDeviceId);
-
-            $aircraft->setRelation('latestRoute', $newRoute);
-
-            // Este mensaje concreto puede no traer posición (un squawk o una
-            // altitud sueltos): en ese caso `latestPosition` se deja para
-            // que `AirFlightResource` la resuelva bajo demanda si hace falta,
-            // en vez de asumir que la posición nueva es esta.
-            if ($newRoute->lat !== null && $newRoute->lon !== null) {
-                $aircraft->setRelation('latestPosition', $newRoute);
-
-                // `route_last_at`: "el momento del último registro CON RUTA
-                // VÁLIDA" (comentario de la migración), es decir con
-                // posición real — no cualquier mensaje, igual que
-                // `latestPosition` frente a `latestRoute`. Ningún código lo
-                // mantenía al día (el único método que lo leía,
-                // `getRecentsAircrafts()`, no tiene ningún caller): se
-                // actualiza aquí, en cada sondeo con posición, en vez de
-                // depender de un comando aparte.
-                $aircraft->route_last_at = $newRoute->seen_at;
-                $aircraft->save();
-            }
-        }
-
-        return $aircraft;
     }
 
     /**

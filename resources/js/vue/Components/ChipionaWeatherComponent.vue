@@ -5,9 +5,9 @@
             quedaba enseñando ceros: 0 ºC, 0 % de humedad y 0 km/h de viento,
             que no es «no hay dato», es un dato falso.
         -->
-        <p v-if="loading" class="widget-state">Cargando datos del clima…</p>
+        <p v-if="loading" class="widget-state" role="status" aria-live="polite">Cargando datos del clima…</p>
 
-        <p v-else-if="error" class="widget-state widget-state-error">
+        <p v-else-if="error" class="widget-state widget-state-error" role="alert">
             No se han podido cargar los datos de la estación.
             <button type="button" class="widget-state-retry" @click="fetchData()">Reintentar</button>
         </p>
@@ -59,16 +59,17 @@
 
                             <!-- Viento -->
                             <div v-show="navigation.wind" class="navigation navigation-wind">
-                                <span class="icon icon-wind color-blue"></span> Viento
-                                <h1 class="resume-weather-temp">{{ roundTo2(wind.average) }} km/h</h1>
-                                <h3 class="resume-weather-desc">
-                                    Min: {{ roundTo2(wind.min) }} km/h<br/>
-                                    Max: {{ roundTo2(wind.max) }} km/h
-                                </h3>
+                                <span class="icon icon-wind color-blue" aria-hidden="true"></span> Viento
+                                <p class="resume-weather-temp">{{ roundTo2(wind.average) }} km/h</p>
+                                <p class="resume-weather-desc">
+                                    Mín.: {{ roundTo2(wind.min) }} km/h<br/>
+                                    Máx.: {{ roundTo2(wind.max) }} km/h
+                                </p>
                                 <div v-if="wind.direction" class="wind-direction" :title="`Dirección del viento: ${wind.direction}`">
                                     <span
                                         class="icon icon-wind-direction color-blue"
                                         :style="{ transform: `rotate(${wind.grades ?? 0}deg)` }"
+                                        aria-hidden="true"
                                     ></span>
                                     <span class="wind-direction-label">{{ wind.direction }}</span>
                                 </div>
@@ -76,32 +77,32 @@
 
                             <!-- TVOC -->
                             <div v-show="navigation.tvoc" class="navigation">
-                                <span class="icon icon-tvoc color-yellow"></span> Calidad del Aire
-                                <h1 class="resume-weather-temp">{{ roundTo2(air_quality.quality) }} %</h1>
-                                <h3 class="resume-weather-desc">
+                                <span class="icon icon-tvoc color-yellow" aria-hidden="true"></span> Calidad del Aire
+                                <p class="resume-weather-temp">{{ roundTo2(air_quality.quality) }} %</p>
+                                <p class="resume-weather-desc">
                                     TVOC: {{ roundTo2(air_quality.tvoc) }} ppb<br/>
                                     CO2-ECO2: {{ roundTo2(air_quality.co2_eco2) }} ppm
-                                </h3>
+                                </p>
                             </div>
 
                             <!-- UV -->
                             <div v-show="navigation.light" class="navigation">
-                                <span class="icon icon-uv color-orange"></span> Radiación Solar
-                                <h1 class="resume-weather-temp">{{ roundTo2(light.index) }} UV</h1>
-                                <h3 class="resume-weather-desc">
+                                <span class="icon icon-uv color-orange" aria-hidden="true"></span> Radiación Solar
+                                <p class="resume-weather-temp">{{ roundTo2(light.index) }} UV</p>
+                                <p class="resume-weather-desc">
                                     UVA: {{ roundTo2(light.uva) }}<br/>
                                     UVB: {{ roundTo2(light.uvb) }}
-                                </h3>
+                                </p>
                             </div>
 
                             <!-- Rayos -->
                             <div v-show="navigation.lightning" class="navigation">
-                                <span class="icon icon-lightning color-yellow"></span> Rayos
-                                <h1 class="resume-weather-temp">{{ lightning.inLastHour }}</h1>
-                                <h3 class="resume-weather-desc">
+                                <span class="icon icon-lightning color-yellow" aria-hidden="true"></span> Rayos
+                                <p class="resume-weather-temp">{{ lightning.inLastHour }}</p>
+                                <p class="resume-weather-desc">
                                     Última hora: {{ lightning.inLastHour }}<br/>
                                     Últimos 10 min: {{ lightning.inLast10Minutes }}
-                                </h3>
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -110,26 +111,61 @@
 
             <div class="box-selectors m-0 p-0">
                 <div class="selectors-container">
-                    <ul class="selector-list">
-                        <li :class="{ active: navigation.info }" @click="menuSelect('info')">
-                            <span class="icon icon-info"></span>
-                            <span class="selector-element">General</span>
+                    <ul class="selector-list" role="tablist" aria-label="Magnitudes meteorológicas">
+                        <li role="presentation">
+                            <button type="button"
+                                    role="tab"
+                                    :aria-selected="navigation.info ? 'true' : 'false'"
+                                    :class="{ active: navigation.info }"
+                                    class="selector-button"
+                                    @click="menuSelect('info')">
+                                <span class="icon icon-info" aria-hidden="true"></span>
+                                <span class="selector-element">General</span>
+                            </button>
                         </li>
-                        <li :class="{ active: navigation.wind }" @click="menuSelect('wind')">
-                            <span class="icon icon-wind"></span>
-                            <span class="selector-element">Viento</span>
+                        <li role="presentation">
+                            <button type="button"
+                                    role="tab"
+                                    :aria-selected="navigation.wind ? 'true' : 'false'"
+                                    :class="{ active: navigation.wind }"
+                                    class="selector-button"
+                                    @click="menuSelect('wind')">
+                                <span class="icon icon-wind" aria-hidden="true"></span>
+                                <span class="selector-element">Viento</span>
+                            </button>
                         </li>
-                        <li :class="{ active: navigation.tvoc }" @click="menuSelect('tvoc')">
-                            <span class="icon icon-tvoc"></span>
-                            <span class="selector-element">TVOC</span>
+                        <li role="presentation">
+                            <button type="button"
+                                    role="tab"
+                                    :aria-selected="navigation.tvoc ? 'true' : 'false'"
+                                    :class="{ active: navigation.tvoc }"
+                                    class="selector-button"
+                                    @click="menuSelect('tvoc')">
+                                <span class="icon icon-tvoc" aria-hidden="true"></span>
+                                <span class="selector-element">TVOC</span>
+                            </button>
                         </li>
-                        <li :class="{ active: navigation.light }" @click="menuSelect('light')">
-                            <span class="icon icon-uv"></span>
-                            <span class="selector-element">UV</span>
+                        <li role="presentation">
+                            <button type="button"
+                                    role="tab"
+                                    :aria-selected="navigation.light ? 'true' : 'false'"
+                                    :class="{ active: navigation.light }"
+                                    class="selector-button"
+                                    @click="menuSelect('light')">
+                                <span class="icon icon-uv" aria-hidden="true"></span>
+                                <span class="selector-element">UV</span>
+                            </button>
                         </li>
-                        <li :class="{ active: navigation.lightning }" @click="menuSelect('lightning')">
-                            <span class="icon icon-lightning"></span>
-                            <span class="selector-element">Rayos</span>
+                        <li role="presentation">
+                            <button type="button"
+                                    role="tab"
+                                    :aria-selected="navigation.lightning ? 'true' : 'false'"
+                                    :class="{ active: navigation.lightning }"
+                                    class="selector-button"
+                                    @click="menuSelect('lightning')">
+                                <span class="icon icon-lightning" aria-hidden="true"></span>
+                                <span class="selector-element">Rayos</span>
+                            </button>
                         </li>
                     </ul>
                 </div>
@@ -200,6 +236,10 @@ const props = defineProps({
         type: [String, Number],
         default: '',
     },
+    initialData: {
+        type: Object,
+        default: null,
+    },
 });
 
 const navigation = ref({ info: true, wind: false, tvoc: false, light: false, lightning: false });
@@ -227,7 +267,7 @@ const loading = ref(true);
  * un reintento fallido pasaba de largo por la comprobación y dejaba el widget
  * enseñando los ceros con los que arranca `info`, como si fueran medidas.
  */
-const cargadoAlgunaVez = ref(false);
+const hasLoadedOnce = ref(false);
 const error = ref(false);
 
 /** Id real de la estación que se está mostrando, para suscribirse a su channel. */
@@ -298,27 +338,27 @@ const fetchData = async () => {
     // error —la comprobación de abajo mira `loading`, que ya está en false— y
     // el widget se queda enseñando los valores a cero como si fueran datos
     // buenos. Un cero no es una medida: es que no hay ninguna.
-    const primeraCarga = !cargadoAlgunaVez.value;
+    const isFirstLoad = !hasLoadedOnce.value;
 
     try {
         // Con id, el recurso: `data` es un objeto. Sin id, la colección: `data`
         // es una lista y la principal es la primera.
-        const porZona = props.zone !== '' && props.zone != null;
-        const conId = props.station !== '' && props.station != null;
+        const byZone = props.zone !== '' && props.zone != null;
+        const hasStationId = props.station !== '' && props.station != null;
 
-        let sufijo = '';
+        let suffix = '';
 
-        if (porZona) {
-            sufijo = `/zone/${encodeURIComponent(props.zone)}`;
+        if (byZone) {
+            suffix = `/zone/${encodeURIComponent(props.zone)}`;
 
             if (props.locationType !== '' && props.locationType != null) {
-                sufijo += `/${encodeURIComponent(props.locationType)}`;
+                suffix += `/${encodeURIComponent(props.locationType)}`;
             }
-        } else if (conId) {
-            sufijo = `/${encodeURIComponent(props.station)}`;
+        } else if (hasStationId) {
+            suffix = `/${encodeURIComponent(props.station)}`;
         }
 
-        const url = `${props.apiBaseUrl}/${props.apiPath}${sufijo}`;
+        const url = `${props.apiBaseUrl}/${props.apiPath}${suffix}`;
 
         const response = await fetch(url, {
             headers: { Accept: 'application/json' },
@@ -331,20 +371,20 @@ const fetchData = async () => {
         }
 
         const json = await response.json();
-        const carga = json?.data ?? json;
-        const data = Array.isArray(carga) ? carga[0] : carga;
+        const payload = json?.data ?? json;
+        const data = Array.isArray(payload) ? payload[0] : payload;
 
         if (!data) {
             throw new Error('No hay ninguna estación que mostrar');
         }
 
         apply(data);
-        cargadoAlgunaVez.value = true;
+        hasLoadedOnce.value = true;
         subscribe();
     } catch (e) {
         // Sólo se marca error si aún no hay nada que enseñar: si ya había datos
         // en pantalla, un fallo puntual de red no debe borrarlos.
-        if (primeraCarga) {
+        if (isFirstLoad) {
             error.value = true;
         }
 
@@ -379,16 +419,24 @@ const subscribe = () => {
     rescheduleRefresh(300000);
 };
 
-const rescheduleRefresh = (milisegundos) => {
+const rescheduleRefresh = (milliseconds) => {
     if (intervalId) {
         clearInterval(intervalId);
     }
 
-    intervalId = setInterval(fetchData, milisegundos);
+    intervalId = setInterval(fetchData, milliseconds);
 };
 
 onBeforeMount(() => {
-    fetchData();
+    if (props.initialData && typeof props.initialData === 'object') {
+        apply(props.initialData);
+        hasLoadedOnce.value = true;
+        loading.value = false;
+        subscribe();
+    } else {
+        fetchData();
+    }
+
     rescheduleRefresh(65000);
 });
 
@@ -440,9 +488,9 @@ onBeforeUnmount(() => {
 
 .weather-container {
     margin: auto;
-    padding: 1vh;
+    padding: 0.5rem;
     max-width: 500px;
-    color: #ffffff;
+    color: var(--color-on-primary, #ffffff);
 }
 
 /* Iconos */
@@ -557,18 +605,31 @@ onBeforeUnmount(() => {
 }
 
 .box-resume-center {
+    position: relative;
     border-radius: 25px;
     background-image: url("./assets/chipiona.webp");
+    background-size: cover;
+    background-position: center;
     width: 100%;
     min-height: 300px;
     box-shadow: 0 0 20px -10px rgba(0, 0, 0, 0.2);
-    transition: transform 400ms ease;
-    transform: translateZ(0) scale(1.02) perspective(1000px);
-    --gradient: linear-gradient(90deg, rgba(81,81,229,0.6) 20%, rgba(68, 218, 255, 0.2) 100%);
+    transition: transform 300ms ease;
+    --gradient: linear-gradient(90deg, color-mix(in srgb, var(--color-primary-container, #1e3a8a) 72%, transparent) 20%, rgba(15, 23, 42, 0.35) 100%);
 }
 
-.box-resume-center:hover {
-    transform: scale(1.1) perspective(1500px) rotateY(10deg);
+@media (hover: hover) {
+    .box-resume-center:hover {
+        transform: translateY(-2px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .box-resume-center {
+        transition: none;
+    }
+    .box-resume-center:hover {
+        transform: none;
+    }
 }
 
 .resume-container-date {
@@ -586,8 +647,13 @@ onBeforeUnmount(() => {
     left: 0;
     background-image: var(--gradient);
     border-radius: 25px;
-    opacity: 0.8;
-    z-index: -1;
+    opacity: 0.85;
+    z-index: 0;
+}
+
+.box-resume-center > div:last-child {
+    position: relative;
+    z-index: 1;
 }
 
 .resume-date-day { margin-left: 5px; }
@@ -596,13 +662,14 @@ onBeforeUnmount(() => {
 .resume-weather-container {
     margin-top: 8px;
     margin-left: 15px;
+    margin-right: 15px;
 }
 
 .resume-weather-temp {
     margin: 0;
     font-weight: 700;
-    font-size: 3.5rem;
-    text-shadow: 3px 3px 3px #222831;
+    font-size: clamp(2.25rem, 6vw, 3.5rem);
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.55);
 }
 
 .resume-weather-desc { margin: 0; }
@@ -619,52 +686,80 @@ onBeforeUnmount(() => {
     margin-top: -15px;
     margin-left: auto;
     margin-right: auto;
-    padding-top: 16px;
-    padding-bottom: 1px;
+    padding: 20px 8px 10px;
     width: 95%;
     min-height: 90px;
-    background-color: #222831;
+    background-color: var(--color-footer-surface, #111827);
+    color: var(--color-footer-on-surface, #f8fafc);
     text-align: center;
     border-radius: 0 0 20px 20px;
 }
 
 .selector-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.35rem;
     padding: 2px 0;
+    margin: 0;
+    list-style: none;
     border-radius: 10px;
 }
 
-.selector-list > li {
-    display: inline-block;
-    padding: 15px;
+.selector-button {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 60px;
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.8125rem;
     cursor: pointer;
-    transition: 200ms ease;
+    transition: background-color 200ms ease, color 200ms ease;
     border-radius: 10px;
 }
 
-.selector-list > li:hover {
-    transform: scale(1.1);
-    background: #fff;
-    color: #222831;
-    box-shadow: 0 0 40px -5px rgba(0, 0, 0, 0.2);
+.selector-button:focus-visible {
+    outline: 2px solid var(--color-on-primary, #ffffff);
+    outline-offset: 2px;
 }
 
-.selector-list > li > .icon {
-    filter: invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%);
+@media (hover: hover) {
+    .selector-button:hover {
+        background: var(--color-surface-container-lowest, #ffffff);
+        color: var(--color-on-surface, #191c1e);
+        box-shadow: 0 0 20px -5px rgba(0, 0, 0, 0.25);
+    }
 }
 
-.selector-list > li:hover > .icon, .selector-list > li.active > .icon {
+.selector-button > .icon {
+    filter: brightness(0) invert(1);
+    margin-bottom: 0;
+}
+
+@media (hover: hover) {
+    .selector-button:hover > .icon {
+        filter: none;
+    }
+}
+
+.selector-button.active {
+    background: var(--color-surface-container-lowest, #ffffff);
+    color: var(--color-on-surface, #191c1e);
+    font-weight: 600;
+}
+
+.selector-button.active > .icon {
     filter: none;
 }
 
-.selector-list > li.active {
-    background: #fff;
-    color: #222831;
-    border-radius: 10px;
-}
-
-.selector-list > li .selector-element {
+.selector-button .selector-element {
     display: block;
-    margin: 10px 0 0 0;
+    margin: 6px 0 0 0;
     text-align: center;
 }
 

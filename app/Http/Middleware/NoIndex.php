@@ -27,7 +27,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class NoIndex
 {
-    public const VALOR = 'noindex, nofollow, noarchive';
+    public const VALUE = 'noindex, nofollow, noarchive';
 
     public function handle(Request $request, Closure $next): Response
     {
@@ -37,7 +37,7 @@ class NoIndex
         // `CurriculumController::shared()` pone su propio `X-Robots-Tag` y esa
         // decisión es suya.
         if (! $response->headers->has('X-Robots-Tag')) {
-            $response->headers->set('X-Robots-Tag', self::VALOR);
+            $response->headers->set('X-Robots-Tag', self::VALUE);
         }
 
         return $response;

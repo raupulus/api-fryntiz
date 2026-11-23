@@ -6,27 +6,68 @@
     con `safeBasic()`, y una `<meta>` no. Si se cuela un `<p>` aquí, sale tal
     cual en el resultado de búsqueda.
 --}}
-@section('description', \App\Helpers\HtmlHelper::toMetaDescription($plant->description) ?: 'Perfil y estadísticas de '.$plant->name.' en Smart Plant')
+@section('description', \App\Helpers\HtmlHelper::toMetaDescription($plant->description) ?: 'Perfil, cuidados y estadísticas de sensores IoT en tiempo real para '.$plant->name.' en Smart Plant.')
 @section('keywords', 'smart plant, bonsai, '.$plant->name.', '.$plant->name_scientific.', sensores, riego')
 
-@section('rs-title', $plant->name.' - Smart Plant')
+@section('rs-title', $plant->name.' | Smart Plant | Api Raupulus')
 @section('rs-sitename', 'Api Raupulus')
-@section('rs-description', \App\Helpers\HtmlHelper::toMetaDescription($plant->description) ?: 'Perfil y estadísticas de '.$plant->name)
+@section('rs-description', \App\Helpers\HtmlHelper::toMetaDescription($plant->description) ?: 'Perfil, cuidados y estadísticas de sensores IoT para '.$plant->name)
 @section('rs-image', $plant->url_image)
 @section('rs-url', route('smartplant.show', $plant))
 
+@push('json-ld')
+    @php
+        $plantSchema = [
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                [
+                    '@type' => 'WebPage',
+                    'name' => $plant->name.' — Smart Plant',
+                    'description' => \App\Helpers\HtmlHelper::toMetaDescription($plant->description) ?: 'Perfil y estadísticas de '.$plant->name,
+                    'url' => route('smartplant.show', $plant),
+                    'inLanguage' => 'es-ES',
+                ],
+                [
+                    '@type' => 'BreadcrumbList',
+                    'itemListElement' => [
+                        [
+                            '@type' => 'ListItem',
+                            'position' => 1,
+                            'name' => 'Portada',
+                            'item' => route('home'),
+                        ],
+                        [
+                            '@type' => 'ListItem',
+                            'position' => 2,
+                            'name' => 'Smart Plant',
+                            'item' => route('smartplant.index'),
+                        ],
+                        [
+                            '@type' => 'ListItem',
+                            'position' => 3,
+                            'name' => $plant->name,
+                            'item' => route('smartplant.show', $plant),
+                        ],
+                    ],
+                ],
+            ],
+        ];
+    @endphp
+    <script type="application/ld+json">@json($plantSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG)</script>
+@endpush
+
 @section('content')
     {{-- Hero --}}
-    <section class="hero-gradient min-h-[30vh] flex items-center pt-20">
-        <div class="max-w-7xl mx-auto px-6 text-white">
+    <section class="hero-gradient min-h-[30svh] flex items-center pt-20 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 text-on-primary">
             <h1 class="text-4xl md:text-5xl font-bold tracking-tighter mb-2">#{{ $plant->id }} - {{ $plant->name }}</h1>
             @if($plant->name_scientific)
-                <p class="text-lg text-white/80 italic">{{ $plant->name_scientific }}</p>
+                <p class="text-lg text-on-primary/85 italic">{{ $plant->name_scientific }}</p>
             @endif
             @if($plant->start_at)
-                <div class="inline-flex items-center gap-2 bg-white/15 rounded-full px-4 py-1.5 text-sm text-white mt-4">
-                    <span class="material-symbols-outlined text-base">eco</span>
-                    Siembra: {{ $plant->start_at->format('d/m/Y') }}
+                <div class="inline-flex items-center gap-2 bg-on-primary/15 rounded-full px-4 py-1.5 text-sm text-on-primary mt-4">
+                    <span class="material-symbols-outlined text-base" aria-hidden="true">eco</span>
+                    Siembra: <time datetime="{{ $plant->start_at->toDateString() }}">{{ $plant->start_at->format('d/m/Y') }}</time>
                 </div>
             @endif
         </div>
@@ -34,10 +75,10 @@
 
     {{-- Volver --}}
     <section class="pt-8 bg-surface">
-        <div class="max-w-5xl mx-auto px-6">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6">
             <a href="{{ route('smartplant.index') }}"
                class="inline-flex items-center gap-2 px-4 py-2 bg-surface-container rounded-lg text-on-surface hover:bg-surface-container-high transition-colors">
-                <span class="material-symbols-outlined text-sm">arrow_back</span>
+                <span class="material-symbols-outlined text-sm" aria-hidden="true">arrow_back</span>
                 Volver a Smart Plant
             </a>
         </div>
@@ -58,7 +99,7 @@
                         etiquetas: `{!! !!}` a secas sobre texto que alguien
                         escribe es una puerta abierta.
                     --}}
-                    <div class="text-on-surface-variant mb-6 prose-basica">
+                    <div class="text-on-surface-variant mb-6 prose-basic">
                         @if(filled($plant->description))
                             @safeHtml($plant->description)
                         @else
@@ -78,7 +119,7 @@
                         propias etiquetas y enseñarlas tal cual.
                     --}}
                     @if(filled($plant->details))
-                        <div class="text-on-surface-variant prose-basica">
+                        <div class="text-on-surface-variant prose-basic">
                             @safeHtml($plant->details)
                         </div>
                     @endif
@@ -91,8 +132,8 @@
     @if($registers->count() > 0)
         @php $lastRegister = $registers->first(); @endphp
         <section class="pb-12 bg-surface">
-            <div class="max-w-5xl mx-auto px-6">
-                <h3 class="text-2xl text-on-surface font-bold leading-none mb-4">Última lectura</h3>
+            <div class="max-w-5xl mx-auto px-4 sm:px-6">
+                <h2 class="text-2xl text-on-surface font-bold leading-none mb-4">Última lectura</h2>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm mb-3">
                     <div class="bg-surface-container-lowest rounded-lg p-3 text-center shadow-lg">
                         <span class="text-on-surface-variant text-xs">Humedad Tierra</span>
@@ -128,7 +169,7 @@
                         ['on' => $lastRegister->vaporizer_enabled, 'icon' => 'humidity_high', 'label' => 'Vaporizador'],
                     ] as $estado)
                         <div class="rounded-lg p-3 text-center shadow-lg {{ $estado['on'] ? 'bg-success-container' : 'bg-surface-container-lowest' }}">
-                            <span class="material-symbols-outlined block {{ $estado['on'] ? 'text-on-success-container' : 'text-on-surface-variant' }}">{{ $estado['icon'] }}</span>
+                            <span class="material-symbols-outlined block {{ $estado['on'] ? 'text-on-success-container' : 'text-on-surface-variant' }}" aria-hidden="true">{{ $estado['icon'] }}</span>
                             <span class="text-xs {{ $estado['on'] ? 'text-on-success-container font-semibold' : 'text-on-surface-variant' }}">{{ $estado['label'] }}</span>
                         </div>
                     @endforeach
@@ -140,13 +181,13 @@
     {{-- Mínimos/máximos por sensor: hoy, esta semana y este mes --}}
     @if(count($statCards) > 0)
         <section class="pb-12 bg-surface">
-            <div class="max-w-7xl mx-auto px-6">
-                <h3 class="text-2xl text-on-surface font-bold leading-none mb-4">Mínimos y máximos</h3>
+            <div class="max-w-7xl mx-auto px-4 sm:px-6">
+                <h2 class="text-2xl text-on-surface font-bold leading-none mb-4">Mínimos y máximos</h2>
                 <div class="grid gap-4 md:grid-cols-2">
                     @foreach($statCards as $card)
                         <div class="bg-surface-container-lowest rounded-xl shadow-lg p-6">
-                            <h4 class="text-on-surface font-bold mb-3">{{ $card['label'] }}</h4>
-                            <div class="grid grid-cols-3 gap-3 text-sm">
+                            <h3 class="text-on-surface font-bold mb-3">{{ $card['label'] }}</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
                                 @foreach($card['stats'] as $stat)
                                     <div class="text-center">
                                         <span class="text-on-surface-variant text-xs">{{ $stat['label'] }}</span>
@@ -166,30 +207,37 @@
 
     {{-- Tabla de últimas 50 lecturas --}}
     <section class="pb-16 bg-surface">
-        <div class="max-w-7xl mx-auto px-6">
-            <h3 class="text-2xl text-on-surface font-bold leading-none mb-4">Últimas {{ $registers->count() }} lecturas</h3>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
+            <h2 class="text-2xl text-on-surface font-bold leading-none mb-4">Últimas {{ $registers->count() }} lecturas</h2>
 
-            <div class="bg-surface-container-lowest rounded-xl shadow-lg p-6">
+            <div class="bg-surface-container-lowest rounded-xl shadow-lg p-4 sm:p-6">
                 @if($registers->count() > 0)
                     <div class="overflow-x-auto">
                         <table class="min-w-max w-full table-auto text-sm">
+                            <caption class="sr-only">Historial de lecturas de {{ $plant->name }}</caption>
                             <thead>
                                 <tr class="bg-inverse-surface text-inverse-on-surface">
-                                    <td class="px-4 py-2 text-center">Fecha</td>
-                                    <td class="px-4 py-2 text-center">Hum. Tierra</td>
-                                    <td class="px-4 py-2 text-center">Temp.</td>
-                                    <td class="px-4 py-2 text-center">Hum. Aire</td>
-                                    <td class="px-4 py-2 text-center">Presión</td>
-                                    <td class="px-4 py-2 text-center">UV</td>
-                                    <td class="px-4 py-2 text-center">Tanque lleno</td>
-                                    <td class="px-4 py-2 text-center">Riego activo</td>
-                                    <td class="px-4 py-2 text-center">Vaporizador</td>
+                                    <th scope="col" class="px-4 py-2 text-center">Fecha</th>
+                                    <th scope="col" class="px-4 py-2 text-center">Hum. Tierra</th>
+                                    <th scope="col" class="px-4 py-2 text-center">Temp.</th>
+                                    <th scope="col" class="px-4 py-2 text-center">Hum. Aire</th>
+                                    <th scope="col" class="px-4 py-2 text-center">Presión</th>
+                                    <th scope="col" class="px-4 py-2 text-center">UV</th>
+                                    <th scope="col" class="px-4 py-2 text-center">Tanque lleno</th>
+                                    <th scope="col" class="px-4 py-2 text-center">Riego activo</th>
+                                    <th scope="col" class="px-4 py-2 text-center">Vaporizador</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($registers as $register)
                                     <tr class="bg-surface-container-lowest border-b border-outline-variant/20">
-                                        <td class="px-4 py-2 text-center text-on-surface-variant">{{ $register->created_at?->format('d/m/Y H:i:s') ?? '-' }}</td>
+                                        <td class="px-4 py-2 text-center text-on-surface-variant">
+                                            @if($register->created_at)
+                                                <time datetime="{{ $register->created_at->toIso8601String() }}">{{ $register->created_at->timezone(config('app.display_timezone', 'Europe/Madrid'))->format('d/m/Y H:i:s') }}</time>
+                                            @else
+                                                -
+                                            @endif
+                                        </td>
                                         <td class="px-4 py-2 text-center text-on-surface font-semibold">{{ $register->soil_humidity ?? '-' }}%</td>
                                         <td class="px-4 py-2 text-center text-on-surface font-semibold">{{ $register->temperature ?? '-' }}°C</td>
                                         <td class="px-4 py-2 text-center text-on-surface font-semibold">{{ $register->humidity ?? '-' }}%</td>
@@ -205,7 +253,7 @@
                     </div>
                 @else
                     <div class="text-center py-12">
-                        <span class="material-symbols-outlined text-6xl text-on-surface-variant mb-4">potted_plant</span>
+                        <span class="material-symbols-outlined text-6xl text-on-surface-variant mb-4" aria-hidden="true">potted_plant</span>
                         <p class="text-on-surface-variant text-lg">No hay lecturas registradas todavía para esta planta.</p>
                     </div>
                 @endif

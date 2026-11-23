@@ -160,10 +160,10 @@ class HardwareDeviceController extends Controller
         }
 
         $channelColors = [
-            ['bar' => 'bg-sky-500 dark:bg-sky-400', 'text' => 'text-sky-600 dark:text-sky-400', 'dot' => 'bg-sky-500'],
-            ['bar' => 'bg-violet-500 dark:bg-violet-400', 'text' => 'text-violet-600 dark:text-violet-400', 'dot' => 'bg-violet-500'],
-            ['bar' => 'bg-emerald-500 dark:bg-emerald-400', 'text' => 'text-emerald-600 dark:text-emerald-400', 'dot' => 'bg-emerald-500'],
-            ['bar' => 'bg-rose-500 dark:bg-rose-400', 'text' => 'text-rose-600 dark:text-rose-400', 'dot' => 'bg-rose-500'],
+            ['bar' => 'bg-primary-container', 'text' => 'text-primary', 'dot' => 'bg-primary-container'],
+            ['bar' => 'bg-tertiary', 'text' => 'text-tertiary', 'dot' => 'bg-tertiary'],
+            ['bar' => 'bg-success', 'text' => 'text-success', 'dot' => 'bg-success'],
+            ['bar' => 'bg-error', 'text' => 'text-error', 'dot' => 'bg-error'],
         ];
 
         $hasMultipleLoads = $loadElements->count() > 1;

@@ -463,10 +463,10 @@ class EnergyController extends Controller
     private function ownStatusBadges(HardwareDevice $hw): array
     {
         $candidates = [
-            ['field' => 'cpu', 'icon' => 'memory', 'color' => 'text-violet-600 dark:text-violet-400', 'label' => 'CPU', 'unit' => '%'],
-            ['field' => 'temp', 'icon' => 'device_thermostat', 'color' => 'text-orange-600 dark:text-orange-400', 'label' => 'Temp.', 'unit' => '°C'],
-            ['field' => 'battery_level', 'icon' => 'battery_full', 'color' => 'text-emerald-600 dark:text-emerald-400', 'label' => 'Batería', 'unit' => '%'],
-            ['field' => 'ram', 'icon' => 'sd_card', 'color' => 'text-sky-600 dark:text-sky-400', 'label' => 'RAM', 'unit' => '%'],
+            ['field' => 'cpu', 'icon' => 'memory', 'color' => 'text-tertiary', 'label' => 'CPU', 'unit' => '%'],
+            ['field' => 'temp', 'icon' => 'device_thermostat', 'color' => 'text-on-warning-container', 'label' => 'Temp.', 'unit' => '°C'],
+            ['field' => 'battery_level', 'icon' => 'battery_full', 'color' => 'text-success', 'label' => 'Batería', 'unit' => '%'],
+            ['field' => 'ram', 'icon' => 'sd_card', 'color' => 'text-primary', 'label' => 'RAM', 'unit' => '%'],
         ];
 
         $badges = [];

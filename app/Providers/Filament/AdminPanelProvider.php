@@ -97,7 +97,7 @@ class AdminPanelProvider extends PanelProvider
             // comiera la cabecera, la directiva sigue en el HTML.
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
-                fn (): string => '<meta name="robots" content="'.NoIndex::VALOR.'">',
+                fn (): string => '<meta name="robots" content="'.NoIndex::VALUE.'">',
             )
             // El CSS propio del panel, detrás del `app.css` de Filament.
             //
@@ -108,7 +108,7 @@ class AdminPanelProvider extends PanelProvider
             // sí va en git.
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
-                fn (): string => FilamentPanelCss::etiqueta(),
+                fn (): string => FilamentPanelCss::tag(),
             )
             ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_BEFORE,
@@ -132,7 +132,6 @@ class AdminPanelProvider extends PanelProvider
                 scopes: [EditContent::class, ManageContentPages::class],
             )
             ->defaultThemeMode(ThemeMode::Dark)
-            ->font('Figtree')
             // Una entrada del menú por plataforma, que abre «Contenidos» filtrado
             // por ella. Se construye al arrancar el panel, que es cuando se
             // pinta: antes iba aquí mismo, y esta función corre en cada
@@ -171,6 +170,14 @@ class AdminPanelProvider extends PanelProvider
                     ->label('Editar perfil')
                     ->icon(Heroicon::OutlinedUserCircle)
                     ->url(fn () => Profile::getUrl()),
+                'tenant_panel' => MenuItem::make()
+                    ->label('Panel de usuario')
+                    ->icon(Heroicon::OutlinedSquares2x2)
+                    ->url(fn () => url('/panel')),
+                'public_site' => MenuItem::make()
+                    ->label('Ir a la web pública')
+                    ->icon(Heroicon::OutlinedGlobeAlt)
+                    ->url(fn () => url('/')),
             ]);
     }
 }

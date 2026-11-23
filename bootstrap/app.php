@@ -6,6 +6,7 @@ use App\Exceptions\JsonAuthorizationException;
 use App\Exceptions\JsonValidationException;
 use App\Http\Middleware\EnsurePaginationIsSameOrigin;
 use App\Http\Middleware\EnsureRequestIsSameOrigin;
+use App\Http\Middleware\EnsureUserIsActive;
 use App\Http\Middleware\SecurityHeaders;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Auth\Access\AuthorizationException;
@@ -120,6 +121,10 @@ return Application::configure(basePath: dirname(__DIR__))
             // históricos en las vistas web públicas exigiendo origen propio,
             // dejando abierta la página 1 para usuarios directos y buscadores.
             'same-origin-pagination' => EnsurePaginationIsSameOrigin::class,
+
+            // Corta el paso en rutas web autenticadas fuera de Filament a
+            // cuentas desactivadas que conserven una cookie de sesión vigente.
+            'active' => EnsureUserIsActive::class,
         ]);
 
         // El idioma de la respuesta sale de `Accept-Language` (o de `?lang=`).
@@ -171,7 +176,7 @@ return Application::configure(basePath: dirname(__DIR__))
         |
         */
 
-        $esApi = static fn ($request): bool => $request->is('api/*') || $request->wantsJson();
+        $isApi = static fn ($request): bool => $request->is('api/*') || $request->wantsJson();
 
         // Estas dos NO van al log: son respuestas del contrato, no fallos del
         // servidor. Un cliente que manda un campo de más, uno mal escrito o un
@@ -187,8 +192,8 @@ return Application::configure(basePath: dirname(__DIR__))
             JsonAuthorizationException::class,
         ]);
 
-        $exceptions->render(function (AuthenticationException $e, $request) use ($esApi) {
-            if ($esApi($request)) {
+        $exceptions->render(function (AuthenticationException $e, $request) use ($isApi) {
+            if ($isApi($request)) {
                 return JsonHelper::unauthorized(__('api.unauthenticated'));
             }
         });
@@ -196,39 +201,40 @@ return Application::configure(basePath: dirname(__DIR__))
         // JsonValidationException y JsonAuthorizationException se auto-renderizan
         // mediante su propio método render(), que también llama a JsonHelper.
 
-        $exceptions->render(function (AuthorizationException $e, $request) use ($esApi) {
-            if ($esApi($request)) {
+        $exceptions->render(function (AuthorizationException $e, $request) use ($isApi) {
+            if ($isApi($request)) {
                 return JsonHelper::forbidden(__('api.forbidden'));
             }
         });
 
-        $exceptions->render(function (AccessDeniedHttpException $e, $request) use ($esApi) {
-            if ($esApi($request)) {
+        $exceptions->render(function (AccessDeniedHttpException $e, $request) use ($isApi) {
+            if ($isApi($request)) {
                 return JsonHelper::forbidden(__('api.forbidden'));
             }
         });
 
-        $exceptions->render(function (ModelNotFoundException $e, $request) use ($esApi) {
-            if ($esApi($request)) {
+        $exceptions->render(function (ModelNotFoundException $e, $request) use ($isApi) {
+            if ($isApi($request)) {
                 return JsonHelper::notFound(__('api.not_found'));
             }
         });
 
-        $exceptions->render(function (NotFoundHttpException $e, $request) use ($esApi) {
-            if ($request->is('api/v1/*') || $request->is('api/*/v1/*')) {
+        $exceptions->render(function (NotFoundHttpException $e, $request) use ($isApi) {
+            if ($request->is('api/v1') || $request->is('api/v1/*') || $request->is('api/*/v1/*')) {
                 return JsonHelper::error(__('api.v1_gone'), 410);
             }
             if ($request->is('api/v2/*')) {
                 return JsonHelper::notFound(__('api.endpoint_not_found'));
             }
-            if ($esApi($request)) {
+            if ($isApi($request)) {
                 return JsonHelper::notFound(__('api.not_found'));
             }
         });
 
-        $exceptions->render(function (MethodNotAllowedHttpException $e, $request) use ($esApi) {
-            if ($esApi($request)) {
-                return JsonHelper::error(__('api.method_not_allowed'), 405);
+        $exceptions->render(function (MethodNotAllowedHttpException $e, $request) use ($isApi) {
+            if ($isApi($request)) {
+                return JsonHelper::error(__('api.method_not_allowed'), 405)
+                    ->withHeaders($e->getHeaders());
             }
         });
 
@@ -269,8 +275,8 @@ return Application::configure(basePath: dirname(__DIR__))
                 return null;
             }
 
-            $esHttp = $e instanceof HttpExceptionInterface;
-            $status = $esHttp ? $e->getStatusCode() : 500;
+            $isHttp = $e instanceof HttpExceptionInterface;
+            $status = $isHttp ? $e->getStatusCode() : 500;
 
             $message = match (true) {
                 $e instanceof ThrottleRequestsException => __('api.too_many_requests'),
@@ -280,7 +286,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
             $response = JsonHelper::serverError($message, $e, $status);
 
-            return $esHttp ? $response->withHeaders($e->getHeaders()) : $response;
+            return $isHttp ? $response->withHeaders($e->getHeaders()) : $response;
         });
     })
     ->create();

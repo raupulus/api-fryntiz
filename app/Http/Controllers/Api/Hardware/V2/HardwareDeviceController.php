@@ -94,7 +94,7 @@ class HardwareDeviceController extends BaseApiController
         // `?include=status` añade el último estado conocido, con la IP local y
         // la pública. Detrás de un parámetro a propósito: son datos del cacharro
         // que no tienen por qué ir en cada respuesta.
-        if ($request->quiereEstado()) {
+        if ($request->wantsStatus()) {
             $resource->withStatus();
         }
 

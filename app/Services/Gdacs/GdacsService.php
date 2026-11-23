@@ -70,7 +70,8 @@ class GdacsService
         ];
 
         try {
-            $response = Http::timeout((int) config('gdacs.timeout_seconds'))
+            $response = Http::connectTimeout(5)
+                ->timeout((int) config('gdacs.timeout_seconds'))
                 ->retry(2, 2000, function (\Throwable $exception) {
                     if ($exception instanceof RequestException) {
                         $status = $exception->response?->status();
@@ -82,7 +83,7 @@ class GdacsService
                 }, throw: false)
                 ->get(config('gdacs.base_url'), $params);
         } catch (\Throwable $e) {
-            Log::error('GDACS: excepción al pedir el listado de sucesos', [
+            Log::error('GDACS: exception fetching events list', [
                 'message' => $e->getMessage(),
             ]);
 

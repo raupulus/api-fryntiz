@@ -29,10 +29,9 @@
   }
   ```
 - **Autenticación**: Laravel Sanctum (`Authorization: Bearer <token>`).
-  - **Tokens de sesión humana**: emitidos en `POST /auth/tokens` con scope `session`.
-  - **Tokens de dispositivo IoT**: emitidos con scope `device:{hardware_device_id}` y abilities de módulo:
-    - `printers:read`: lectura de impresoras y cola de trabajos.
-    - `printers:write`: consumo atómico de cola (`jobs/next`), reporte de estado (`status`) y latidos (`heartbeat`).
+  - **Tokens de módulo / dispositivo IoT**: emitidos con abilities de módulo (y opcionalmente `device:{hardware_device_id}` para acotar a una impresora concreta). Los tokens de sesión humana (`session`) **no** tienen acceso a los endpoints de impresoras, en coherencia con el resto de módulos de la API V2:
+    - `printers:read`: exclusivamente lectura de impresoras y cola de trabajos (`GET`).
+    - `printers:write`: encolado, reimpresión, favoritos, cancelación, consumo atómico de cola (`jobs/next`), reporte de estado (`status`) y latidos (`heartbeat`) (`POST`/`PATCH`/`DELETE`). Si el token declara `device:{id}`, tanto lecturas como escrituras quedan estrictamente acotadas a ese dispositivo.
 - **Telemetría Hardware Opcional (`hardware_device_info`)**:
   Cualquier endpoint llamado por el microcontrolador (`/jobs/next`, `/status`, `/heartbeat`) permite adjuntar el objeto `hardware_device_info` (`temp`, `voltage`, `battery_level`, `uptime`, `ip_local`, `software_version`, `extra`) para refrescar la salud del dispositivo físico en el mismo viaje de red.
 
@@ -184,7 +183,7 @@ Extrae de forma atómica (`lockForUpdate`) el siguiente trabajo pendiente por pr
 
 ### 3.4 Descarga de trabajo concreto por ID
 - **Método y Ruta**: `GET /api/v2/printers/jobs/{job}`
-- **Auth**: `printers:read`, `printers:write` o `session`.
+- **Auth**: `printers:read`.
 
 ---
 
@@ -192,7 +191,7 @@ Extrae de forma atómica (`lockForUpdate`) el siguiente trabajo pendiente por pr
 
 ### 4.1 Encolar nuevo trabajo de impresión
 - **Método y Ruta**: `POST /api/v2/printers/{printer}/jobs`
-- **Auth**: `printers:write` o `session`.
+- **Auth**: `printers:write`.
 - **Body**:
   ```json
   {
@@ -233,6 +232,8 @@ Extrae de forma atómica (`lockForUpdate`) el siguiente trabajo pendiente por pr
 
 ### 4.8 Cancelar trabajo de impresión
 - **Método y Ruta**: `DELETE /api/v2/printers/jobs/{job}`
+- **Auth**: `printers:write`.
+- **Respuesta**: `204 No Content` (cuerpo vacío; el trabajo pasa a estado `cancelled`).
 
 ---
 
@@ -278,4 +279,4 @@ void drain_queue() {
 
 ---
 
-> Creado: 2026-09-17 · Última revisión: 2026-09-19
+> Creado: 2026-09-17 · Última revisión: 2026-11-23

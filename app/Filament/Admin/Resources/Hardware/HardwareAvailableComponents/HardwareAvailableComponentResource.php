@@ -8,6 +8,7 @@ use App\Filament\Admin\Resources\Hardware\HardwareAvailableComponents\Pages\Crea
 use App\Filament\Admin\Resources\Hardware\HardwareAvailableComponents\Pages\EditHardwareAvailableComponent;
 use App\Filament\Admin\Resources\Hardware\HardwareAvailableComponents\Pages\ListHardwareAvailableComponents;
 use App\Models\Hardware\HardwareAvailableComponent;
+use App\Support\FilamentValidationRules;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -34,18 +35,27 @@ class HardwareAvailableComponentResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Componentes disponibles';
 
+    protected static ?string $navigationLabel = 'Componentes disponibles';
+
+    protected static ?string $recordTitleAttribute = 'name';
+
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
                 TextInput::make('name')
                     ->label('Nombre')
-                    ->required(),
+                    ->required()
+                    ->maxLength(255),
                 TextInput::make('type')
-                    ->label('Tipo'),
+                    ->label('Tipo')
+                    ->maxLength(255),
                 TextInput::make('slug')
                     ->label('Slug')
-                    ->required(),
+                    ->required()
+                    ->maxLength(255)
+                    ->unique(ignoreRecord: true)
+                    ->rules(FilamentValidationRules::slug()),
                 Textarea::make('description')
                     ->label('Descripción')
                     ->columnSpanFull(),
@@ -58,12 +68,16 @@ class HardwareAvailableComponentResource extends Resource
             ->columns([
                 TextColumn::make('name')
                     ->label('Nombre')
+                    ->limit(40)
+                    ->tooltip(fn (?string $state): ?string => $state)
                     ->searchable(),
                 TextColumn::make('type')
                     ->label('Tipo')
                     ->searchable(),
                 TextColumn::make('slug')
                     ->label('Slug')
+                    ->limit(40)
+                    ->tooltip(fn (?string $state): ?string => $state)
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->label('Creado el')

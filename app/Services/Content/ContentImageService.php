@@ -17,6 +17,7 @@ use App\Models\Gallery;
 use App\Models\GalleryImage;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
 use Throwable;
 
@@ -237,7 +238,12 @@ class ContentImageService
             $json = $this->pages->contentIn($page, ContentPageFormatEnum::EditorJs);
 
             return $json === '' ? [] : $this->converter->decodeBlocks($json);
-        } catch (Throwable) {
+        } catch (Throwable $e) {
+            Log::warning('ContentImageService: failed to decode page blocks', [
+                'page_id' => $page->id,
+                'error' => $e->getMessage(),
+            ]);
+
             return [];
         }
     }

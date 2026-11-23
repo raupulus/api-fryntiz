@@ -35,8 +35,8 @@ class ShowDeviceRequest extends BaseFormRequest
     protected function prepareForValidation(): void
     {
         if ($this->has('include') && is_string($this->query('include'))) {
-            $partes = array_filter(array_map('trim', explode(',', (string) $this->query('include'))));
-            $this->merge(['include' => array_values($partes)]);
+            $parts = array_filter(array_map('trim', explode(',', (string) $this->query('include'))));
+            $this->merge(['include' => array_values($parts)]);
         }
     }
 
@@ -61,7 +61,7 @@ class ShowDeviceRequest extends BaseFormRequest
     /**
      * ¿Se ha pedido el bloque de estado?
      */
-    public function quiereEstado(): bool
+    public function wantsStatus(): bool
     {
         return in_array('status', (array) $this->input('include', []), true);
     }

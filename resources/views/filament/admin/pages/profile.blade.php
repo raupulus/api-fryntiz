@@ -2,7 +2,7 @@
     <form wire:submit="save">
         {{ $this->form }}
 
-        <div class="mt-6 flex justify-end">
+        <div class="fp-form-actions">
             <x-filament::button type="submit" wire:loading.attr="disabled" wire:target="save">
                 Guardar
             </x-filament::button>

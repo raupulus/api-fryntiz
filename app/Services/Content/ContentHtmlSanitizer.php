@@ -163,20 +163,40 @@ class ContentHtmlSanitizer
                 break;
 
             case 'image':
+                $data['caption'] = $inline($data['caption'] ?? null);
+                if (is_array($data['file'] ?? null) && is_string($data['file']['url'] ?? null) && ! ContentBlockValidator::isSafeUrl($data['file']['url'], allowRelative: true)) {
+                    $data['file']['url'] = '';
+                }
+                break;
+
             case 'embed':
                 $data['caption'] = $inline($data['caption'] ?? null);
+                foreach (['embed', 'source'] as $urlKey) {
+                    if (is_string($data[$urlKey] ?? null) && ! ContentBlockValidator::isSafeUrl($data[$urlKey], allowRelative: false)) {
+                        $data[$urlKey] = '';
+                    }
+                }
                 break;
 
             case 'attaches':
                 $data['title'] = $inline($data['title'] ?? null);
+                if (is_array($data['file'] ?? null) && is_string($data['file']['url'] ?? null) && ! ContentBlockValidator::isSafeUrl($data['file']['url'], allowRelative: true)) {
+                    $data['file']['url'] = '';
+                }
                 break;
 
             case 'linkTool':
+                if (is_string($data['link'] ?? null) && ! ContentBlockValidator::isSafeUrl($data['link'], allowRelative: true)) {
+                    $data['link'] = '';
+                }
                 if (is_array($data['meta'] ?? null)) {
                     foreach (['title', 'description'] as $key) {
                         if (is_string($data['meta'][$key] ?? null)) {
                             $data['meta'][$key] = $this->text($data['meta'][$key]);
                         }
+                    }
+                    if (is_array($data['meta']['image'] ?? null) && is_string($data['meta']['image']['url'] ?? null) && ! ContentBlockValidator::isSafeUrl($data['meta']['image']['url'], allowRelative: true)) {
+                        $data['meta']['image']['url'] = '';
                     }
                 }
                 break;

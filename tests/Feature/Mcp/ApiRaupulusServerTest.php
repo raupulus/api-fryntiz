@@ -9,6 +9,7 @@ use App\Mcp\Tools\GetModelInfoTool;
 use App\Mcp\Tools\GetSystemStatusTool;
 use App\Mcp\Tools\InspectDatabaseSchemaTool;
 use App\Mcp\Tools\RunSpecificTestTool;
+use App\Models\CV\CurriculumBaseSection;
 use App\Models\User;
 use Illuminate\Support\Facades\Process;
 use PHPUnit\Framework\Attributes\Test;
@@ -51,6 +52,22 @@ class ApiRaupulusServerTest extends TestCase
         ApiRaupulusServer::tool(GetModelInfoTool::class, ['modelClass' => 'App\\Models\\NoExiste'])
             ->assertHasErrors()
             ->assertSee("Class 'App\\Models\\NoExiste' does not exist.");
+    }
+
+    #[Test]
+    public function get_model_info_tool_rejects_classes_outside_models_namespace(): void
+    {
+        ApiRaupulusServer::tool(GetModelInfoTool::class, ['modelClass' => \stdClass::class])
+            ->assertHasErrors()
+            ->assertSee('App\\Models\\');
+    }
+
+    #[Test]
+    public function get_model_info_tool_rejects_abstract_models(): void
+    {
+        ApiRaupulusServer::tool(GetModelInfoTool::class, ['modelClass' => CurriculumBaseSection::class])
+            ->assertHasErrors()
+            ->assertSee('abstract');
     }
 
     #[Test]

@@ -8,7 +8,7 @@ use App\Models\AirFlight\AirFlightAirPlane;
 use Illuminate\Console\Command;
 
 /**
- * Class KeyCounterGenerateDuration
+ * Class AirflightFixCommand
  */
 class AirflightFixCommand extends Command
 {
@@ -40,11 +40,11 @@ class AirflightFixCommand extends Command
      * Añade el icono de la bandera y también el país a los aviones
      * que les falte uno de esos campos.
      */
-    private function fixAirplaneFlagsAndCountries()
+    private function fixAirplaneFlagsAndCountries(): void
     {
         $airflightsCount = AirFlightAirPlane::whereNull('country')->orWhereNull('flag')->count();
 
-        echo "\nSe van a revisar: ".$airflightsCount." aviones.\n";
+        $this->line('Se van a revisar: '.$airflightsCount.' aviones.');
 
         $updated = 0;
         $excludedIds = [];
@@ -61,14 +61,13 @@ class AirflightFixCommand extends Command
                 break;
             }
 
-            echo "\nConsultando nuevos aviones: ".$airflights->count()." \n";
+            $this->line('Consultando nuevos aviones: '.$airflights->count());
 
             foreach ($airflights as $airflight) {
                 $hex = AirFlightAirPlane::searchHex($airflight->icao);
 
                 if ($hex) {
-                    echo "\nActualizando avión con id: ".$airflight->id.
-                        ' código ICAO: '.$airflight->icao."\n";
+                    $this->line('Actualizando avión con id: '.$airflight->id.' código ICAO: '.$airflight->icao);
 
                     $airflight->flag = $hex['flag_image'];
                     $airflight->country = $hex['country'];
@@ -87,18 +86,18 @@ class AirflightFixCommand extends Command
             }
         }
 
-        echo "\nSe han actualizado: ".$updated.' aviones de '.$airflightsCount.".\n";
+        $this->info('Se han actualizado: '.$updated.' aviones de '.$airflightsCount.'.');
     }
 
     /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): int
     {
-        echo "\n\nComenzando a Reparar y Añadir características en Aviones\n\n";
+        $this->info('Comenzando a reparar y añadir características en aviones');
         $this->fixAirplaneFlagsAndCountries();
-        echo "\n\nTermina de Reparar y Añadir características en Aviones\n\n";
+        $this->info('Termina de reparar y añadir características en aviones');
+
+        return self::SUCCESS;
     }
 }

@@ -1,43 +1,33 @@
 @extends('layouts.app')
 
-@section('title', 'Vuelos en tiempo real sobre Chipiona')
-@section('description', 'Registro de vuelos en tiempo real para aviones en Chipiona y alrededores')
-@section('keywords', 'vuelos, aviones, chipiona, Raúl Caro Pastorino, raupulus, airplanes, airflight')
+@section('title', 'Vuelos en Tiempo Real Chipiona | Api Raupulus')
+@section('description', 'Seguimiento en tiempo real de vuelos y aeronaves ADS-B recibidos sobre Chipiona y la bahía de Cádiz con mapa interactivo OpenLayers y estadísticas.')
+@section('keywords', 'vuelos, aviones, chipiona, Raúl Caro Pastorino, raupulus, airplanes, airflight, ads-b, 1090mhz')
 
-@section('rs-title', 'Vuelos en tiempo real sobre Chipiona')
+@section('rs-title', 'Vuelos en Tiempo Real sobre Chipiona | Api Raupulus')
 @section('rs-sitename', 'Api Raupulus')
-@section('rs-description', 'Registro de vuelos en tiempo real para aviones en Chipiona y alrededores')
+@section('rs-description', 'Registro y mapa de vuelos ADS-B en tiempo real sobre Chipiona y alrededores.')
 @section('rs-image', asset('images/airflight/social-thumbnail.jpg'))
 @section('rs-url', route('airflight.index'))
 @section('rs-image-alt', 'Vuelos en tiempo real sobre Chipiona')
 
-@push('head')
-    {{-- CSS del mapa de vuelos (jQuery + OpenLayers) --}}
-    <link rel="stylesheet" href="{{ asset('resources/airflight/style.css') }}" type="text/css"/>
-    <link rel="stylesheet" href="{{ asset('resources/airflight/jquery/jquery-ui-1.11.4-smoothness.css') }}" type="text/css"/>
-    <link rel="stylesheet" href="{{ asset('resources/airflight/ol3/ol-3.17.1.css') }}" type="text/css"/>
-    <link rel="stylesheet" href="{{ asset('resources/airflight/ol3/ol3-layerswitcher.css') }}" type="text/css"/>
-@endpush
-
 @section('content')
     {{-- Hero --}}
-    <section class="hero-gradient min-h-[40vh] flex items-center pt-20">
-        <div class="max-w-7xl mx-auto px-6 text-white">
+    <section class="hero-gradient min-h-[40svh] flex items-center pt-20 pb-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 text-on-primary">
             <h1 class="text-4xl md:text-6xl font-bold tracking-tighter mb-4">Airflight</h1>
-            <p class="text-xl text-white/80">Registros de vuelos en tiempo real — Chipiona</p>
+            <p class="text-xl text-on-primary/85">Registros de vuelos en tiempo real — Chipiona</p>
         </div>
     </section>
 
     {{-- Descripción --}}
     <section class="py-12 bg-surface">
-        <div class="max-w-5xl mx-auto px-6">
-            <div class="bg-error-container border border-error/30 mb-5 text-on-surface px-4 py-3 rounded-lg" role="alert">
-                <span class="text-sm">
-                    Sitio <strong>temporal</strong> con la finalidad de comprobar el funcionamiento de los dispositivos que uso para recopilar los datos (raspberry pi y capturadora de televisión digital con una antena modificada para 1090Mhz)
-                </span>
-            </div>
+        <div class="max-w-5xl mx-auto px-4 sm:px-6">
+            <x-alert type="warning" class="mb-5">
+                Sitio <strong>temporal</strong> con la finalidad de comprobar el funcionamiento de los dispositivos que uso para recopilar los datos (raspberry pi y capturadora de televisión digital con una antena modificada para 1090 MHz)
+            </x-alert>
 
-            <h3 class="text-3xl text-on-surface font-bold leading-none mb-3">Sobre esta api</h3>
+            <h2 class="text-3xl text-on-surface font-bold leading-none mb-3">Sobre esta api</h2>
             <p class="text-on-surface-variant mb-2">
                 Básicamente monitorizo la señal que emiten los aviones enviando su posición para no chocarse entre ellos obteniendo esos datos por ondas que decodifico y parseo para poder sacar estadísticas y trazar rutas de vuelos en tiempo real.
             </p>
@@ -46,13 +36,13 @@
             </p>
             <p class="text-on-surface-variant mb-2">
                 Puedes ver el desarrollo del programa:
-                <a href="https://gitlab.com/raupulus/dump1090-to-db" class="underline text-primary font-bold text-sm" target="_blank">
+                <a href="https://gitlab.com/raupulus/dump1090-to-db" class="underline text-primary font-bold text-sm" target="_blank" rel="noopener noreferrer">
                     https://gitlab.com/raupulus/dump1090-to-db
                 </a>
             </p>
             <div class="bg-surface-container border border-outline-variant/30 my-4 px-4 py-2 rounded-lg text-center">
                 <span class="font-bold text-on-surface">
-                    Horas mostradas en tu zona horaria (<span id="zona-horaria-detectada">detectando…</span>)
+                    Horas mostradas en tu zona horaria (<span id="detected-timezone">detectando…</span>)
                 </span>
             </div>
         </div>
@@ -60,141 +50,113 @@
 
     {{-- Mapa interactivo de vuelos --}}
     <section class="py-8 bg-surface-container-low">
-        <div class="max-w-7xl mx-auto px-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6">
             <h2 class="text-3xl font-bold text-on-surface mb-4 text-center">Aviones en Tiempo Real</h2>
             <p class="text-sm text-center text-on-surface-variant mb-6">
                 (Selecciona el avión en el mapa o la tabla para ver el recorrido que realiza.)
             </p>
 
-            <div id="box-airflight" class="relative w-full bg-surface-container-lowest rounded-xl shadow-lg overflow-hidden">
-                <div class="box-information">
-                    <div class="box-buttons">
-                        <div class="btn-map btn-downto-map pointer">Ir debajo del Mapa</div>
+            <div id="box-airflight"
+                 data-aircrafts-url="{{ route('airflight.aircrafts') }}"
+                 data-receiver-url="{{ route('airflight.receiver') }}"
+                 class="relative w-full bg-surface-container-lowest rounded-xl shadow-lg overflow-hidden scroll-mt-24 border border-outline-variant/20">
+                <div class="p-3 bg-surface-container flex justify-end border-b border-outline-variant/20">
+                    <x-button type="button" size="sm" variant="outline" class="btn-downto-map">
+                        Ir debajo del Mapa
+                    </x-button>
+                </div>
+
+                {{-- Mapa OpenLayers moderno --}}
+                <div id="map_container" class="relative w-full">
+                    <div id="loader" hidden class="absolute top-3 right-3 z-10 rounded-full bg-surface-container-lowest/90 px-3 py-1 text-xs font-medium text-on-surface shadow">
+                        Actualizando radar…
                     </div>
+                    <div id="map_canvas" class="h-[440px] lg:h-[540px] w-full bg-surface-container"></div>
                 </div>
 
-                <!-- Mapa -->
-                <div id="map_container" class="box-map">
-                    <span id="loader" class="display-hidden box-map-loader">
-                        <img src="{{ asset('resources/airflight/spinny.gif') }}" id="spinny" class="spinny" alt="Cargando..."/>
-                        <progress id="loader_progress" class="loader-progress"></progress>
-                    </span>
-                    <div id="map_canvas" class="map-canvas"></div>
-                </div>
-
-                <!-- Información del vuelo seleccionado -->
-                <div id="sidebar_container" class="box-information">
-                    <div id="sidebar_canvas">
-                        <div id="sudo_buttons" class="box-buttons">
-                            <div class="btn-map btn-reset-map pointer">Reiniciar Zoom</div>
-                            <div class="btn-map btn-upto-map pointer">Ir encima del Mapa</div>
-                            <div class="btn-map btn-reload-map pointer">Recargar datos</div>
+                {{-- Panel de telemetría y tabla en vivo --}}
+                <div id="sidebar_container" class="p-4 sm:p-6 space-y-4">
+                    <div id="sidebar_canvas" class="space-y-4">
+                        <div id="sudo_buttons" class="flex flex-wrap gap-2">
+                            <x-button type="button" size="sm" variant="outline" class="btn-reset-map">Reiniciar Zoom</x-button>
+                            <x-button type="button" size="sm" variant="outline" class="btn-upto-map">Ir encima del Mapa</x-button>
+                            <x-button type="button" size="sm" variant="primary" class="btn-reload-map">Recargar datos</x-button>
                         </div>
 
-                        <div id="dump1090_infoblock">
-                            <table style="width: 100%">
-                                <tr class="infoblock_heading">
-                                    <td class="center"><b id="infoblock_name">Detalles del Vuelo</b></td>
-                                    <td style="text-align: right"><a href="https://api.raupulus.dev/airflight" id="dump1090_version" target="_blank"></a></td>
-                                </tr>
-                                <tr class="infoblock_body"><td>&nbsp;</td><td>&nbsp;</td></tr>
-                                <tr class="infoblock_body dim"><td>Selecciona un avión de la tabla inferior para ver sus datos</td><td>&nbsp;</td></tr>
-                                <tr class="infoblock_body"><td>&nbsp;</td><td>&nbsp;</td></tr>
-                                <tr class="infoblock_body">
-                                    <td>Aviones (total): <span id="dump1090_total_ac">n/a</span></td>
-                                    <td>Mensajes: <span id="dump1090_message_rate">n/a</span>/sec</td>
-                                </tr>
-                                <tr class="infoblock_body">
-                                    <td>(con posiciones): <span id="dump1090_total_ac_positions">n/a</span></td>
-                                    <td>Historial: <span id="dump1090_total_history">n/a</span> posiciones</td>
-                                </tr>
-                            </table>
+                        <div id="dump1090_infoblock" class="rounded-lg bg-surface-container p-4 text-sm text-on-surface">
+                            <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+                                <strong id="infoblock_name">Estado del receptor ADS-B</strong>
+                                <a href="{{ route('airflight.index') }}" id="dump1090_version" class="text-xs underline text-on-tertiary-container font-semibold">Airflight v2</a>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs text-on-surface-variant">
+                                <div>Aviones activos: <strong id="dump1090_total_ac" class="text-on-surface">—</strong></div>
+                                <div>Con posición GPS: <strong id="dump1090_total_ac_positions" class="text-on-surface">—</strong></div>
+                                <div>Puntos de ruta: <strong id="dump1090_total_history" class="text-on-surface">—</strong></div>
+                            </div>
                         </div>
 
-                        <div id="selected_infoblock" class="display-hidden">
-                            <table style="width: 100%">
-                                <tr class="infoblock_heading">
-                                    <td colspan="2">
-                                        <b><span id="selected_callsign" class="map-selected-callsign pointer">n/a</span></b>
-                                        <span id="selected_follow" class="map-selected-follow pointer">&#x21D2;</span>
-                                        <span id="selected_flag" class="selected-flag"><img class="selected-flag-image" src="about:blank" alt="Flag"/></span>
-                                        <span id="selected_registration" class="selected-registration"></span>
-                                        <span id="selected_icaotype" class="selected-icao-type"></span>
-                                        <span id="selected_emergency"></span>
-                                        <div style="display: inline-block;">
-                                            <span style="color: green; font-size: small;">&nbsp;Ver otras plataformas:</span>
-                                            <a id="selected_flightaware_link" href="" target="_blank">[FlightAware]</a>
-                                            <span id="selected_links">
-                                                <a id="selected_fr24_link" href="" target="_blank">[FR24]</a>
-                                                <a id="selected_flightstats_link" href="" target="_blank">[FlightStats]</a>
-                                                <a id="selected_planefinder_link" href="" target="_blank">[PlaneFinder]</a>
-                                            </span>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr id="infoblock_country" class="infoblock_body"><td colspan="2">País del registro: <span id="selected_country">n/a</span></td></tr>
-                                <tr class="infoblock_body">
-                                    <td style="width: 55%;">Altitud: <span id="selected_altitude"></span></td>
-                                    <td style="width: 45%;">Squawk: <span id="selected_squawk"></span></td>
-                                </tr>
-                                <tr class="infoblock_body">
-                                    <td>Velocidad: <span id="selected_speed">n/a</span></td>
-                                    <td>RSSI: <span id="selected_rssi">n/a</span></td>
-                                </tr>
-                                <tr class="infoblock_body">
-                                    <td>Track: <span id="selected_track">n/a</span></td>
-                                    <td>Visto hace: <span id="selected_seen">n/a</span></td>
-                                </tr>
-                                <tr class="infoblock_body"><td colspan="2">Posición: <span id="selected_position">n/a</span></td></tr>
-                                <tr class="infoblock_body"><td colspan="2">Distancia al centro de Chipiona: <span id="selected_sitedist">n/a</span></td></tr>
-                            </table>
+                        <div id="selected_infoblock" hidden class="rounded-lg border border-outline-variant/30 bg-surface-container-low p-4 text-sm text-on-surface space-y-2">
+                            <div class="flex flex-wrap items-center justify-between gap-2">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <button type="button" id="selected_callsign" class="map-selected-callsign font-bold text-primary cursor-pointer hover:underline">—</button>
+                                    <button type="button" id="selected_follow" class="map-selected-follow text-xs px-2 py-0.5 rounded bg-surface-container text-on-surface-variant cursor-pointer" title="Seguir aeronave">Seguir &#x21D2;</button>
+                                    <span id="selected_registration" class="text-xs font-mono text-on-surface-variant"></span>
+                                    <span id="selected_icaotype" class="text-xs text-on-surface-variant"></span>
+                                    <span id="selected_emergency" class="text-xs font-bold text-error"></span>
+                                </div>
+                                <div class="flex flex-wrap gap-2 text-xs">
+                                    <a id="selected_flightaware_link" target="_blank" rel="noopener noreferrer" class="underline text-on-tertiary-container">[FlightAware]</a>
+                                    <a id="selected_fr24_link" target="_blank" rel="noopener noreferrer" class="underline text-on-tertiary-container">[FR24]</a>
+                                    <a id="selected_flightstats_link" target="_blank" rel="noopener noreferrer" class="underline text-on-tertiary-container">[FlightStats]</a>
+                                    <a id="selected_planefinder_link" target="_blank" rel="noopener noreferrer" class="underline text-on-tertiary-container">[PlaneFinder]</a>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-on-surface-variant">
+                                <div>País: <strong id="selected_country" class="text-on-surface">—</strong></div>
+                                <div>Altitud: <strong id="selected_altitude" class="text-on-surface">—</strong></div>
+                                <div>Squawk: <strong id="selected_squawk" class="text-on-surface">—</strong></div>
+                                <div>Velocidad: <strong id="selected_speed" class="text-on-surface">—</strong></div>
+                                <div>RSSI: <strong id="selected_rssi" class="text-on-surface">—</strong></div>
+                                <div>Rumbo: <strong id="selected_track" class="text-on-surface">—</strong></div>
+                                <div>Visto hace: <strong id="selected_seen" class="text-on-surface">—</strong></div>
+                                <div>Distancia: <strong id="selected_sitedist" class="text-on-surface">—</strong></div>
+                                <div class="col-span-2 sm:col-span-4">Posición: <strong id="selected_position" class="text-on-surface font-mono">—</strong></div>
+                            </div>
                         </div>
 
-                        <div id="planes_table" class="box-table-planes">
-                            <table id="tableinfo" class="table-info">
-                                <thead>
+                        <div id="planes_table" class="overflow-x-auto rounded-lg border border-outline-variant/25">
+                            <table id="tableinfo" class="w-full text-xs text-left text-on-surface">
+                                <caption class="sr-only">Aeronaves activas en el radar</caption>
+                                <thead class="bg-surface-container text-on-surface-variant uppercase">
                                 <tr>
-                                    <td id="icao" class="map-tableinfo-title-icao">ICAO</td>
-                                    <td id="flag" class="map-tableinfo-title-country"></td>
-                                    <td id="flight" class="map-tableinfo-title-flight">Vuelo</td>
-                                    <td id="squawk" class="map-tableinfo-title-squawk">Squawk</td>
-                                    <td id="altitude" class="map-tableinfo-title-altitude">Altitud ft</td>
-                                    <td id="speed" class="map-tableinfo-title-speed">Velocidad kt</td>
-                                    <td id="distance" class="map-tableinfo-title-distance">Distancia nm</td>
-                                    <td id="track" class="map-tableinfo-title-track">Track</td>
-                                    <td id="msgs" class="map-tableinfo-title-messages">Msgs</td>
-                                    <td id="seen" class="map-tableinfo-title-seen">Visto s</td>
+                                    <th scope="col" data-sort-key="icao" class="px-2.5 py-2 cursor-pointer">ICAO</th>
+                                    <th scope="col" data-sort-key="flight" class="px-2.5 py-2 cursor-pointer">Vuelo</th>
+                                    <th scope="col" data-sort-key="squawk" class="px-2.5 py-2 cursor-pointer">Squawk</th>
+                                    <th scope="col" data-sort-key="altitude" class="px-2.5 py-2 cursor-pointer">Altitud ft</th>
+                                    <th scope="col" data-sort-key="speed" class="px-2.5 py-2 cursor-pointer">Velocidad kt</th>
+                                    <th scope="col" data-sort-key="distance" class="px-2.5 py-2 cursor-pointer">Distancia nm</th>
+                                    <th scope="col" data-sort-key="track" class="px-2.5 py-2 cursor-pointer">Rumbo</th>
+                                    <th scope="col" data-sort-key="msgs" class="px-2.5 py-2 cursor-pointer">Msgs</th>
+                                    <th scope="col" data-sort-key="seen" class="px-2.5 py-2 cursor-pointer">Visto s</th>
                                 </tr>
                                 </thead>
-                                <tbody>
-                                <tr id="plane_row_template" class="plane_table_row display-hidden">
-                                    <td>ICAO</td>
-                                    <td><img class="plane-table-image" src="about:blank" alt="Flag"/></td>
-                                    <td>VUELO</td>
-                                    <td>SQUAWK</td>
-                                    <td>ALTITUD</td>
-                                    <td>VELOCIDAD</td>
-                                    <td>DISTANCIA</td>
-                                    <td>TRACK</td>
-                                    <td>MSGS</td>
-                                    <td>EDAD</td>
-                                </tr>
+                                <tbody id="radar-planes-tbody">
+                                    <tr>
+                                        <td colspan="9" class="px-3 py-4 text-center text-on-surface-variant">Cargando radar en tiempo real…</td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
 
-                <div id="SpecialSquawkWarning" class="display-hidden special-squawk-warning">
-                    <b>Squawk 7x00 se informa y se muestra.</b><br/>
-                    Lo más probable es que se trate de un error en la recepción o decodificación.
+                <div id="SpecialSquawkWarning" hidden class="mx-4 mb-4 rounded-lg bg-warning-container p-3 text-xs text-on-warning-container">
+                    <strong>Squawk 7x00 detectado.</strong> Puede corresponder a emergencia o error de decodificación.
                 </div>
-                <div id="update_error" class="display-hidden update-error">
-                    <b>Problema sincronizando datos.</b><br/>
-                    <span id="update_error_detail"></span><br/>
-                    El mapa mostrado puede estar desactualizado, recárguelo para reintentarlo.
+                <div id="update_error" hidden class="mx-4 mb-4 rounded-lg bg-error-container p-3 text-xs text-on-error-container">
+                    <strong>Problema sincronizando datos:</strong>
+                    <span id="update_error_detail"></span>
                 </div>
-                <div id="container_splitter"></div>
             </div>
         </div>
     </section>
@@ -215,7 +177,7 @@
             {{-- Bloque 1: Métricas de actividad temporal (1h, 24h, 7d, Total) --}}
             <div class="mb-10">
                 <h3 class="text-xs font-bold uppercase tracking-wider text-on-surface-variant mb-4 flex items-center gap-2">
-                    <span class="material-symbols-outlined text-primary text-base">radar</span>
+                    <span class="material-symbols-outlined text-primary text-base" aria-hidden="true">radar</span>
                     <span>Actividad de detección</span>
                 </h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -224,7 +186,7 @@
                         <div class="flex items-center justify-between mb-3">
                             <span class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Última hora</span>
                             <span class="p-2 rounded-lg bg-primary/10 text-primary">
-                                <span class="material-symbols-outlined text-xl">schedule</span>
+                                <span class="material-symbols-outlined text-xl" aria-hidden="true">schedule</span>
                             </span>
                         </div>
                         <div>
@@ -232,9 +194,9 @@
                                 {{ number_format($stats['last_hour'] ?? 0, 0, ',', '.') }}
                             </div>
                             <p class="text-xs text-on-surface-variant mt-1 flex items-center gap-1.5">
-                                <span class="relative flex h-2 w-2">
-                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 dark:bg-emerald-400 opacity-75"></span>
-                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 dark:bg-emerald-400"></span>
+                                <span class="relative flex h-2 w-2" aria-hidden="true">
+                                    <span class="motion-safe:animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-success"></span>
                                 </span>
                                 <span>Aeronaves en tiempo real</span>
                             </p>
@@ -246,7 +208,7 @@
                         <div class="flex items-center justify-between mb-3">
                             <span class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Últimas 24 horas</span>
                             <span class="p-2 rounded-lg bg-primary/10 text-primary">
-                                <span class="material-symbols-outlined text-xl">today</span>
+                                <span class="material-symbols-outlined text-xl" aria-hidden="true">today</span>
                             </span>
                         </div>
                         <div>
@@ -262,7 +224,7 @@
                         <div class="flex items-center justify-between mb-3">
                             <span class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Últimos 7 días</span>
                             <span class="p-2 rounded-lg bg-primary/10 text-primary">
-                                <span class="material-symbols-outlined text-xl">date_range</span>
+                                <span class="material-symbols-outlined text-xl" aria-hidden="true">date_range</span>
                             </span>
                         </div>
                         <div>
@@ -278,7 +240,7 @@
                         <div class="flex items-center justify-between mb-3">
                             <span class="text-xs font-semibold uppercase tracking-wider text-on-surface-variant">Total histórico</span>
                             <span class="p-2 rounded-lg bg-primary/10 text-primary">
-                                <span class="material-symbols-outlined text-xl">flight</span>
+                                <span class="material-symbols-outlined text-xl" aria-hidden="true">flight</span>
                             </span>
                         </div>
                         <div>
@@ -296,7 +258,7 @@
                 <div class="flex items-center justify-between mb-4">
                     <div>
                         <h3 class="text-xs font-bold uppercase tracking-wider text-on-surface-variant flex items-center gap-2">
-                            <span class="material-symbols-outlined text-primary text-base">military_tech</span>
+                            <span class="material-symbols-outlined text-primary text-base" aria-hidden="true">military_tech</span>
                             <span>Aviones más frecuentes</span>
                         </h3>
                         <p class="text-xs text-on-surface-variant mt-0.5">Aeronaves detectadas durante más jornadas diferentes en el receptor</p>
@@ -357,7 +319,7 @@
                                    title="Ver ficha en FlightRadar24 (sitio externo)"
                                    class="text-primary hover:underline inline-flex items-center gap-0.5 font-medium">
                                     <span>FR24</span>
-                                    <span class="material-symbols-outlined text-[13px]">open_in_new</span>
+                                    <span class="material-symbols-outlined text-[13px]" aria-hidden="true">open_in_new</span>
                                 </a>
                             </div>
                         </div>
@@ -371,20 +333,21 @@
 
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mb-6">
                 <h2 class="text-3xl font-bold text-on-surface">Aviones detectados (última hora)</h2>
-                <p id="detected-planes-status" class="text-xs text-on-surface-variant"></p>
+                <p id="detected-planes-status" role="status" aria-live="polite" class="text-xs text-on-surface-variant"></p>
             </div>
 
             <div id="detected-planes-table-wrap" class="overflow-x-auto" @if($planes->count() === 0) hidden @endif>
                 <table class="min-w-max w-full table-auto text-sm">
+                    <caption class="sr-only">Aeronaves detectadas en la última hora</caption>
                     <thead>
                         <tr class="bg-inverse-surface text-inverse-on-surface">
-                            <td class="px-3 py-2 text-center">ICAO</td>
-                            <td class="px-3 py-2 text-center">Squawk</td>
-                            <td class="px-3 py-2 text-center">Vuelo</td>
-                            <td class="px-3 py-2 text-center">Altitud (m)</td>
-                            <td class="px-3 py-2 text-center">Velocidad (km/h)</td>
-                            <td class="px-3 py-2 text-center">Dirección</td>
-                            <td class="px-3 py-2 text-center">Visto última vez</td>
+                            <th scope="col" class="px-3 py-2 text-center font-semibold">ICAO</th>
+                            <th scope="col" class="px-3 py-2 text-center font-semibold">Squawk</th>
+                            <th scope="col" class="px-3 py-2 text-center font-semibold">Vuelo</th>
+                            <th scope="col" class="px-3 py-2 text-center font-semibold">Altitud (m)</th>
+                            <th scope="col" class="px-3 py-2 text-center font-semibold">Velocidad (km/h)</th>
+                            <th scope="col" class="px-3 py-2 text-center font-semibold">Dirección</th>
+                            <th scope="col" class="px-3 py-2 text-center font-semibold">Visto última vez</th>
                         </tr>
                     </thead>
                     <tbody id="detected-planes-tbody">
@@ -397,7 +360,7 @@
                                 <td class="px-3 py-2 text-center text-on-surface">{{ $plane->speed ?? '-' }}</td>
                                 <td class="px-3 py-2 text-center text-on-surface">
                                     @if($plane->track !== null)
-                                        <span class="material-symbols-outlined text-base align-middle" style="transform: rotate({{ $plane->track }}deg);">navigation</span>
+                                        <span class="material-symbols-outlined text-base align-middle" style="transform: rotate({{ $plane->track }}deg);" aria-hidden="true">navigation</span>
                                     @endif
                                     {{ $plane->track !== null ? $plane->track.'°' : '-' }}
                                 </td>
@@ -413,7 +376,7 @@
             </div>
 
             <div id="detected-planes-empty" class="bg-surface-container rounded-xl p-12 text-center" @if($planes->count() > 0) hidden @endif>
-                <span class="material-symbols-outlined text-6xl text-on-surface-variant mb-4">flight_land</span>
+                <span class="material-symbols-outlined text-6xl text-on-surface-variant mb-4" aria-hidden="true">flight_land</span>
                 <p class="text-on-surface-variant text-lg">No se han detectado aviones en la última hora.</p>
             </div>
         </div>
@@ -421,80 +384,9 @@
 @endsection
 
 @push('scripts')
-    {{-- jQuery y dependencias del mapa (solo en esta página) --}}
-    <script type="text/javascript" src="{{ asset('resources/airflight/functions.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('resources/airflight/jquery/jquery-3.0.0.min.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('resources/airflight/jquery/jquery-ui-1.11.4.min.js') }}"></script>
-    <script src="{{ asset('resources/airflight/ol3/ol-3.17.1.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('resources/airflight/ol3/ol3-layerswitcher.js') }}" type="text/javascript"></script>
-    <script type="text/javascript" src="{{ asset('resources/airflight/config.js') }}"></script>
+    @vite('resources/js/airflight-map.js')
 
-    {{-- Endpoints del mapa: rutas web de esta misma aplicación, no la API.
-
-         Apuntaban a `API_URL/v2/airflight/*`, que por eso tenía que quedarse
-         abierta a cualquiera y dejaba la ability `airflight:read` sin nada que
-         proteger. El mapa es una página propia: se le sirven los aviones ya
-         filtrados y cacheados desde `routes/airflight/web.php`, y la API queda
-         para integraciones con token.
-
-         No se definen urlHistory ni urlDb: el backend no guarda snapshots de
-         historial (ver AirFlightController::receiver(), 'history' => 0) ni
-         expone un catálogo de matrículas/tipos por ICAO. script.js y
-         dbloader.js ya comprueban su ausencia y no llaman a esos endpoints. --}}
-    <script>
-        var urlAircrafts = "{{ route('airflight.aircrafts') }}";
-        var urlReceiver = "{{ route('airflight.receiver') }}";
-    </script>
-
-    <script type="text/javascript" src="{{ asset('resources/airflight/markers.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('resources/airflight/dbloader.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('resources/airflight/registrations.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('resources/airflight/planeObject.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('resources/airflight/formatter.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('resources/airflight/flags.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('resources/airflight/layers.js') }}"></script>
-    <script type="text/javascript" src="{{ asset('resources/airflight/script.js') }}"></script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            initialize();
-
-            // Botón para ir debajo del mapa
-            let btnsDownTo = document.getElementsByClassName('btn-downto-map');
-            Array.from(btnsDownTo).forEach((e) => {
-                e.addEventListener('click', () => {
-                    let position = e.getBoundingClientRect().top + window.scrollY;
-                    window.scrollTo({ top: position + 440, left: 0, behavior: 'smooth' });
-                });
-            });
-
-            // Botón para ir encima del mapa
-            let btnsUpTo = document.getElementsByClassName('btn-upto-map');
-            Array.from(btnsUpTo).forEach((e) => {
-                e.addEventListener('click', () => {
-                    let position = e.getBoundingClientRect().top - window.scrollY;
-                    window.scrollTo({ top: position, left: 0, behavior: 'smooth' });
-                });
-            });
-
-            addEventOnClick('.btn-reset-map', resetMap);
-            addEventOnClick('.btn-reload-map', reloadHistorial);
-            addEventOnClick('.map-selected-callsign', toggleFollowSelected);
-            addEventOnClick('.map-selected-follow', toggleFollowSelected);
-            addEventOnClick('.map-tableinfo-title-icao', sortByICAO);
-            addEventOnClick('.map-tableinfo-title-country', sortByCountry);
-            addEventOnClick('.map-tableinfo-title-flight', sortByFlight);
-            addEventOnClick('.map-tableinfo-title-squawk', sortBySquawk);
-            addEventOnClick('.map-tableinfo-title-altitude', sortByAltitude);
-            addEventOnClick('.map-tableinfo-title-speed', sortBySpeed);
-            addEventOnClick('.map-tableinfo-title-distance', sortByDistance);
-            addEventOnClick('.map-tableinfo-title-track', sortByTrack);
-            addEventOnClick('.map-tableinfo-title-messages', sortByMsgs);
-            addEventOnClick('.map-tableinfo-title-seen', sortBySeen);
-        });
-    </script>
-
-    {{-- Fechas en hora local del navegador, formato español.
+    {{-- Fechas en hora local del navegador, formato español. --}}
 
          El backend manda `seen_last_at` en ISO-8601 UTC sin ambigüedad
          (`AirFlightController::seenLastAtAsUtcIso()`). Aquí se convierte a
@@ -508,7 +400,7 @@
          (eso sí lo es el sondeo de refresco automático, ver más abajo). --}}
     <script>
         (function () {
-            function zonaHorariaDetectada() {
+            function getDetectedTimezone() {
                 try {
                     return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Europe/Madrid';
                 } catch (e) {
@@ -516,23 +408,21 @@
                 }
             }
 
-            var ZONA_HORARIA = zonaHorariaDetectada();
+            var TIMEZONE = getDetectedTimezone();
 
-            window.formatFechaEsLocal = function (isoUtc) {
+            window.formatLocalEsDate = function (isoUtc) {
                 if (!isoUtc) {
                     return '-';
                 }
 
-                var fecha = new Date(isoUtc);
+                var date = new Date(isoUtc);
 
-                if (isNaN(fecha.getTime())) {
-                    // No se ha podido interpretar como fecha: se enseña tal
-                    // cual llegó antes que enseñar "-" y perder el dato.
+                if (isNaN(date.getTime())) {
                     return isoUtc;
                 }
 
-                var opciones = {
-                    timeZone: ZONA_HORARIA,
+                var options = {
+                    timeZone: TIMEZONE,
                     day: '2-digit',
                     month: '2-digit',
                     year: 'numeric',
@@ -542,22 +432,20 @@
                 };
 
                 try {
-                    return new Intl.DateTimeFormat('es-ES', opciones).format(fecha);
+                    return new Intl.DateTimeFormat('es-ES', options).format(date);
                 } catch (e) {
-                    // Zona horaria detectada pero no soportada por el motor
-                    // de fechas del navegador: se fuerza Madrid.
-                    opciones.timeZone = 'Europe/Madrid';
-                    return new Intl.DateTimeFormat('es-ES', opciones).format(fecha);
+                    options.timeZone = 'Europe/Madrid';
+                    return new Intl.DateTimeFormat('es-ES', options).format(date);
                 }
             };
 
-            var etiquetaZona = document.getElementById('zona-horaria-detectada');
-            if (etiquetaZona) {
-                etiquetaZona.textContent = ZONA_HORARIA;
+            var timezoneLabel = document.getElementById('detected-timezone');
+            if (timezoneLabel) {
+                timezoneLabel.textContent = TIMEZONE;
             }
 
-            document.querySelectorAll('[data-seen-at]').forEach(function (celda) {
-                celda.textContent = window.formatFechaEsLocal(celda.dataset.seenAt);
+            document.querySelectorAll('[data-seen-at]').forEach(function (cell) {
+                cell.textContent = window.formatLocalEsDate(cell.dataset.seenAt);
             });
         })();
     </script>
@@ -600,7 +488,7 @@
             // arriba por defecto) rotada a los grados de la ruta, igual que
             // en el HTML que pinta el servidor: la misma orientación
             // aproximada de un vistazo, no solo el número.
-            function direccionCell(track) {
+            function directionCell(track) {
                 var td = document.createElement('td');
                 td.className = CELL_CLASS;
 
@@ -609,12 +497,13 @@
                     return td;
                 }
 
-                var icono = document.createElement('span');
-                icono.className = 'material-symbols-outlined text-base align-middle';
-                icono.style.transform = 'rotate(' + track + 'deg)';
-                icono.textContent = 'navigation';
+                var icon = document.createElement('span');
+                icon.className = 'material-symbols-outlined text-base align-middle';
+                icon.setAttribute('aria-hidden', 'true');
+                icon.style.transform = 'rotate(' + track + 'deg)';
+                icon.textContent = 'navigation';
 
-                td.appendChild(icono);
+                td.appendChild(icon);
                 td.appendChild(document.createTextNode(' ' + track + '°'));
 
                 return td;
@@ -629,8 +518,8 @@
                 tr.appendChild(cell(plane.flight, 'font-bold'));
                 tr.appendChild(cell(plane.altitude));
                 tr.appendChild(cell(plane.speed));
-                tr.appendChild(direccionCell(plane.track));
-                tr.appendChild(cell(window.formatFechaEsLocal(plane.seen_last_at)));
+                tr.appendChild(directionCell(plane.track));
+                tr.appendChild(cell(window.formatLocalEsDate(plane.seen_last_at)));
 
                 return tr;
             }
@@ -675,9 +564,10 @@
                         applyPlanes(Array.isArray(json.data) ? json.data : []);
                     })
                     .catch(function (error) {
-                        // Un fallo puntual no borra lo que ya había pintado
-                        // el servidor: se reintenta en el siguiente minuto.
-                        console.error('Error al refrescar aviones detectados:', error);
+                        if (status) {
+                            status.textContent = 'Sin conexión al refrescar · reintentando…';
+                        }
+                        console.error('Error updating detected planes:', error);
                     });
             }
 

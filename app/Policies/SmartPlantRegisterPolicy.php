@@ -4,40 +4,28 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
+use App\Models\SmartPlant\SmartPlantPlant;
 use App\Models\SmartPlant\SmartPlantRegister;
 use App\Models\User;
+use App\Policies\Concerns\GuardsAdminAndDeviceAccess;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 /**
- * Class SmartPlantRegisterPolicy
+ * Policy de registros de sensores de SmartPlant.
  */
 class SmartPlantRegisterPolicy
 {
+    use GuardsAdminAndDeviceAccess;
     use HandlesAuthorization;
-
-    /**
-     * Create a new policy instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    protected function isAdmin(User $user): bool
-    {
-        return $user->role && in_array($user->role->slug, ['admin', 'superadmin'], true);
-    }
 
     public function viewAny(User $user): bool
     {
-        return $this->isAdmin($user);
+        return $this->isHumanAdmin($user);
     }
 
     public function view(User $user, SmartPlantRegister $register): bool
     {
-        return $this->isAdmin($user);
+        return $this->isHumanAdmin($user);
     }
 
     /**
@@ -60,6 +48,10 @@ class SmartPlantRegisterPolicy
 
     public function delete(User $user, SmartPlantRegister $register): bool
     {
-        return $this->isAdmin($user);
+        $ownerId = $register->relationLoaded('plant')
+            ? $register->plant?->user_id
+            : SmartPlantPlant::query()->whereKey($register->plant_id)->value('user_id');
+
+        return $this->adminCanManageOwner($user, $ownerId !== null ? (int) $ownerId : null);
     }
 }

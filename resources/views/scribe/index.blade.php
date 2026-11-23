@@ -227,6 +227,12 @@ la primera página. Con `?include=` lo que se pida (`all`, todo).</a>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-POSTapi-v2-weather-stations--station---sensor-">
                                 <a href="#endpoints-POSTapi-v2-weather-stations--station---sensor-">Guarda una lectura o un lote de lecturas de un sensor.</a>
                             </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-weather-station-official-cities--id-">
+                                <a href="#endpoints-GETapi-v2-weather-station-official-cities--id-">Parte meteorológico y tabla de mareas del día para una ciudad/municipio.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-weather-station-official-provinces--id-">
+                                <a href="#endpoints-GETapi-v2-weather-station-official-provinces--id-">Parte meteorológico y tabla de mareas del día para una provincia.</a>
+                            </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-v2-curriculum">
                                 <a href="#endpoints-GETapi-v2-curriculum">Listado público. Sólo los marcados como públicos (B3).</a>
                             </li>
@@ -296,7 +302,7 @@ la primera página. Con `?include=` lo que se pida (`all`, todo).</a>
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: October 28, 2026</li>
+        <li>Last updated: November 23, 2026</li>
     </ul>
 </div>
 
@@ -520,6 +526,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -622,10 +631,10 @@ añade <code>device:{id}</code>. No emite nunca el comodín ni la ability de ses
     --data "{
     \"device_id\": 16,
     \"abilities\": [
-        \"keycounter:write\"
+        \"smartplant:read\"
     ],
     \"name\": \"n\",
-    \"expires_at\": \"2052-11-21\"
+    \"expires_at\": \"2052-12-16\"
 }"
 </code></pre></div>
 
@@ -643,10 +652,10 @@ const headers = {
 let body = {
     "device_id": 16,
     "abilities": [
-        "keycounter:write"
+        "smartplant:read"
     ],
     "name": "n",
-    "expires_at": "2052-11-21"
+    "expires_at": "2052-12-16"
 };
 
 fetch(url, {
@@ -778,10 +787,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="expires_at"                data-endpoint="POSTapi-v2-auth-tokens-devices"
-               value="2052-11-21"
+               value="2052-12-16"
                data-component="body">
     <br>
-<p>Must be a valid date. Must be a date after <code>now</code>. Example: <code>2052-11-21</code></p>
+<p>Must be a valid date. Must be a date after <code>now</code>. Example: <code>2052-12-16</code></p>
         </div>
         </form>
 
@@ -1072,6 +1081,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -1174,8 +1186,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"email\": \"zbailey@example.net\",
     \"subject\": \"i\",
     \"message\": \"y\",
-    \"privacity\": false,
-    \"contactme\": true,
+    \"privacity\": true,
+    \"contactme\": false,
     \"attributes\": [
         \"v\"
     ],
@@ -1202,8 +1214,8 @@ let body = {
     "email": "zbailey@example.net",
     "subject": "i",
     "message": "y",
-    "privacity": false,
-    "contactme": true,
+    "privacity": true,
+    "contactme": false,
     "attributes": [
         "v"
     ],
@@ -1346,7 +1358,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>privacity</code></b>&nbsp;&nbsp;
 <small>boolean</small>&nbsp;
-<i>optional</i> &nbsp;
+ &nbsp;
  &nbsp;
                 <label data-endpoint="POSTapi-v2-contact-messages" style="display: none">
             <input type="radio" name="privacity"
@@ -1363,7 +1375,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Must be accepted. Example: <code>true</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>contactme</code></b>&nbsp;&nbsp;
@@ -1385,7 +1397,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>true</code></p>
+<p>Example: <code>false</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>attributes</code></b>&nbsp;&nbsp;
@@ -1470,7 +1482,12 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"email\": \"gbailey@example.net\",
     \"name\": \"m\",
-    \"platform_id\": 16
+    \"platform_id\": 16,
+    \"privacy_accepted\": true,
+    \"g-recaptcha-response\": \"architecto\",
+    \"recaptcha_token\": \"architecto\",
+    \"cf-turnstile-response\": \"architecto\",
+    \"turnstile_token\": \"architecto\"
 }"
 </code></pre></div>
 
@@ -1488,7 +1505,12 @@ const headers = {
 let body = {
     "email": "gbailey@example.net",
     "name": "m",
-    "platform_id": 16
+    "platform_id": 16,
+    "privacy_accepted": true,
+    "g-recaptcha-response": "architecto",
+    "recaptcha_token": "architecto",
+    "cf-turnstile-response": "architecto",
+    "turnstile_token": "architecto"
 };
 
 fetch(url, {
@@ -1595,7 +1617,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value="m"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>m</code></p>
+<p>Must not be greater than 100 characters. Example: <code>m</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>platform_id</code></b>&nbsp;&nbsp;
@@ -1608,6 +1630,76 @@ You can check the Dev Tools console for debugging information.</code></pre>
                data-component="body">
     <br>
 <p>Must match an existing stored value. Example: <code>16</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>privacy_accepted</code></b>&nbsp;&nbsp;
+<small>boolean</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <label data-endpoint="POSTapi-v2-newsletter-subscriptions" style="display: none">
+            <input type="radio" name="privacy_accepted"
+                   value="true"
+                   data-endpoint="POSTapi-v2-newsletter-subscriptions"
+                   data-component="body"             >
+            <code>true</code>
+        </label>
+        <label data-endpoint="POSTapi-v2-newsletter-subscriptions" style="display: none">
+            <input type="radio" name="privacy_accepted"
+                   value="false"
+                   data-endpoint="POSTapi-v2-newsletter-subscriptions"
+                   data-component="body"             >
+            <code>false</code>
+        </label>
+    <br>
+<p>Must be accepted. Example: <code>true</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>g-recaptcha-response</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="g-recaptcha-response"                data-endpoint="POSTapi-v2-newsletter-subscriptions"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>recaptcha_token</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="recaptcha_token"                data-endpoint="POSTapi-v2-newsletter-subscriptions"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>cf-turnstile-response</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="cf-turnstile-response"                data-endpoint="POSTapi-v2-newsletter-subscriptions"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>turnstile_token</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="turnstile_token"                data-endpoint="POSTapi-v2-newsletter-subscriptions"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
         </div>
         </form>
 
@@ -1663,6 +1755,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -1764,7 +1859,11 @@ comprobar si una dirección está en la lista (auditoría A6).</p>
     --header "Accept: application/json" \
     --data "{
     \"email\": \"gbailey@example.net\",
-    \"platform_id\": 16
+    \"platform_id\": 16,
+    \"g-recaptcha-response\": \"architecto\",
+    \"recaptcha_token\": \"architecto\",
+    \"cf-turnstile-response\": \"architecto\",
+    \"turnstile_token\": \"architecto\"
 }"
 </code></pre></div>
 
@@ -1781,7 +1880,11 @@ const headers = {
 
 let body = {
     "email": "gbailey@example.net",
-    "platform_id": 16
+    "platform_id": 16,
+    "g-recaptcha-response": "architecto",
+    "recaptcha_token": "architecto",
+    "cf-turnstile-response": "architecto",
+    "turnstile_token": "architecto"
 };
 
 fetch(url, {
@@ -1889,6 +1992,54 @@ You can check the Dev Tools console for debugging information.</code></pre>
                data-component="body">
     <br>
 <p>Must match an existing stored value. Example: <code>16</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>g-recaptcha-response</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="g-recaptcha-response"                data-endpoint="POSTapi-v2-newsletter-subscriptions-verification"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>recaptcha_token</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="recaptcha_token"                data-endpoint="POSTapi-v2-newsletter-subscriptions-verification"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>cf-turnstile-response</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="cf-turnstile-response"                data-endpoint="POSTapi-v2-newsletter-subscriptions-verification"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>turnstile_token</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="turnstile_token"                data-endpoint="POSTapi-v2-newsletter-subscriptions-verification"
+               value="architecto"
+               data-component="body">
+    <br>
+<p>Example: <code>architecto</code></p>
         </div>
         </form>
 
@@ -2321,6 +2472,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -2533,6 +2687,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -2682,6 +2839,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -2830,6 +2990,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -2982,6 +3145,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -3131,6 +3297,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -3296,6 +3465,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -3512,6 +3684,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -3728,6 +3903,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -3956,6 +4134,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -4172,6 +4353,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -4332,6 +4516,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -4492,6 +4679,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -4652,6 +4842,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -4814,6 +5007,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -4947,6 +5143,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -5976,6 +6175,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -6076,7 +6278,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"duration\": 22,
-    \"read_at\": \"2022-11-22\",
+    \"read_at\": \"2022-12-17\",
     \"energy\": []
 }"
 </code></pre></div>
@@ -6095,7 +6297,7 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "duration": 22,
-    "read_at": "2022-11-22",
+    "read_at": "2022-12-17",
     "energy": []
 };
 
@@ -6236,10 +6438,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="read_at"                data-endpoint="POSTapi-v2-energy-readings"
-               value="2022-11-22"
+               value="2022-12-17"
                data-component="body">
     <br>
-<p>Must be a valid date. Must be a date after or equal to <code>2000-01-01</code>. Must be a date before or equal to <code>2026-10-28 22:08:44</code>. Example: <code>2022-11-22</code></p>
+<p>Must be a valid date. Must be a date after or equal to <code>2000-01-01</code>. Must be a date before or equal to <code>2026-11-23 12:29:21</code>. Example: <code>2022-12-17</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>energy</code></b>&nbsp;&nbsp;
@@ -6307,6 +6509,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -6454,6 +6659,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -6584,15 +6792,15 @@ sobrescribiendo el mismo. Repetir la petición deja el sistema igual.</p>
     --header "Accept: application/json" \
     --data "{
     \"hardware_device_id\": 16,
-    \"temp\": 4326.41688,
-    \"voltage\": 4326.41688,
-    \"battery_level\": 0,
-    \"battery_voltage\": 4326.41688,
-    \"software_version\": \"m\",
+    \"temp\": -99,
+    \"voltage\": 0,
+    \"battery_level\": 1,
+    \"battery_voltage\": 0,
+    \"software_version\": \"i\",
     \"cpu\": 0,
-    \"disk\": 0,
+    \"disk\": 1,
     \"ram\": 1,
-    \"uptime\": 42,
+    \"uptime\": 37,
     \"ip_local\": \"1.102.226.211\",
     \"ip_public\": \"1.102.226.211\"
 }"
@@ -6611,15 +6819,15 @@ const headers = {
 
 let body = {
     "hardware_device_id": 16,
-    "temp": 4326.41688,
-    "voltage": 4326.41688,
-    "battery_level": 0,
-    "battery_voltage": 4326.41688,
-    "software_version": "m",
+    "temp": -99,
+    "voltage": 0,
+    "battery_level": 1,
+    "battery_voltage": 0,
+    "software_version": "i",
     "cpu": 0,
-    "disk": 0,
+    "disk": 1,
     "ram": 1,
-    "uptime": 42,
+    "uptime": 37,
     "ip_local": "1.102.226.211",
     "ip_public": "1.102.226.211"
 };
@@ -6738,10 +6946,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="temp"                data-endpoint="PUTapi-v2-hardware-devices--device_id--status"
-               value="4326.41688"
+               value="-99"
                data-component="body">
     <br>
-<p>Example: <code>4326.41688</code></p>
+<p>Must be between -100 and 200. Example: <code>-99</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>voltage</code></b>&nbsp;&nbsp;
@@ -6750,10 +6958,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="voltage"                data-endpoint="PUTapi-v2-hardware-devices--device_id--status"
-               value="4326.41688"
+               value="0"
                data-component="body">
     <br>
-<p>Example: <code>4326.41688</code></p>
+<p>Must be between 0 and 1000. Example: <code>0</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>battery_level</code></b>&nbsp;&nbsp;
@@ -6762,10 +6970,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="battery_level"                data-endpoint="PUTapi-v2-hardware-devices--device_id--status"
-               value="0"
+               value="1"
                data-component="body">
     <br>
-<p>Must be between 0 and 100. Example: <code>0</code></p>
+<p>Must be between 0 and 100. Example: <code>1</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>battery_voltage</code></b>&nbsp;&nbsp;
@@ -6774,10 +6982,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="battery_voltage"                data-endpoint="PUTapi-v2-hardware-devices--device_id--status"
-               value="4326.41688"
+               value="0"
                data-component="body">
     <br>
-<p>Example: <code>4326.41688</code></p>
+<p>Must be between 0 and 1000. Example: <code>0</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>software_version</code></b>&nbsp;&nbsp;
@@ -6786,10 +6994,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="software_version"                data-endpoint="PUTapi-v2-hardware-devices--device_id--status"
-               value="m"
+               value="i"
                data-component="body">
     <br>
-<p>Must not be greater than 50 characters. Example: <code>m</code></p>
+<p>Must not be greater than 50 characters. Example: <code>i</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>cpu</code></b>&nbsp;&nbsp;
@@ -6810,10 +7018,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="disk"                data-endpoint="PUTapi-v2-hardware-devices--device_id--status"
-               value="0"
+               value="1"
                data-component="body">
     <br>
-<p>Must be between 0 and 100. Example: <code>0</code></p>
+<p>Must be between 0 and 100. Example: <code>1</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>ram</code></b>&nbsp;&nbsp;
@@ -6834,10 +7042,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="uptime"                data-endpoint="PUTapi-v2-hardware-devices--device_id--status"
-               value="42"
+               value="37"
                data-component="body">
     <br>
-<p>Must be at least 0. Example: <code>42</code></p>
+<p>Must be at least 0. Example: <code>37</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>ip_local</code></b>&nbsp;&nbsp;
@@ -6933,6 +7141,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -7068,6 +7279,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -7201,6 +7415,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -7348,6 +7565,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -7473,14 +7693,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"user_id\": 16,
-    \"start_at\": \"2026-10-28 21:08:44\",
-    \"end_at\": \"2026-10-28 21:08:44\",
-    \"duration\": 16,
-    \"pulsations\": 39,
-    \"pulsations_special_keys\": 84,
-    \"pulsation_average\": 12,
-    \"score\": 77,
-    \"weekday\": 5
+    \"start_at\": \"2026-11-23 11:29:21\",
+    \"end_at\": \"2052-12-16\",
+    \"duration\": 39,
+    \"pulsations\": 84,
+    \"pulsations_special_keys\": 12,
+    \"pulsation_average\": 77,
+    \"score\": 8,
+    \"weekday\": 1
 }"
 </code></pre></div>
 
@@ -7498,14 +7718,14 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "user_id": 16,
-    "start_at": "2026-10-28 21:08:44",
-    "end_at": "2026-10-28 21:08:44",
-    "duration": 16,
-    "pulsations": 39,
-    "pulsations_special_keys": 84,
-    "pulsation_average": 12,
-    "score": 77,
-    "weekday": 5
+    "start_at": "2026-11-23 11:29:21",
+    "end_at": "2052-12-16",
+    "duration": 39,
+    "pulsations": 84,
+    "pulsations_special_keys": 12,
+    "pulsation_average": 77,
+    "score": 8,
+    "weekday": 1
 };
 
 fetch(url, {
@@ -7633,10 +7853,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_at"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="2026-10-28 21:08:44"
+               value="2026-11-23 11:29:21"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-10-28 21:08:44</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-11-23 11:29:21</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_at</code></b>&nbsp;&nbsp;
@@ -7645,10 +7865,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_at"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="2026-10-28 21:08:44"
+               value="2052-12-16"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-10-28 21:08:44</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Must be a date after or equal to <code>start_at</code>. Example: <code>2052-12-16</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
@@ -7657,10 +7877,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="duration"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="16"
+               value="39"
                data-component="body">
     <br>
-<p>Example: <code>16</code></p>
+<p>Must be at least 0. Example: <code>39</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>pulsations</code></b>&nbsp;&nbsp;
@@ -7669,10 +7889,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="pulsations"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="39"
+               value="84"
                data-component="body">
     <br>
-<p>Must be at least 0. Example: <code>39</code></p>
+<p>Must be at least 0. Example: <code>84</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>pulsations_special_keys</code></b>&nbsp;&nbsp;
@@ -7681,10 +7901,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="pulsations_special_keys"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="84"
+               value="12"
                data-component="body">
     <br>
-<p>Must be at least 0. Example: <code>84</code></p>
+<p>Must be at least 0. Example: <code>12</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>pulsation_average</code></b>&nbsp;&nbsp;
@@ -7693,10 +7913,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="pulsation_average"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="12"
+               value="77"
                data-component="body">
     <br>
-<p>Must be at least 0. Example: <code>12</code></p>
+<p>Must be at least 0. Example: <code>77</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>score</code></b>&nbsp;&nbsp;
@@ -7705,10 +7925,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="score"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="77"
+               value="8"
                data-component="body">
     <br>
-<p>Must be at least 0. Example: <code>77</code></p>
+<p>Must be at least 0. Example: <code>8</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>weekday</code></b>&nbsp;&nbsp;
@@ -7717,10 +7937,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="weekday"                data-endpoint="POSTapi-v2-keycounter-keyboard-sessions"
-               value="5"
+               value="1"
                data-component="body">
     <br>
-<p>Must be at least 0. Must not be greater than 6. Example: <code>5</code></p>
+<p>Must be at least 0. Must not be greater than 6. Example: <code>1</code></p>
         </div>
         </form>
 
@@ -7743,15 +7963,15 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"hardware_device_id\": 16,
     \"user_id\": 16,
-    \"start_at\": \"2026-10-28 21:08:44\",
-    \"end_at\": \"2026-10-28 21:08:44\",
-    \"duration\": 16,
-    \"clicks_left\": 39,
-    \"clicks_right\": 84,
-    \"clicks_middle\": 12,
-    \"total_clicks\": 77,
-    \"clicks_average\": 8,
-    \"weekday\": 1
+    \"start_at\": \"2026-11-23 11:29:21\",
+    \"end_at\": \"2052-12-16\",
+    \"duration\": 39,
+    \"clicks_left\": 84,
+    \"clicks_right\": 12,
+    \"clicks_middle\": 77,
+    \"total_clicks\": 8,
+    \"clicks_average\": 76,
+    \"weekday\": 4
 }"
 </code></pre></div>
 
@@ -7769,15 +7989,15 @@ const headers = {
 let body = {
     "hardware_device_id": 16,
     "user_id": 16,
-    "start_at": "2026-10-28 21:08:44",
-    "end_at": "2026-10-28 21:08:44",
-    "duration": 16,
-    "clicks_left": 39,
-    "clicks_right": 84,
-    "clicks_middle": 12,
-    "total_clicks": 77,
-    "clicks_average": 8,
-    "weekday": 1
+    "start_at": "2026-11-23 11:29:21",
+    "end_at": "2052-12-16",
+    "duration": 39,
+    "clicks_left": 84,
+    "clicks_right": 12,
+    "clicks_middle": 77,
+    "total_clicks": 8,
+    "clicks_average": 76,
+    "weekday": 4
 };
 
 fetch(url, {
@@ -7905,10 +8125,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_at"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="2026-10-28 21:08:44"
+               value="2026-11-23 11:29:21"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-10-28 21:08:44</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-11-23 11:29:21</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_at</code></b>&nbsp;&nbsp;
@@ -7917,10 +8137,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_at"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="2026-10-28 21:08:44"
+               value="2052-12-16"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-10-28 21:08:44</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Must be a date after or equal to <code>start_at</code>. Example: <code>2052-12-16</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>duration</code></b>&nbsp;&nbsp;
@@ -7929,10 +8149,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="duration"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="16"
+               value="39"
                data-component="body">
     <br>
-<p>Example: <code>16</code></p>
+<p>Must be at least 0. Example: <code>39</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>clicks_left</code></b>&nbsp;&nbsp;
@@ -7941,10 +8161,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="clicks_left"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="39"
+               value="84"
                data-component="body">
     <br>
-<p>Must be at least 0. Example: <code>39</code></p>
+<p>Must be at least 0. Example: <code>84</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>clicks_right</code></b>&nbsp;&nbsp;
@@ -7953,10 +8173,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="clicks_right"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="84"
+               value="12"
                data-component="body">
     <br>
-<p>Must be at least 0. Example: <code>84</code></p>
+<p>Must be at least 0. Example: <code>12</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>clicks_middle</code></b>&nbsp;&nbsp;
@@ -7965,10 +8185,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="clicks_middle"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="12"
+               value="77"
                data-component="body">
     <br>
-<p>Must be at least 0. Example: <code>12</code></p>
+<p>Must be at least 0. Example: <code>77</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>total_clicks</code></b>&nbsp;&nbsp;
@@ -7977,10 +8197,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="total_clicks"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="77"
+               value="8"
                data-component="body">
     <br>
-<p>Must be at least 0. Example: <code>77</code></p>
+<p>Must be at least 0. Example: <code>8</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>clicks_average</code></b>&nbsp;&nbsp;
@@ -7989,10 +8209,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="clicks_average"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="8"
+               value="76"
                data-component="body">
     <br>
-<p>Must be at least 0. Example: <code>8</code></p>
+<p>Must be at least 0. Example: <code>76</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>weekday</code></b>&nbsp;&nbsp;
@@ -8001,10 +8221,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="weekday"                data-endpoint="POSTapi-v2-keycounter-mouse-sessions"
-               value="1"
+               value="4"
                data-component="body">
     <br>
-<p>Must be at least 0. Must not be greater than 6. Example: <code>1</code></p>
+<p>Must be at least 0. Must not be greater than 6. Example: <code>4</code></p>
         </div>
         </form>
 
@@ -8060,6 +8280,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -8195,6 +8418,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -8306,16 +8532,16 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"plant_id\": 4326.41688,
-    \"hardware_device_id\": 4326.41688,
-    \"uv\": 16,
-    \"pressure\": 4326.41688,
-    \"temperature\": 4326.41688,
-    \"humidity\": 4326.41688,
-    \"soil_humidity\": 17,
-    \"soil_humidity_raw\": 16,
+    \"plant_id\": 16,
+    \"hardware_device_id\": 16,
+    \"uv\": 1,
+    \"pressure\": 800,
+    \"temperature\": -49,
+    \"humidity\": 0,
+    \"soil_humidity\": 15,
+    \"soil_humidity_raw\": 8,
     \"full_water_tank\": false,
-    \"waterpump_enabled\": false,
+    \"waterpump_enabled\": true,
     \"vaporizer_enabled\": true
 }"
 </code></pre></div>
@@ -8332,16 +8558,16 @@ const headers = {
 };
 
 let body = {
-    "plant_id": 4326.41688,
-    "hardware_device_id": 4326.41688,
-    "uv": 16,
-    "pressure": 4326.41688,
-    "temperature": 4326.41688,
-    "humidity": 4326.41688,
-    "soil_humidity": 17,
-    "soil_humidity_raw": 16,
+    "plant_id": 16,
+    "hardware_device_id": 16,
+    "uv": 1,
+    "pressure": 800,
+    "temperature": -49,
+    "humidity": 0,
+    "soil_humidity": 15,
+    "soil_humidity_raw": 8,
     "full_water_tank": false,
-    "waterpump_enabled": false,
+    "waterpump_enabled": true,
     "vaporizer_enabled": true
 };
 
@@ -8454,27 +8680,27 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>plant_id</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
+<small>integer</small>&nbsp;
  &nbsp;
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="plant_id"                data-endpoint="POSTapi-v2-smartplant-plants--plant_id--readings"
-               value="4326.41688"
+               value="16"
                data-component="body">
     <br>
-<p>Must match an existing stored value. Example: <code>4326.41688</code></p>
+<p>Must match an existing stored value. Example: <code>16</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>hardware_device_id</code></b>&nbsp;&nbsp;
-<small>number</small>&nbsp;
+<small>integer</small>&nbsp;
  &nbsp;
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="hardware_device_id"                data-endpoint="POSTapi-v2-smartplant-plants--plant_id--readings"
-               value="4326.41688"
+               value="16"
                data-component="body">
     <br>
-<p>Must match an existing stored value. Example: <code>4326.41688</code></p>
+<p>Must match an existing stored value. Example: <code>16</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>uv</code></b>&nbsp;&nbsp;
@@ -8483,10 +8709,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="uv"                data-endpoint="POSTapi-v2-smartplant-plants--plant_id--readings"
-               value="16"
+               value="1"
                data-component="body">
     <br>
-<p>Example: <code>16</code></p>
+<p>Must be between 0 and 20. Example: <code>1</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>pressure</code></b>&nbsp;&nbsp;
@@ -8495,10 +8721,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="pressure"                data-endpoint="POSTapi-v2-smartplant-plants--plant_id--readings"
-               value="4326.41688"
+               value="800"
                data-component="body">
     <br>
-<p>Example: <code>4326.41688</code></p>
+<p>Must be between 800 and 1100. Example: <code>800</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>temperature</code></b>&nbsp;&nbsp;
@@ -8507,10 +8733,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="temperature"                data-endpoint="POSTapi-v2-smartplant-plants--plant_id--readings"
-               value="4326.41688"
+               value="-49"
                data-component="body">
     <br>
-<p>Example: <code>4326.41688</code></p>
+<p>Must be between -50 and 80. Example: <code>-49</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>humidity</code></b>&nbsp;&nbsp;
@@ -8519,10 +8745,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="humidity"                data-endpoint="POSTapi-v2-smartplant-plants--plant_id--readings"
-               value="4326.41688"
+               value="0"
                data-component="body">
     <br>
-<p>Example: <code>4326.41688</code></p>
+<p>Must be between 0 and 100. Example: <code>0</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>soil_humidity</code></b>&nbsp;&nbsp;
@@ -8531,10 +8757,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="soil_humidity"                data-endpoint="POSTapi-v2-smartplant-plants--plant_id--readings"
-               value="17"
+               value="15"
                data-component="body">
     <br>
-<p>Must be at least 0. Must not be greater than 100. Example: <code>17</code></p>
+<p>Must be at least 0. Must not be greater than 100. Example: <code>15</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>soil_humidity_raw</code></b>&nbsp;&nbsp;
@@ -8543,10 +8769,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="soil_humidity_raw"                data-endpoint="POSTapi-v2-smartplant-plants--plant_id--readings"
-               value="16"
+               value="8"
                data-component="body">
     <br>
-<p>Example: <code>16</code></p>
+<p>Must be at least 0. Must not be greater than 65535. Example: <code>8</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>full_water_tank</code></b>&nbsp;&nbsp;
@@ -8590,7 +8816,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>vaporizer_enabled</code></b>&nbsp;&nbsp;
@@ -8635,7 +8861,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"sensors\": [
-        \"humidity\"
+        \"pressure\"
     ],
     \"location_type\": \"indoor\"
 }"
@@ -8654,7 +8880,7 @@ const headers = {
 
 let body = {
     "sensors": [
-        "humidity"
+        "pressure"
     ],
     "location_type": "indoor"
 };
@@ -8683,6 +8909,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -8813,7 +9042,7 @@ Must be one of:
     --header "Accept: application/json" \
     --data "{
     \"sensors\": [
-        \"wind\"
+        \"pressure\"
     ]
 }"
 </code></pre></div>
@@ -8831,7 +9060,7 @@ const headers = {
 
 let body = {
     "sensors": [
-        "wind"
+        "pressure"
     ]
 };
 
@@ -8859,6 +9088,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -9029,6 +9261,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -9192,6 +9427,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -9473,7 +9711,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                name="data[1]"                data-endpoint="POSTapi-v2-weather-stations--station--readings"
                data-component="body">
     <br>
-<p>Must have at least 1 items.</p>
+<p>Must have at least 1 items. Must not have more than 500 items.</p>
         </div>
         </form>
 
@@ -9666,6 +9904,304 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </div>
         </form>
 
+                    <h2 id="endpoints-GETapi-v2-weather-station-official-cities--id-">Parte meteorológico y tabla de mareas del día para una ciudad/municipio.</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-v2-weather-station-official-cities--id-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "https://api.raupulus.dev/api/v2/weather-station-official/cities/architecto" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "https://api.raupulus.dev/api/v2/weather-station-official/cities/architecto"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v2-weather-station-official-cities--id-">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+content-language: en
+vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Unauthenticated&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v2-weather-station-official-cities--id-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v2-weather-station-official-cities--id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v2-weather-station-official-cities--id-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v2-weather-station-official-cities--id-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v2-weather-station-official-cities--id-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v2-weather-station-official-cities--id-" data-method="GET"
+      data-path="api/v2/weather-station-official/cities/{id}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-weather-station-official-cities--id-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v2-weather-station-official-cities--id-"
+                    onclick="tryItOut('GETapi-v2-weather-station-official-cities--id-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v2-weather-station-official-cities--id-"
+                    onclick="cancelTryOut('GETapi-v2-weather-station-official-cities--id-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v2-weather-station-official-cities--id-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v2/weather-station-official/cities/{id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v2-weather-station-official-cities--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v2-weather-station-official-cities--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="id"                data-endpoint="GETapi-v2-weather-station-official-cities--id-"
+               value="architecto"
+               data-component="url">
+    <br>
+<p>The ID of the city. Example: <code>architecto</code></p>
+            </div>
+                    </form>
+
+                    <h2 id="endpoints-GETapi-v2-weather-station-official-provinces--id-">Parte meteorológico y tabla de mareas del día para una provincia.</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-GETapi-v2-weather-station-official-provinces--id-">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request GET \
+    --get "https://api.raupulus.dev/api/v2/weather-station-official/provinces/architecto" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json"</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "https://api.raupulus.dev/api/v2/weather-station-official/provinces/architecto"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+
+fetch(url, {
+    method: "GET",
+    headers,
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-GETapi-v2-weather-station-official-provinces--id-">
+            <blockquote>
+            <p>Example response (401):</p>
+        </blockquote>
+                <details class="annotation">
+            <summary style="cursor: pointer;">
+                <small onclick="textContent = parentElement.parentElement.open ? 'Show headers' : 'Hide headers'">Show headers</small>
+            </summary>
+            <pre><code class="language-http">cache-control: no-cache, private
+content-type: application/json
+content-language: en
+vary: Accept-Language, Origin
+x-content-type-options: nosniff
+x-frame-options: SAMEORIGIN
+referrer-policy: strict-origin-when-cross-origin
+permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
+ </code></pre></details>         <pre>
+
+<code class="language-json" style="max-height: 300px;">{
+    &quot;success&quot;: false,
+    &quot;message&quot;: &quot;Unauthenticated&quot;
+}</code>
+ </pre>
+    </span>
+<span id="execution-results-GETapi-v2-weather-station-official-provinces--id-" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-GETapi-v2-weather-station-official-provinces--id-"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-GETapi-v2-weather-station-official-provinces--id-"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-GETapi-v2-weather-station-official-provinces--id-" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-GETapi-v2-weather-station-official-provinces--id-">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-GETapi-v2-weather-station-official-provinces--id-" data-method="GET"
+      data-path="api/v2/weather-station-official/provinces/{id}"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-v2-weather-station-official-provinces--id-', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-GETapi-v2-weather-station-official-provinces--id-"
+                    onclick="tryItOut('GETapi-v2-weather-station-official-provinces--id-');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-GETapi-v2-weather-station-official-provinces--id-"
+                    onclick="cancelTryOut('GETapi-v2-weather-station-official-provinces--id-');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-GETapi-v2-weather-station-official-provinces--id-"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-green">GET</small>
+            <b><code>api/v2/weather-station-official/provinces/{id}</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="GETapi-v2-weather-station-official-provinces--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="GETapi-v2-weather-station-official-provinces--id-"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                        <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
+                    <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="id"                data-endpoint="GETapi-v2-weather-station-official-provinces--id-"
+               value="architecto"
+               data-component="url">
+    <br>
+<p>The ID of the province. Example: <code>architecto</code></p>
+            </div>
+                    </form>
+
                     <h2 id="endpoints-GETapi-v2-curriculum">Listado público. Sólo los marcados como públicos (B3).</h2>
 
 <p>
@@ -9720,6 +10256,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -9856,6 +10395,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -10004,6 +10546,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -10152,6 +10697,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -10312,6 +10860,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -10482,6 +11033,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -10576,14 +11130,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://api.raupulus.dev/api/v2/printers/16" \
+    --get "https://api.raupulus.dev/api/v2/printers/2" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://api.raupulus.dev/api/v2/printers/16"
+    "https://api.raupulus.dev/api/v2/printers/2"
 );
 
 const headers = {
@@ -10615,6 +11169,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -10702,10 +11259,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="id"                data-endpoint="GETapi-v2-printers--id-"
-               value="16"
+               value="2"
                data-component="url">
     <br>
-<p>The ID of the printer. Example: <code>16</code></p>
+<p>The ID of the printer. Example: <code>2</code></p>
             </div>
                     </form>
 
@@ -10722,14 +11279,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://api.raupulus.dev/api/v2/printers/16/jobs" \
+    --get "https://api.raupulus.dev/api/v2/printers/2/jobs" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://api.raupulus.dev/api/v2/printers/16/jobs"
+    "https://api.raupulus.dev/api/v2/printers/2/jobs"
 );
 
 const headers = {
@@ -10761,6 +11318,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -10848,10 +11408,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="printer_id"                data-endpoint="GETapi-v2-printers--printer_id--jobs"
-               value="16"
+               value="2"
                data-component="url">
     <br>
-<p>The ID of the printer. Example: <code>16</code></p>
+<p>The ID of the printer. Example: <code>2</code></p>
             </div>
                     </form>
 
@@ -10868,14 +11428,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request GET \
-    --get "https://api.raupulus.dev/api/v2/printers/16/favorites" \
+    --get "https://api.raupulus.dev/api/v2/printers/2/favorites" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre></div>
 
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://api.raupulus.dev/api/v2/printers/16/favorites"
+    "https://api.raupulus.dev/api/v2/printers/2/favorites"
 );
 
 const headers = {
@@ -10907,6 +11467,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -10994,10 +11557,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="printer_id"                data-endpoint="GETapi-v2-printers--printer_id--favorites"
-               value="16"
+               value="2"
                data-component="url">
     <br>
-<p>The ID of the printer. Example: <code>16</code></p>
+<p>The ID of the printer. Example: <code>2</code></p>
             </div>
                     </form>
 
@@ -11053,6 +11616,9 @@ x-content-type-options: nosniff
 x-frame-options: SAMEORIGIN
 referrer-policy: strict-origin-when-cross-origin
 permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+cross-origin-opener-policy: same-origin
+content-security-policy: default-src &#039;self&#039;; script-src &#039;self&#039; &#039;unsafe-inline&#039; &#039;unsafe-eval&#039;; style-src &#039;self&#039; &#039;unsafe-inline&#039; https://fonts.googleapis.com; img-src &#039;self&#039; data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src &#039;self&#039; data: https://fonts.gstatic.com; connect-src &#039;self&#039; ws: wss:; frame-src &#039;self&#039; https://www.youtube-nocookie.com; object-src &#039;none&#039;; base-uri &#039;self&#039;; form-action &#039;self&#039;; frame-ancestors &#039;self&#039;
+cross-origin-resource-policy: cross-origin
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
@@ -11160,7 +11726,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "https://api.raupulus.dev/api/v2/printers/16/jobs" \
+    "https://api.raupulus.dev/api/v2/printers/2/jobs" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -11175,7 +11741,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://api.raupulus.dev/api/v2/printers/16/jobs"
+    "https://api.raupulus.dev/api/v2/printers/2/jobs"
 );
 
 const headers = {
@@ -11280,10 +11846,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="printer_id"                data-endpoint="POSTapi-v2-printers--printer_id--jobs"
-               value="16"
+               value="2"
                data-component="url">
     <br>
-<p>The ID of the printer. Example: <code>16</code></p>
+<p>The ID of the printer. Example: <code>2</code></p>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
@@ -11522,7 +12088,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"is_favorite\": false
+    \"is_favorite\": true
 }"
 </code></pre></div>
 
@@ -11538,7 +12104,7 @@ const headers = {
 };
 
 let body = {
-    "is_favorite": false
+    "is_favorite": true
 };
 
 fetch(url, {
@@ -11656,7 +12222,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             <code>false</code>
         </label>
     <br>
-<p>Example: <code>false</code></p>
+<p>Example: <code>true</code></p>
         </div>
         </form>
 
@@ -11797,7 +12363,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "https://api.raupulus.dev/api/v2/printers/16/jobs/next" \
+    "https://api.raupulus.dev/api/v2/printers/2/jobs/next" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
 </code></pre></div>
@@ -11805,7 +12371,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://api.raupulus.dev/api/v2/printers/16/jobs/next"
+    "https://api.raupulus.dev/api/v2/printers/2/jobs/next"
 );
 
 const headers = {
@@ -11902,10 +12468,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="printer_id"                data-endpoint="POSTapi-v2-printers--printer_id--jobs-next"
-               value="16"
+               value="2"
                data-component="url">
     <br>
-<p>The ID of the printer. Example: <code>16</code></p>
+<p>The ID of the printer. Example: <code>2</code></p>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">
@@ -11940,8 +12506,8 @@ de la ejecución del ticket.</p>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"status\": \"out_of_paper\",
-    \"error_message\": \"b\"
+    \"status\": \"completed\",
+    \"error_message\": \"v\"
 }"
 </code></pre></div>
 
@@ -11957,8 +12523,8 @@ const headers = {
 };
 
 let body = {
-    "status": "out_of_paper",
-    "error_message": "b"
+    "status": "completed",
+    "error_message": "v"
 };
 
 fetch(url, {
@@ -12063,10 +12629,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="status"                data-endpoint="PATCHapi-v2-printers-jobs--job_id--status"
-               value="out_of_paper"
+               value="completed"
                data-component="body">
     <br>
-<p>Example: <code>out_of_paper</code></p>
+<p>Example: <code>completed</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>completed</code></li> <li><code>failed</code></li> <li><code>out_of_paper</code></li></ul>
         </div>
@@ -12077,10 +12643,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="error_message"                data-endpoint="PATCHapi-v2-printers-jobs--job_id--status"
-               value="b"
+               value="v"
                data-component="body">
     <br>
-<p>This field is required when <code>status</code> is <code>failed</code>. Must not be greater than 1000 characters. Example: <code>b</code></p>
+<p>This field is required when <code>status</code> is <code>failed</code>. Must not be greater than 1000 characters. Example: <code>v</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>hardware_device_info</code></b>&nbsp;&nbsp;
@@ -12109,7 +12675,7 @@ Must be one of:
 
 <div class="bash-example">
     <pre><code class="language-bash">curl --request POST \
-    "https://api.raupulus.dev/api/v2/printers/16/heartbeat" \
+    "https://api.raupulus.dev/api/v2/printers/2/heartbeat" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
@@ -12120,7 +12686,7 @@ Must be one of:
 
 <div class="javascript-example">
     <pre><code class="language-javascript">const url = new URL(
-    "https://api.raupulus.dev/api/v2/printers/16/heartbeat"
+    "https://api.raupulus.dev/api/v2/printers/2/heartbeat"
 );
 
 const headers = {
@@ -12221,10 +12787,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="number" style="display: none"
                step="any"               name="printer_id"                data-endpoint="POSTapi-v2-printers--printer_id--heartbeat"
-               value="16"
+               value="2"
                data-component="url">
     <br>
-<p>The ID of the printer. Example: <code>16</code></p>
+<p>The ID of the printer. Example: <code>2</code></p>
             </div>
                             <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
         <div style=" padding-left: 28px;  clear: unset;">

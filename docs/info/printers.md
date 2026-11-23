@@ -110,10 +110,10 @@ Cuelga directamente de `printer_id` (`printers.id`).
 | Panel Filament | ✅ | `PrinterResource` y `PrinterStackRelationManager` completos |
 | API REST V2 | ✅ | Controladores, FormRequests y Resources bajo `/api/v2/printers` |
 | WebSockets Reverb | ✅ | Canal privado `printer.{id}` y eventos `job.created` / `job.updated` |
-| Service Layer | ✅ | `PrinterService` con extracción atómica `lockForUpdate` y odómetro |
+| Service Layer | ✅ | `PrinterService` con `for update skip locked` en `claimNextJob`, idempotencia y máquina de estados con `lockForUpdate` en `updateJobStatus`/`cancelJob` (`409 Conflict` ante transiciones inválidas) y odómetro |
 | Mantenimiento | ✅ | Comando `printers:cleanup-stale-jobs` |
-| Tests Automatizados | ✅ | `PrintersTest` (Feature API V2), `PrinterServiceTest` (Unit), `CleanupStaleJobsCommandTest` (Feature), `PanelAuthorizationTest` |
+| Tests Automatizados | ✅ | `PrintersTest` (Feature API V2), `PrinterServiceTest` (Unit), `CleanupStaleJobsCommandTest` (Feature), `PanelAuthorizationTest`, `Audit20PentestHardeningTest` |
 
 ---
 
-> Creado: 2026-06-17 · Última revisión: 2026-09-19
+> Creado: 2026-06-17 · Última revisión: 2026-11-23

@@ -61,6 +61,12 @@ class HardwareEnergyResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Elementos de energía';
 
+    protected static ?string $navigationLabel = 'Elementos de energía';
+
+    protected static ?string $recordTitleAttribute = 'role';
+
+    protected static ?string $slug = 'elements';
+
     public static function form(Schema $schema): Schema
     {
         return HardwareEnergyForm::full($schema);
@@ -100,14 +106,16 @@ class HardwareEnergyResource extends Resource
                     }),
                 TextColumn::make('monitorized.display_name')
                     ->label('Qué mide')
+                    ->limit(30)
+                    ->tooltip(fn (?string $state): ?string => $state)
                     ->placeholder('a sí mismo'),
                 TextColumn::make('sourceType.name')
                     ->label('Fuente')
                     ->placeholder('sin asignar')
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('hardwareDevice.name')
                     ->label('Monitor')
-                    ->toggleable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->sortable(),
                 TextColumn::make('sensor_position')
                     ->label('Canal')
@@ -123,23 +131,27 @@ class HardwareEnergyResource extends Resource
                     ->label('Capacidad')
                     ->suffix(' Ah')
                     ->placeholder('—')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('capacity_wh')
                     ->label('Capacidad Wh')
                     ->suffix(' Wh')
-                    ->placeholder('—'),
+                    ->placeholder('—')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('auto_calculate_history')
                     ->label('Auto Hist.')
                     ->boolean()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('is_active')
                     ->label('Activo')
                     ->boolean(),
                 TextColumn::make('created_at')
+                    ->label('Creado el')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Actualizado el')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

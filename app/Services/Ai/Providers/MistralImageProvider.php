@@ -88,29 +88,50 @@ class MistralImageProvider extends HttpImageProvider
         $host = strtolower((string) ($parts['host'] ?? ''));
 
         if (($parts['scheme'] ?? null) !== 'https' || ! Str::endsWith($host, self::DOWNLOAD_HOSTS)) {
-            Log::warning('Mistral: la imagen llega de un sitio que no se descarga', ['host' => $host]);
+            Log::warning('Mistral: image URL host is not allowed', ['host' => $host]);
 
             throw new AiImageException('Mistral ha dejado la imagen en un sitio desde el que no se descarga. Vuelve a intentarlo.');
         }
 
         try {
-            $response = Http::timeout(60)->get($url);
+            $response = Http::connectTimeout(10)
+                ->timeout(60)
+                ->withoutRedirecting()
+                ->withOptions(['stream' => true])
+                ->get($url);
+
+            if (! $response->successful()) {
+                return $this->imageFrom('');
+            }
+
+            $stream = $response->toPsrResponse()->getBody();
+            if ($stream->isSeekable()) {
+                $stream->rewind();
+            }
+
+            $bytes = '';
+
+            while (! $stream->eof() && strlen($bytes) <= self::MAX_BYTES) {
+                $bytes .= $stream->read(65_536);
+            }
         } catch (Throwable $e) {
-            Log::error('Mistral: no se ha podido descargar la imagen: '.$e->getMessage());
+            Log::error('Mistral: failed to download generated image', ['error' => $e->getMessage()]);
 
             throw new AiImageException('No se ha podido descargar la imagen de Mistral. Vuelve a intentarlo.');
         }
 
-        return $this->imageFrom($response->successful() ? $response->body() : '');
+        return $this->imageFrom($bytes);
     }
 
     private function file(AiProvider $provider, string $fileId): GeneratedImage
     {
         try {
-            $response = Http::withHeaders($this->authHeaders((string) $provider->api_key))->timeout(60)
+            $response = Http::withHeaders($this->authHeaders((string) $provider->api_key))
+                ->connectTimeout(10)
+                ->timeout(60)
                 ->get($provider->provider->baseUrl().'/files/'.rawurlencode($fileId).'/content');
         } catch (Throwable $e) {
-            Log::error('Mistral: no se ha podido descargar la imagen: '.$e->getMessage());
+            Log::error('Mistral: failed to download image file', ['error' => $e->getMessage()]);
 
             throw new AiImageException('No se ha podido descargar la imagen de Mistral. Vuelve a intentarlo.');
         }

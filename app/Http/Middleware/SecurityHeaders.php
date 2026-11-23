@@ -48,7 +48,28 @@ class SecurityHeaders
         // Nada de esto lo usa la plataforma. Se apaga para que tampoco lo use
         // lo que se cuele dentro.
         'Permissions-Policy' => 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()',
+
+        // Aislamiento de contexto entre ventanas y restricción de incrustación.
+        'Cross-Origin-Opener-Policy' => 'same-origin',
     ];
+
+    /**
+     * CSP por defecto, compatible con Alpine.js, Livewire/Filament, Material Symbols,
+     * mosaicos OpenStreetMap (OpenLayers /airflight) y embeds YouTube sin cookies.
+     */
+    private const DEFAULT_CSP = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'";
+
+    /**
+     * CSP dedicada exclusivamente a `/docs` (documentación Scribe autenticada),
+     * cuya plantilla estática carga lodash, highlight.js, jets y Open Sans desde CDN.
+     */
+    private const SCRIBE_DOCS_CSP = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://unpkg.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; img-src 'self' data: blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'";
+
+    /**
+     * CSP específica para los formularios de login cuando Google reCAPTCHA v3
+     * está habilitado (`google.recaptcha.site_key`).
+     */
+    private const RECAPTCHA_LOGIN_CSP = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.google.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss: https://www.google.com; frame-src 'self' https://www.youtube-nocookie.com https://www.google.com https://recaptcha.google.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'";
 
     public function handle(Request $request, Closure $next): Response
     {
@@ -61,6 +82,20 @@ class SecurityHeaders
             if (! $response->headers->has($name)) {
                 $response->headers->set($name, $value);
             }
+        }
+
+        if (! $response->headers->has('Content-Security-Policy')) {
+            $csp = match (true) {
+                $request->is('docs') => self::SCRIBE_DOCS_CSP,
+                filled(config('google.recaptcha.site_key')) && $request->is('admin/login', 'panel/login') => self::RECAPTCHA_LOGIN_CSP,
+                default => self::DEFAULT_CSP,
+            };
+            $response->headers->set('Content-Security-Policy', $csp);
+        }
+
+        if (! $response->headers->has('Cross-Origin-Resource-Policy')) {
+            $corp = $request->is('api/*', 'file/*') ? 'cross-origin' : 'same-site';
+            $response->headers->set('Cross-Origin-Resource-Policy', $corp);
         }
 
         // HSTS sólo sobre HTTPS. Mandarla por HTTP no sirve de nada —el

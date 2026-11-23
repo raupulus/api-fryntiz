@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api\KeyCounter\V2;
 use App\Http\Controllers\Api\V2\BaseApiController;
 use App\Http\Resources\V2\KeyCounter\KeyCounterStatsResource;
 use App\Services\KeyCounter\KeyCounterService;
+use App\Support\Auth\TokenAbilities;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -32,7 +33,8 @@ class StatsController extends BaseApiController
             return $this->forbiddenResponse('Usuario inactivo o no autorizado');
         }
 
-        $stats = $this->service->userStats((int) $user->id);
+        $declaredDevices = TokenAbilities::devicesReachableBy($user);
+        $stats = $this->service->userStats((int) $user->id, $declaredDevices);
 
         return $this->successResponse(new KeyCounterStatsResource($stats));
     }

@@ -189,9 +189,9 @@ class SmartPlantViewsTest extends TestCase
 
         $html = $this->get(route('smartplant.show', $plant))->assertOk()->getContent();
 
-        $this->assertStringContainsString('<h4 class="text-on-surface font-bold mb-3">Humedad Tierra</h4>', $html);
-        $this->assertStringNotContainsString('<h4 class="text-on-surface font-bold mb-3">Presión</h4>', $html);
-        $this->assertStringNotContainsString('<h4 class="text-on-surface font-bold mb-3">Radiación UV</h4>', $html);
+        $this->assertStringContainsString('<h3 class="text-on-surface font-bold mb-3">Humedad Tierra</h3>', $html);
+        $this->assertStringNotContainsString('<h3 class="text-on-surface font-bold mb-3">Presión</h3>', $html);
+        $this->assertStringNotContainsString('<h3 class="text-on-surface font-bold mb-3">Radiación UV</h3>', $html);
     }
 
     /**
@@ -240,6 +240,24 @@ class SmartPlantViewsTest extends TestCase
         }
     }
 
+    #[Test]
+    public function smartplant_show_uses_slug_and_redirects_numeric_id_permanently(): void
+    {
+        $plant = $this->plant();
+
+        $this->assertSame('olmo-chino', $plant->slug);
+
+        $this->get('/smartplant/'.$plant->slug)
+            ->assertOk()
+            ->assertSee($plant->name);
+
+        $this->get('/smartplant/'.$plant->id)
+            ->assertStatus(301)
+            ->assertRedirect(route('smartplant.show', ['smartplant' => $plant->slug]));
+
+        $this->get('/smartplant/999999')->assertNotFound();
+    }
+
     /**
      * El icono y los badges de «Hardware del proyecto» iban con
      * `on-tertiary-container` sobre `tertiary-fixed`: 2,91:1 en claro y 1,01:1
@@ -255,5 +273,31 @@ class SmartPlantViewsTest extends TestCase
             'text-on-tertiary-container bg-tertiary-fixed',
             $html,
         );
+    }
+
+    #[Test]
+    public function default_plant_image_normalizes_legacy_jpg_or_empty_to_webp(): void
+    {
+        $withoutImage = SmartPlantPlant::create([
+            'name' => 'Helecho sin foto',
+            'name_scientific' => 'Nephrolepis exaltata',
+            'description' => 'Sin imagen explícita.',
+            'details' => 'Detalles.',
+            'start_at' => now()->subMonth(),
+        ])->refresh();
+
+        $this->assertSame('smartplant/default.webp', $withoutImage->image);
+        $this->assertStringEndsWith('/storage/smartplant/default.webp', $withoutImage->url_image);
+
+        $legacyJpg = SmartPlantPlant::create([
+            'name' => 'Helecho legado',
+            'name_scientific' => 'Pteris cretica',
+            'description' => 'Con ruta legada.',
+            'details' => 'Detalles.',
+            'image' => 'smartplant/default.jpg',
+            'start_at' => now()->subMonth(),
+        ]);
+
+        $this->assertStringEndsWith('/storage/smartplant/default.webp', $legacyJpg->url_image);
     }
 }

@@ -27,7 +27,7 @@ final class FilamentPanelCss
     /**
      * Entrada de Vite. Tiene que estar también en `vite.config.js`.
      */
-    public const ENTRADA = 'resources/css/filament/admin/panel.css';
+    public const ENTRY = 'resources/css/filament/admin/panel.css';
 
     /**
      * El `<link>` del CSS propio, o nada si no se puede resolver.
@@ -38,10 +38,10 @@ final class FilamentPanelCss
      * el panel sigue funcionando sin los estilos propios; el test
      * `FilamentPanelCssTest` es el que avisa antes de llegar ahí.
      */
-    public static function etiqueta(): string
+    public static function tag(): string
     {
         try {
-            return app(Vite::class)(self::ENTRADA)->toHtml();
+            return app(Vite::class)(self::ENTRY)->toHtml();
         } catch (Throwable $e) {
             report($e);
 

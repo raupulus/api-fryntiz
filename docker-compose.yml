@@ -14,15 +14,24 @@ services:
       - DB_DATABASE=${DB_DATABASE:-raupulus_api}
       - DB_USERNAME=${DB_USERNAME:-postgres}
       - DB_PASSWORD=${DB_PASSWORD:-secret}
-      - CACHE_STORE=${CACHE_STORE:-file}
-      - QUEUE_CONNECTION=${QUEUE_CONNECTION:-sync}
+      - CACHE_STORE=${CACHE_STORE:-redis}
+      - QUEUE_CONNECTION=${QUEUE_CONNECTION:-database}
+      - SESSION_DRIVER=${SESSION_DRIVER:-redis}
       - REDIS_HOST=${REDIS_HOST:-redis}
     volumes:
       - ${STORAGE_VOLUME:-./storage}:/var/www/storage
       - .:/var/www
       - /var/www/vendor
+    mem_limit: 1g
+    healthcheck:
+      test: ["CMD-SHELL", "php-fpm -t || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     networks:
       - api-raupulus-network
@@ -38,8 +47,15 @@ services:
     volumes:
       - .:/var/www
       - ${STORAGE_VOLUME:-./storage}:/var/www/storage
+    mem_limit: 256m
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/up || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     depends_on:
-      - app
+      app:
+        condition: service_healthy
     networks:
       - api-raupulus-network
 
@@ -56,6 +72,7 @@ services:
       - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
       - "${DB_PORT:-5432}:5432"
+    mem_limit: 1g
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres}"]
       interval: 10s
@@ -72,6 +89,42 @@ services:
       - "${REDIS_PORT:-6379}:6379"
     volumes:
       - redis-data:/data
+    mem_limit: 256m
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - api-raupulus-network
+
+  reverb:
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+    container_name: api-raupulus-reverb
+    profiles: ["reverb"]
+    restart: unless-stopped
+    command: ["php", "/var/www/artisan", "reverb:start", "--host=0.0.0.0", "--port=8080"]
+    environment:
+      - APP_ENV=${APP_ENV:-production}
+      - DB_CONNECTION=pgsql
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=${DB_DATABASE:-raupulus_api}
+      - DB_USERNAME=${DB_USERNAME:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-secret}
+      - REDIS_HOST=${REDIS_HOST:-redis}
+    volumes:
+      - ${STORAGE_VOLUME:-./storage}:/var/www/storage
+      - .:/var/www
+      - /var/www/vendor
+    ports:
+      - "${REVERB_SERVER_PORT:-8080}:8080"
+    mem_limit: 256m
+    depends_on:
+      redis:
+        condition: service_healthy
     networks:
       - api-raupulus-network
 

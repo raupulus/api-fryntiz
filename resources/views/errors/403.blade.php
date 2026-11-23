@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Error 403 · No tienes acceso')
+@section('noindex', '1')
 
 @section('content')
     @include('errors._page', [

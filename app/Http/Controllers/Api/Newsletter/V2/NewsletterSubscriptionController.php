@@ -7,7 +7,9 @@ namespace App\Http\Controllers\Api\Newsletter\V2;
 use App\Http\Controllers\Api\V2\BaseApiController;
 use App\Http\Requests\Api\Newsletter\V2\NewsletterResendRequest;
 use App\Http\Requests\Api\Newsletter\V2\NewsletterSubscribeRequest;
+use App\Services\CaptchaVerifierService;
 use App\Services\Newsletter\NewsletterService;
+use App\Support\Http\ClientIp;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -27,13 +29,23 @@ use Illuminate\Http\Request;
  */
 class NewsletterSubscriptionController extends BaseApiController
 {
-    public function __construct(private readonly NewsletterService $service) {}
+    public function __construct(
+        private readonly NewsletterService $service,
+        private readonly CaptchaVerifierService $captchaVerifier,
+    ) {}
 
     /**
      * Alta en la newsletter.
      */
     public function store(NewsletterSubscribeRequest $request): JsonResponse
     {
+        $clientIp = ClientIp::public($request) ?? $request->ip();
+        $captcha = $this->captchaVerifier->verify($request->validated(), $clientIp);
+
+        if ($captcha->configured && ! $captcha->valid) {
+            return $this->errorResponse('Verificación de seguridad fallida', 422);
+        }
+
         $this->service->subscribe(
             $request->validated('email'),
             $request->validated('name'),
@@ -42,7 +54,7 @@ class NewsletterSubscriptionController extends BaseApiController
         );
 
         return $this->createdResponse(
-            message: 'Suscripcion creada. Revisa tu email para verificar.'
+            message: 'Suscripción creada. Revisa tu email para verificar.'
         );
     }
 
@@ -88,7 +100,7 @@ class NewsletterSubscriptionController extends BaseApiController
             return $this->notFoundResponse('Token inválido');
         }
 
-        return $this->successResponse(message: 'Suscripcion cancelada correctamente');
+        return $this->successResponse(message: 'Suscripción cancelada correctamente');
     }
 
     /**
@@ -100,6 +112,13 @@ class NewsletterSubscriptionController extends BaseApiController
      */
     public function resendVerification(NewsletterResendRequest $request): JsonResponse
     {
+        $clientIp = ClientIp::public($request) ?? $request->ip();
+        $captcha = $this->captchaVerifier->verify($request->validated(), $clientIp);
+
+        if ($captcha->configured && ! $captcha->valid) {
+            return $this->errorResponse('Verificación de seguridad fallida', 422);
+        }
+
         $this->service->resendVerification(
             $request->validated('email'),
             (int) $request->validated('platform_id')

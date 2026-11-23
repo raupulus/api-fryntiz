@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Error 419 · La sesión ha caducado')
+@section('noindex', '1')
 
 @section('content')
     @include('errors._page', [

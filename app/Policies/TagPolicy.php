@@ -6,55 +6,49 @@ namespace App\Policies;
 
 use App\Models\Tag;
 use App\Models\User;
+use App\Policies\Concerns\GuardsAdminAndDeviceAccess;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 /**
- * Autorización sobre tags.
- *
- * Los nombres de los métodos son los que llama el framework (`viewAny`,
- * `view`, `create`, `update`, `delete`…). Antes eran `index`, `store` y
- * `show`, que no los llama nadie: la policy parecía escrita y no se ejecutaba
- * ni una línea.
- *
- * Un editor necesita la taxonomía para poder clasificar lo que escribe, así que
- * puede crearla y editarla; borrarla queda para administración.
+ * Autorización sobre etiquetas del CMS.
  */
 class TagPolicy
 {
+    use GuardsAdminAndDeviceAccess;
     use HandlesAuthorization;
 
     public function viewAny(User $user): bool
     {
-        return $user->isAdmin() || $user->isEditor();
+        return $this->isHumanAdmin($user) || $this->isHumanEditor($user);
     }
 
     public function view(User $user, Tag $tag): bool
     {
-        return $user->isAdmin() || $user->isEditor();
+        return $this->isHumanAdmin($user) || $this->isHumanEditor($user);
     }
 
     public function create(User $user): bool
     {
-        return $user->isAdmin() || $user->isEditor();
+        return $this->isHumanAdmin($user) || $this->isHumanEditor($user);
     }
 
     public function update(User $user, Tag $tag): bool
     {
-        return $user->isAdmin() || $user->isEditor();
+        return $this->isHumanAdmin($user) || $this->isHumanEditor($user);
     }
 
     public function delete(User $user, Tag $tag): bool
     {
-        return $user->isAdmin();
+        return $this->isHumanAdmin($user);
     }
 
     public function restore(User $user, Tag $tag): bool
     {
-        return $user->isAdmin();
+        return $this->isHumanAdmin($user);
     }
 
     public function forceDelete(User $user, Tag $tag): bool
     {
-        return $user->isSuperAdmin();
+        return $this->isHumanSuperAdmin($user);
     }
 }

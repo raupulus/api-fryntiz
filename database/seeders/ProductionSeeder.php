@@ -10,7 +10,7 @@ use Illuminate\Database\Seeder;
  * Catálogos mínimos para que la aplicación funcione en producción.
  *
  * Es `DatabaseSeeder` MENOS `UsersTableSeeder`. Ese es el motivo de que exista
- * este fichero: `UsersTableSeeder` crea `superadmin@domain.es` con la contraseña
+ * este fichero: `UsersTableSeeder` crea `superadmin@example.test` con la contraseña
  * `123123` y le emite un token de API. En desarrollo es cómodo; en un servidor
  * público es una cuenta de administrador con contraseña conocida. Con
  * `db:seed --class=ProductionSeeder` no hay forma de invocarlo por accidente.

@@ -1,18 +1,18 @@
 <x-filament-panels::page>
     <x-filament::section>
-        <div class="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-                <h2 class="text-xl font-bold flex items-center gap-2 text-gray-900 dark:text-white">
-                    <x-filament::icon icon="heroicon-o-cloud" class="h-6 w-6 text-sky-500" />
-                    Panel de datos AEMET
+        <div class="aemet-dash__header">
+            <div class="aemet-dash__header-copy">
+                <h2 class="aemet-dash__title">
+                    <x-filament::icon icon="heroicon-o-cloud" class="aemet-dash__title-icon" />
+                    <span>Panel de datos AEMET</span>
                 </h2>
-                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                <p class="aemet-dash__subtitle">
                     Monitorización y sincronización de las fuentes de datos de la Agencia Estatal de Meteorología.
                 </p>
             </div>
-            <div class="flex items-center gap-3 text-sm">
+            <div class="aemet-dash__header-meta">
                 <x-filament::badge color="success">
-                    {{ collect($cards)->sum('count') }} registros totales
+                    {{ number_format((int) collect($cards)->sum('count')) }} registros totales
                 </x-filament::badge>
             </div>
         </div>
@@ -22,17 +22,20 @@
          NO da error: la API responde 200 con el cuerpo vacío. Si no se avisa
          aquí, la integración se queda muda y no se entera nadie. --}}
     @if (($apiKey['status'] ?? 'ok') !== 'ok')
+        @php
+            $isCriticalKey = ($apiKey['status'] === 'expired' || $apiKey['status'] === 'no_key');
+        @endphp
         <x-filament::section>
-            <div class="flex items-start gap-3">
+            <div class="aemet-dash__alert">
                 <x-filament::icon
-                    icon="{{ $apiKey['status'] === 'expired' || $apiKey['status'] === 'no_key' ? 'heroicon-o-exclamation-triangle' : 'heroicon-o-clock' }}"
-                    class="h-6 w-6 shrink-0 {{ $apiKey['status'] === 'expired' || $apiKey['status'] === 'no_key' ? 'text-danger-500' : 'text-warning-500' }}"
+                    icon="{{ $isCriticalKey ? 'heroicon-o-exclamation-triangle' : 'heroicon-o-clock' }}"
+                    class="aemet-dash__alert-icon {{ $isCriticalKey ? 'aemet-dash__alert-icon--danger' : 'aemet-dash__alert-icon--warning' }}"
                 />
-                <div>
-                    <h3 class="font-semibold text-gray-900 dark:text-white">
+                <div class="aemet-dash__alert-body">
+                    <h3 class="aemet-dash__alert-title">
                         Clave de AEMET: {{ str_replace('_', ' ', $apiKey['status']) }}
                     </h3>
-                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                    <p class="aemet-dash__alert-text">
                         {{ $apiKey['message'] }}
                     </p>
                 </div>
@@ -41,19 +44,19 @@
     @endif
 
     {{-- Grid de tarjetas --}}
-    <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 pt-4">
+    <div class="aemet-dash__grid">
         @foreach ($cards as $key => $card)
-            <x-filament::section class="flex flex-col h-full border border-gray-200 dark:border-white/10 shadow-sm rounded-xl">
+            <x-filament::section class="aemet-dash__section">
                 <x-slot name="heading">
-                    <span class="text-lg">{{ $card['label'] }}</span>
+                    <span class="aemet-dash__card-heading">{{ $card['label'] }}</span>
                 </x-slot>
 
-                <div class="flex flex-col flex-grow gap-5">
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                <div class="aemet-dash__card-body">
+                    <p class="aemet-dash__card-desc">
                         {{ $card['description'] }}
                     </p>
 
-                    <div class="flex items-center justify-between">
+                    <div class="aemet-dash__card-badges">
                         <x-filament::badge color="info" icon="heroicon-m-circle-stack" size="lg">
                             {{ number_format($card['count']) }} registros
                         </x-filament::badge>
@@ -66,48 +69,44 @@
                     </div>
 
                     @if (! empty($card['missing']))
-                        <div class="mt-2">
-                            <x-filament::badge color="danger" icon="heroicon-m-exclamation-triangle" class="w-full justify-center">
+                        <div class="aemet-dash__card-missing">
+                            <x-filament::badge color="danger" icon="heroicon-m-exclamation-triangle">
                                 Modelo no encontrado
                             </x-filament::badge>
                         </div>
                     @else
-                        <div class="flex flex-col gap-4 mt-2">
+                        <div class="aemet-dash__card-meta">
                             {{-- Última actualización --}}
-                            <div class="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-white/5 p-3 rounded-lg">
-                                <span class="flex items-center gap-2 font-semibold">
-                                    <x-filament::icon icon="heroicon-m-clock" class="h-5 w-5 text-gray-400" />
+                            <div class="aemet-dash__meta-row aemet-dash__meta-row--highlight">
+                                <span class="aemet-dash__meta-label">
+                                    <x-filament::icon icon="heroicon-m-clock" class="aemet-dash__meta-icon" />
                                     Actualizado:
                                 </span>
                                 @if ($card['last'])
-                                    <span>
-                                        {{-- La base guarda en UTC y la página lo pintaba tal cual, así que un
-                                             cron de las 08:30 salía como 06:30 y parecía que no se había
-                                             ejecutado. `FilamentTimezone` sólo alcanza a las columnas y
-                                             las infolists del panel, no a una vista propia como esta. --}}
+                                    <span class="aemet-dash__meta-value">
                                         {{ \Carbon\Carbon::parse($card['last'])
                                             ->timezone(config('app.display_timezone', 'Europe/Madrid'))
                                             ->format('d/m/Y H:i') }}
                                     </span>
                                 @else
-                                    <span class="italic">nunca</span>
+                                    <span class="aemet-dash__meta-empty">nunca</span>
                                 @endif
                             </div>
 
                             {{-- Comando asociado --}}
-                            <div class="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300">
-                                <span class="flex items-center gap-2 font-semibold">
-                                    <x-filament::icon icon="heroicon-m-command-line" class="h-5 w-5 text-gray-400" />
+                            <div class="aemet-dash__meta-row">
+                                <span class="aemet-dash__meta-label">
+                                    <x-filament::icon icon="heroicon-m-command-line" class="aemet-dash__meta-icon" />
                                     Cmd:
                                 </span>
-                                <code class="rounded bg-sky-100 dark:bg-sky-900/40 px-2 py-1 font-mono text-xs text-sky-800 dark:text-sky-300 truncate" title="{{ $card['command'] }}">
+                                <code class="aemet-dash__cmd" title="{{ $card['command'] }}">
                                     {{ $card['command'] }}
                                 </code>
                             </div>
                         </div>
 
                         {{-- Botón de sincronización --}}
-                        <div class="pt-4 mt-auto border-t border-gray-100 dark:border-white/10">
+                        <div class="aemet-dash__card-footer">
                             <x-filament::button
                                 wire:click="resync('{{ $card['command'] }}')"
                                 wire:loading.attr="disabled"
@@ -115,7 +114,7 @@
                                 icon="heroicon-m-arrow-path"
                                 color="primary"
                                 size="lg"
-                                class="w-full bg-primary-600 text-white shadow-md hover:bg-primary-500"
+                                class="aemet-dash__sync-btn"
                             >
                                 <span wire:loading.remove wire:target="resync('{{ $card['command'] }}')">
                                     Sincronizar ahora
@@ -135,11 +134,11 @@
          citarla como fuente y conservar sus metadatos, y la Ley 18/2015 trae
          régimen sancionador. Los textos son los literales oficiales. --}}
     <x-filament::section>
-        <div class="text-xs text-gray-500 dark:text-gray-400 space-y-1">
-            <p class="font-semibold text-gray-700 dark:text-gray-300">{{ $attribution['short'] }}</p>
+        <div class="aemet-dash__attribution">
+            <p class="aemet-dash__attribution-lead">{{ $attribution['short'] }}</p>
             <p>{{ $attribution['copyright'] }}</p>
             <p>
-                <a href="{{ $attribution['legal_notice'] }}" target="_blank" rel="noopener noreferrer" class="underline">
+                <a href="{{ $attribution['legal_notice'] }}" target="_blank" rel="noopener noreferrer" class="aemet-dash__attribution-link">
                     Nota legal de AEMET
                 </a>
             </p>

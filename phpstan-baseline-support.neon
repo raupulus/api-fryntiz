@@ -25,50 +25,8 @@ parameters:
 			path: support/helpers/AEMETHelper.php
 
 		-
-			message: '#^Function extractDateFromUnknownLine not found\.$#'
-			identifier: function.notFound
-			count: 2
-			path: support/helpers/AEMETHelper.php
-
-		-
-			message: '#^Function extractDateFromUnknownLine\(\) never returns array\<string\> so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: support/helpers/AEMETHelper.php
-
-		-
-			message: '#^Function getCharsRangeFromString not found\.$#'
-			identifier: function.notFound
-			count: 2
-			path: support/helpers/AEMETHelper.php
-
-		-
-			message: '#^Inner named functions are not supported by PHPStan\. Consider refactoring to an anonymous function, class method, or a top\-level\-defined function\. See issue \#165 \(https\://github\.com/phpstan/phpstan/issues/165\) for more details\.$#'
-			identifier: function.inner
-			count: 2
-			path: support/helpers/AEMETHelper.php
-
-		-
 			message: '#^Invalid array key type float\.$#'
 			identifier: offsetAccess.invalidOffset
-			count: 1
-			path: support/helpers/AEMETHelper.php
-
-		-
-			message: '#^Method AEMETHelper\:\:getContamination\(\) should return string\|null but empty return statement found\.$#'
-			identifier: return.empty
-			count: 2
-			path: support/helpers/AEMETHelper.php
-
-		-
-			message: '#^Method AEMETHelper\:\:getContamination\(\) should return string\|null but returns array\<int\<0, max\>, array\<string, mixed\>\>\|null\.$#'
-			identifier: return.type
-			count: 1
-			path: support/helpers/AEMETHelper.php
-
-		-
-			message: '#^Method AEMETHelper\:\:getConventionalObservationData\(\) with return type void returns bool\|string\|null but should not return anything\.$#'
-			identifier: return.void
 			count: 1
 			path: support/helpers/AEMETHelper.php
 
@@ -123,12 +81,6 @@ parameters:
 		-
 			message: '#^Static property AEMETHelper\:\:\$CITY is never read, only written\.$#'
 			identifier: property.onlyWritten
-			count: 1
-			path: support/helpers/AEMETHelper.php
-
-		-
-			message: '#^Used function App\\Models\\WeatherStation\\extractRange not found\.$#'
-			identifier: function.notFound
 			count: 1
 			path: support/helpers/AEMETHelper.php
 

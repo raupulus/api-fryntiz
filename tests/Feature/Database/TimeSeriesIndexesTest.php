@@ -67,7 +67,7 @@ class TimeSeriesIndexesTest extends TestCase
         ))->pluck('indexdef');
 
         $this->assertTrue(
-            $definitions->contains(fn (string $def): bool => str_contains($def, "({$columns})")),
+            $definitions->contains(fn (string $def): bool => str_contains($def, "({$columns})") || str_contains($def, "({$columns}, ")),
             "La tabla «{$table}» no tiene índice por ({$columns}), que es justo por donde la ".
             "consulta la API.\nÍndices que tiene:\n  ".$definitions->implode("\n  ")
         );
@@ -83,7 +83,7 @@ class TimeSeriesIndexesTest extends TestCase
             "select indexdef from pg_indexes where schemaname = current_schema() and tablename = 'meteorology_temperature'"
         ))->pluck('indexdef');
 
-        $this->assertTrue($definitions->contains(fn (string $d): bool => str_contains($d, '(hardware_device_id, created_at)')));
+        $this->assertTrue($definitions->contains(fn (string $d): bool => str_contains($d, '(hardware_device_id, created_at)') || str_contains($d, '(hardware_device_id, created_at, ')));
         $this->assertFalse($definitions->contains(fn (string $d): bool => str_contains($d, '(created_at, hardware_device_id)')));
     }
 }

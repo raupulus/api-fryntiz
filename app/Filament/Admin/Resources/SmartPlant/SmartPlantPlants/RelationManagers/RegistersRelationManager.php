@@ -23,12 +23,12 @@ class RegistersRelationManager extends RelationManager
     public function form(Schema $schema): Schema
     {
         return $schema->components([
-            TextInput::make('soil_humidity')->numeric()->minValue(0)->maxValue(100)->label('Humedad suelo (%)'),
-            TextInput::make('humidity')->numeric()->label('Humedad aire (%)'),
-            TextInput::make('temperature')->numeric()->label('Temperatura (°C)'),
-            TextInput::make('pressure')->numeric()->label('Presión'),
-            TextInput::make('uv')->numeric()->label('UV'),
-            TextInput::make('soil_humidity_raw')->numeric()->label('Humedad suelo (raw)'),
+            TextInput::make('soil_humidity')->required()->integer()->minValue(0)->maxValue(100)->label('Humedad suelo (%)'),
+            TextInput::make('humidity')->numeric()->minValue(0)->maxValue(100)->label('Humedad aire (%)'),
+            TextInput::make('temperature')->numeric()->minValue(-50)->maxValue(80)->label('Temperatura (°C)'),
+            TextInput::make('pressure')->numeric()->minValue(800)->maxValue(1100)->label('Presión'),
+            TextInput::make('uv')->integer()->minValue(0)->maxValue(20)->label('UV'),
+            TextInput::make('soil_humidity_raw')->integer()->minValue(0)->maxValue(65535)->label('Humedad suelo (raw)'),
             Toggle::make('full_water_tank')->label('Tanque lleno'),
             Toggle::make('waterpump_enabled')->label('Bomba de agua'),
             Toggle::make('vaporizer_enabled')->label('Vaporizador'),

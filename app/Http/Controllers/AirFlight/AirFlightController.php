@@ -149,6 +149,7 @@ class AirFlightController extends Controller
             'airflight:web:detected_collection_1h',
             20,
             fn () => app(AirFlightService::class)->getDetectedQuery($lastHour)
+                ->limit(500)
                 ->get()
                 ->map(function ($plane) {
                     $plane->seen_last_at = $this->seenLastAtAsUtcIso($plane->seen_last_at);

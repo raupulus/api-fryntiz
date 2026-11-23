@@ -143,8 +143,8 @@ class PrinterResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('id')->sortable()->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('name')->searchable()->sortable()->label('Nombre'),
+                TextColumn::make('id')->label('ID')->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('name')->searchable()->sortable()->limit(35)->tooltip(fn (?string $state): ?string => $state)->label('Nombre'),
                 TextColumn::make('printer_type')
                     ->badge()
                     ->formatStateUsing(fn ($state) => $state instanceof PrinterTypeEnum ? $state->label() : (PrinterTypeEnum::tryFrom((string) $state)?->label() ?? $state))
@@ -155,8 +155,8 @@ class PrinterResource extends Resource
                     ->formatStateUsing(fn ($state) => $state instanceof PrinterStatusEnum ? $state->label() : (PrinterStatusEnum::tryFrom((string) $state)?->label() ?? $state))
                     ->label('Estado'),
                 IconColumn::make('is_active')->boolean()->label('Activa'),
-                TextColumn::make('hardwareDevice.name')->label('Dispositivo')->searchable()->toggleable(),
-                TextColumn::make('total_prints_count')->numeric()->sortable()->label('Odómetro'),
+                TextColumn::make('hardwareDevice.name')->label('Dispositivo')->limit(30)->tooltip(fn (?string $state): ?string => $state)->searchable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('total_prints_count')->numeric()->sortable()->toggleable(isToggledHiddenByDefault: true)->label('Odómetro'),
                 TextColumn::make('print_stack_count')->counts('printStack')->label('Cola')->sortable(),
                 TextColumn::make('last_seen_at')->since()->label('Último contacto')->sortable(),
                 TextColumn::make('created_at')->dateTime('d/m/Y H:i')->sortable()->toggleable(isToggledHiddenByDefault: true)->label('Creado'),

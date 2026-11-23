@@ -459,3 +459,7 @@ contraria.
 Los datos históricos que no cuadren con esta convención se recalculan desde
 `start_at` con `php artisan keycounter:fix_weekday --write`; ver
 [`../../keycounter.md`](../../keycounter.md).
+
+---
+
+> Creado: 2026-08-30 · Última revisión: 2026-11-23

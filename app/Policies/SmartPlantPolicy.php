@@ -6,6 +6,7 @@ namespace App\Policies;
 
 use App\Models\SmartPlant\SmartPlantPlant;
 use App\Models\User;
+use App\Policies\Concerns\GuardsAdminAndDeviceAccess;
 use App\Support\Auth\TokenAbilities;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -19,6 +20,7 @@ use Illuminate\Auth\Access\HandlesAuthorization;
  */
 class SmartPlantPolicy
 {
+    use GuardsAdminAndDeviceAccess;
     use HandlesAuthorization;
 
     public function viewAny(User $user): bool
@@ -43,8 +45,12 @@ class SmartPlantPolicy
 
     public function delete(User $user, SmartPlantPlant $plant): bool
     {
-        return ! TokenAbilities::deviceRequest($user)
-            && ((int) $plant->user_id === (int) $user->id || $user->isAdmin());
+        if (TokenAbilities::deviceRequest($user)) {
+            return false;
+        }
+
+        return (int) $plant->user_id === (int) $user->id
+            || $this->adminCanManageOwner($user, $plant->user_id !== null ? (int) $plant->user_id : null);
     }
 
     public function restore(User $user, SmartPlantPlant $plant): bool
@@ -54,7 +60,7 @@ class SmartPlantPolicy
 
     public function forceDelete(User $user, SmartPlantPlant $plant): bool
     {
-        return $this->delete($user, $plant);
+        return $this->isHumanSuperAdmin($user);
     }
 
     /**
@@ -108,6 +114,7 @@ class SmartPlantPolicy
             return (int) $plant->user_id === (int) $user->id;
         }
 
-        return (int) $plant->user_id === (int) $user->id || $user->isAdmin();
+        return (int) $plant->user_id === (int) $user->id
+            || $this->adminCanManageOwner($user, $plant->user_id !== null ? (int) $plant->user_id : null);
     }
 }

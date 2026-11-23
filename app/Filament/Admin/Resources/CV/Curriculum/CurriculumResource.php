@@ -11,6 +11,7 @@ use App\Filament\Admin\Resources\CV\Curriculum\Pages\ListCurriculums;
 use App\Filament\Components\ImageCropperUpload;
 use App\Filament\Concerns\ScopesToOwner;
 use App\Models\CV\Curriculum;
+use App\Support\FilamentValidationRules;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -41,11 +42,15 @@ class CurriculumResource extends Resource
 
     protected static ?int $navigationSort = 20;
 
-    protected static ?string $slug = 'c-v/curriculum';
+    protected static ?string $slug = 'curriculums';
 
-    protected static ?string $modelLabel = 'Curriculum';
+    protected static ?string $modelLabel = 'Currículum';
 
-    protected static ?string $pluralModelLabel = 'Curriculums';
+    protected static ?string $pluralModelLabel = 'Currículums';
+
+    protected static ?string $navigationLabel = 'Currículums';
+
+    protected static ?string $recordTitleAttribute = 'title';
 
     public static function form(Schema $schema): Schema
     {
@@ -62,7 +67,7 @@ class CurriculumResource extends Resource
                     ->storeFiles(false)
                     ->label('Imagen'),
                 TextInput::make('title')
-                    ->required()->label('Título')
+                    ->required()->maxLength(511)->label('Título')
                     ->live(onBlur: true)
                     ->afterStateUpdated(function (?string $state, Set $set, string $operation) {
                         // El slug se propone al escribir el título sólo al crear:
@@ -74,6 +79,7 @@ class CurriculumResource extends Resource
                 TextInput::make('slug')
                     ->required()->maxLength(255)
                     ->unique(ignoreRecord: true)
+                    ->rules(FilamentValidationRules::slug())
                     ->label('Slug')
                     ->helperText('Es la URL del CV. Cambiarlo rompe los enlaces que ya hayas repartido.'),
                 Textarea::make('presentation')
@@ -92,7 +98,7 @@ class CurriculumResource extends Resource
                         ? ''
                         : (CurriculumVisibilityEnum::tryFrom($state)?->description() ?? '')),
 
-                Placeholder::make('enlace_compartido')
+                Placeholder::make('shared_link')
                     ->label('Enlace privado')
                     ->content(fn (?Curriculum $record): string => $record?->share_token
                         ? url('/cv/s/'.$record->share_token)
@@ -116,9 +122,15 @@ class CurriculumResource extends Resource
                     ->label('Usuario')
                     ->sortable()
                     ->searchable(),
-                TextColumn::make('image_id')->numeric()->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('image_id')
+                    ->label('ID Imagen')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('title')
                     ->label('Título')
+                    ->limit(40)
+                    ->tooltip(fn (?string $state): ?string => $state)
                     ->searchable(),
                 IconColumn::make('is_active')
                     ->label('Activo')
@@ -133,14 +145,17 @@ class CurriculumResource extends Resource
                     ->label('Público')
                     ->boolean(),
                 TextColumn::make('created_at')
+                    ->label('Creado el')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Actualizado el')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('deleted_at')
+                    ->label('Eliminado el')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

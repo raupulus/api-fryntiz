@@ -1,6 +1,6 @@
 FROM php:8.4-fpm-alpine AS base
 
-LABEL maintainer="Raul Caro Pastorino <raul@raupulus.dev>"
+LABEL maintainer="Raúl Caro Pastorino (@raupulus) <public@raupulus.dev>"
 LABEL description="Api Raupulus - Aplicacion Laravel 13"
 
 ENV APP_ENV=production \
@@ -23,8 +23,9 @@ RUN apk add --no-cache imagemagick imagemagick-heic \
     && docker-php-ext-enable redis imagick \
     && apk del .build-deps
 
+COPY docker/app/imagemagick-policy.xml /etc/ImageMagick-7/policy.xml
 COPY docker/app/php.ini /usr/local/etc/php/conf.d/custom.ini
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.8 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
 COPY . /var/www

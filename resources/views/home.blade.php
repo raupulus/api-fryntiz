@@ -1,23 +1,56 @@
 @extends('layouts.app')
 
 {{-- Descripción sobre esta página --}}
-@section('title', 'API Privada de Raúl Caro Pastorino')
-@section('description', 'Api privada dónde depuro desarrollos y monitorizo datos de mis aplicaciones')
-@section('keywords', 'Raúl Caro Pastorino, raupulus, chipiona, api, laravel, vue.js, javascript, php, tailwind, tailwindcss, postgresql, mysql, mariadb, linux, debian, fedora, gnu, open source, software libre, programador, desarrollador, developer, web, web developer, informático, redes, sistema, ingeniero')
+@section('title', 'Api Raupulus | Plataforma Multi-API e IoT')
+@section('description', 'Plataforma multi-API en Laravel para monitorizar estación meteorológica en Chipiona, hardware IoT, vuelos ADS-B, plantas inteligentes y currículums.')
+@section('keywords', 'Raúl Caro Pastorino, raupulus, chipiona, api, laravel, vue.js, javascript, php, tailwind, tailwindcss, postgresql, linux, open source, iot')
 
 {{-- Etiquetas para Redes sociales --}}
-@section('rs-title', 'API Privada de Raúl Caro Pastorino')
-@section('rs-sitename', 'API Raupulus')
-@section('rs-description', 'Api privada dónde depuro desarrollos y monitorizo datos de mis aplicaciones')
+@section('rs-title', 'Api Raupulus | Plataforma Multi-API e IoT')
+@section('rs-sitename', 'Api Raupulus')
+@section('rs-description', 'Plataforma multi-API en Laravel para monitorizar estación meteorológica en Chipiona, hardware IoT, vuelos ADS-B y plantas.')
 @section('rs-image', asset('images/social-thumbnail.jpg'))
 @section('rs-url', route('home'))
-@section('rs-image-alt', 'API Privada de Raúl Caro Pastorino')
+@section('rs-image-alt', 'Api Raupulus — Plataforma Multi-API e IoT de Raúl Caro Pastorino')
 
-@section('meta-twitter-title', 'API Privada de Raúl Caro Pastorino')
+@section('meta-twitter-title', 'Api Raupulus | Plataforma Multi-API e IoT')
+
+@push('json-ld')
+    @php
+        $homeSchema = [
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                [
+                    '@type' => 'WebSite',
+                    '@id' => route('home').'#website',
+                    'url' => route('home'),
+                    'name' => 'Api Raupulus',
+                    'description' => 'Plataforma multi-API de proyectos personales, telemetría IoT y currículums públicos de Raúl Caro Pastorino.',
+                    'inLanguage' => 'es-ES',
+                    'publisher' => ['@id' => route('home').'#person'],
+                ],
+                [
+                    '@type' => 'Person',
+                    '@id' => route('home').'#person',
+                    'name' => 'Raúl Caro Pastorino',
+                    'alternateName' => 'raupulus',
+                    'url' => 'https://raupulus.dev',
+                    'email' => 'mailto:public@raupulus.dev',
+                    'sameAs' => [
+                        'https://raupulus.dev',
+                        'https://gitlab.com/raupulus',
+                        'https://github.com/raupulus',
+                    ],
+                ],
+            ],
+        ];
+    @endphp
+    <script type="application/ld+json">@json($homeSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG)</script>
+@endpush
 
 @section('content')
     {{-- 1. HERO con logo grande y CTA --}}
-    <section class="hero-gradient min-h-[60vh] flex items-center pt-20 pb-8">
+    <section class="hero-gradient min-h-[60svh] flex items-center pt-20 pb-8">
         <div class="max-w-7xl mx-auto px-6 w-full flex flex-col md:flex-row items-center gap-8">
             {{-- Texto y CTA --}}
             <div class="flex flex-col w-full md:w-2/5 justify-center items-center md:items-start text-center md:text-left">
@@ -29,25 +62,31 @@
                     Una api para depurarlas a todas...
                 </p>
 
-                <a href="https://raupulus.dev"
-                   target="_blank"
-                   class="bg-white text-primary-container font-bold rounded-full py-4 px-8 shadow-lg hover:scale-105 transition-transform duration-300">
-                    Sobre Mi
-                </a>
+                <x-button href="https://raupulus.dev"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          variant="surface"
+                          size="lg">
+                    Sobre Mí
+                </x-button>
             </div>
 
             {{-- Logo --}}
             <div class="w-full md:w-3/5 py-4 flex justify-center">
-                <img class="w-48 sm:w-64 md:w-4/5 max-w-sm"
-                     src="{{ asset('images/logo-fryntiz-512x512.png') }}"
+                <img class="w-48 sm:w-64 md:w-4/5 max-w-sm h-auto"
+                     src="{{ asset('images/logo-fryntiz-512x512.webp') }}"
+                     width="512"
+                     height="512"
+                     fetchpriority="high"
+                     decoding="async"
                      alt="Logo Api Raupulus"/>
             </div>
         </div>
     </section>
 
     {{-- Onda SVG decorativa --}}
-    <div class="relative -mt-11 lg:-mt-22">
-        <svg viewBox="0 0 1428 174" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    <div class="relative -mt-11 lg:-mt-22 overflow-hidden">
+        <svg viewBox="0 0 1428 174" version="1.1" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
                 <g transform="translate(-2.000000, 44.000000)" fill="currentColor" fill-rule="nonzero" class="text-surface">
                     <path d="M0,0 C90.7283404,0.927527913 147.912752,27.187927 291.910178,59.9119003 C387.908462,81.7278826 543.605069,89.334785 759,82.7326078 C469.336065,156.254352 216.336065,153.6679 0,74.9732496" opacity="0.100000001"></path>
@@ -73,7 +112,7 @@
 
             {{-- Sobre esta api --}}
             <div class="flex flex-wrap content-center">
-                <div class="w-5/6 sm:w-1/2 p-6">
+                <div class="w-full sm:w-1/2 p-6">
                     <h3 class="text-3xl text-on-surface font-bold leading-none mb-3">
                         Sobre esta api
                     </h3>
@@ -88,17 +127,24 @@
                     </p>
                     <p class="text-on-surface-variant mb-3">
                         Puedes ver el desarrollo de la api aquí:
-                        <a href="https://gitlab.com/raupulus/api-fryntiz/tree/master"
+                        <a href="https://gitlab.com/raupulus/api-fryntiz"
                            class="underline text-on-tertiary-container font-bold text-xs"
                            target="_blank"
+                           rel="noopener noreferrer"
                            title="Api Raupulus en GitLab">
                             https://gitlab.com/raupulus/api-fryntiz
                         </a>
                     </p>
                 </div>
                 <div class="w-full sm:w-1/2 p-6">
-                    <img src="{{ asset('images/main-thumbnail.jpg') }}"
-                         class="m-auto rounded-xl shadow-lg"
+                    <img src="{{ asset('images/main-thumbnail.webp') }}"
+                         srcset="{{ asset('images/main-thumbnail-400w.webp') }} 400w, {{ asset('images/main-thumbnail.webp') }} 800w"
+                         sizes="(max-width: 640px) 100vw, 480px"
+                         width="800"
+                         height="447"
+                         loading="lazy"
+                         decoding="async"
+                         class="m-auto rounded-xl shadow-lg w-full h-auto"
                          alt="Logo Raupulus"/>
                 </div>
             </div>
@@ -106,8 +152,14 @@
             {{-- Estación Meteorológica --}}
             <div class="flex flex-wrap flex-col-reverse sm:flex-row mt-12">
                 <div class="w-full sm:w-1/2 p-6">
-                    <img src="{{ asset('images/wheater-station/wheater-station-main-thumbnail.jpg') }}"
-                         class="rounded-xl shadow-lg"
+                    <img src="{{ asset('images/wheater-station/wheater-station-main-thumbnail.webp') }}"
+                         srcset="{{ asset('images/wheater-station/wheater-station-main-thumbnail-400w.webp') }} 400w, {{ asset('images/wheater-station/wheater-station-main-thumbnail.webp') }} 800w"
+                         sizes="(max-width: 640px) 100vw, 480px"
+                         width="800"
+                         height="447"
+                         loading="lazy"
+                         decoding="async"
+                         class="rounded-xl shadow-lg w-full h-auto"
                          alt="Logo estación meteorológica en Chipiona"/>
                 </div>
                 <div class="w-full sm:w-1/2 p-6">
@@ -119,13 +171,14 @@
                             La estación meteorológica es un proyecto con raspberry pi, arduino y una serie de sensores tomando datos en mi localidad, <strong>Chipiona</strong>.
                         </p>
                         <p class="text-on-surface-variant mb-3">
-                            Humedad, Temperatura, Presión atmosférica, Viento (Velocidad, dirección y ráfagas), Cantidad de luz en general, Indice UV, UVA, UVB, CO2-ECO2, TVOC, Calidad del aire, Relámpagos (Cantidad, distancia y potencia)
+                            Humedad, Temperatura, Presión atmosférica, Viento (Velocidad, dirección y ráfagas), Cantidad de luz en general, Índice UV, UVA, UVB, CO2-ECO2, TVOC, Calidad del aire, Relámpagos (Cantidad, distancia y potencia)
                         </p>
                         <p class="text-on-surface-variant mb-3">
                             Puedes ver el desarrollo de rpi (python3 y sqlite) aquí:
                             <a href="https://gitlab.com/raupulus/raspberry-weather-station"
                                class="underline text-on-tertiary-container font-bold text-xs"
                                target="_blank"
+                               rel="noopener noreferrer"
                                title="Enlace al repositorio de mi estación meteorológica de Chipiona en python3 para raspberry pi">
                                 https://gitlab.com/raupulus/raspberry-weather-station
                             </a>
@@ -136,12 +189,12 @@
 
             {{-- Smart Plant --}}
             <div class="flex flex-wrap content-center mt-12">
-                <div class="w-5/6 sm:w-1/2 p-6">
+                <div class="w-full sm:w-1/2 p-6">
                     <h3 class="text-3xl text-on-surface font-bold leading-none mb-3">
                         <a href="{{ route('smartplant.index') }}">Smart Plant</a>
                     </h3>
                     <p class="text-on-surface-variant mb-3">
-                        Proyecto para monitorizar plantas delicadas, principalmente bonsais pudiendo observar el comportamiento asegurando cubrir necesidades manteniendo así la salud o descubrir problemas.
+                        Proyecto para monitorizar plantas delicadas, principalmente bonsáis pudiendo observar el comportamiento asegurando cubrir necesidades manteniendo así la salud o descubrir problemas.
                     </p>
                     <p class="text-on-surface-variant mb-3">
                         Utilizo un <strong>esp32 lite</strong> conectado a una placa solar y sensores para medir la humedad en tierra/aire, temperatura, luz y tanque de agua está lleno antes de activar el riego.
@@ -151,14 +204,21 @@
                         <a href="https://gitlab.com/raupulus/esp32-smart-bonsai"
                            class="underline text-on-tertiary-container font-bold text-xs"
                            target="_blank"
+                               rel="noopener noreferrer"
                            title="Enlace al repositorio con el código para el smart plant con esp32 lite en c++">
                             https://gitlab.com/raupulus/esp32-smart-bonsai
                         </a>
                     </p>
                 </div>
                 <div class="w-full sm:w-1/2 p-6">
-                    <img src="{{ asset('images/smart-plant/smart-plant-main-thumbnail.jpg') }}"
-                         class="m-auto rounded-xl shadow-lg"
+                    <img src="{{ asset('images/smart-plant/smart-plant-main-thumbnail.webp') }}"
+                         srcset="{{ asset('images/smart-plant/smart-plant-main-thumbnail-400w.webp') }} 400w, {{ asset('images/smart-plant/smart-plant-main-thumbnail.webp') }} 800w"
+                         sizes="(max-width: 640px) 100vw, 480px"
+                         width="800"
+                         height="447"
+                         loading="lazy"
+                         decoding="async"
+                         class="m-auto rounded-xl shadow-lg w-full h-auto"
                          alt="Circuitos para el smart plant"/>
                 </div>
             </div>
@@ -166,8 +226,14 @@
             {{-- Contador de pulsaciones --}}
             <div class="flex flex-wrap flex-col-reverse sm:flex-row mt-12">
                 <div class="w-full sm:w-1/2 p-6 mt-6">
-                    <img src="{{ asset('images/keycounter/keycounter-main-thumbnail.jpg') }}"
-                         class="rounded-xl shadow-lg"
+                    <img src="{{ asset('images/keycounter/keycounter-main-thumbnail.webp') }}"
+                         srcset="{{ asset('images/keycounter/keycounter-main-thumbnail-400w.webp') }} 400w, {{ asset('images/keycounter/keycounter-main-thumbnail.webp') }} 800w"
+                         sizes="(max-width: 640px) 100vw, 480px"
+                         width="800"
+                         height="447"
+                         loading="lazy"
+                         decoding="async"
+                         class="rounded-xl shadow-lg w-full h-auto"
                          alt="Pantalla para la visualización de mi contador de teclas"/>
                 </div>
                 <div class="w-full sm:w-1/2 p-6 mt-6">
@@ -189,6 +255,7 @@
                             <a href="https://gitlab.com/raupulus/python-keycounter"
                                class="underline text-on-tertiary-container font-bold text-xs"
                                target="_blank"
+                               rel="noopener noreferrer"
                                title="Enlace al repositorio con el código para el contador de teclas escrito en python 3">
                                 https://gitlab.com/raupulus/python-keycounter
                             </a>
@@ -199,7 +266,7 @@
 
             {{-- Airflight --}}
             <div class="flex flex-wrap content-center mt-12">
-                <div class="w-5/6 sm:w-1/2 p-6">
+                <div class="w-full sm:w-1/2 p-6">
                     <h3 class="text-3xl text-on-surface font-bold leading-none mb-3">
                         <a href="{{ route('airflight.index') }}">Radar de vuelo</a>
                     </h3>
@@ -207,21 +274,28 @@
                         Con este radar monitorizo los aviones que transmiten su posición cerca de mi ciudad.
                     </p>
                     <p class="text-on-surface-variant mb-3">
-                        Utilizo una <strong>raspberry pi 4</strong> y una capturadora de TDT usando la banda de <strong>1090Mhz</strong> y decodificando los datos recibidos para agruparlos y preparar rutas a partir de sus coordenadas.
+                        Utilizo una <strong>raspberry pi 4</strong> y una capturadora de TDT usando la banda de <strong>1090 MHz</strong> y decodificando los datos recibidos para agruparlos y preparar rutas a partir de sus coordenadas.
                     </p>
                     <p class="text-on-surface-variant mb-3">
                         Puedes ver el código del exportador para la herramienta <strong>dump1090</strong> a sql escrito en php desde aquí:
                         <a href="https://gitlab.com/raupulus/dump1090-to-db"
                            class="underline text-on-tertiary-container font-bold text-xs"
                            target="_blank"
+                               rel="noopener noreferrer"
                            title="Enlace al repositorio con el código para exportar datos capturados con dump1090 a sql escrito en php">
                             https://gitlab.com/raupulus/dump1090-to-db
                         </a>
                     </p>
                 </div>
                 <div class="w-full sm:w-1/2 p-6">
-                    <img src="{{ asset('images/airflight/airflight-main-thumbnail.jpg') }}"
-                         class="m-auto rounded-xl shadow-lg"
+                    <img src="{{ asset('images/airflight/airflight-main-thumbnail.webp') }}"
+                         srcset="{{ asset('images/airflight/airflight-main-thumbnail-400w.webp') }} 400w, {{ asset('images/airflight/airflight-main-thumbnail.webp') }} 800w"
+                         sizes="(max-width: 640px) 100vw, 480px"
+                         width="800"
+                         height="447"
+                         loading="lazy"
+                         decoding="async"
+                         class="m-auto rounded-xl shadow-lg w-full h-auto"
                          alt="Dispositivos utilizados para el radar de vuelos en chipiona"/>
                 </div>
             </div>
@@ -229,8 +303,12 @@
             {{-- Blog --}}
             <div class="flex flex-wrap flex-col-reverse sm:flex-row mt-12">
                 <div class="w-full sm:w-1/2 p-6 mt-6">
-                    <img src="{{ asset('images/logo-blog.png') }}"
-                         class="rounded-xl"
+                    <img src="{{ asset('images/logo-blog.webp') }}"
+                         width="192"
+                         height="192"
+                         loading="lazy"
+                         decoding="async"
+                         class="rounded-xl mx-auto sm:mx-0"
                          alt="Logo raupulus"/>
                 </div>
                 <div class="w-full sm:w-1/2 p-6 mt-12">
@@ -246,7 +324,7 @@
     </section>
 
     {{-- 3. MÓDULOS DEL ECOSISTEMA (Bento Grid) --}}
-    <section class="py-24 bg-surface-container-low" id="modules">
+    <section class="defer-section py-24 px-4 sm:px-6 bg-surface-container-low scroll-mt-20" id="modules">
         <div class="max-w-7xl mx-auto px-6">
             <h2 class="text-4xl font-bold tracking-tight text-on-background mb-4">Servicios Disponibles</h2>
             <div class="w-20 h-1 bg-primary mb-12"></div>
@@ -254,31 +332,31 @@
                 {{-- Weather Station --}}
                 <a href="{{ route('weather_station.index') }}" class="md:col-span-8 group relative overflow-hidden bg-surface-container-lowest rounded-xl p-8 flex flex-col justify-between min-h-[400px] shadow-lg hover:shadow-xl transition-shadow">
                     <div class="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
-                        <span class="material-symbols-outlined text-[120px]">cloud</span>
+                        <span class="material-symbols-outlined text-[120px]" aria-hidden="true">cloud</span>
                     </div>
                     <div>
                         <div class="w-14 h-14 bg-surface-container rounded-full flex items-center justify-center mb-6">
-                            <span class="material-symbols-outlined text-primary text-3xl">thermostat</span>
+                            <span class="material-symbols-outlined text-primary text-3xl" aria-hidden="true">thermostat</span>
                         </div>
                         <h3 class="text-3xl font-bold mb-4 text-on-surface">Weather Station</h3>
-                        <p class="text-secondary text-lg max-w-md leading-relaxed">
+                        <p class="text-on-surface-variant text-lg max-w-md leading-relaxed">
                             Monitorización meteorológica en tiempo real. Datos de temperatura, humedad, presión y calidad del aire procesados mediante sensores distribuidos.
                         </p>
                     </div>
                     <div class="mt-8">
                         <span class="inline-flex items-center text-primary-container font-semibold hover:gap-2 transition-all">
-                            Acceder <span class="material-symbols-outlined ml-2">arrow_forward</span>
+                            Ver estación meteorológica <span class="material-symbols-outlined ml-2" aria-hidden="true">arrow_forward</span>
                         </span>
                     </div>
                 </a>
 
                 {{-- Keycounter --}}
-                <a href="{{ route('keycounter.index') }}" class="md:col-span-4 bg-surface-container-low rounded-xl p-8 flex flex-col shadow-lg hover:shadow-xl transition-shadow">
-                    <div class="w-12 h-12 bg-surface-container-lowest rounded-lg flex items-center justify-center mb-6">
-                        <span class="material-symbols-outlined text-on-tertiary-container">keyboard</span>
+                <a href="{{ route('keycounter.index') }}" class="md:col-span-4 bg-surface-container-lowest rounded-xl p-8 flex flex-col shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="w-12 h-12 bg-surface-container rounded-lg flex items-center justify-center mb-6">
+                        <span class="material-symbols-outlined text-on-tertiary-container" aria-hidden="true">keyboard</span>
                     </div>
                     <h3 class="text-xl font-bold mb-3 text-on-surface">Keycounter</h3>
-                    <p class="text-secondary text-sm mb-8 flex-grow">
+                    <p class="text-on-surface-variant text-sm mb-8 flex-grow">
                         Estadísticas detalladas sobre el uso de periféricos. Análisis de productividad y métricas de entrada de datos personalizadas.
                     </p>
                     <span class="text-primary-container font-bold text-xs uppercase tracking-widest hover:underline">Ver Métricas</span>
@@ -286,23 +364,23 @@
 
                 {{-- Airflight --}}
                 <a href="{{ route('airflight.index') }}" class="md:col-span-4 bg-surface-container-lowest rounded-xl p-8 flex flex-col shadow-lg hover:shadow-xl transition-shadow">
-                    <div class="w-12 h-12 bg-surface-container-low rounded-lg flex items-center justify-center mb-6">
-                        <span class="material-symbols-outlined text-on-tertiary-container">flight</span>
+                    <div class="w-12 h-12 bg-surface-container rounded-lg flex items-center justify-center mb-6">
+                        <span class="material-symbols-outlined text-on-tertiary-container" aria-hidden="true">flight</span>
                     </div>
                     <h3 class="text-xl font-bold mb-3 text-on-surface">Airflight</h3>
-                    <p class="text-secondary text-sm mb-8 flex-grow">
+                    <p class="text-on-surface-variant text-sm mb-8 flex-grow">
                         Seguimiento de tráfico aéreo regional. Datos en tiempo real sobre altitud, velocidad y trayectorias de vuelos.
                     </p>
                     <span class="text-primary-container font-bold text-xs uppercase tracking-widest hover:underline">Explorar Vuelos</span>
                 </a>
 
                 {{-- Smart Plant --}}
-                <a href="{{ route('smartplant.index') }}" class="md:col-span-4 bg-surface-container-low rounded-xl p-8 flex flex-col shadow-lg hover:shadow-xl transition-shadow">
-                    <div class="w-12 h-12 bg-surface-container-lowest rounded-lg flex items-center justify-center mb-6">
-                        <span class="material-symbols-outlined text-on-success-container">potted_plant</span>
+                <a href="{{ route('smartplant.index') }}" class="md:col-span-4 bg-surface-container-lowest rounded-xl p-8 flex flex-col shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="w-12 h-12 bg-surface-container rounded-lg flex items-center justify-center mb-6">
+                        <span class="material-symbols-outlined text-success" aria-hidden="true">potted_plant</span>
                     </div>
                     <h3 class="text-xl font-bold mb-3 text-on-surface">Smart Plant</h3>
-                    <p class="text-secondary text-sm mb-8 flex-grow">
+                    <p class="text-on-surface-variant text-sm mb-8 flex-grow">
                         Control inteligente de riego y salud vegetal. Sensores de humedad de suelo y luz para optimizar el crecimiento botánico.
                     </p>
                     <span class="text-primary-container font-bold text-xs uppercase tracking-widest hover:underline">Estado Jardín</span>
@@ -310,11 +388,11 @@
 
                 {{-- Curriculum Vitae --}}
                 <a href="{{ route('cv.index') }}" class="md:col-span-4 bg-surface-container-lowest rounded-xl p-8 flex flex-col shadow-lg hover:shadow-xl transition-shadow">
-                    <div class="w-12 h-12 bg-surface-container-low rounded-lg flex items-center justify-center mb-6">
-                        <span class="material-symbols-outlined text-on-tertiary-container">badge</span>
+                    <div class="w-12 h-12 bg-surface-container rounded-lg flex items-center justify-center mb-6">
+                        <span class="material-symbols-outlined text-on-tertiary-container" aria-hidden="true">badge</span>
                     </div>
                     <h3 class="text-xl font-bold mb-3 text-on-surface">Curriculum Vitae</h3>
-                    <p class="text-secondary text-sm mb-8 flex-grow">
+                    <p class="text-on-surface-variant text-sm mb-8 flex-grow">
                         Perfil profesional, experiencia laboral, proyectos técnicos y habilidades de ingeniería.
                     </p>
                     <span class="text-primary-container font-bold text-xs uppercase tracking-widest hover:underline">Ver Currículum</span>
@@ -324,10 +402,10 @@
                 <a href="{{ route('hardware.index') }}" class="md:col-span-6 bg-surface-container-lowest rounded-xl p-8 flex flex-col justify-between shadow-lg hover:shadow-xl transition-shadow">
                     <div>
                         <div class="w-12 h-12 bg-surface-container rounded-lg flex items-center justify-center mb-6">
-                            <span class="material-symbols-outlined text-primary">developer_board</span>
+                            <span class="material-symbols-outlined text-primary" aria-hidden="true">developer_board</span>
                         </div>
                         <h3 class="text-2xl font-bold mb-3 text-on-surface">Hardware</h3>
-                        <p class="text-secondary text-sm mb-6 leading-relaxed">
+                        <p class="text-on-surface-variant text-sm mb-6 leading-relaxed">
                             Catálogo de equipos, nodos IoT y microcontroladores con telemetría de salud (CPU, RAM, temperatura y almacenamiento) en tiempo real.
                         </p>
                     </div>
@@ -337,18 +415,18 @@
                 </a>
 
                 {{-- Energy --}}
-                <a href="{{ route('hardware.energy.index') }}" class="md:col-span-6 bg-primary-container text-white rounded-xl p-8 flex flex-col justify-between shadow-lg hover:shadow-xl transition-shadow">
+                <a href="{{ route('hardware.energy.index') }}" class="md:col-span-6 bg-primary-container text-on-primary rounded-xl p-8 flex flex-col justify-between shadow-lg hover:shadow-xl transition-shadow">
                     <div>
-                        <div class="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center mb-6">
-                            <span class="material-symbols-outlined text-white">bolt</span>
+                        <div class="w-12 h-12 bg-on-primary/15 rounded-lg flex items-center justify-center mb-6">
+                            <span class="material-symbols-outlined text-on-primary" aria-hidden="true">bolt</span>
                         </div>
                         <h3 class="text-2xl font-bold mb-3">Energy</h3>
-                        <p class="text-surface-dim/70 text-sm mb-6 leading-relaxed">
+                        <p class="text-on-primary/85 text-sm mb-6 leading-relaxed">
                             Monitorización del consumo eléctrico doméstico. Identificación de picos de consumo y eficiencia energética por dispositivo.
                         </p>
                     </div>
                     <div>
-                        <span class="text-white font-bold text-xs uppercase tracking-widest hover:opacity-70">Consumo Hoy</span>
+                        <span class="text-on-primary font-bold text-xs uppercase tracking-widest hover:opacity-80">Consumo Hoy</span>
                     </div>
                 </a>
             </div>
@@ -356,7 +434,7 @@
     </section>
 
     {{-- 4. STACK TECNOLÓGICO --}}
-    <section class="bg-surface-dim/30 py-24">
+    <section class="defer-section bg-surface-dim/30 py-24">
         <div class="max-w-7xl mx-auto px-6 text-center">
             <p class="text-secondary font-bold text-xs uppercase tracking-widest mb-12">Potenciado por Tecnologías Modernas</p>
             <div class="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
@@ -370,7 +448,7 @@
     </section>
 
     {{-- 5. MÁS INFORMACIÓN --}}
-    <section class="bg-surface-container-low py-8">
+    <section class="defer-section bg-surface-container-low py-8">
         <div class="max-w-7xl mx-auto px-6 pt-4 pb-12">
             <h2 class="w-full my-2 text-5xl font-bold leading-tight text-center text-on-surface">
                 Más información
@@ -382,90 +460,78 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
                 {{-- Autor --}}
                 <div class="flex flex-col flex-grow flex-shrink">
-                    <div class="flex-1 bg-surface-container-lowest rounded-t overflow-hidden shadow">
-                        <a href="https://raupulus.dev"
-                           title="Web de Raúl Caro Pastorino (raupulus)"
-                           target="_blank"
-                           class="flex flex-wrap no-underline hover:no-underline p-6">
-                            <p class="w-full text-on-surface-variant text-xs md:text-sm text-right">
-                                Información sobre el autor
-                            </p>
-                            <div class="w-full font-bold text-xl text-on-surface">
-                                Raúl Caro Pastorino
-                            </div>
-                            <p class="text-on-surface-variant text-base mb-5">
-                                Puedes visitar mi sitio web personal en el que describo mis trabajos, colaboraciones, proyectos, formación..
-                            </p>
-                        </a>
+                    <div class="flex-1 bg-surface-container-lowest rounded-t overflow-hidden shadow p-6">
+                        <p class="w-full text-on-surface-variant text-xs md:text-sm text-right">
+                            Información sobre el autor
+                        </p>
+                        <h3 class="w-full font-bold text-xl text-on-surface mb-2">
+                            Raúl Caro Pastorino
+                        </h3>
+                        <p class="text-on-surface-variant text-base mb-2">
+                            Puedes visitar mi sitio web personal en el que describo mis trabajos, colaboraciones, proyectos y formación.
+                        </p>
                     </div>
                     <div class="flex-none mt-auto bg-surface-container-lowest rounded-b overflow-hidden shadow p-6">
                         <div class="flex items-center justify-center">
-                            <a href="https://raupulus.dev"
-                               title="Web de Raúl Caro Pastorino (raupulus)"
-                               target="_blank"
-                               class="mx-auto lg:mx-0 gradient text-white font-bold rounded-full my-6 py-4 px-8 shadow-lg hover:scale-105 transition-transform duration-300">
-                                Explorar
-                            </a>
+                            <x-button href="https://raupulus.dev"
+                                      title="Web de Raúl Caro Pastorino (raupulus)"
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      size="lg">
+                                Visitar raupulus.dev
+                            </x-button>
                         </div>
                     </div>
                 </div>
 
                 {{-- Contacto --}}
                 <div class="flex flex-col flex-grow flex-shrink">
-                    <div class="flex-1 bg-surface-container-lowest rounded-t overflow-hidden shadow">
-                        <a href="https://raupulus.dev/contact"
-                           title="Contactar con Raúl Caro Pastorino (raupulus)"
-                           target="_blank"
-                           class="flex flex-wrap no-underline hover:no-underline p-6">
-                            <p class="w-full text-on-surface-variant text-xs md:text-sm text-right">
-                                Puedes contactar con el autor
-                            </p>
-                            <div class="w-full font-bold text-xl text-on-surface">
-                                Contactar
-                            </div>
-                            <p class="text-on-surface-variant text-base mb-5">
-                                ¿Has detectado algún error?<br/>
-                                ¿Alguna sugerencia o propuesta?<br/>
-                                Contacta conmigo, ¡estaré encantado!
-                            </p>
-                        </a>
+                    <div class="flex-1 bg-surface-container-lowest rounded-t overflow-hidden shadow p-6">
+                        <p class="w-full text-on-surface-variant text-xs md:text-sm text-right">
+                            Puedes contactar con el autor
+                        </p>
+                        <h3 class="w-full font-bold text-xl text-on-surface mb-2">
+                            Contactar
+                        </h3>
+                        <p class="text-on-surface-variant text-base mb-2">
+                            ¿Has detectado algún error?<br/>
+                            ¿Alguna sugerencia o propuesta?<br/>
+                            Contacta conmigo, ¡estaré encantado!
+                        </p>
                     </div>
                     <div class="flex-none mt-auto bg-surface-container-lowest rounded-b overflow-hidden shadow p-6">
                         <div class="flex items-center justify-center">
-                            <a href="https://raupulus.dev/contact"
-                               title="Contactar con Raúl Caro Pastorino (raupulus)"
-                               target="_blank"
-                               class="mx-auto lg:mx-0 gradient text-white font-bold rounded-full my-6 py-4 px-8 shadow-lg hover:scale-105 transition-transform duration-300">
-                                Contactar
-                            </a>
+                            <x-button href="https://raupulus.dev/contact"
+                                      title="Contactar con Raúl Caro Pastorino (raupulus)"
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      size="lg">
+                                Contactar<span class="sr-only"> con el autor</span>
+                            </x-button>
                         </div>
                     </div>
                 </div>
 
                 {{-- Currículum --}}
                 <div class="flex flex-col flex-grow flex-shrink">
-                    <div class="flex-1 bg-surface-container-lowest rounded-t overflow-hidden shadow">
-                        <a href="{{ route('cv.index') }}"
-                           title="Currículums públicos de Raúl Caro Pastorino"
-                           class="flex flex-wrap no-underline hover:no-underline p-6">
-                            <p class="w-full text-on-surface-variant text-xs md:text-sm text-right">
-                                CV
-                            </p>
-                            <div class="w-full font-bold text-xl text-on-surface">
-                                Currículum
-                            </div>
-                            <p class="text-on-surface-variant text-base mb-5">
-                                Varios currículums según el perfil —frontend, backend, resumen— listos para consultar en línea o descargar en PDF.
-                            </p>
-                        </a>
+                    <div class="flex-1 bg-surface-container-lowest rounded-t overflow-hidden shadow p-6">
+                        <p class="w-full text-on-surface-variant text-xs md:text-sm text-right">
+                            CV
+                        </p>
+                        <h3 class="w-full font-bold text-xl text-on-surface mb-2">
+                            Currículum
+                        </h3>
+                        <p class="text-on-surface-variant text-base mb-2">
+                            Varios currículums según el perfil —frontend, backend, resumen— listos para consultar en línea o descargar en PDF.
+                        </p>
                     </div>
                     <div class="flex-none mt-auto bg-surface-container-lowest rounded-b overflow-hidden shadow p-6">
                         <div class="flex items-center justify-center">
-                            <a href="{{ route('cv.index') }}"
-                               title="Currículums públicos de Raúl Caro Pastorino"
-                               class="mx-auto lg:mx-0 gradient text-white font-bold rounded-full my-6 py-4 px-8 shadow-lg hover:scale-105 transition-transform duration-300">
+                            <x-button :href="route('cv.index')"
+                                      title="Currículums públicos de Raúl Caro Pastorino"
+                                      size="lg">
                                 Ver currículum
-                            </a>
+                            </x-button>
                         </div>
                     </div>
                 </div>

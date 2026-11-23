@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Http;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 /**
@@ -60,7 +61,12 @@ class PublicUrlFetcher
             while (! $stream->eof() && strlen($body) <= $maxBytes) {
                 $body .= $stream->read(65_536);
             }
-        } catch (Throwable) {
+        } catch (Throwable $e) {
+            Log::warning('PublicUrlFetcher: request failed', [
+                'host' => $target['host'],
+                'error' => $e->getMessage(),
+            ]);
+
             return null;
         }
 
@@ -83,6 +89,24 @@ class PublicUrlFetcher
     }
 
     /**
+     * Rangos IPv4 e IPv6 no enrutables públicamente que `FILTER_FLAG_NO_PRIV_RANGE`
+     * / `FILTER_FLAG_NO_RES_RANGE` no descartan por defecto (CGNAT, multicast, NAT64…).
+     *
+     * @var list<string>
+     */
+    private const BLOCKED_CIDRS = [
+        '100.64.0.0/10',
+        '192.0.0.0/24',
+        '192.0.2.0/24',
+        '198.18.0.0/15',
+        '224.0.0.0/4',
+        '240.0.0.0/4',
+        '::/128',
+        '64:ff9b::/96',
+        'ff00::/8',
+    ];
+
+    /**
      * Host, puerto e IP pública a la que conectar, o null si no se debe.
      *
      * @return array{host: string, port: int, ip: string}|null
@@ -94,29 +118,33 @@ class PublicUrlFetcher
         }
 
         $parts = parse_url($url);
-        $scheme = $parts['scheme'] ?? '';
+
+        if (! is_array($parts) || isset($parts['user']) || isset($parts['pass'])) {
+            return null;
+        }
+
+        $scheme = strtolower((string) ($parts['scheme'] ?? ''));
 
         if (! in_array($scheme, ['http', 'https'], true)) {
             return null;
         }
 
-        $host = $parts['host'] ?? '';
+        $rawHost = (string) ($parts['host'] ?? '');
+        $host = trim($rawHost, '[]');
         $port = (int) ($parts['port'] ?? ($scheme === 'https' ? 443 : 80));
 
         if ($host === '' || ! in_array($port, [80, 443], true)) {
             return null;
         }
 
-        $ips = $this->resolve(trim($host, '[]'));
+        $ips = $this->resolve($host);
 
         if ($ips === []) {
             return null;
         }
 
         foreach ($ips as $ip) {
-            $public = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
-
-            if ($public === false) {
+            if (! $this->isPublicIp($ip)) {
                 return null;
             }
         }
@@ -124,13 +152,61 @@ class PublicUrlFetcher
         return [
             'host' => $host,
             'port' => $port,
-            // curl quiere las IPv6 entre corchetes.
-            'ip' => str_contains($ips[0], ':') ? '['.$ips[0].']' : $ips[0],
+            // libcurl `CURLOPT_RESOLVE` espera `HOST:PORT:ADDRESS` sin corchetes.
+            'ip' => trim($ips[0], '[]'),
         ];
     }
 
     /**
-     * Las IPs a las que apunta un host.
+     * Comprueba que la IP es estrictamente enrutable en Internet público.
+     */
+    private function isPublicIp(string $ip): bool
+    {
+        if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
+            return false;
+        }
+
+        foreach (self::BLOCKED_CIDRS as $cidr) {
+            if ($this->ipInCidr($ip, $cidr)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Evalúa pertenencia de una IPv4 o IPv6 a un prefijo CIDR mediante máscara binaria.
+     */
+    private function ipInCidr(string $ip, string $cidr): bool
+    {
+        [$subnet, $prefixLength] = explode('/', $cidr, 2);
+        $ipBin = @inet_pton($ip);
+        $subnetBin = @inet_pton($subnet);
+
+        if ($ipBin === false || $subnetBin === false || strlen($ipBin) !== strlen($subnetBin)) {
+            return false;
+        }
+
+        $prefix = (int) $prefixLength;
+        $fullBytes = intdiv($prefix, 8);
+        $remainingBits = $prefix % 8;
+
+        if ($fullBytes > 0 && substr($ipBin, 0, $fullBytes) !== substr($subnetBin, 0, $fullBytes)) {
+            return false;
+        }
+
+        if ($remainingBits === 0) {
+            return true;
+        }
+
+        $mask = (0xFF << (8 - $remainingBits)) & 0xFF;
+
+        return (ord($ipBin[$fullBytes]) & $mask) === (ord($subnetBin[$fullBytes]) & $mask);
+    }
+
+    /**
+     * Las IPs a las que apunta un host (IPv4 e IPv6).
      *
      * Aparte para poder sustituirlo en los tests: si no, el caso feliz
      * dependería de que haya DNS y de que el dominio de prueba exista.
@@ -143,6 +219,25 @@ class PublicUrlFetcher
             return [$host];
         }
 
-        return gethostbynamel($host) ?: [];
+        $ips = [];
+        $records = @dns_get_record($host, DNS_A | DNS_AAAA);
+
+        if (is_array($records)) {
+            foreach ($records as $record) {
+                $ip = $record['ip'] ?? $record['ipv6'] ?? null;
+                if (is_string($ip) && $ip !== '') {
+                    $ips[] = $ip;
+                }
+            }
+        }
+
+        if ($ips === []) {
+            $ipv4 = @gethostbynamel($host);
+            if (is_array($ipv4)) {
+                $ips = $ipv4;
+            }
+        }
+
+        return array_values(array_unique($ips));
     }
 }

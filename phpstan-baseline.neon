@@ -1,12 +1,6 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Property App\\Models\\KeyCounter\\Keyboard\:\:\$duration \(int\) does not accept float\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Console/Commands/KeyCounterGenerateDuration.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user_id\.$#'
 			identifier: property.notFound
 			count: 1
@@ -55,28 +49,16 @@ parameters:
 			path: app/Filament/Admin/Widgets/AemetMetricsWidget.php
 
 		-
-			message: '#^Method App\\Http\\Controllers\\FileController\:\:delete\(\) with return type void returns Illuminate\\Http\\RedirectResponse but should not return anything\.$#'
-			identifier: return.void
-			count: 2
-			path: app/Http/Controllers/FileController.php
-
-		-
-			message: '#^Static method App\\Models\\Language\:\:getTableHeads\(\) invoked with 1 parameter, 0 required\.$#'
-			identifier: arguments.count
+			message: '#^Using nullsafe property access "\?\-\>mime" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
+			identifier: nullsafe.neverNull
 			count: 1
-			path: app/Http/Controllers/LanguageController.php
+			path: app/Http/Controllers/FileController.php
 
 		-
 			message: '#^Method App\\Http\\Controllers\\WeatherStation\\WeatherStationController\:\:sensor\(\) should return Illuminate\\View\\View but returns Illuminate\\Http\\RedirectResponse\.$#'
 			identifier: return.type
 			count: 1
 			path: app/Http/Controllers/WeatherStation/WeatherStationController.php
-
-		-
-			message: '#^Parameter \#2 \$name of method Illuminate\\Mail\\Mailable\:\:to\(\) expects string\|null, array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Mail/GenericMail.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\AirFlight\\AirFlightAirPlane\:\:\$altitude\.$#'
@@ -155,18 +137,6 @@ parameters:
 			identifier: property.notFound
 			count: 1
 			path: app/Models/AirFlight/AirFlightAirPlane.php
-
-		-
-			message: '#^Parameter \#1 \$message of static method Illuminate\\Log\\Logger\:\:error\(\) expects array\|Illuminate\\Contracts\\Support\\Arrayable\|Illuminate\\Contracts\\Support\\Jsonable\|Illuminate\\Support\\Stringable\|string, Exception given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Models/AirFlight/AirFlightAirPlane.php
-
-		-
-			message: '#^Strict comparison using \=\=\= between mixed~''App\\\\Models\\\\User'' and ''App\\\\Models\\\\User'' will always evaluate to false\.$#'
-			identifier: identical.alwaysFalse
-			count: 1
-			path: app/Models/ApiToken.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\BaseModels\\BaseModel\:\:\$image\.$#'
@@ -313,6 +283,18 @@ parameters:
 			path: app/Models/File.php
 
 		-
+			message: '#^Offset 0 on array\{0\: int\<0, max\>, 1\: int\<0, max\>, 2\: int, 3\: string, mime\: string, channels\?\: int, bits\?\: int\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Models/File.php
+
+		-
+			message: '#^Offset 1 on array\{0\: int\<0, max\>, 1\: int\<0, max\>, 2\: int, 3\: string, mime\: string, channels\?\: int, bits\?\: int\} on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Models/File.php
+
+		-
 			message: '#^PHPDoc tag @return with type array\[int\] is not subtype of native type array\.$#'
 			identifier: return.phpDocType
 			count: 1
@@ -331,12 +313,6 @@ parameters:
 			path: app/Models/KeyCounter/BaseKeyCounter.php
 
 		-
-			message: '#^Method App\\Models\\KeyCounter\\BaseKeyCounter\:\:setUpdatedAt\(\) should return \$this\(App\\Models\\KeyCounter\\BaseKeyCounter\) but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Models/KeyCounter/BaseKeyCounter.php
-
-		-
 			message: '#^Method App\\Models\\KeyCounter\\Mouse\:\:all\(\) should return Illuminate\\Database\\Eloquent\\Collection\<int, static\(App\\Models\\KeyCounter\\Mouse\)\> but returns Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\KeyCounter\\Keyboard\>\.$#'
 			identifier: return.type
 			count: 1
@@ -348,24 +324,11 @@ parameters:
 			count: 1
 			path: app/Models/Language.php
 
-
 		-
 			message: '#^PHPDoc tag @return with type mixed is not subtype of native type Illuminate\\Database\\Eloquent\\Relations\\HasMany\.$#'
 			identifier: return.phpDocType
 			count: 1
 			path: app/Models/SmartPlant/SmartPlantPlant.php
-
-		-
-			message: '#^Parameter \#2 \$direction of method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\SmartPlant\\SmartPlantRegister\>\:\:orderBy\(\) expects ''asc''\|''desc''\|SortDirection, ''DESC'' given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Models/SmartPlant/SmartPlantPlant.php
-
-		-
-			message: '#^Method App\\Models\\SmartPlant\\SmartPlantRegister\:\:setUpdatedAt\(\) should return \$this\(App\\Models\\SmartPlant\\SmartPlantRegister\) but return statement is missing\.$#'
-			identifier: return.missing
-			count: 1
-			path: app/Models/SmartPlant/SmartPlantRegister.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\User\:\:\$image\.$#'
@@ -530,54 +493,6 @@ parameters:
 			path: app/Services/AirFlight/AirFlightService.php
 
 		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\KeyCounter\\Keyboard\>\:\:lastDays\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Services/KeyCounter/KeyCounterService.php
-
-		-
-			message: '#^Trait App\\Traits\\Filterable is used zero times and is not analysed\.$#'
-			identifier: trait.unused
-			count: 1
-			path: app/Traits/Filterable.php
-
-		-
-			message: '#^Trait App\\Traits\\HasSlug is used zero times and is not analysed\.$#'
-			identifier: trait.unused
-			count: 1
-			path: app/Traits/HasSlug.php
-
-		-
-			message: '#^PHPDoc tag @extends has invalid type App\\Models\\WeatherStation\\BaseWheaterStation\.$#'
-			identifier: class.notFound
-			count: 1
-			path: database/factories/BaseWheaterStationFactory.php
-
-		-
-			message: '#^Type App\\Models\\WeatherStation\\BaseWheaterStation in generic type Illuminate\\Database\\Eloquent\\Factories\\Factory\<App\\Models\\WeatherStation\\BaseWheaterStation\> in PHPDoc tag @extends is not subtype of template type TModel of Illuminate\\Database\\Eloquent\\Model of class Illuminate\\Database\\Eloquent\\Factories\\Factory\.$#'
-			identifier: generics.notSubtype
-			count: 1
-			path: database/factories/BaseWheaterStationFactory.php
-
-		-
-			message: '#^Call to static method factory\(\) on an unknown class App\\Models\\Team\.$#'
-			identifier: class.notFound
-			count: 1
-			path: database/factories/UserFactory.php
-
-		-
-			message: '#^Call to static method hasTeamFeatures\(\) on an unknown class Database\\Factories\\Features\.$#'
-			identifier: class.notFound
-			count: 1
-			path: database/factories/UserFactory.php
-
-		-
-			message: '#^Method Database\\Factories\\UserFactory\:\:withPersonalTeam\(\) should return \$this\(Database\\Factories\\UserFactory\) but returns static\(Database\\Factories\\UserFactory\)\.$#'
-			identifier: return.type
-			count: 2
-			path: database/factories/UserFactory.php
-
-		-
 			message: '#^PHPDoc type string of property Database\\Factories\\UserFactory\:\:\$model is not covariant with PHPDoc type class\-string\<Illuminate\\Database\\Eloquent\\Model\> of overridden property Illuminate\\Database\\Eloquent\\Factories\\Factory\<Illuminate\\Database\\Eloquent\\Model\>\:\:\$model\.$#'
 			identifier: property.phpDocType
 			count: 1
@@ -600,10 +515,4 @@ parameters:
 			identifier: property.onlyWritten
 			count: 1
 			path: database/seeders/UsersTableSeeder.php
-
-		-
-			message: '#^Anonymous function should never return but return statement found\.$#'
-			identifier: return.never
-			count: 1
-			path: routes/web.php
 

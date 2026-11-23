@@ -50,6 +50,7 @@ class TurnstileService
 
         try {
             $response = Http::asForm()
+                ->connectTimeout(5)
                 ->timeout(10)
                 ->post(self::ENDPOINT, array_filter([
                     'secret' => $secret,

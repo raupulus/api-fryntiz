@@ -38,10 +38,11 @@ trait HasRecaptchaLogin
             $token,
             request()->ip(),
             (float) config('google.recaptcha.min_score_login', 0.3),
+            'login',
         );
 
         if ($result->configured && ! $result->valid) {
-            Log::warning('[reCAPTCHA Login] Verificación fallida o token ausente', [
+            Log::warning('reCAPTCHA login verification failed or token missing', [
                 'token_present' => ! empty($token),
                 'score' => $result->score,
                 'ip' => request()->ip(),

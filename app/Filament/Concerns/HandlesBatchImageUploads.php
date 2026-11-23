@@ -78,7 +78,7 @@ trait HandlesBatchImageUploads
                 $uploadedFile = $this->resolveUploadedFile($uploaded);
 
                 if (! $uploadedFile) {
-                    Log::warning('Gallery: no se pudo resolver el archivo temporal para la galería', [
+                    Log::warning('Gallery: could not resolve temporary file for upload', [
                         'gallery_id' => $gallery->id,
                         'uploaded' => is_string($uploaded) ? $uploaded : get_debug_type($uploaded),
                     ]);
@@ -90,7 +90,7 @@ trait HandlesBatchImageUploads
                 $file = File::addFile($uploadedFile, 'galleries', is_private: false);
 
                 if (! $file) {
-                    Log::warning('Gallery: File::addFile rechazó el archivo para la galería', [
+                    Log::warning('Gallery: File::addFile rejected uploaded image', [
                         'gallery_id' => $gallery->id,
                         'original_name' => $uploadedFile->getClientOriginalName(),
                         'size' => $uploadedFile->getSize(),
@@ -113,7 +113,7 @@ trait HandlesBatchImageUploads
 
                 $successCount++;
             } catch (\Throwable $e) {
-                Log::error('Gallery: excepción al procesar imagen en lote', [
+                Log::error('Gallery: exception processing batch image upload', [
                     'gallery_id' => $gallery->id,
                     'error' => $e->getMessage(),
                 ]);

@@ -23,9 +23,9 @@ class RepositoriesRelationManager extends RelationManager
     public function form(Schema $schema): Schema
     {
         return $schema->components([
-            TextInput::make('title')->maxLength(511)->label('Título'),
+            TextInput::make('title')->required()->maxLength(511)->label('Título'),
             TextInput::make('name')->maxLength(255)->required()->label('Nombre'),
-            TextInput::make('url')->url()->maxLength(511)->label('URL'),
+            TextInput::make('url')->required()->url()->maxLength(511)->label('URL'),
             Textarea::make('description')->rows(3)->columnSpanFull()->label('Descripción'),
         ]);
     }

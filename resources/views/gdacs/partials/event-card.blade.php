@@ -1,9 +1,9 @@
 {{-- Tarjeta horizontal de un evento GDACS. Espera $event (GdacsEvent). --}}
 @php
     $styles = [
-        'Green' => ['container' => 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-950 dark:text-emerald-100', 'icon' => 'text-emerald-600 dark:text-emerald-400'],
-        'Orange' => ['container' => 'bg-orange-50 dark:bg-orange-950/30 text-orange-950 dark:text-orange-100', 'icon' => 'text-orange-600 dark:text-orange-400'],
-        'Red' => ['container' => 'bg-error-container/40 dark:bg-error-container/20 text-on-surface', 'icon' => 'text-error'],
+        'Green' => ['container' => 'bg-surface-container-lowest text-on-surface border border-success/30', 'icon' => 'text-success'],
+        'Orange' => ['container' => 'bg-warning-container text-on-warning-container', 'icon' => 'text-on-warning-container'],
+        'Red' => ['container' => 'bg-error-container text-on-error-container', 'icon' => 'text-on-error-container'],
     ];
 
     $style = $styles[$event->alert_level->value] ?? $styles['Green'];
@@ -14,13 +14,13 @@
 <div class="w-full rounded-xl p-6 shadow-lg {{ $style['container'] }}">
     <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
         <div class="flex items-center gap-3">
-            <span class="material-symbols-outlined text-2xl {{ $style['icon'] }}">public</span>
+            <span class="material-symbols-outlined text-2xl {{ $style['icon'] }}" aria-hidden="true">public</span>
             <div>
-                <h3 class="text-lg font-bold">{{ $event->name ?? $event->event_type->label() }}</h3>
-                <span class="text-xs uppercase tracking-widest opacity-80">{{ $event->event_type->label() }}</span>
+                <h2 class="text-lg font-bold">{{ $event->name ?? $event->event_type->label() }}</h2>
+                <span class="text-xs uppercase tracking-widest opacity-85">{{ $event->event_type->label() }}</span>
             </div>
         </div>
-        <span class="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-surface-container-lowest/60">
+        <span class="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full bg-surface-container-lowest/80 text-on-surface">
             {{ $event->alert_level->label() }}{{ $event->is_current ? ' · Vigente' : ' · Cerrada' }}
         </span>
     </div>
@@ -30,15 +30,15 @@
             <strong>Distancia a Chipiona:</strong> {{ number_format($event->distance_km, 1) }} km
         </p>
         <p>
-            <strong>Inicio:</strong> {{ $event->from_date->timezone($displayTimezone)->translatedFormat('d/m/Y H:i') }} (hora de Madrid)
+            <strong>Inicio:</strong> <time datetime="{{ $event->from_date->toIso8601String() }}">{{ $event->from_date->timezone($displayTimezone)->translatedFormat('d/m/Y H:i') }}</time> (hora de Madrid)
         </p>
         @if($event->to_date)
             <p>
-                <strong>Fin / última fecha conocida:</strong> {{ $event->to_date->timezone($displayTimezone)->translatedFormat('d/m/Y H:i') }} (hora de Madrid)
+                <strong>Fin / última fecha conocida:</strong> <time datetime="{{ $event->to_date->toIso8601String() }}">{{ $event->to_date->timezone($displayTimezone)->translatedFormat('d/m/Y H:i') }}</time> (hora de Madrid)
             </p>
         @endif
         <p>
-            <strong>Última actualización:</strong> {{ $event->last_modified_at->timezone($displayTimezone)->translatedFormat('d/m/Y H:i') }} (hora de Madrid)
+            <strong>Última actualización:</strong> <time datetime="{{ $event->last_modified_at->toIso8601String() }}">{{ $event->last_modified_at->timezone($displayTimezone)->translatedFormat('d/m/Y H:i') }}</time> (hora de Madrid)
         </p>
         @if($event->severity_text)
             <p class="md:col-span-2">
@@ -55,11 +55,11 @@
         @endif
     </div>
 
-    @if($event->report_url)
-        <a href="{{ $event->report_url }}" target="_blank" rel="noopener"
+    @if($event->report_url && \App\Services\Content\ContentBlockValidator::isSafeUrl($event->report_url, false))
+        <a href="{{ $event->report_url }}" target="_blank" rel="noopener noreferrer"
            class="inline-flex items-center gap-1 mt-4 text-xs font-bold uppercase tracking-widest underline underline-offset-2">
             Ver informe completo
-            <span class="material-symbols-outlined text-sm">open_in_new</span>
+            <span class="material-symbols-outlined text-sm" aria-hidden="true">open_in_new</span>
         </a>
     @endif
 </div>

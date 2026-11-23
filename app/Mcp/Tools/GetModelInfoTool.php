@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Mcp\Tools;
 
 use Illuminate\Contracts\JsonSchema\JsonSchema;
+use Illuminate\Database\Eloquent\Model;
 use Laravel\Mcp\Request;
 use Laravel\Mcp\Response;
 use Laravel\Mcp\ResponseFactory;
@@ -31,14 +32,27 @@ class GetModelInfoTool extends Tool
 
     public function handle(Request $request): Response|ResponseFactory
     {
-        $modelClass = (string) $request->string('modelClass');
+        $modelClass = ltrim((string) $request->string('modelClass'), '\\');
+
+        if (! str_starts_with($modelClass, 'App\\Models\\')) {
+            return Response::error("Error: Class '{$modelClass}' must be under the App\\Models\\ namespace.");
+        }
 
         if (! class_exists($modelClass)) {
             return Response::error("Error: Class '{$modelClass}' does not exist.");
         }
 
+        if (! is_subclass_of($modelClass, Model::class)) {
+            return Response::error("Error: Class '{$modelClass}' is not an Eloquent model.");
+        }
+
         try {
             $reflection = new ReflectionClass($modelClass);
+
+            if ($reflection->isAbstract()) {
+                return Response::error("Error: Class '{$modelClass}' is abstract and cannot be instantiated.");
+            }
+
             $model = new $modelClass;
 
             $fillable = $model->getFillable();

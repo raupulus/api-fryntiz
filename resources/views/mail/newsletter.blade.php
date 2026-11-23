@@ -74,7 +74,7 @@
                 <div style="color: #2e7d32; font-size: 16px; line-height: 1.6;">
                     <!-- Contenido dinámico de la newsletter -->
                     @if(isset($content))
-                        {!! $content !!}
+                        {!! \App\Helpers\HtmlHelper::safeBasic((string) $content) !!}
                     @else
                         <p>Aquí irá el contenido de la newsletter.</p>
                     @endif
@@ -91,7 +91,7 @@
                 <li>Email: {{ $newsletter->email }}</li>
                 <li>Plataforma: {{ $newsletter->platform->name ?? 'No especificada' }}</li>
                 <li>Idioma: {{ strtoupper($newsletter->language) }}</li>
-                <li>Fecha de suscripción: {{ $newsletter->created_at->format('d/m/Y H:i') }}</li>
+                <li>Fecha de suscripción: {{ $newsletter->created_at?->timezone(config('app.display_timezone', 'Europe/Madrid'))->format('d/m/Y H:i') }}</li>
             </ul>
         </div>
 

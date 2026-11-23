@@ -42,6 +42,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -72,14 +75,14 @@ endpoints:
         name: id
         description: 'The ID of the printer.'
         required: true
-        example: 16
+        example: 2
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      id: 16
+      id: 2
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -99,6 +102,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -129,14 +135,14 @@ endpoints:
         name: printer_id
         description: 'The ID of the printer.'
         required: true
-        example: 16
+        example: 2
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      printer_id: 16
+      printer_id: 2
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -156,6 +162,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -186,14 +195,14 @@ endpoints:
         name: printer_id
         description: 'The ID of the printer.'
         required: true
-        example: 16
+        example: 2
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      printer_id: 16
+      printer_id: 2
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -213,6 +222,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -270,6 +282,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -300,14 +315,14 @@ endpoints:
         name: printer_id
         description: 'The ID of the printer.'
         required: true
-        example: 16
+        example: 2
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      printer_id: 16
+      printer_id: 2
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -479,14 +494,14 @@ endpoints:
         name: is_favorite
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      is_favorite: false
+      is_favorite: true
     fileParameters: []
     responses: []
     responseFields: []
@@ -561,14 +576,14 @@ endpoints:
         name: printer_id
         description: 'The ID of the printer.'
         required: true
-        example: 16
+        example: 2
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      printer_id: 16
+      printer_id: 2
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -633,7 +648,7 @@ endpoints:
         name: status
         description: ''
         required: true
-        example: out_of_paper
+        example: completed
         type: string
         enumValues:
           - completed
@@ -647,7 +662,7 @@ endpoints:
         name: error_message
         description: 'This field is required when <code>status</code> is <code>failed</code>. Must not be greater than 1000 characters.'
         required: false
-        example: b
+        example: v
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -665,8 +680,8 @@ endpoints:
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      status: out_of_paper
-      error_message: b
+      status: completed
+      error_message: v
     fileParameters: []
     responses: []
     responseFields: []
@@ -698,14 +713,14 @@ endpoints:
         name: printer_id
         description: 'The ID of the printer.'
         required: true
-        example: 16
+        example: 2
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      printer_id: 16
+      printer_id: 2
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:

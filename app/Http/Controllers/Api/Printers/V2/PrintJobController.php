@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api\Printers\V2;
 
+use App\Http\Api\CollectionQuery;
 use App\Http\Controllers\Api\Hardware\V2\Concerns\HandlesHardwareDeviceInfo;
 use App\Http\Controllers\Api\V2\BaseApiController;
 use App\Http\Requests\Api\Printers\V2\ClaimNextJobRequest;
@@ -20,6 +21,7 @@ use App\Services\Printers\PrinterService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use RuntimeException;
 
 /**
  * Controlador API V2 para la cola de trabajos de impresión física.
@@ -41,22 +43,43 @@ class PrintJobController extends BaseApiController
     {
         Gate::authorize('view', $printer);
 
-        $filters = $request->only(['status', 'format', 'is_favorite']);
-        $paginator = $this->printerService->getJobsForPrinter($printer, $filters);
+        $collectionQuery = new CollectionQuery(
+            filterable: ['status', 'format', 'is_favorite', 'created_at'],
+            sortable: ['priority', 'created_at', 'updated_at', 'printed_at'],
+            defaultSortColumn: 'created_at',
+            defaultSortDescending: true,
+        );
 
-        return $this->paginatedResponse($paginator, PrintJobResource::class, 'Trabajos de impresión obtenidos exitosamente');
+        $query = $this->printerService->jobsQueryForPrinter($printer);
+
+        return $this->paginatedResponse(
+            $collectionQuery->paginate($query, $request),
+            PrintJobResource::class,
+            'Trabajos de impresión obtenidos exitosamente'
+        );
     }
 
     /**
      * Listar plantillas favoritas de una impresora.
      */
-    public function favorites(Printer $printer): JsonResponse
+    public function favorites(Request $request, Printer $printer): JsonResponse
     {
         Gate::authorize('view', $printer);
 
-        $paginator = $this->printerService->getFavoritesForPrinter($printer);
+        $collectionQuery = new CollectionQuery(
+            filterable: ['format', 'status', 'created_at'],
+            sortable: ['updated_at', 'created_at', 'priority'],
+            defaultSortColumn: 'updated_at',
+            defaultSortDescending: true,
+        );
 
-        return $this->paginatedResponse($paginator, PrintJobResource::class, 'Plantillas favoritas obtenidas exitosamente');
+        $query = $this->printerService->favoritesQueryForPrinter($printer);
+
+        return $this->paginatedResponse(
+            $collectionQuery->paginate($query, $request),
+            PrintJobResource::class,
+            'Plantillas favoritas obtenidas exitosamente'
+        );
     }
 
     /**
@@ -122,11 +145,15 @@ class PrintJobController extends BaseApiController
 
         $this->storeDeviceInfoIfPresent($request, $hardwareService, (int) $job->printer->hardware_device_id);
 
-        $updatedJob = $this->printerService->updateJobStatus(
-            $job,
-            $request->validated('status'),
-            $request->validated('error_message')
-        );
+        try {
+            $updatedJob = $this->printerService->updateJobStatus(
+                $job,
+                $request->validated('status'),
+                $request->validated('error_message')
+            );
+        } catch (RuntimeException $e) {
+            return $this->conflictResponse($e->getMessage());
+        }
 
         return $this->successResponse(new PrintJobResource($updatedJob), 'Estado del trabajo de impresión actualizado exitosamente');
     }
@@ -164,10 +191,14 @@ class PrintJobController extends BaseApiController
      */
     public function destroy(PrinterStack $job): JsonResponse
     {
-        Gate::authorize('delete', $job);
+        Gate::authorize('update', $job);
 
-        $cancelledJob = $this->printerService->cancelJob($job);
+        try {
+            $this->printerService->cancelJob($job);
+        } catch (RuntimeException $e) {
+            return $this->conflictResponse($e->getMessage());
+        }
 
-        return $this->successResponse(new PrintJobResource($cancelledJob), 'Trabajo de impresión cancelado exitosamente');
+        return $this->deletedResponse();
     }
 }

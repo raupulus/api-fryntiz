@@ -717,3 +717,7 @@ la subnavegación del clúster. Cuando `EnergyDashboard` empataba en
 `navigationSort` con el otro recurso del clúster, pulsar «Energy» llevaba
 siempre a ése — estando ya en esa pantalla, parecía que sólo se recargaba. El
 resumen es la portada del módulo, así que va con `navigationSort = 0`.
+
+---
+
+> Creado: 2026-08-31 · Última revisión: 2026-11-23

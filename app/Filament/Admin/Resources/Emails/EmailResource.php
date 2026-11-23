@@ -52,9 +52,11 @@ class EmailResource extends Resource
 
     protected static ?int $navigationSort = 10;
 
-    protected static ?string $modelLabel = 'Email';
+    protected static ?string $modelLabel = 'Mensaje de contacto';
 
-    protected static ?string $pluralModelLabel = 'Emails';
+    protected static ?string $pluralModelLabel = 'Mensajes de contacto';
+
+    protected static ?string $navigationLabel = 'Mensajes de contacto';
 
     protected static ?string $recordTitleAttribute = 'subject';
 
@@ -65,7 +67,7 @@ class EmailResource extends Resource
                 Select::make('user_id')
                     ->relationship('user', 'name')->searchable()->nullable()->label('Usuario'),
                 Select::make('language_id')
-                    ->relationship('language', 'name')->nullable()->label('Idioma'),
+                    ->relationship('language', 'name')->searchable()->preload()->nullable()->label('Idioma'),
                 TextInput::make('email')->email()->required()->maxLength(511)->label('Destinatario'),
                 TextInput::make('subject')->required()->maxLength(511)->label('Asunto'),
                 Textarea::make('message')->required()->rows(10)
@@ -139,15 +141,15 @@ class EmailResource extends Resource
         return $table
             ->columns([
                 IconColumn::make('send')->boolean()->label('Env.'),
-                TextColumn::make('email')->searchable()->copyable()->limit(40)->label('Destinatario'),
-                TextColumn::make('subject')->searchable()->limit(60)->label('Asunto'),
-                TextColumn::make('language.name')->badge()->label('Idioma')->toggleable(),
+                TextColumn::make('email')->searchable()->copyable()->limit(40)->tooltip(fn (?string $state): ?string => $state)->label('Destinatario'),
+                TextColumn::make('subject')->searchable()->limit(50)->tooltip(fn (?string $state): ?string => $state)->label('Asunto'),
+                TextColumn::make('language.name')->badge()->label('Idioma')->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('priority')->sortable()->badge()
                     ->color(fn ($state) => $state >= 5 ? 'danger' : ($state >= 3 ? 'warning' : 'gray'))
-                    ->label('Prio'),
-                TextColumn::make('attempts')->sortable()->toggleable()->label('Int.'),
-                TextColumn::make('sent_at')->dateTime('d/m/Y H:i')->sortable()->toggleable()->label('Enviado'),
-                TextColumn::make('error_code')->toggleable(isToggledHiddenByDefault: true)->label('Err'),
+                    ->label('Prioridad'),
+                TextColumn::make('attempts')->sortable()->toggleable(isToggledHiddenByDefault: true)->label('Intentos'),
+                TextColumn::make('sent_at')->dateTime('d/m/Y H:i')->sortable()->toggleable(isToggledHiddenByDefault: true)->label('Enviado'),
+                TextColumn::make('error_code')->toggleable(isToggledHiddenByDefault: true)->label('Error'),
                 TextColumn::make('created_at')->dateTime('d/m/Y H:i')->sortable()->label('Recibido'),
             ])
             ->filters([

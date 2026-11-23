@@ -45,6 +45,12 @@ class KeyboardResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Rachas de teclado';
 
+    protected static ?string $navigationLabel = 'Rachas de teclado';
+
+    protected static ?string $recordTitleAttribute = 'id';
+
+    protected static ?string $slug = 'keyboards';
+
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -64,7 +70,7 @@ class KeyboardResource extends Resource
                         ->required()->label('Fin')
                         ->rule('after_or_equal:start_at'),
                     TextInput::make('duration')
-                        ->required()->numeric()->minValue(0)->suffix('s')->label('Duración'),
+                        ->required()->integer()->minValue(0)->suffix('s')->label('Duración'),
                     // `0` es domingo (convención de Carbon). Un `Select` en
                     // vez de un número suelto para que no haya que acordarse.
                     Select::make('weekday')
@@ -75,13 +81,13 @@ class KeyboardResource extends Resource
                 ])->columnSpanFull(),
                 Section::make('Pulsaciones')->columns(2)->schema([
                     TextInput::make('pulsations')
-                        ->required()->numeric()->minValue(0)->label('Total'),
+                        ->required()->integer()->minValue(0)->label('Total'),
                     TextInput::make('pulsations_special_keys')
-                        ->required()->numeric()->minValue(0)->default(0)->label('Especiales'),
+                        ->required()->integer()->minValue(0)->default(0)->label('Especiales'),
                     TextInput::make('pulsation_average')
                         ->required()->numeric()->step(0.0001)->label('Media (puls/s)'),
                     TextInput::make('score')
-                        ->required()->numeric()->minValue(0)->label('Puntuación'),
+                        ->required()->integer()->minValue(0)->label('Puntuación'),
                 ])->columnSpanFull(),
             ]);
     }
@@ -92,12 +98,15 @@ class KeyboardResource extends Resource
             ->columns([
                 TextColumn::make('user.name')
                     ->label('Usuario')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 // El nombre corto, no el id: `display_name` prefiere
                 // `name_friendly` y cae en `name` cuando no lo hay. El mismo
                 // criterio que ya usaba el filtro de abajo.
                 TextColumn::make('hardwareDevice.display_name')
                     ->label('Dispositivo')
+                    ->limit(30)
+                    ->tooltip(fn (?string $state): ?string => $state)
                     ->sortable()
                     ->searchable(['name_friendly', 'name']),
                 TextColumn::make('start_at')
@@ -107,27 +116,30 @@ class KeyboardResource extends Resource
                 TextColumn::make('end_at')
                     ->label('Fin')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('duration')
                     ->label('Duración (s)')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('pulsations')
-                    ->label('Total_Puls.')
+                    ->label('Pulsaciones')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('pulsations_special_keys')
-                    ->label('Puls._Especiales')
+                    ->label('Puls. especiales')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('pulsation_average')
-                    ->label('Media_Puls.')
+                    ->label('Media (puls/s)')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('score')
                     ->label('Puntuación')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('weekday')
                     ->label('Día')
                     ->formatStateUsing(fn ($state): ?string => KeyCounterWeekdayEnum::labelFor($state))

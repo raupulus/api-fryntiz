@@ -10,7 +10,6 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/js/app.js',
                 'resources/js/vue.js',
-                'resources/css/filament/admin/theme.css',
                 // CSS propio del panel: lo cargan los PanelProviders con un
                 // render hook. CSS normal, sin Tailwind (ver el propio fichero).
                 'resources/css/filament/admin/panel.css',
@@ -30,6 +29,10 @@ export default defineConfig({
                 // El modal de las portadas con IA (ficha de la entrada y
                 // editor de páginas). Lo carga su propio render hook.
                 'resources/js/filament/ai-images.js',
+                // Gráfica Keycounter con Chart.js v4 tree-shaken.
+                'resources/js/keycounter-chart.js',
+                // Mapa de radar ADS-B /airflight con OpenLayers actual.
+                'resources/js/airflight-map.js',
             ],
             refresh: true,
         }),
@@ -43,9 +46,4 @@ export default defineConfig({
             },
         }),
     ],
-    resolve: {
-        alias: {
-            vue: 'vue/dist/vue.esm-bundler.js',
-        },
-    },
 });

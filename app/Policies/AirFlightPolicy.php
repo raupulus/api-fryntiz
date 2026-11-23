@@ -6,10 +6,12 @@ namespace App\Policies;
 
 use App\Models\AirFlight\AirFlightAirPlane;
 use App\Models\User;
-use App\Support\Auth\TokenAbilities;
+use App\Policies\Concerns\GuardsAdminAndDeviceAccess;
 
 class AirFlightPolicy
 {
+    use GuardsAdminAndDeviceAccess;
+
     public function viewAny(User $user): bool
     {
         return true;
@@ -22,16 +24,16 @@ class AirFlightPolicy
 
     public function create(User $user): bool
     {
-        return $user->isAdmin() && ! TokenAbilities::deviceRequest($user);
+        return $this->isHumanAdmin($user);
     }
 
     public function update(User $user, AirFlightAirPlane $airplane): bool
     {
-        return $user->isAdmin() && ! TokenAbilities::deviceRequest($user);
+        return $this->isHumanAdmin($user);
     }
 
     public function delete(User $user, AirFlightAirPlane $airplane): bool
     {
-        return $user->isSuperAdmin();
+        return $this->isHumanSuperAdmin($user);
     }
 }

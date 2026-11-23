@@ -8,8 +8,6 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
-use function App\Models\WeatherStation\extractRange;
-
 class AEMETHelper
 {
     private static $URL = 'https://opendata.aemet.es/opendata/api';   // Ver config('aemet.base_url')
@@ -552,6 +550,11 @@ class AEMETHelper
      *
      * @return string|null
      */
+    /**
+     * Devuelve los datos de contaminación de fondo.
+     *
+     * @return array<int, array<string, mixed>|null>|null
+     */
     public static function getContamination()
     {
         $url = self::getUrl('contamination');
@@ -561,7 +564,7 @@ class AEMETHelper
             $curl2 = self::getCurl($curl['datos'], false);
 
             if (! $curl2) {
-                return;
+                return null;
             }
         }
 
@@ -690,15 +693,6 @@ class AEMETHelper
                 return null;
             }
 
-            /**
-             * Devuelve un rango desde el string.
-             */
-            function getCharsRangeFromString(string $string, int $start,
-                $size): string
-            {
-                return substr($string, $start, $size);
-            }
-
             foreach ($realDataArray as $position => $realDataLine) {
 
                 foreach ($positionsValuesRange as $idx => $range) {
@@ -712,7 +706,7 @@ class AEMETHelper
                     $end = $range['end'];
                     $size = $range['size'];
 
-                    $subString = getCharsRangeFromString($realDataLine, $start, $size);
+                    $subString = self::getCharsRangeFromString($realDataLine, $start, $size);
 
                     if (! $subString) {
                         continue;
@@ -728,7 +722,7 @@ class AEMETHelper
                         array_values($rangeIdConversion));
 
                     if (! $contains) {
-                        return;
+                        return null;
                     }
 
                     $validationRangeKey = array_search($realField.'_validation',
@@ -744,7 +738,7 @@ class AEMETHelper
                     $end2 = $validationRange['end'];
                     $size2 = $validationRange['size'];
 
-                    $subStringValidation = getCharsRangeFromString($realDataLine,
+                    $subStringValidation = self::getCharsRangeFromString($realDataLine,
                         $start2, $size2);
 
                     $validation = in_array($subStringValidation,
@@ -760,8 +754,7 @@ class AEMETHelper
         if (isset($finalResponseArray) && $finalResponseArray) {
             $finalResponseArray = array_map(function ($ele) {
 
-                if (isset($ele['date']) && $ele['date'] &&
-                    isset($ele['time']) && $ele['time']) {
+                if (isset($ele['date'], $ele['time'])) {
 
                     $timeStr = $ele['date'].' '.$ele['time'];
                     $timeCarbon = Carbon::createFromFormat('d-m-Y H:i',
@@ -1300,41 +1293,12 @@ class AEMETHelper
             // # Operación especial, chapuza para obtener fecha y prevenir que pueda estar en otra línea distinta. Compruebo primero línea 1 y después entre las 5 primeras líneas.
             $subSubLines = array_slice($arrayRaw, 0, 5);
 
-            /**
-             * Intenta comprobar si la línea recibida es un patrón que se
-             * puede convertir a fecha.
-             *
-             *
-             * @return array|string|string[]|null
-             */
-            function extractDateFromUnknownLine($l)
-            {
-                // Aquí, de lo que reciba, intento asegurarme que es una fecha
-
-                $strClean = trim($l);
-                $strClean = str_replace('"', '', $strClean);
-
-                $containsDash = str_contains($strClean, '-');
-
-                if (! $containsDash) {
-                    return null;
-                }
-
-                $hasThreePositions = count(explode('-', $strClean)) === 3;
-
-                if ($hasThreePositions) {
-                    return $strClean;
-                }
-
-                return null;
-            }
-
-            $dateRead = extractDateFromUnknownLine($arrayRaw[0]);
+            $dateRead = self::extractDateFromUnknownLine($arrayRaw[0]);
 
             // # Si la fecha está en una posición distinta pues directamente la busco entre las primeras 5 líneas del documento.
             if (! $dateRead) {
                 foreach ($subSubLines as $subSubLine) {
-                    $dateRead = extractDateFromUnknownLine($subSubLine);
+                    $dateRead = self::extractDateFromUnknownLine($subSubLine);
 
                     if ($dateRead) {
                         break;
@@ -1534,13 +1498,35 @@ class AEMETHelper
      * "tamax" : 15.3
      * }, ... ]
      *
-     * @return void
+     * @return array<mixed>|string|bool|null
      */
     public static function getConventionalObservationData()
     {
         $url = self::getUrl('conventionalObservationData');
 
         return self::getCurl($url);
+    }
+
+    /**
+     * Devuelve un rango de caracteres de una cadena.
+     */
+    private static function getCharsRangeFromString(string $string, int $start, int $size): string
+    {
+        return substr($string, $start, $size);
+    }
+
+    /**
+     * Intenta extraer una fecha con formato dd-mm-yy de una línea del documento.
+     */
+    private static function extractDateFromUnknownLine(string $line): ?string
+    {
+        $clean = str_replace('"', '', trim($line));
+
+        if (! str_contains($clean, '-')) {
+            return null;
+        }
+
+        return count(explode('-', $clean)) === 3 ? $clean : null;
     }
 
     /**
@@ -1833,282 +1819,4 @@ class AEMETHelper
             }
         }
     }
-
-    /**
-     * Devuelve la predicción diaria para la ciudad de Chipiona.
-     *
-     *         // No terminado de preparar
-     *
-     * @return array
-     */
-    /*
-    public static function getPredictionDaily()
-    {
-        $url = self::getUrl('predictionDaily');
-        $curl = self::getCurl($url);
-
-        if ($curl && $curl['datos']) {
-            $curl2 = self::getCurl($curl['datos']);
-
-            dd($curl2);
-
-            if (!$curl2 || !count($curl2) || !isset($curl2[0]['prediccion']) || !$curl2[0]['prediccion']) {
-                return null;
-            }
-        } else {
-            return null;
-        }
-
-
-        // Aquí hay $curl2 con datos. $curl2 es un array
-
-        $finalArray = [];
-
-        function extractRange(Carbon $readAt, string $stringRange): array|null
-        {
-            $stringToArray = explode('-', $stringRange);
-
-            if (!count($stringToArray) === 2) {
-                return null;
-            }
-
-            $readAt->setMinute(0)->setSecond(0)->setMicrosecond(0);
-
-            $start = clone( $readAt );
-            $end = clone( $readAt );
-
-            $start->setHour($stringToArray[0]);
-            $end->setHour($stringToArray[1]);
-
-            return [
-                'period_start_at' => $start,
-                'period_end_at' => $end
-            ];
-        }
-
-        ## Recorro toda las páginas que han sido devueltas.
-        foreach ($curl2 as $page) {
-            $predictions = $page['prediccion'];
-
-            ## Recorro todas las predicciones para la página actual.
-            foreach ($predictions as $days) {
-                $predictionClean = [];
-
-                ## Recorro todos los días con las predicciones.
-                foreach ($days as $day) {
-
-                    $readAtRaw = isset($day['fecha']) ? $day['fecha'] : null;
-
-                    if (!$readAtRaw) {
-                        continue;
-                    }
-
-                    $readAt = Carbon::parse($readAtRaw);
-
-                    $rainfall = $day['probPrecipitacion'];
-                    $snowerCover = $day['cotaNieveProv'];
-                    $skyStatus = $day['estadoCielo'];
-                    $wind = $day['viento'];
-                    $windMax = $day['rachaMax'];
-                    $temperature = $day['temperatura'];
-                    $thermalSensation = $day['sensTermica'];
-                    $humidity = $day['humedadRelativa'];
-                    $uvMax = isset($day['uvMax']) ? $day['uvMax'] : null;
-
-                    $tmpArray = [];
-
-                    ## Precipitaciones por rango
-                    foreach ($rainfall as $registerRange) {
-
-                        if (!isset($registerRange['periodo']) || !$registerRange['periodo']) {
-                            continue;
-                        }
-
-                        $prepareData = extractRange($readAt, $registerRange['periodo']);
-
-                        if (!$prepareData) {
-                            continue;
-                        }
-
-                        $tmpArray['rainfall'][] = array_merge([
-                            'prob_precipitation' => $registerRange['value'] ? $registerRange['value'] : null,
-                        ], $prepareData);
-                    }
-
-
-                    ## Cota de nieve por rango (m)
-                    foreach ($snowerCover as $registerRange) {
-                        if (!isset($registerRange['periodo']) || !$registerRange['periodo']) {
-                            continue;
-                        }
-
-                        $prepareData = extractRange($readAt, $registerRange['periodo']);
-
-                        if (!$prepareData) {
-                            continue;
-                        }
-
-                        $tmpArray['snower_cover'][] = array_merge([
-                            'snower_cover' => $registerRange['value'] ? $registerRange['value'] : null,
-                        ], $prepareData);
-                    }
-
-                    ## Estado del cielo
-                    foreach ($skyStatus as $registerRange) {
-                        if (!isset($registerRange['periodo']) || !$registerRange['periodo']) {
-                            continue;
-                        }
-
-                        $prepareData = extractRange($readAt, $registerRange['periodo']);
-
-                        if (!$prepareData) {
-                            continue;
-                        }
-
-                        $tmpArray['sky_status'][] = array_merge([
-                            'sky_status' => $registerRange['value'] ? $registerRange['value'] : null,
-                            'sky_status_description' => $registerRange['descripcion'] ? $registerRange['descripcion'] : null,
-                        ], $prepareData);
-                    }
-
-                    ## Dirección y velocidad del viento
-                    foreach ($wind as $registerRange) {
-                        if (!isset($registerRange['periodo']) || !$registerRange['periodo']) {
-                            continue;
-                        }
-
-                        $prepareData = extractRange($readAt, $registerRange['periodo']);
-
-                        if (!$prepareData) {
-                            continue;
-                        }
-
-                        $tmpArray['sky_status'][] = array_merge([
-                            'wind_direction' => $registerRange['direccion'] ? $registerRange['direccion'] : null, // Dirección del viento (N/Norte, NE/Nordeste, E/Este, SE/Sudeste, S/Sur, SO/Suroeste, O / Oeste, NO / Noroeste, C / Calma
-                            'wind_speed' => $registerRange['velocidad'] ? $registerRange['velocidad'] : null, // Kilómetros por hora (km/h)
-                        ], $prepareData);
-                    }
-
-                    ## Racha máxima de viento
-                    foreach ($windMax as $registerRange) {
-                        if (!isset($registerRange['periodo']) || !$registerRange['periodo']) {
-                            continue;
-                        }
-
-                        $prepareData = extractRange($readAt, $registerRange['periodo']);
-
-                        if (!$prepareData) {
-                            continue;
-                        }
-
-                        $tmpArray['wind_max'][] = array_merge([
-                            'wind_max' => $registerRange['value'] ? $registerRange['value'] : null, // Kilómetros por hora (km/h)
-                        ], $prepareData);
-                    }
-
-
-                    ## Temperatura
-                    $tmpArray['temperature_day']['temperature_max'] = $temperature['maxima'];
-                    $tmpArray['temperature_day']['temperature_min'] = $temperature['minima'];
-
-
-                    if ($temperature['maxima'] && $temperature['minima']) {
-                        $tmpArray['temperature_day'] = array_merge(
-                            $tmpArray['temperature_day'],
-                            extractRange($readAt, '00-24')
-                        );
-                    }
-
-                    foreach ($temperature['dato'] as $registerRange) {
-                        $range = $registerRange['hora'] - 6 . '-' . $registerRange['hora'];
-
-                        $prepareData = extractRange($readAt, $range);
-
-                        if (!$prepareData) {
-                            continue;
-                        }
-
-                        $tmpArray['temperature'][] = array_merge([
-                            'temperature' => $registerRange['value'] ? $registerRange['value'] : null,
-                        ], $prepareData);
-                    }
-
-                    dd($tmpArray);
-
-                    ## Sensación térmica
-                    $tmpArray['thermal_sensation_day']['thermal_sensation_max'] = $thermalSensation['maxima'];
-                    $tmpArray['thermal_sensation_day']['thermal_sensation_min'] = $thermalSensation['minima'];
-
-
-                    if ($thermalSensation['maxima'] && $thermalSensation['minima']) {
-                        $tmpArray['thermal_sensation_day'] = array_merge(
-                            $tmpArray['thermal_sensation_day'],
-                            extractRange($readAt, '00-24')
-                        );
-                    }
-
-                    foreach ($thermalSensation['dato'] as $registerRange) {
-                        $range = $registerRange['hora'] - 6 . '-' . $registerRange['hora'];
-
-                        $prepareData = extractRange($readAt, $range);
-
-                        if (!$prepareData) {
-                            continue;
-                        }
-
-                        $tmpArray['thermal_sensation'][] = array_merge([
-                            'thermal_sensation' => $registerRange['value'] ? $registerRange['value'] : null,
-                        ], $prepareData);
-                    }
-
-
-                    ## Humedad Relativa
-                    $tmpArray['humidity_day']['humidity_max'] = $humidity['maxima'];
-                    $tmpArray['humidity_day']['humidity_min'] = $humidity['minima'];
-
-                    if ($humidity['maxima'] && $humidity['minima']) {
-                        $tmpArray['humidity_day'] = array_merge(
-                            $tmpArray['humidity_day'],
-                            extractRange($readAt, '00-24')
-                        );
-                    }
-
-                    foreach ($humidity['dato'] as $registerRange) {
-                        $range = $registerRange['hora'] - 6 . '-' . $registerRange['hora'];
-
-                        $prepareData = extractRange($readAt, $range);
-
-                        if (!$prepareData) {
-                            continue;
-                        }
-
-                        $tmpArray['humidity'][] = array_merge([
-                            'humidity' => $registerRange['value'] ? $registerRange['value'] : null,
-                        ], $prepareData);
-                    }
-
-                    if ($uvMax) {
-                        $tmpArray['uv']['uv_max'] = $uvMax;
-
-                        $tmpArray['uv'] = array_merge(
-                            $tmpArray['uv'],
-                            extractRange($readAt, '00-24')
-                        );
-                    }
-
-                    $predictionClean[ $readAt->format('Y-m-d') ] = $tmpArray;
-                }
-
-
-                if ($predictionClean && count($predictionClean)) {
-                    $finalArray[] = $predictionClean;
-                }
-            }
-
-
-        }
-
-        return $finalArray;
-    }
-    */
 }

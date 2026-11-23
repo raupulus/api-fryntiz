@@ -18,11 +18,11 @@ class LightResource extends JsonResource
         return [
             'id' => $this->id,
             'hardware_device_id' => $this->hardware_device_id,
-            'lumens' => $this->lumens,
-            'index' => $this->index,
-            'lux' => $this->lux,
-            'uva' => $this->uva,
-            'uvb' => $this->uvb,
+            'lumens' => $this->lumens !== null ? (float) $this->lumens : null,
+            'index' => $this->index !== null ? (float) $this->index : null,
+            'lux' => $this->lux !== null ? (float) $this->lux : null,
+            'uva' => $this->uva !== null ? (float) $this->uva : null,
+            'uvb' => $this->uvb !== null ? (float) $this->uvb : null,
             'created_at' => $this->created_at?->toISOString(),
         ];
     }

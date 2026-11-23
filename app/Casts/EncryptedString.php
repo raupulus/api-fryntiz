@@ -8,6 +8,7 @@ use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Como el cast `encrypted`, pero un valor que no se puede descifrar se lee
@@ -31,7 +32,14 @@ class EncryptedString implements CastsAttributes
 
         try {
             return Crypt::decryptString((string) $value);
-        } catch (DecryptException) {
+        } catch (DecryptException $e) {
+            Log::warning('EncryptedString: failed to decrypt model attribute (possible APP_KEY rotation)', [
+                'model' => $model::class,
+                'attribute' => $key,
+                'id' => $model->getKey(),
+                'error' => $e->getMessage(),
+            ]);
+
             return null;
         }
     }

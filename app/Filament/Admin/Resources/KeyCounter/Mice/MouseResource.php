@@ -45,6 +45,12 @@ class MouseResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Rachas de ratón';
 
+    protected static ?string $navigationLabel = 'Rachas de ratón';
+
+    protected static ?string $recordTitleAttribute = 'id';
+
+    protected static ?string $slug = 'mice';
+
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -64,7 +70,7 @@ class MouseResource extends Resource
                         ->required()->label('Fin')
                         ->rule('after_or_equal:start_at'),
                     TextInput::make('duration')
-                        ->required()->numeric()->minValue(0)->suffix('s')->label('Duración'),
+                        ->required()->integer()->minValue(0)->suffix('s')->label('Duración'),
                     // `0` es domingo (convención de Carbon). Un `Select` en
                     // vez de un número suelto para que no haya que acordarse.
                     Select::make('weekday')
@@ -75,13 +81,13 @@ class MouseResource extends Resource
                 ])->columnSpanFull(),
                 Section::make('Clicks')->columns(2)->schema([
                     TextInput::make('clicks_left')
-                        ->required()->numeric()->minValue(0)->label('Izquierdos'),
+                        ->required()->integer()->minValue(0)->label('Izquierdos'),
                     TextInput::make('clicks_right')
-                        ->required()->numeric()->minValue(0)->label('Derechos'),
+                        ->required()->integer()->minValue(0)->label('Derechos'),
                     TextInput::make('clicks_middle')
-                        ->required()->numeric()->minValue(0)->label('Centrales'),
+                        ->required()->integer()->minValue(0)->label('Centrales'),
                     TextInput::make('total_clicks')
-                        ->required()->numeric()->minValue(0)->label('Total'),
+                        ->required()->integer()->minValue(0)->label('Total'),
                     TextInput::make('clicks_average')
                         ->required()->numeric()->step(0.0001)->label('Media (cps)'),
                 ])->columnSpanFull(),
@@ -94,12 +100,15 @@ class MouseResource extends Resource
             ->columns([
                 TextColumn::make('user.name')
                     ->label('Usuario')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 // El nombre corto, no el id: `display_name` prefiere
                 // `name_friendly` y cae en `name` cuando no lo hay. El mismo
                 // criterio que ya usaba el filtro de abajo.
                 TextColumn::make('hardwareDevice.display_name')
                     ->label('Dispositivo')
+                    ->limit(30)
+                    ->tooltip(fn (?string $state): ?string => $state)
                     ->sortable()
                     ->searchable(['name_friendly', 'name']),
                 TextColumn::make('start_at')
@@ -109,29 +118,33 @@ class MouseResource extends Resource
                 TextColumn::make('end_at')
                     ->label('Fin')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('duration')
                     ->label('Duración (s)')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('clicks_left')
-                    ->label('Clicks Izq.')
+                    ->label('Clicks izq.')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('clicks_right')
-                    ->label('Clicks Der.')
+                    ->label('Clicks der.')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('clicks_middle')
-                    ->label('Clicks Cen.')
+                    ->label('Clicks cen.')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('total_clicks')
-                    ->label('Total Clicks')
+                    ->label('Total clicks')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('clicks_average')
-                    ->label('Media Clicks')
+                    ->label('Media (cps)')
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('weekday')

@@ -162,13 +162,34 @@ class WeatherStationController extends Controller
      */
     public function widget(?string $zone = null, ?string $locationType = null, ?int $station = null): JsonResponse
     {
+        $data = $this->resolveWidgetData($zone, $locationType, $station);
+
+        if ($data === null) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No hay ninguna estación meteorológica que mostrar.',
+            ], 404);
+        }
+
+        return response()->json(['success' => true, 'data' => $data]);
+    }
+
+    /**
+     * Obtiene los datos cacheados del widget (1 minuto) para compartirlos entre
+     * el endpoint JSON y el primer pintado SSR de `index()`.
+     *
+     * @return array<string, mixed>|null
+     */
+    private function resolveWidgetData(?string $zone = null, ?string $locationType = null, ?int $station = null): ?array
+    {
         // (`widgetStation()` entra por aquí con la estación fijada.)
         $cacheKey = 'weather:widget:'.($zone ?? '-').':'.($locationType ?? '-').':'.($station ?? '-');
 
         // Los sensores suben cada pocos minutos y la página se recarga sola;
         // un minuto de caché quita la mayor parte de las consultas sin que el
         // dato llegue a notarse viejo.
-        $data = Cache::remember($cacheKey, 60, function () use ($zone, $locationType, $station) {
+        /** @var array<string, mixed>|null $data */
+        $data = Cache::remember($cacheKey, 60, function () use ($zone, $locationType, $station): ?array {
             $service = app(WeatherStationService::class);
 
             if ($zone !== null && $zone !== '') {
@@ -184,14 +205,7 @@ class WeatherStationController extends Controller
                 : (new WeatherStationResource($service->getStationReadings($device)))->resolve();
         });
 
-        if ($data === null) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No hay ninguna estación meteorológica que mostrar.',
-            ], 404);
-        }
-
-        return response()->json(['success' => true, 'data' => $data]);
+        return $data;
     }
 
     /**
@@ -259,9 +273,12 @@ class WeatherStationController extends Controller
         $coast = $this->latestChipionaCoast();
         $seaState = $coast ? SeaStateExtractor::extract($coast->subzone_text) : null;
         $seaStateUpdatedAt = $coast?->created_at;
+        $initialWeatherWidget = ($mainZone !== null || $mainStationId !== null)
+            ? $this->resolveWidgetData($mainZone, $mainZone ? 'outdoor' : null, $mainZone ? null : $mainStationId)
+            : null;
 
         return view('weather_station.index', compact(
-            'groups', 'ungrouped', 'mainStationId', 'mainZone',
+            'groups', 'ungrouped', 'mainStationId', 'mainZone', 'initialWeatherWidget',
             'moon', 'sun', 'ozone', 'aemetAlert', 'gdacsLatestActive', 'nextTide', 'seaState', 'seaStateUpdatedAt',
         ));
     }

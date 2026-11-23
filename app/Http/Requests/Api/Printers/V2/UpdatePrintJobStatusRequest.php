@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Api\Printers\V2;
 
+use App\Enums\PrinterStatusEnum;
+use App\Enums\PrintJobStatusEnum;
 use App\Http\Requests\Api\BaseFormRequest;
 use App\Rules\DeviceStatusPayload;
+use Illuminate\Validation\Rule;
 
 /**
  * Validación para notificar el resultado de la ejecución física de un trabajo de impresión.
@@ -23,7 +26,11 @@ class UpdatePrintJobStatusRequest extends BaseFormRequest
     public function rules(): array
     {
         return [
-            'status' => ['required', 'string', 'in:completed,failed,out_of_paper'],
+            'status' => ['required', 'string', Rule::in([
+                PrintJobStatusEnum::Completed->value,
+                PrintJobStatusEnum::Failed->value,
+                PrinterStatusEnum::OutOfPaper->value,
+            ])],
             'error_message' => ['nullable', 'string', 'required_if:status,failed', 'max:1000'],
             'hardware_device_info' => ['nullable', new DeviceStatusPayload],
         ];

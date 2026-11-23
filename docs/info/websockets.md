@@ -195,4 +195,4 @@ son los pactados, y que una petición rechazada no emite nada.
 
 ---
 
-> Creado: 2026-08-19 · Última revisión: 2026-09-06
+> Creado: 2026-08-19 · Última revisión: 2026-11-23

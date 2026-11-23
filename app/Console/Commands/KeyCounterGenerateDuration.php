@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Console\Commands;
 
-use App\Models\KeyCounter\Keyboard;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 /**
- * Class KeyCounterGenerateDuration
+ * Recalcula en base de datos la duración en segundos de las rachas de teclado
+ * cuya columna `duration` esté a NULL, sin cargar la tabla completa en RAM.
  */
 class KeyCounterGenerateDuration extends Command
 {
@@ -28,34 +28,20 @@ class KeyCounterGenerateDuration extends Command
     protected $description = 'Regenera la duración para los registros que no se le calculara automáticamente';
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
      * Execute the console command.
-     *
-     * @return mixed
      */
-    public function handle()
+    public function handle(): int
     {
-        $keyboard = Keyboard::whereNull('duration')->get();
+        $updated = DB::table('keycounter_keyboard')
+            ->whereNull('duration')
+            ->whereNotNull('start_at')
+            ->whereNotNull('end_at')
+            ->update([
+                'duration' => DB::raw('GREATEST(0, ROUND(EXTRACT(EPOCH FROM (end_at - start_at))))::bigint'),
+            ]);
 
-        foreach ($keyboard as $k) {
-            // # Calculo la duración en segundos de la racha.
-            $start = new Carbon($k->start_at);
-            $end = new Carbon($k->end_at);
-            $duration = $start->diffInSeconds($end);
+        $this->info("Duración recalculada en {$updated} registro(s).");
 
-            // # Almaceno la duración en segundos de la racha.
-            $k->duration = $duration;
-
-            $k->save();
-        }
+        return self::SUCCESS;
     }
 }

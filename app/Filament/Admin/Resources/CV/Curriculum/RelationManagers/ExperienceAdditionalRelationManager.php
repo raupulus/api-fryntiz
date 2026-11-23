@@ -23,8 +23,8 @@ class ExperienceAdditionalRelationManager extends RelationManager
     public function form(Schema $schema): Schema
     {
         return $schema->components([
-            TextInput::make('title')->maxLength(255)->label('Title'),
-            Textarea::make('description')->rows(3)->columnSpanFull()->label('Descripcion'),
+            TextInput::make('title')->required()->maxLength(255)->label('Título'),
+            Textarea::make('description')->rows(3)->columnSpanFull()->label('Descripción'),
         ]);
     }
 
@@ -32,7 +32,7 @@ class ExperienceAdditionalRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                TextColumn::make('title')->label('Title'),
+                TextColumn::make('title')->label('Título')->limit(40)->tooltip(fn (?string $state): ?string => $state),
             ])
             ->headerActions([CreateAction::make()])
             ->recordActions([EditAction::make(), DeleteAction::make()]);

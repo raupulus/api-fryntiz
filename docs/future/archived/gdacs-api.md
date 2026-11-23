@@ -178,3 +178,7 @@ Detalle completo de la implementación en
 - [USGS Earthquake feeds — GeoJSON summary format](https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php)
 - [NASA EONET](https://eonet.gsfc.nasa.gov/api/v3/categories)
 - [ReliefWeb API doc](https://apidoc.reliefweb.int/)
+
+---
+
+> Creado: 2026-09-15 · Última revisión: 2026-11-23

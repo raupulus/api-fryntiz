@@ -42,7 +42,7 @@ class ContactMessageController extends BaseApiController
         // Un captcha inválido con claves configuradas sí se rechaza de plano:
         // ahí no hay duda posible y no interesa guardar la basura.
         if ($captcha->configured && ! $captcha->valid) {
-            return $this->errorResponse('Verificacion de seguridad fallida', 422);
+            return $this->errorResponse('Verificación de seguridad fallida', 422);
         }
 
         $this->contactService->register(

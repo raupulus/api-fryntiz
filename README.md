@@ -189,7 +189,7 @@ pnpm run build
 php artisan migrate --force
 
 #    ProductionSeeder = DatabaseSeeder MENOS el seeder de usuarios (que crea
-#    superadmin@domain.es con la contraseña 123123). Nunca `db:seed` a secas en
+#    superadmin@example.test con la contraseña 123123). Nunca `db:seed` a secas en
 #    un servidor. Sus catálogos comprueban si la fila existe antes de insertar y
 #    ninguno borra nada: es idempotente y no toca los datos ya presentes.
 php artisan db:seed --class=ProductionSeeder --force

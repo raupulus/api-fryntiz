@@ -6,12 +6,12 @@ namespace App\Models;
 
 use App\Casts\EncryptedString;
 use App\Enums\AiProviderEnum;
+use App\Models\BaseModels\BaseModel;
 use App\Services\Ai\AiImageProvider;
 use App\Services\Ai\AiTextProvider;
 use Database\Factories\AiProviderFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 
 /**
@@ -35,7 +35,7 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-class AiProvider extends Model
+class AiProvider extends BaseModel
 {
     /** @use HasFactory<AiProviderFactory> */
     use HasFactory;

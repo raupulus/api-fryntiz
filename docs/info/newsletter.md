@@ -89,21 +89,21 @@ Al crear un suscriptor, se generan automáticamente:
 
 | Método | Ruta | Auth | Throttle | Descripción |
 |--------|------|------|----------|-------------|
-| POST | `/api/v2/newsletter/subscribe` | No | api-auth | Suscribir email |
-| POST | `/api/v2/newsletter/resend-verification` | No | api-auth | Reenviar email de verificación |
-| GET | `/api/v2/newsletter/verify/{token}` | No | api-auth | Verificar email |
-| GET | `/api/v2/newsletter/unsubscribe/{token}` | No | api-auth | Cancelar suscripción |
-| GET | `/api/v2/newsletter/stats` | Sí | api-auth | Estadísticas de suscriptores |
+| POST | `/api/v2/newsletter/subscriptions` | No | api-auth | Suscribir email (no degrada suscriptores ya verificados y activos) |
+| POST | `/api/v2/newsletter/subscriptions/verification` | No | api-auth | Reenviar email de verificación |
+| POST | `/api/v2/newsletter/subscriptions/{token}/confirmation` | No | api-auth | Verificar email |
+| POST | `/api/v2/newsletter/subscriptions/{token}/unsubscription` | No | api-auth | Baja de un clic (RFC 8058) |
+| DELETE | `/api/v2/newsletter/subscriptions/{token}` | No | api-auth | Cancelar suscripción |
+| GET | `/api/v2/newsletter/subscriptions/stats` | Sí (`session`, `view-statistics`) | api-auth | Estadísticas de suscriptores |
 
 ## Flujo de suscripción
 
-1. POST `/subscribe` con `email` (y opcionalmente `name`)
-2. Se crea registro con `is_verified=false` y tokens generados
-3. Se envía `NewsletterVerification` mail con enlace de verificación
-4. Usuario hace click en enlace → GET `/verify/{token}`
-5. Se marca `is_verified=true` y `verified_at=now()`
-6. Para darse de baja → GET `/unsubscribe/{token}`
-7. Se marca `status=unsubscribed` y `unsubscribed_at=now()`
+1. `POST /api/v2/newsletter/subscriptions` con `email`, `platform_id` y `privacy_accepted`. Si la suscripción ya está verificada y activa, se conserva intacta sin reenviar correo.
+2. Si es nueva o sigue pendiente, se guarda `is_verified=false` y tokens criptográficos únicos.
+3. Se envía `NewsletterVerification` mail con enlace a la vista web `GET /newsletter/{token}` (sin mutar en GET).
+4. Usuario confirma vía `POST /newsletter/{token}/confirmation` → se marca `is_verified=true`, `verified_at=now()` y se limpia `verification_token`.
+5. Para darse de baja → `POST` de confirmación desde `/newsletter/{token}` o `List-Unsubscribe-Post` (RFC 8058).
+6. En envíos con bloque `$content`, la plantilla `mail/newsletter.blade.php` sanea el HTML mediante `HtmlHelper::safeBasic()`.
 
 ## Comando de debug
 
@@ -124,4 +124,4 @@ php artisan debug:seed-newsletter --count=10
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-06
+> Creado: 2026-05-25 · Última revisión: 2026-11-23

@@ -3,6 +3,10 @@
     lo mismo que antes; con los que devuelve la subida de la v2 (url, nombre,
     tamaño, extensión e id del fichero), el nombre y el botón de descarga.
 --}}
+@php
+    $safeUrl = \App\Services\Content\ContentBlockValidator::isSafeUrl($url, true) ? $url : '#';
+    $safeIcon = $icon !== '' && \App\Services\Content\ContentBlockValidator::isSafeUrl($icon, true) ? $icon : '';
+@endphp
 <div id="{{$id}}"
      class="r-attaches-container"
      @if(filled($file['content_id'] ?? null)) data-content_id="{{$file['content_id']}}" @endif
@@ -10,9 +14,9 @@
      @if(filled($file['file_id'] ?? null)) data-file_id="{{$file['file_id']}}" @endif>
 
     <div class="r-attaches-box">
-        @if ($icon !== '')
+        @if ($safeIcon !== '')
             <div class="r-attaches-img">
-                <img src="{{$icon}}" alt="{{$title}}">
+                <img src="{{ $safeIcon }}" alt="{{$title}}">
             </div>
         @endif
 
@@ -26,8 +30,8 @@
             @endif
         </div>
 
-        <div class="r-attaches-download" data-url_download="{{$url}}">
-            <a href="{{$url}}" download target="_self" class="r-attaches-download-link">
+        <div class="r-attaches-download" data-url_download="{{ $safeUrl }}">
+            <a href="{{ $safeUrl }}" download target="_self" class="r-attaches-download-link">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <path stroke="currentColor" stroke-linecap="round" stroke-width="2"
                           d="M7 10L11.8586 14.8586C11.9367 14.9367 12.0633 14.9367 12.1414 14.8586L17 10"></path>

@@ -79,6 +79,14 @@ class ContentAiImageController extends Controller
         $prompt = $images->buildPrompt($content, $page?->title, (string) ($validated['prompt'] ?? ''), (bool) ($validated['use_colors'] ?? false), $improve);
         $count = (int) $validated['count'];
 
+        // Liberar la sesión antes del stream de hasta 300 s.
+        if ($request->hasSession()) {
+            $request->session()->save();
+        }
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_write_close();
+        }
+
         return response()->stream(function () use ($images, $provider, $prompt, $source, $count, $quality): void {
             if (function_exists('set_time_limit')) {
                 @set_time_limit(300);
@@ -105,6 +113,10 @@ class ContentAiImageController extends Controller
 
             $lastPing = microtime(true);
             $tick = function () use (&$lastPing, $flush): void {
+                if (connection_aborted() === 1) {
+                    return;
+                }
+
                 if (microtime(true) - $lastPing >= self::PING_SECONDS) {
                     $lastPing = microtime(true);
                     echo ": ping\n\n";
@@ -113,7 +125,7 @@ class ContentAiImageController extends Controller
             };
 
             // Para que el navegador sepa enseguida que ha empezado.
-            echo ": inicio\n\n";
+            echo ": ping\n\n";
             $flush();
 
             try {
@@ -125,13 +137,17 @@ class ContentAiImageController extends Controller
 
                 return;
             } catch (Throwable $e) {
-                Log::error('Portadas con IA: '.$e->getMessage(), ['exception' => $e]);
+                Log::error('AI cover images: generation failed', ['message' => $e->getMessage(), 'exception' => $e]);
                 $send('error', ['message' => 'No se ha podido generar la imagen. Vuelve a intentarlo.']);
 
                 return;
             }
 
             foreach ($generated as $image) {
+                if (connection_aborted() === 1) {
+                    return;
+                }
+
                 $send('image', $images->storeCandidate($images->toCover($image)));
             }
 

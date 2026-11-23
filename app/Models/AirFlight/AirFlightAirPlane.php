@@ -423,8 +423,7 @@ class AirFlightAirPlane extends BaseModel
                 }
             }
         } catch (Exception $e) {
-            Log::error('Error en modelo AirflightAirPlane, método searchHex para el código ICAO: '.$icao);
-            Log::error($e);
+            Log::error('AirFlightAirPlane::searchHex failed for ICAO code: '.$icao, ['exception' => $e]);
         }
 
         return null;

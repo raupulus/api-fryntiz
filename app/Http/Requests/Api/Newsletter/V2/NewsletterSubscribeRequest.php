@@ -6,6 +6,7 @@ namespace App\Http\Requests\Api\Newsletter\V2;
 
 use App\Http\Requests\Api\BaseFormRequest;
 use App\Models\Platform;
+use App\Services\CaptchaVerifierService;
 use App\Support\Http\ClientIp;
 
 /**
@@ -43,10 +44,17 @@ class NewsletterSubscribeRequest extends BaseFormRequest
 
     public function rules(): array
     {
+        $captchaRequired = app(CaptchaVerifierService::class)->isConfigured();
+
         return [
             'email' => ['required', 'email', 'max:255'],
-            'name' => ['nullable', 'string', 'max:255'],
+            'name' => ['nullable', 'string', 'max:100'],
             'platform_id' => ['required', 'integer', 'exists:platforms,id'],
+            'privacy_accepted' => ['required', 'accepted'],
+            'g-recaptcha-response' => [$captchaRequired ? 'required_without_all:recaptcha_token,cf-turnstile-response,turnstile_token' : 'nullable', 'string'],
+            'recaptcha_token' => ['nullable', 'string'],
+            'cf-turnstile-response' => ['nullable', 'string'],
+            'turnstile_token' => ['nullable', 'string'],
         ];
     }
 
@@ -66,13 +74,14 @@ class NewsletterSubscribeRequest extends BaseFormRequest
     {
         return [
             'platform_id.required' => 'No se ha podido determinar la plataforma de la suscripción.',
+            'g-recaptcha-response.required_without_all' => 'Falta la verificación de seguridad.',
         ];
     }
 
     /**
      * Datos de contexto que el servicio guarda con la suscripción.
      *
-     * @return array{language: string, ip_address: string|null, user_agent: string|null}
+     * @return array{language: string, ip_address: string|null, user_agent: string|null, metadata: array<string, mixed>}
      */
     public function context(): array
     {
@@ -83,7 +92,10 @@ class NewsletterSubscribeRequest extends BaseFormRequest
             // La de origen, no la del proxy: se guarda para poder rastrear
             // una suscripción y detectar altas masivas.
             'ip_address' => ClientIp::public($this) ?? $this->ip(),
-            'user_agent' => $this->userAgent(),
+            'user_agent' => $this->userAgent() !== null ? mb_substr($this->userAgent(), 0, 500) : null,
+            'metadata' => [
+                'privacy_accepted_at' => now()->toIso8601String(),
+            ],
         ];
     }
 }

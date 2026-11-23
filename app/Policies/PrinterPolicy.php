@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
+use App\Enums\UserRoleEnum;
 use App\Models\Printer;
 use App\Models\PrinterStack;
 use App\Models\User;
@@ -57,7 +58,8 @@ class PrinterPolicy
             return false;
         }
 
-        return (int) $printer->hardwareDevice->user_id === (int) $user->id || $user->isAdmin();
+        return (int) $printer->hardwareDevice->user_id === (int) $user->id
+            || ($user->isAdmin() && $this->adminCanManageOwner($user, (int) $printer->hardwareDevice->user_id));
     }
 
     public function restore(User $user, Printer|PrinterStack $record): bool
@@ -88,6 +90,22 @@ class PrinterPolicy
                 && TokenAbilities::tokenReachesDevice($user, (int) $device->id);
         }
 
-        return (int) $device->user_id === (int) $user->id || $user->isAdmin();
+        return (int) $device->user_id === (int) $user->id
+            || ($user->isAdmin() && $this->adminCanManageOwner($user, (int) $device->user_id));
+    }
+
+    /**
+     * Un Admin gestiona recursos ajenos excepto los de un SuperAdmin.
+     */
+    protected function adminCanManageOwner(User $actor, int $ownerId): bool
+    {
+        if ($actor->isSuperAdmin()) {
+            return true;
+        }
+
+        return ! User::query()
+            ->whereKey($ownerId)
+            ->where('role_id', UserRoleEnum::SuperAdmin->value)
+            ->exists();
     }
 }

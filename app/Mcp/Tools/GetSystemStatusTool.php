@@ -25,8 +25,8 @@ class GetSystemStatusTool extends Tool
         try {
             DB::connection()->getPdo();
             $dbConnected = true;
-        } catch (\Exception $e) {
-            $dbError = $e->getMessage();
+        } catch (\Exception) {
+            $dbError = 'Database connection failed';
         }
 
         $status = [

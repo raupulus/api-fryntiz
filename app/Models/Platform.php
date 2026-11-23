@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Casts\EncryptedString;
 use App\Enums\PlatformColorRoleEnum;
 use App\Http\Traits\ImageTrait;
 use App\Models\BaseModels\BaseModel;
@@ -110,8 +111,12 @@ class Platform extends BaseModel
      */
     public const MAX_THEME_COLORS = 5;
 
+    protected $hidden = ['twitter_token', 'mastodon_token'];
+
     protected $casts = [
         'theme_colors' => 'array',
+        'twitter_token' => EncryptedString::class,
+        'mastodon_token' => EncryptedString::class,
     ];
 
     /**
@@ -143,6 +148,17 @@ class Platform extends BaseModel
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    /**
+     * Editores y usuarios asignados a esta plataforma (`platform_user`).
+     *
+     * @return BelongsToMany<User, $this>
+     */
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'platform_user', 'platform_id', 'user_id')
+            ->withTimestamps();
     }
 
     /**

@@ -18,7 +18,7 @@ class TvocResource extends JsonResource
         return [
             'id' => $this->id,
             'hardware_device_id' => $this->hardware_device_id,
-            'value' => $this->value,
+            'value' => $this->value !== null ? (float) $this->value : null,
             'created_at' => $this->created_at?->toISOString(),
         ];
     }

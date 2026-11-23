@@ -46,9 +46,13 @@ class AiProviderResource extends Resource
 
     protected static ?int $navigationSort = 10;
 
-    protected static ?string $modelLabel = 'proveedor de IA';
+    protected static ?string $modelLabel = 'Proveedor de IA';
 
     protected static ?string $pluralModelLabel = 'Proveedores de IA';
+
+    protected static ?string $navigationLabel = 'Proveedores de IA';
+
+    protected static ?string $recordTitleAttribute = 'model';
 
     public static function form(Schema $schema): Schema
     {
@@ -122,8 +126,17 @@ class AiProviderResource extends Resource
             ->columns([
                 TextColumn::make('provider')->label('Proveedor')
                     ->formatStateUsing(fn (AiProviderEnum $state): string => $state->fullLabel()),
-                TextColumn::make('model')->label('Modelo')->searchable(),
-                TextColumn::make('image_model')->label('Imágenes')->placeholder('—')->toggleable(),
+                TextColumn::make('model')
+                    ->label('Modelo')
+                    ->limit(35)
+                    ->tooltip(fn (?string $state): ?string => $state)
+                    ->searchable(),
+                TextColumn::make('image_model')
+                    ->label('Imágenes')
+                    ->limit(35)
+                    ->tooltip(fn (?string $state): ?string => $state)
+                    ->placeholder('—')
+                    ->toggleable(),
                 TextColumn::make('key_status')->label('Clave')->badge()
                     ->state(fn (AiProvider $record): string => $record->keyStatus())
                     ->formatStateUsing(fn (string $state): string => match ($state) {

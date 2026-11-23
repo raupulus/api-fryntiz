@@ -455,7 +455,8 @@ Para permitir navegar a cualquier página del histórico (~3,4M de registros por
 1. **Índices compuestos (`2026_10_29_000001_add_pagination_indexes_to_time_series_tables`):** cada una de las 11 tablas de sensores cuenta con `(created_at, id)` y `(hardware_device_id, created_at, id)`, y `gdacs_events` con `(from_date, id)`.
 2. **Deferred Join + conteo cacheado (`App\Support\Pagination\DeferredPaginator`):** resuelve primero solo los 25 `id` de la página mediante *Index-Only Scan* y luego hidrata las columnas completas con `WHERE id IN (...)`. El `COUNT(*)` se cachea durante 1 hora por sensor y estación.
 3. **Protección por origen en paginación (`App\Http\Middleware\EnsurePaginationIsSameOrigin`):** la página 1 es de acceso público directo e indexable, mientras que `?page > 1` exige proceder del propio dominio (`Referer`/`Origin` o `Sec-Fetch-Site: same-origin`) y añade `X-Robots-Tag: noindex, nofollow`. El `<link rel="canonical">` conserva `?station=X` y omite `?page=N`.
+4. **Primer pintado SSR e hidratación en `/weatherstation` (`2026-11-23`):** `WeatherStationController::index()` reutiliza `resolveWidgetData()` para renderizar el bloque resumen en el HTML inicial e inyectar `#weather-widget-initial-data` como `initialData` de `ChipionaWeatherComponent.vue`, evitando esperar a una petición fetch extra para el LCP.
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-11-04
+> Creado: 2026-05-25 · Última revisión: 2026-11-23

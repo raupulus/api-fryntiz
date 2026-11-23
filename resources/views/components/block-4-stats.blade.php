@@ -10,37 +10,31 @@
         'image' => '',
         'value' => '',
         'unit' => '',
-        'porcent' => '',
      ]
 --}}
 
-{{-- Card --}}
-<div class="grid grid-cols-2 gap-4 p-2 md:grid-cols-4 xl:grid-cols-4">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 p-2 md:grid-cols-4">
     @foreach($stats as $stat)
-        <div class="flex items-center justify-between p-4 bg-white rounded-md dark:bg-darker">
-            <div>
-                <h6 class="text-xs font-medium leading-none tracking-wider text-gray-500 uppercase dark:text-primary-light">
+        <div class="flex items-center justify-between gap-3 p-4 bg-surface-container-lowest border border-outline-variant/20 rounded-xl shadow-sm">
+            <div class="min-w-0">
+                <p class="text-xs font-semibold leading-tight tracking-wider text-on-surface-variant uppercase">
                     {{ $stat['title'] }}
-                </h6>
+                </p>
 
-                <span class="text-md font-semibold">
+                <p class="text-base font-bold text-on-surface mt-1">
                     {{ $stat['value'] }}{{ $stat['unit'] }}
-                </span>
-
-                {{--
-                <span class="inline-block px-2 py-px ml-2 text-xs text-green-500 bg-green-100 rounded-md">
-                    +0.0%
-                </span>
-                --}}
+                </p>
             </div>
 
-            <div>
-                <span>
-                    <img src="{{ $stat['image'] }}"
-                         alt="{{ $stat['title'] }}"
-                         class="w-14 h-14">
-                </span>
-            </div>
+            @if(! empty($stat['image']))
+                <img src="{{ $stat['image'] }}"
+                     alt="{{ $stat['title'] }}"
+                     width="56"
+                     height="56"
+                     loading="lazy"
+                     decoding="async"
+                     class="w-14 h-14 shrink-0 object-contain">
+            @endif
         </div>
     @endforeach
 </div>

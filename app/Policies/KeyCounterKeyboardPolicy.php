@@ -6,6 +6,7 @@ namespace App\Policies;
 
 use App\Models\KeyCounter\Keyboard;
 use App\Models\User;
+use App\Policies\Concerns\GuardsAdminAndDeviceAccess;
 use App\Support\Auth\TokenAbilities;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -20,6 +21,7 @@ use Illuminate\Auth\Access\HandlesAuthorization;
  */
 class KeyCounterKeyboardPolicy
 {
+    use GuardsAdminAndDeviceAccess;
     use HandlesAuthorization;
 
     public function viewAny(User $user): bool
@@ -63,14 +65,20 @@ class KeyCounterKeyboardPolicy
      */
     private function isOwnedBy(User $user, Keyboard $keyboard): bool
     {
-        if ((int) $keyboard->user_id !== (int) $user->id && ! $user->isAdmin()) {
-            return false;
+        $ownerId = $keyboard->user_id !== null ? (int) $keyboard->user_id : null;
+
+        if (TokenAbilities::deviceRequest($user)) {
+            if ($ownerId === null || $ownerId !== (int) $user->id || $keyboard->hardware_device_id === null) {
+                return false;
+            }
+
+            return TokenAbilities::tokenReachesDevice($user, (int) $keyboard->hardware_device_id);
         }
 
-        if ($keyboard->hardware_device_id === null) {
-            return ! TokenAbilities::deviceRequest($user);
+        if ($ownerId !== null && $ownerId === (int) $user->id) {
+            return true;
         }
 
-        return TokenAbilities::tokenReachesDevice($user, (int) $keyboard->hardware_device_id);
+        return $this->adminCanManageOwner($user, $ownerId);
     }
 }

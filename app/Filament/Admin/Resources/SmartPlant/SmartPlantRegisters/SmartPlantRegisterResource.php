@@ -38,55 +38,72 @@ class SmartPlantRegisterResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Lecturas SmartPlant';
 
+    protected static ?string $recordTitleAttribute = 'id';
+
+    protected static ?string $slug = 'registers';
+
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('plant.name')
                     ->label('Planta')
+                    ->limit(30)
+                    ->tooltip(fn (?string $state): ?string => $state)
                     ->sortable()
                     ->searchable(),
                 TextColumn::make('hardwareDevice.name')
                     ->label('Dispositivo')
-                    ->sortable(),
-                TextColumn::make('uv')
-                    ->label('UV')
-                    ->numeric()
+                    ->limit(30)
+                    ->tooltip(fn (?string $state): ?string => $state)
                     ->sortable(),
                 TextColumn::make('temperature')
                     ->label('Temp.')
                     ->numeric()
-                    ->sortable(),
-                TextColumn::make('pressure')
-                    ->label('Presión')
-                    ->numeric()
+                    ->suffix(' °C')
                     ->sortable(),
                 TextColumn::make('humidity')
                     ->label('Hum.')
                     ->numeric()
+                    ->suffix(' %')
                     ->sortable(),
                 TextColumn::make('soil_humidity')
-                    ->label('Hum. Suelo')
+                    ->label('Hum. suelo')
                     ->numeric()
+                    ->suffix(' %')
                     ->sortable(),
-                TextColumn::make('soil_humidity_raw')
-                    ->label('Hum. Suelo bruto')
+                TextColumn::make('uv')
+                    ->label('UV')
                     ->numeric()
-                    ->sortable(),
-                IconColumn::make('full_water_tank')
-                    ->label('Depósito Lleno')
-                    ->boolean(),
-                IconColumn::make('waterpump_enabled')
-                    ->label('Bomba de agua')
-                    ->boolean(),
-                IconColumn::make('vaporizer_enabled')
-                    ->label('Vaporizador')
-                    ->boolean(),
-                TextColumn::make('created_at')
-                    ->label('Creado el')
-                    ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('pressure')
+                    ->label('Presión')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('soil_humidity_raw')
+                    ->label('Hum. suelo bruto')
+                    ->numeric()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                IconColumn::make('full_water_tank')
+                    ->label('Depósito lleno')
+                    ->boolean()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                IconColumn::make('waterpump_enabled')
+                    ->label('Bomba de agua')
+                    ->boolean()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                IconColumn::make('vaporizer_enabled')
+                    ->label('Vaporizador')
+                    ->boolean()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('created_at')
+                    ->label('Registrado el')
+                    ->dateTime('d/m/Y H:i')
+                    ->sortable(),
             ])
             ->filters([
                 // Para acotar a la planta o al dispositivo de la prueba que

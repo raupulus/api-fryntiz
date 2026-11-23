@@ -94,7 +94,7 @@ class EnergyTelemetryPayload implements ValidationRule
             'battery.total_operating_days' => ['nullable', 'integer', 'min:0'],
             'battery.days_operating' => ['nullable', 'integer', 'min:0'],
 
-            'loads' => ['nullable', 'array'],
+            'loads' => ['nullable', 'array', 'max:32'],
             'loads.*' => ['required', 'array'],
             'loads.*.channel' => ['nullable', 'integer', 'min:0'],
             'loads.*.sensor_position' => ['nullable', 'integer', 'min:0'],

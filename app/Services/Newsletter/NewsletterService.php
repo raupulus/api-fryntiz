@@ -7,6 +7,7 @@ namespace App\Services\Newsletter;
 use App\Mail\NewsletterVerification;
 use App\Models\Newsletter;
 use App\Models\Platform;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 /**
@@ -27,35 +28,60 @@ class NewsletterService
      * @param  string  $email  Dirección de correo electrónico.
      * @param  string|null  $name  Nombre opcional del suscriptor.
      * @param  int  $platformId  Plataforma a la que se suscribe (ya validada).
-     * @param  array{language?: string|null, ip_address?: string|null, user_agent?: string|null}  $context
+     * @param  array{language?: string|null, ip_address?: string|null, user_agent?: string|null, metadata?: array<string, mixed>}  $context
      * @return Newsletter Modelo de la suscripción generada.
      */
     public function subscribe(string $email, ?string $name, int $platformId, array $context = []): Newsletter
     {
-        $result = Newsletter::createOrUpdate([
-            'email' => $email,
-            'name' => $name,
-            'platform_id' => $platformId,
-            'is_verified' => false,
-            'status' => Newsletter::STATUS_INACTIVE,
-            'subscription_source' => Newsletter::SOURCE_API,
-            'language' => $context['language'] ?? 'es',
-            'ip_address' => $context['ip_address'] ?? null,
-            'user_agent' => $context['user_agent'] ?? null,
-        ]);
+        /** @var array{newsletter: Newsletter, should_verify: bool} $outcome */
+        $outcome = DB::transaction(function () use ($email, $name, $platformId, $context): array {
+            $existing = Newsletter::query()
+                ->where('platform_id', $platformId)
+                ->where('email', $email)
+                ->lockForUpdate()
+                ->first();
 
-        $newsletter = $result['newsletter'];
+            // Un suscriptor ya activo y verificado no puede degradarse desde un
+            // alta pública anónima ni usarse para disparar correos de reverificación.
+            if ($existing !== null && $existing->is_verified && $existing->isActive()) {
+                return [
+                    'newsletter' => $existing,
+                    'should_verify' => false,
+                ];
+            }
 
-        // Always ensure tokens exist
-        if (empty($newsletter->verification_token)) {
-            $newsletter->regenerateVerificationToken();
+            $result = Newsletter::createOrUpdate([
+                'email' => $email,
+                'name' => $name,
+                'platform_id' => $platformId,
+                'is_verified' => false,
+                'status' => Newsletter::STATUS_INACTIVE,
+                'subscription_source' => Newsletter::SOURCE_API,
+                'language' => $context['language'] ?? 'es',
+                'ip_address' => $context['ip_address'] ?? null,
+                'user_agent' => $context['user_agent'] ?? null,
+                'metadata' => $context['metadata'] ?? null,
+            ]);
+
+            $newsletter = $result['newsletter'];
+
+            if (empty($newsletter->verification_token)) {
+                $newsletter->regenerateVerificationToken();
+            }
+
+            return [
+                'newsletter' => $newsletter,
+                'should_verify' => true,
+            ];
+        });
+
+        if ($outcome['should_verify']) {
+            // La cabecera RFC 8058 se añade en el propio Mailable, para que la baja
+            // de un clic del cliente de correo haga POST y no GET.
+            Mail::to($email)->send(new NewsletterVerification($outcome['newsletter']));
         }
 
-        // La cabecera RFC 8058 se añade en el propio Mailable, para que la baja
-        // de un clic del cliente de correo haga POST y no GET.
-        Mail::to($email)->send(new NewsletterVerification($newsletter));
-
-        return $newsletter;
+        return $outcome['newsletter'];
     }
 
     /**

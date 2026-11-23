@@ -18,9 +18,9 @@ class WindDirectionResource extends JsonResource
         return [
             'id' => $this->id,
             'hardware_device_id' => $this->hardware_device_id,
-            'resistance' => $this->resistance,
+            'resistance' => $this->resistance !== null ? (float) $this->resistance : null,
             'direction' => $this->direction,
-            'grades' => $this->grades,
+            'grades' => $this->grades !== null ? (float) $this->grades : null,
             'created_at' => $this->created_at?->toISOString(),
         ];
     }

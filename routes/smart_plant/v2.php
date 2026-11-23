@@ -23,13 +23,13 @@ Route::prefix('smartplant')->group(function () {
     // Leer exige `smartplant:read`; escribir, `smartplant:write` (AR-S02).
     Route::middleware(['auth:sanctum', 'ability:'.TokenAbilities::SMARTPLANT_READ, 'throttle:api'])->group(function () {
         Route::get('/plants', [SmartPlantRegisterController::class, 'plants'])->name('api.v2.smartplant.plants.index');
-        Route::get('/plants/{plant}/readings', [SmartPlantRegisterController::class, 'index'])
+        Route::get('/plants/{plant:id}/readings', [SmartPlantRegisterController::class, 'index'])
             ->whereNumber('plant')
             ->name('api.v2.smartplant.plants.readings.index');
     });
 
     Route::middleware(['auth:sanctum', 'ability:'.TokenAbilities::SMARTPLANT_WRITE, 'throttle:api-store'])->group(function () {
-        Route::post('/plants/{plant}/readings', [SmartPlantRegisterController::class, 'store'])
+        Route::post('/plants/{plant:id}/readings', [SmartPlantRegisterController::class, 'store'])
             ->whereNumber('plant')
             ->name('api.v2.smartplant.plants.readings.store');
     });

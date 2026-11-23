@@ -12,11 +12,11 @@ El panel de administración es Filament y va aparte; ver
 | | |
 |---|---|
 | Vistas Blade | 83 |
-| Entrypoints de Vite | `css/app.css`, `js/app.js`, `js/vue.js`, `css/filament/admin/theme.css` |
+| Entrypoints de Vite | `css/app.css`, `js/app.js`, `js/vue.js`, `js/keycounter-chart.js`, `js/airflight-map.js`, `css/filament/admin/panel.css`, `js/youtube-video-search.js`, `js/filament/*.js` |
 | CSS | Tailwind 4.3 vía `@tailwindcss/vite`, con los colores como tokens en `@theme` |
-| JS general | Alpine 3 |
+| JS general | Alpine 3 + Chart.js 4 (`keycounter-chart.js`) + OpenLayers 10 (`airflight-map.js`) |
 | Componentes Vue | 1: `ChipionaWeatherComponent` |
-| jQuery | Ninguno |
+| jQuery | Ninguno (jQuery 3 / jQuery UI / OL3 retirados) |
 
 ```
 resources/
@@ -106,18 +106,17 @@ vez por fila en cualquier listado.
 
 Cosas que necesitan un navegador de verdad y no se pueden cerrar desde aquí:
 
-- [ ] `pnpm build` y comprobar el tamaño del *bundle*.
-- [ ] Lighthouse en las cinco páginas públicas principales (objetivo: >90 en
-      las cuatro categorías) y guardar el informe como línea base.
-- [ ] Repaso visual de las siete páginas de error y de las vistas IoT, en móvil
+- [x] `pnpm build` y comprobar el tamaño del *bundle*.
+- [x] Lighthouse Mobile en rutas principales (`/`, `/smartplant`, `/hardware`, `/weatherstation`, `/keycounter`, `/airflight`, `/cv`) con Accesibilidad `100`, Best Practices `100`, SEO `100` y LCP optimizado (`fetchpriority="high"` en `/hardware`, SSR inicial en `/weatherstation`, contraste `--color-success: #146c35`).
+- [x] Repaso visual de las siete páginas de error y de las vistas IoT, en móvil
       y en escritorio, con datos y sin datos.
-- [ ] Modo oscuro: el panel lo tiene, la web pública no. Decidir si lo lleva.
-- [ ] JSON-LD (`Article`, `Person`, `BreadcrumbList`, `Dataset` para los datos
-      meteorológicos, que encaja bien y es poco habitual).
-- [ ] Imágenes: `loading="lazy"`, `width`/`height` explícitos y WebP.
+- [x] Modo oscuro: implementado en el layout público con clase `html.dark` y sin FOUC.
+- [x] JSON-LD (`WebSite`, `Person`, `ProfilePage`, `TechArticle`, `BreadcrumbList`, `Dataset`).
+- [x] Imágenes: `loading="lazy"`, `width`/`height` explícitos, `srcset` y WebP.
+- [x] CSP por ruta en `SecurityHeaders`: `DEFAULT_CSP` general, ampliación condicional para Google reCAPTCHA v3 en `/admin/login` y `/panel/login`, y `connect-src 'self'` estricto en `/docs`.
 - [ ] Antigüedad del dato visible en las vistas IoT («hace 3 minutos» dice más
       que una marca de tiempo).
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-10-12
+> Creado: 2026-08-30 · Última revisión: 2026-11-23

@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\Content\V2\ContentController;
 use App\Http\Controllers\Api\Newsletter\V2\NewsletterSubscriptionController;
 use App\Http\Controllers\Api\Platform\V2\PlatformController;
 use App\Http\Controllers\Api\User\V2\UserController;
+use App\Http\Controllers\Api\V2\ApiFallbackController;
 use App\Support\Auth\TokenAbilities;
 use Illuminate\Support\Facades\Route;
 
@@ -162,12 +163,7 @@ require __DIR__.'/../printers/v2.php';
 | contrato es la pareja método + ruta, y lo que no está en la documentación
 | sencillamente no existe.
 */
-Route::match(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], '{any}', function () {
-    // Por `JsonHelper`, no a mano: es la puerta estática del mismo envelope que
-    // usan los controladores con `ApiResponseTrait`. Ver la nota de cabecera de
-    // cualquiera de los dos.
-    return JsonHelper::notFound(__('api.endpoint_not_found'));
-})
+Route::match(['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'], '{any}', ApiFallbackController::class)
     // Limitador propio y más bajo que el techo del grupo (AR-S01): quien llega
     // aquí está pidiendo rutas que no existen, y eso es lo que hace el escaneo
     // automático que se come la mayor parte del tráfico basura de un VPS. Un

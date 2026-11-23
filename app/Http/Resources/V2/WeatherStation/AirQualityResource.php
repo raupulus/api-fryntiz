@@ -18,8 +18,8 @@ class AirQualityResource extends JsonResource
         return [
             'id' => $this->id,
             'hardware_device_id' => $this->hardware_device_id,
-            'gas_resistance' => $this->gas_resistance,
-            'air_quality' => $this->air_quality,
+            'gas_resistance' => $this->gas_resistance !== null ? (float) $this->gas_resistance : null,
+            'air_quality' => $this->air_quality !== null ? (float) $this->air_quality : null,
             'created_at' => $this->created_at?->toISOString(),
         ];
     }

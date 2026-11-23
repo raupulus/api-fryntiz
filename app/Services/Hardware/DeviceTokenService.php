@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Services\Hardware;
 
 use App\Models\Hardware\HardwareDevice;
+use App\Models\User;
 use App\Support\Auth\TokenAbilities;
 use Carbon\Carbon;
+use Illuminate\Auth\Access\AuthorizationException;
 use InvalidArgumentException;
 use Laravel\Sanctum\NewAccessToken;
 use RuntimeException;
@@ -39,15 +41,24 @@ class DeviceTokenService
      * @param  array<int, string>  $abilities  Abilities de módulo (sin "device:{id}").
      *
      * @throws RuntimeException Si el dispositivo no tiene usuario propietario.
+     * @throws AuthorizationException Si un actor no SuperAdmin intenta emitir para un SuperAdmin.
      * @throws InvalidArgumentException Si no se indica ninguna ability de módulo
      *                                  o si se cuela una ability no permitida.
      */
-    public function issue(HardwareDevice $device, array $abilities, ?Carbon $expiresAt = null): NewAccessToken
-    {
+    public function issue(
+        HardwareDevice $device,
+        array $abilities,
+        ?Carbon $expiresAt = null,
+        ?User $actor = null
+    ): NewAccessToken {
         $user = $device->user;
 
         if (! $user) {
             throw new RuntimeException('El dispositivo no tiene usuario propietario asociado.');
+        }
+
+        if ($actor !== null && $user->isSuperAdmin() && ! $actor->isSuperAdmin()) {
+            throw new AuthorizationException('Sólo un Super Administrador puede emitir tokens para un Super Administrador.');
         }
 
         $abilities = array_values(array_unique(array_filter($abilities)));

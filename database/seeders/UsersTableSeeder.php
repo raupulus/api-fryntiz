@@ -25,12 +25,12 @@ class UsersTableSeeder extends Seeder
     public function run()
     {
         $superadmin = User::firstOrCreate([
-            'email' => 'superadmin@domain.es',
+            'email' => 'superadmin@example.test',
         ], [
             'name' => 'Administrador Principal',
             'role_id' => 1,
             'nickname' => 'superadmin',
-            'email' => 'superadmin@domain.es',
+            'email' => 'superadmin@example.test',
             'email_verified_at' => '2021-03-03 12:00:00',
             'password' => bcrypt('123123'),
         ]);
@@ -42,23 +42,23 @@ class UsersTableSeeder extends Seeder
         }
 
         $admin = User::firstOrCreate([
-            'email' => 'admin@domain.es',
+            'email' => 'admin@example.test',
         ], [
             'name' => 'Administrador',
             'role_id' => 2,
             'nickname' => 'admin',
-            'email' => 'admin@domain.es',
+            'email' => 'admin@example.test',
             'email_verified_at' => '2021-03-03 12:00:00',
             'password' => bcrypt('123123'),
         ]);
 
         $user = User::firstOrCreate([
-            'email' => 'user@domain.es',
+            'email' => 'user@example.test',
         ], [
             'name' => 'Usuario Normal',
             'role_id' => 3,
             'nickname' => 'user',
-            'email' => 'user@domain.es',
+            'email' => 'user@example.test',
             'email_verified_at' => '2021-03-03 12:00:00',
             'password' => bcrypt('123123'),
         ]);

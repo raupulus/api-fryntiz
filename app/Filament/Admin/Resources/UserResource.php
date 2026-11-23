@@ -273,14 +273,14 @@ class UserResource extends Resource
                     ->disk('public')
                     ->defaultImageUrl(fn (User $record): string => $record->profile_photo_url)
                     ->label('Foto'),
-                TextColumn::make('id')->sortable()->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('name')->searchable()->sortable()->label('Nombre'),
-                TextColumn::make('nickname')->searchable()->toggleable()->label('Nick'),
-                TextColumn::make('email')->searchable()->copyable()->label('Email'),
+                TextColumn::make('id')->label('ID')->sortable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('name')->searchable()->sortable()->limit(35)->tooltip(fn (?string $state): ?string => $state)->label('Nombre'),
+                TextColumn::make('nickname')->searchable()->limit(25)->toggleable(isToggledHiddenByDefault: true)->label('Nick'),
+                TextColumn::make('email')->searchable()->copyable()->limit(35)->tooltip(fn (?string $state): ?string => $state)->label('Email'),
                 TextColumn::make('role.display_name')->badge()->label('Rol'),
                 IconColumn::make('email_verified_at')->boolean()->label('Verif.'),
                 IconColumn::make('is_active')->boolean()->label('Activo'),
-                TextColumn::make('created_at')->dateTime('d/m/Y H:i')->sortable()->label('Creado'),
+                TextColumn::make('created_at')->dateTime('d/m/Y H:i')->sortable()->toggleable(isToggledHiddenByDefault: true)->label('Creado'),
             ])
             ->filters([
                 SelectFilter::make('role_id')->relationship('role', 'display_name')->label('Rol'),

@@ -8,24 +8,24 @@
 @php
     $types = [
         'info' => [
-            'container' => 'bg-surface-container-high text-on-surface border-tertiary-fixed',
+            'container' => 'bg-info-container text-on-info-container border-on-info-container/20',
             'icon' => 'info',
-            'iconColor' => 'text-primary-container dark:text-primary',
+            'iconColor' => 'text-on-info-container',
         ],
         'success' => [
-            'container' => 'bg-emerald-50 dark:bg-emerald-950/30 text-emerald-950 dark:text-emerald-100 border-emerald-300 dark:border-emerald-800',
+            'container' => 'bg-success-container text-on-success-container border-on-success-container/20',
             'icon' => 'check_circle',
-            'iconColor' => 'text-emerald-600 dark:text-emerald-400',
+            'iconColor' => 'text-on-success-container',
         ],
         'warning' => [
-            'container' => 'bg-amber-50 dark:bg-amber-950/30 text-amber-950 dark:text-amber-100 border-amber-300 dark:border-amber-800',
+            'container' => 'bg-warning-container text-on-warning-container border-on-warning-container/20',
             'icon' => 'warning',
-            'iconColor' => 'text-amber-600 dark:text-amber-400',
+            'iconColor' => 'text-on-warning-container',
         ],
         'error' => [
-            'container' => 'bg-error-container/40 dark:bg-error-container/20 text-on-surface border-error/30',
+            'container' => 'bg-error-container text-on-error-container border-error/30',
             'icon' => 'error',
-            'iconColor' => 'text-error',
+            'iconColor' => 'text-on-error-container',
         ],
     ];
 
@@ -41,12 +41,12 @@
     role="alert"
 >
     <div class="shrink-0 mt-0.5 {{ $cfg['iconColor'] }}">
-        <span class="material-symbols-outlined text-xl">{{ $iconName }}</span>
+        <span class="material-symbols-outlined text-xl" aria-hidden="true">{{ $iconName }}</span>
     </div>
 
     <div class="flex-1 text-sm leading-relaxed">
         @if($title)
-            <h5 class="font-bold mb-1 tracking-tight">{{ $title }}</h5>
+            <p class="font-bold mb-1 tracking-tight">{{ $title }}</p>
         @endif
         <div>{{ $slot }}</div>
     </div>
@@ -55,10 +55,10 @@
         <button
             type="button"
             @click="show = false"
-            class="shrink-0 p-1 text-on-surface-variant hover:text-on-surface rounded-lg hover:bg-surface-container/50 transition-colors focus:outline-none"
-            aria-label="Cerrar"
+            class="shrink-0 min-w-9 min-h-9 inline-flex items-center justify-center opacity-80 hover:opacity-100 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+            aria-label="Cerrar aviso"
         >
-            <span class="material-symbols-outlined text-base leading-none">close</span>
+            <span class="material-symbols-outlined text-base leading-none" aria-hidden="true">close</span>
         </button>
     @endif
 </div>

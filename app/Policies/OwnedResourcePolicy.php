@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Policies;
 
 use App\Models\User;
+use App\Policies\Concerns\GuardsAdminAndDeviceAccess;
 use App\Support\Auth\TokenAbilities;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Database\Eloquent\Model;
@@ -39,6 +40,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 abstract class OwnedResourcePolicy
 {
+    use GuardsAdminAndDeviceAccess;
     use HandlesAuthorization;
 
     /**
@@ -98,6 +100,6 @@ abstract class OwnedResourcePolicy
             return true;
         }
 
-        return $user->isAdmin();
+        return $this->adminCanManageOwner($user, $ownerId);
     }
 }

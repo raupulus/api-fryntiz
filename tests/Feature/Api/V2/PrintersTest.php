@@ -59,7 +59,7 @@ class PrintersTest extends ApiTestCase
 
         $response = $this->getJson(
             $this->apiUrl('printers'),
-            $this->authenticatedHeaders($user)
+            $this->moduleHeaders($user, TokenAbilities::PRINTERS_READ)
         );
 
         $this->assertPaginatedResponse($response);
@@ -78,7 +78,7 @@ class PrintersTest extends ApiTestCase
 
         $response = $this->getJson(
             $this->apiUrl('printers'),
-            $this->authenticatedHeaders($userA)
+            $this->moduleHeaders($userA, TokenAbilities::PRINTERS_READ)
         );
 
         $this->assertPaginatedResponse($response);
@@ -87,22 +87,72 @@ class PrintersTest extends ApiTestCase
     }
 
     #[Test]
-    public function admin_can_see_all_printers(): void
+    public function session_token_cannot_access_printer_read_or_write_endpoints(): void
+    {
+        $user = $this->createAuthenticatedUser();
+        $printer = $this->makePrinter($user);
+
+        $readResponse = $this->getJson(
+            $this->apiUrl('printers'),
+            $this->authenticatedHeaders($user)
+        );
+        $this->assertErrorResponse($readResponse, 403);
+
+        $writeResponse = $this->postJson(
+            $this->apiUrl("printers/{$printer->id}/jobs"),
+            ['content' => 'Ticket', 'format' => 'text'],
+            $this->authenticatedHeaders($user)
+        );
+        $this->assertErrorResponse($writeResponse, 403);
+    }
+
+    #[Test]
+    public function write_only_device_token_cannot_read_printers(): void
     {
         $admin = $this->createAuthenticatedUser(UserRoleEnum::Admin->value);
-        $userA = $this->createAuthenticatedUser();
-        $userB = $this->createAuthenticatedUser();
-
-        $this->makePrinter($userA);
-        $this->makePrinter($userB);
+        $printer = $this->makePrinter($admin);
+        $deviceHeaders = $this->deviceHeaders($printer->hardwareDevice, [TokenAbilities::PRINTERS_WRITE]);
 
         $response = $this->getJson(
             $this->apiUrl('printers'),
-            $this->authenticatedHeaders($admin)
+            $deviceHeaders
+        );
+
+        $this->assertErrorResponse($response, 403);
+    }
+
+    #[Test]
+    public function device_token_with_read_is_scoped_to_owner_and_bound_device_even_for_admin(): void
+    {
+        $admin = $this->createAuthenticatedUser(UserRoleEnum::Admin->value);
+        $otherUser = $this->createAuthenticatedUser();
+
+        $printerA = $this->makePrinter($admin, ['name' => 'Impresora Admin A']);
+        $this->makePrinter($admin, ['name' => 'Impresora Admin B']);
+        $this->makePrinter($otherUser, ['name' => 'Impresora Ajena']);
+
+        $deviceHeaders = $this->deviceHeaders($printerA->hardwareDevice, [TokenAbilities::PRINTERS_READ]);
+
+        $response = $this->getJson(
+            $this->apiUrl('printers'),
+            $deviceHeaders
         );
 
         $this->assertPaginatedResponse($response);
-        $this->assertSame(2, $response->json('meta.total'));
+        $this->assertSame(1, $response->json('meta.total'));
+        $this->assertSame('Impresora Admin A', $response->json('data.0.name'));
+    }
+
+    #[Test]
+    public function admin_cannot_manage_superadmin_printer_via_policy(): void
+    {
+        $superAdmin = $this->createAuthenticatedUser(UserRoleEnum::SuperAdmin->value);
+        $admin = $this->createAuthenticatedUser(UserRoleEnum::Admin->value);
+        $printer = $this->makePrinter($superAdmin);
+
+        $this->assertFalse($admin->can('view', $printer));
+        $this->assertFalse($admin->can('update', $printer));
+        $this->assertFalse($admin->can('delete', $printer));
     }
 
     #[Test]
@@ -113,7 +163,7 @@ class PrintersTest extends ApiTestCase
 
         $response = $this->getJson(
             $this->apiUrl("printers/{$printer->id}"),
-            $this->authenticatedHeaders($user)
+            $this->moduleHeaders($user, TokenAbilities::PRINTERS_READ)
         );
 
         $this->assertSuccessResponse($response);
@@ -130,7 +180,7 @@ class PrintersTest extends ApiTestCase
 
         $response = $this->getJson(
             $this->apiUrl("printers/{$printerB->id}"),
-            $this->authenticatedHeaders($userA)
+            $this->moduleHeaders($userA, TokenAbilities::PRINTERS_READ)
         );
 
         $this->assertErrorResponse($response, 403);
@@ -153,7 +203,7 @@ class PrintersTest extends ApiTestCase
                 'note' => 'Cocina',
                 'is_favorite' => true,
             ],
-            $this->authenticatedHeaders($user)
+            $this->moduleHeaders($user, TokenAbilities::PRINTERS_WRITE)
         );
 
         $this->assertSuccessResponse($response, 201);
@@ -187,7 +237,7 @@ class PrintersTest extends ApiTestCase
                 'content' => 'G1 X10 Y20',
                 'format' => 'gcode',
             ],
-            $this->authenticatedHeaders($user)
+            $this->moduleHeaders($user, TokenAbilities::PRINTERS_WRITE)
         );
 
         $this->assertErrorResponse($response, 422);
@@ -210,7 +260,7 @@ class PrintersTest extends ApiTestCase
                 'content' => $excessiveContent,
                 'format' => 'text',
             ],
-            $this->authenticatedHeaders($user)
+            $this->moduleHeaders($user, TokenAbilities::PRINTERS_WRITE)
         );
 
         $this->assertErrorResponse($response, 422);
@@ -433,7 +483,7 @@ class PrintersTest extends ApiTestCase
         $response = $this->postJson(
             $this->apiUrl("printers/jobs/{$job->id}/reprint"),
             ['priority' => 15],
-            $this->authenticatedHeaders($user)
+            $this->moduleHeaders($user, TokenAbilities::PRINTERS_WRITE)
         );
 
         $this->assertSuccessResponse($response, 201);
@@ -460,7 +510,7 @@ class PrintersTest extends ApiTestCase
         $response = $this->patchJson(
             $this->apiUrl("printers/jobs/{$job->id}/favorite"),
             ['is_favorite' => true],
-            $this->authenticatedHeaders($user)
+            $this->moduleHeaders($user, TokenAbilities::PRINTERS_WRITE)
         );
 
         $this->assertSuccessResponse($response);
@@ -481,10 +531,13 @@ class PrintersTest extends ApiTestCase
         $response = $this->deleteJson(
             $this->apiUrl("printers/jobs/{$job->id}"),
             [],
-            $this->authenticatedHeaders($user)
+            $this->moduleHeaders($user, TokenAbilities::PRINTERS_WRITE)
         );
 
-        $this->assertSuccessResponse($response);
-        $this->assertSame('cancelled', $response->json('data.status'));
+        $response->assertNoContent();
+        $this->assertDatabaseHas('printer_stack', [
+            'id' => $job->id,
+            'status' => PrintJobStatusEnum::Cancelled->value,
+        ]);
     }
 }

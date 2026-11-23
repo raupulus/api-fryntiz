@@ -21,7 +21,7 @@ class ContactTest extends ApiTestCase
         config(['google.recaptcha.secret_key' => 'test-secret']);
         $response = $this->postJson($this->apiUrl('contact-messages'), []);
         $this->assertErrorResponse($response, 422);
-        $response->assertJsonValidationErrors(['name', 'email', 'subject', 'message', 'g-recaptcha-response']);
+        $response->assertJsonValidationErrors(['name', 'email', 'subject', 'message', 'privacity', 'g-recaptcha-response']);
     }
 
     #[Test]
@@ -30,7 +30,7 @@ class ContactTest extends ApiTestCase
         config(['google.recaptcha.secret_key' => null]);
         $response = $this->postJson($this->apiUrl('contact-messages'), []);
         $this->assertErrorResponse($response, 422);
-        $response->assertJsonValidationErrors(['name', 'email', 'subject', 'message']);
+        $response->assertJsonValidationErrors(['name', 'email', 'subject', 'message', 'privacity']);
         $response->assertJsonMissingValidationErrors(['g-recaptcha-response']);
     }
 
@@ -40,6 +40,7 @@ class ContactTest extends ApiTestCase
         $response = $this->postJson($this->apiUrl('contact-messages'), [
             'name' => 'Test', 'email' => 'invalid',
             'subject' => 'Test', 'message' => 'Mensaje largo suficiente para pasar validación mínima',
+            'privacity' => true,
             'g-recaptcha-response' => 'fake',
         ]);
         $this->assertErrorResponse($response, 422);
@@ -52,10 +53,25 @@ class ContactTest extends ApiTestCase
         $response = $this->postJson($this->apiUrl('contact-messages'), [
             'name' => 'Test', 'email' => 'test@test.com',
             'subject' => 'Test', 'message' => 'Corto',
+            'privacity' => true,
             'g-recaptcha-response' => 'fake',
         ]);
         $this->assertErrorResponse($response, 422);
         $response->assertJsonValidationErrors(['message']);
+    }
+
+    #[Test]
+    public function contact_rejects_submission_without_privacy_consent(): void
+    {
+        $this->enableCaptcha();
+
+        $response = $this->postJson($this->apiUrl('contact-messages'), $this->payload([
+            'privacity' => false,
+        ]));
+
+        $this->assertErrorResponse($response, 422);
+        $response->assertJsonValidationErrors(['privacity']);
+        $this->assertSame(0, Email::query()->count());
     }
 
     #[Test]
@@ -108,7 +124,7 @@ class ContactTest extends ApiTestCase
         ]));
 
         $this->assertErrorResponse($response, 422);
-        $response->assertJson(['message' => 'Verificacion de seguridad fallida']);
+        $response->assertJson(['message' => 'Verificación de seguridad fallida']);
         // Se corta antes de guardar: no interesa conservar la basura.
         $this->assertSame(0, Email::query()->count());
     }
@@ -167,7 +183,7 @@ class ContactTest extends ApiTestCase
         ]));
 
         $this->assertErrorResponse($response, 422);
-        $response->assertJson(['message' => 'Verificacion de seguridad fallida']);
+        $response->assertJson(['message' => 'Verificación de seguridad fallida']);
         $this->assertSame(0, Email::query()->count());
     }
 
@@ -271,6 +287,7 @@ class ContactTest extends ApiTestCase
             'email' => 'test@example.com',
             'subject' => 'Test Subject',
             'message' => 'Este es un mensaje de prueba con longitud suficiente.',
+            'privacity' => true,
         ];
     }
 }

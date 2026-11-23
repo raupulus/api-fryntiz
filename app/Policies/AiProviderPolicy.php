@@ -6,42 +6,40 @@ namespace App\Policies;
 
 use App\Models\AiProvider;
 use App\Models\User;
+use App\Policies\Concerns\GuardsAdminAndDeviceAccess;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 /**
- * Los proveedores de IA, con sus claves, son sólo del superadmin: ni un
- * administrador los ve. Lo que usa cada plataforma (su instrucción y sus
- * perfiles de editor) se edita en la plataforma.
- *
- * `Gate::before` ya deja pasar al superadmin; se repite aquí para que la
- * policy diga lo mismo leída sola.
+ * Los proveedores de IA, con sus claves, son sólo del SuperAdmin humano:
+ * ni un administrador ni un token de dispositivo IoT pueden acceder a ellos.
  */
 class AiProviderPolicy
 {
+    use GuardsAdminAndDeviceAccess;
     use HandlesAuthorization;
 
     public function viewAny(User $user): bool
     {
-        return $user->isSuperAdmin();
+        return $this->isHumanSuperAdmin($user);
     }
 
     public function view(User $user, AiProvider $provider): bool
     {
-        return $user->isSuperAdmin();
+        return $this->isHumanSuperAdmin($user);
     }
 
     public function create(User $user): bool
     {
-        return $user->isSuperAdmin();
+        return $this->isHumanSuperAdmin($user);
     }
 
     public function update(User $user, AiProvider $provider): bool
     {
-        return $user->isSuperAdmin();
+        return $this->isHumanSuperAdmin($user);
     }
 
     public function delete(User $user, AiProvider $provider): bool
     {
-        return $user->isSuperAdmin();
+        return $this->isHumanSuperAdmin($user);
     }
 }

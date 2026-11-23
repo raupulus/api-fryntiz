@@ -38,6 +38,10 @@ class AirFlightRouteResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Rutas de vuelo';
 
+    protected static ?string $recordTitleAttribute = 'flight';
+
+    protected static ?string $slug = 'routes';
+
     /**
      * Las rutas las sube la API a partir de lo que capta el hardware. El
      * panel sólo las enseña.
@@ -65,26 +69,26 @@ class AirFlightRouteResource extends Resource
                 Select::make('hardware_device_id')
                     ->relationship('hardwareDevice', 'name')
                     ->searchable()->preload()->label('Dispositivo'),
-                TextInput::make('squawk')->label('Squawk'),
-                TextInput::make('flight')->label('Vuelo'),
+                TextInput::make('squawk')->maxLength(255)->label('Squawk'),
+                TextInput::make('flight')->maxLength(255)->label('Vuelo'),
                 TextInput::make('lat')
-                    ->numeric()->label('Latitud'),
+                    ->numeric()->minValue(-90)->maxValue(90)->label('Latitud'),
                 TextInput::make('lon')
-                    ->numeric()->label('Longitud'),
+                    ->numeric()->minValue(-180)->maxValue(180)->label('Longitud'),
                 TextInput::make('altitude')
                     ->numeric()->label('Altitud'),
                 TextInput::make('vert_rate')
                     ->numeric()->label('Tasa vertical'),
                 TextInput::make('track')
-                    ->numeric()->label('Rumbo'),
+                    ->integer()->minValue(0)->maxValue(360)->label('Rumbo'),
                 TextInput::make('speed')
-                    ->numeric()->label('Velocidad'),
+                    ->numeric()->minValue(0)->label('Velocidad'),
                 DateTimePicker::make('seen_at')->label('Visto el'),
                 TextInput::make('messages')
-                    ->numeric()->label('Mensajes'),
+                    ->integer()->minValue(0)->label('Mensajes'),
                 TextInput::make('rssi')
-                    ->numeric()->label('RSSI'),
-                TextInput::make('emergency')->label('Emergencia'),
+                    ->numeric()->maxValue(0)->label('RSSI'),
+                TextInput::make('emergency')->maxLength(255)->label('Emergencia'),
             ]);
     }
 
@@ -95,28 +99,36 @@ class AirFlightRouteResource extends Resource
             ->columns([
                 TextColumn::make('user.name')
                     ->label('Usuario')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('airplane.icao')
                     ->label('Avión')
                     ->sortable()
                     ->searchable(),
+                TextColumn::make('flight')
+                    ->label('Vuelo')
+                    ->searchable()
+                    ->limit(25)
+                    ->tooltip(fn (?string $state): ?string => $state),
                 TextColumn::make('hardwareDevice.name')
                     ->label('Dispositivo')
+                    ->limit(30)
+                    ->tooltip(fn (?string $state): ?string => $state)
                     ->sortable(),
                 TextColumn::make('squawk')
                     ->label('Squawk')
-                    ->searchable(),
-                TextColumn::make('flight')
-                    ->label('Vuelo')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('lat')
                     ->label('Lat.')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('lon')
                     ->label('Lon.')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('altitude')
                     ->label('Altitud')
                     ->numeric()
@@ -124,11 +136,13 @@ class AirFlightRouteResource extends Resource
                 TextColumn::make('vert_rate')
                     ->label('Tasa vert.')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('track')
                     ->label('Rumbo')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('speed')
                     ->label('Velocidad')
                     ->numeric()
@@ -149,7 +163,8 @@ class AirFlightRouteResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('emergency')
                     ->label('Emergencia')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->label('Creado el')
                     ->dateTime()

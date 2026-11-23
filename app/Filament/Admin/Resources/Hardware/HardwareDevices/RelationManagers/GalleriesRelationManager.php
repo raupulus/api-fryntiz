@@ -45,8 +45,8 @@ class GalleriesRelationManager extends RelationManager
                 AttachAction::make()
                     ->label('Vincular Galería')
                     ->modelLabel('Galería')
-                    ->preloadRecordSelect()
-                    ->recordSelectOptionsQuery(fn (Builder $query) => $query->with('image.fileType')->withCount('images'))
+                    ->recordSelectSearchColumns(['name'])
+                    ->recordSelectOptionsQuery(fn (Builder $query) => $query->with('image.fileType')->withCount('images')->limit(50))
                     ->recordSelect(fn (Select $select) => $select->allowHtml())
                     ->recordTitle(function (Gallery $record): string {
                         $thumbnailStyle = 'width:1.5rem;height:1.5rem;border-radius:0.25rem;object-fit:cover;flex-shrink:0;';

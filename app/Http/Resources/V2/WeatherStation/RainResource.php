@@ -18,10 +18,10 @@ class RainResource extends JsonResource
         return [
             'id' => $this->id,
             'hardware_device_id' => $this->hardware_device_id,
-            'rain' => $this->rain,
-            'rain_intensity' => $this->rain_intensity,
-            'rain_month' => $this->rain_month,
-            'moisture' => $this->moisture,
+            'rain' => $this->rain !== null ? (float) $this->rain : null,
+            'rain_intensity' => $this->rain_intensity !== null ? (float) $this->rain_intensity : null,
+            'rain_month' => $this->rain_month !== null ? (float) $this->rain_month : null,
+            'moisture' => $this->moisture !== null ? (float) $this->moisture : null,
             'created_at' => $this->created_at?->toISOString(),
         ];
     }

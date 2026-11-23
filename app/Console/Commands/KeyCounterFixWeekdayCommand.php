@@ -71,14 +71,20 @@ class KeyCounterFixWeekdayCommand extends Command
         return self::SUCCESS;
     }
 
+    private const ALLOWED_TABLES = ['keycounter_keyboard', 'keycounter_mouse'];
+
+    private const MISMATCH_CONDITION = 'start_at IS NOT NULL AND weekday <> EXTRACT(DOW FROM start_at)::int';
+
     /**
      * @return int Rachas afectadas.
      */
     private function process(string $table, string $label, bool $write): int
     {
-        $condition = 'start_at IS NOT NULL AND weekday <> EXTRACT(DOW FROM start_at)::int';
+        if (! in_array($table, self::ALLOWED_TABLES, true)) {
+            throw new \InvalidArgumentException("Unsupported table: {$table}");
+        }
 
-        $count = (int) DB::table($table)->whereRaw($condition)->count();
+        $count = (int) DB::table($table)->whereRaw(self::MISMATCH_CONDITION)->count();
 
         $this->line("  · {$label} ({$table}): {$count}");
 
@@ -87,20 +93,20 @@ class KeyCounterFixWeekdayCommand extends Command
         }
 
         if (! $write) {
-            $this->showSample($table, $condition);
+            $this->showSample($table);
 
             return $count;
         }
 
         // Qué meses se tocan, **antes** de tocarlos: después la condición ya no
         // los encuentra.
-        $periods = $this->affectedPeriods($table, $condition);
+        $periods = $this->affectedPeriods($table);
 
         // Una sola sentencia: son cientos de miles de filas y recorrerlas con
         // Eloquent sería tan lento como innecesario. El valor nuevo sale de la
         // propia fecha, así que no hace falta traerse nada.
         DB::table($table)
-            ->whereRaw($condition)
+            ->whereRaw(self::MISMATCH_CONDITION)
             ->update([
                 'weekday' => DB::raw('EXTRACT(DOW FROM start_at)::int'),
             ]);
@@ -131,11 +137,11 @@ class KeyCounterFixWeekdayCommand extends Command
      *
      * @return list<array{int, int}>
      */
-    private function affectedPeriods(string $table, string $condition): array
+    private function affectedPeriods(string $table): array
     {
         $rows = DB::table($table)
             ->selectRaw('DISTINCT EXTRACT(YEAR FROM created_at)::int AS year, EXTRACT(MONTH FROM created_at)::int AS month')
-            ->whereRaw($condition)
+            ->whereRaw(self::MISMATCH_CONDITION)
             ->whereNotNull('created_at')
             ->get();
 
@@ -147,11 +153,11 @@ class KeyCounterFixWeekdayCommand extends Command
     /**
      * Cinco filas de ejemplo, para poder comprobar el cambio antes de hacerlo.
      */
-    private function showSample(string $table, string $condition): void
+    private function showSample(string $table): void
     {
         $rows = DB::table($table)
             ->selectRaw("id, start_at, weekday AS current_value, EXTRACT(DOW FROM start_at)::int AS new_value, to_char(start_at, 'Dy') AS weekday_name")
-            ->whereRaw($condition)
+            ->whereRaw(self::MISMATCH_CONDITION)
             ->limit(5)
             ->get();
 

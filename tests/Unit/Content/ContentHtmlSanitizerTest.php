@@ -147,6 +147,24 @@ class ContentHtmlSanitizerTest extends TestCase
     }
 
     #[Test]
+    public function unsafe_url_schemes_in_blocks_are_stripped(): void
+    {
+        $blocks = $this->sanitizer->blocks([
+            ['type' => 'image', 'data' => ['file' => ['url' => 'javascript:alert(1)'], 'caption' => 'ok']],
+            ['type' => 'embed', 'data' => ['embed' => 'data:text/html,<script>alert(1)</script>', 'source' => 'vbscript:msgbox(1)', 'caption' => 'ok']],
+            ['type' => 'attaches', 'data' => ['file' => ['url' => "JaVa\tScRiPt:alert(1)"], 'title' => 'doc']],
+            ['type' => 'linkTool', 'data' => ['link' => 'javascript:alert(1)', 'meta' => ['title' => 't', 'image' => ['url' => 'data:image/svg+xml,<svg onload=alert(1)>']]]],
+        ]);
+
+        $this->assertSame('', $blocks[0]['data']['file']['url']);
+        $this->assertSame('', $blocks[1]['data']['embed']);
+        $this->assertSame('', $blocks[1]['data']['source']);
+        $this->assertSame('', $blocks[2]['data']['file']['url']);
+        $this->assertSame('', $blocks[3]['data']['link']);
+        $this->assertSame('', $blocks[3]['data']['meta']['image']['url']);
+    }
+
+    #[Test]
     public function the_pages_resaved_by_the_current_editor_do_not_change_either(): void
     {
         $converter = new ContentFormatConverter;

@@ -6,6 +6,7 @@ namespace App\Policies;
 
 use App\Models\KeyCounter\Mouse;
 use App\Models\User;
+use App\Policies\Concerns\GuardsAdminAndDeviceAccess;
 use App\Support\Auth\TokenAbilities;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -20,6 +21,7 @@ use Illuminate\Auth\Access\HandlesAuthorization;
  */
 class KeyCounterMousePolicy
 {
+    use GuardsAdminAndDeviceAccess;
     use HandlesAuthorization;
 
     public function viewAny(User $user): bool
@@ -63,14 +65,20 @@ class KeyCounterMousePolicy
      */
     private function isOwnedBy(User $user, Mouse $mouse): bool
     {
-        if ((int) $mouse->user_id !== (int) $user->id && ! $user->isAdmin()) {
-            return false;
+        $ownerId = $mouse->user_id !== null ? (int) $mouse->user_id : null;
+
+        if (TokenAbilities::deviceRequest($user)) {
+            if ($ownerId === null || $ownerId !== (int) $user->id || $mouse->hardware_device_id === null) {
+                return false;
+            }
+
+            return TokenAbilities::tokenReachesDevice($user, (int) $mouse->hardware_device_id);
         }
 
-        if ($mouse->hardware_device_id === null) {
-            return ! TokenAbilities::deviceRequest($user);
+        if ($ownerId !== null && $ownerId === (int) $user->id) {
+            return true;
         }
 
-        return TokenAbilities::tokenReachesDevice($user, (int) $mouse->hardware_device_id);
+        return $this->adminCanManageOwner($user, $ownerId);
     }
 }

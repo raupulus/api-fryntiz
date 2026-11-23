@@ -6,6 +6,7 @@ namespace App\Console\Commands;
 
 use App\Http\Controllers\WeatherStation\WeatherStationController;
 use App\Models\CV\Curriculum;
+use App\Models\Gdacs\GdacsEvent;
 use App\Models\Hardware\HardwareDevice;
 use App\Models\SmartPlant\SmartPlantPlant;
 use Carbon\Carbon;
@@ -27,7 +28,7 @@ class SitemapGeneratorCommand extends Command
 
     private const CACHE_TTL = 3600; // 1 hora
 
-    public function handle()
+    public function handle(): int
     {
         if (! $this->option('force') && Cache::has(self::CACHE_KEY)) {
             $this->warn('Generación de sitemap ya en progreso o reciente. Use --force para omitir.');
@@ -77,14 +78,17 @@ class SitemapGeneratorCommand extends Command
         // depende de cuántos currículums estén marcados como públicos— son las
         // páginas de cada uno, que añade `addCurriculumUrls()`.
         $staticUrls = [
-            ['url' => route('home'), 'priority' => 1.0, 'changefreq' => 'monthly'],
-            ['url' => route('about'), 'priority' => 0.8, 'changefreq' => 'monthly'],
-            ['url' => route('smartplant.index'), 'priority' => 0.7, 'changefreq' => 'weekly'],
-            ['url' => route('hardware.energy.index'), 'priority' => 0.7, 'changefreq' => 'daily'],
-            ['url' => route('hardware.index'), 'priority' => 0.6, 'changefreq' => 'daily'],
-            ['url' => route('keycounter.index'), 'priority' => 0.6, 'changefreq' => 'daily'],
-            ['url' => route('airflight.index'), 'priority' => 0.6, 'changefreq' => 'daily'],
-            ['url' => route('cv.index'), 'priority' => 0.6, 'changefreq' => 'monthly'],
+            ['url' => route('home'), 'priority' => 1.0, 'changefreq' => 'monthly', 'view' => 'home.blade.php'],
+            ['url' => route('about'), 'priority' => 0.8, 'changefreq' => 'monthly', 'view' => 'about.blade.php'],
+            ['url' => route('smartplant.index'), 'priority' => 0.7, 'changefreq' => 'weekly', 'view' => 'smartplant/index.blade.php'],
+            ['url' => route('hardware.energy.index'), 'priority' => 0.7, 'changefreq' => 'daily', 'view' => 'hardware/energy/index.blade.php'],
+            ['url' => route('hardware.index'), 'priority' => 0.6, 'changefreq' => 'daily', 'view' => 'hardware/index.blade.php'],
+            ['url' => route('keycounter.index'), 'priority' => 0.6, 'changefreq' => 'daily', 'view' => 'keycounter/index.blade.php'],
+            ['url' => route('airflight.index'), 'priority' => 0.6, 'changefreq' => 'daily', 'view' => 'airflight/index.blade.php'],
+            ['url' => route('cv.index'), 'priority' => 0.6, 'changefreq' => 'monthly', 'view' => 'cv/index.blade.php'],
+            ['url' => route('legal.notice'), 'priority' => 0.2, 'changefreq' => 'yearly', 'view' => 'legal/notice.blade.php'],
+            ['url' => route('legal.privacy'), 'priority' => 0.2, 'changefreq' => 'yearly', 'view' => 'legal/privacy.blade.php'],
+            ['url' => route('legal.cookies'), 'priority' => 0.2, 'changefreq' => 'yearly', 'view' => 'legal/cookies.blade.php'],
         ];
 
         foreach ($staticUrls as $urlData) {
@@ -92,7 +96,7 @@ class SitemapGeneratorCommand extends Command
                 Url::create($urlData['url'])
                     ->setPriority($urlData['priority'])
                     ->setChangeFrequency($urlData['changefreq'])
-                    ->setLastModificationDate(Carbon::now())
+                    ->setLastModificationDate($this->viewLastModified($urlData['view']))
             );
         }
 
@@ -132,26 +136,32 @@ class SitemapGeneratorCommand extends Command
      */
     private function addCurriculumUrls(Sitemap $sitemap): void
     {
-        Curriculum::publicOnly()->get()->each(function (Curriculum $cv) use ($sitemap) {
-            $sitemap->add(
-                Url::create(route('cv.show', ['slug' => $cv->slug]))
-                    ->setPriority(0.5)
-                    ->setChangeFrequency('monthly')
-                    ->setLastModificationDate($cv->updated_at ?? Carbon::now())
-            );
-        });
+        Curriculum::publicOnly()
+            ->select(['id', 'slug', 'updated_at'])
+            ->lazyById(200)
+            ->each(function (Curriculum $cv) use ($sitemap) {
+                $sitemap->add(
+                    Url::create(route('cv.show', ['slug' => $cv->slug]))
+                        ->setPriority(0.5)
+                        ->setChangeFrequency('monthly')
+                        ->setLastModificationDate($cv->updated_at ?? Carbon::now())
+                );
+            });
     }
 
     private function addSmartPlantUrls(Sitemap $sitemap): void
     {
-        SmartPlantPlant::all()->each(function (SmartPlantPlant $plant) use ($sitemap) {
-            $sitemap->add(
-                Url::create(route('smartplant.show', $plant))
-                    ->setPriority(0.6)
-                    ->setChangeFrequency('weekly')
-                    ->setLastModificationDate($plant->updated_at ?? Carbon::now())
-            );
-        });
+        SmartPlantPlant::query()
+            ->select(['id', 'slug', 'updated_at'])
+            ->lazyById(200)
+            ->each(function (SmartPlantPlant $plant) use ($sitemap) {
+                $sitemap->add(
+                    Url::create(route('smartplant.show', ['smartplant' => $plant->slug]))
+                        ->setPriority(0.6)
+                        ->setChangeFrequency('weekly')
+                        ->setLastModificationDate($plant->updated_at ?? $this->viewLastModified('smartplant/show.blade.php'))
+                );
+            });
     }
 
     /**
@@ -164,12 +174,22 @@ class SitemapGeneratorCommand extends Command
      */
     private function addWeatherStationUrls(Sitemap $sitemap): void
     {
+        $latestStationUpdatedAt = HardwareDevice::weatherStations()->max('updated_at');
+        $weatherIndexLastMod = $latestStationUpdatedAt
+            ? Carbon::parse($latestStationUpdatedAt)
+            : $this->viewLastModified('weather_station/index.blade.php');
+
         $sitemap->add(
             Url::create(route('weather_station.index'))
                 ->setPriority(0.6)
                 ->setChangeFrequency('hourly')
-                ->setLastModificationDate(Carbon::now())
+                ->setLastModificationDate($weatherIndexLastMod)
         );
+
+        $latestGdacsUpdatedAt = GdacsEvent::query()->max('updated_at');
+        $gdacsLastMod = $latestGdacsUpdatedAt
+            ? Carbon::parse($latestGdacsUpdatedAt)
+            : $this->viewLastModified('gdacs/index.blade.php');
 
         // Menor prioridad que el índice: es un histórico de alertas, no la
         // página principal del módulo.
@@ -177,7 +197,7 @@ class SitemapGeneratorCommand extends Command
             Url::create(route('weather_station.gdacs.index'))
                 ->setPriority(0.3)
                 ->setChangeFrequency('daily')
-                ->setLastModificationDate(Carbon::now())
+                ->setLastModificationDate($gdacsLastMod)
         );
 
         $stationIds = HardwareDevice::weatherStations()->pluck('id');
@@ -267,6 +287,24 @@ class SitemapGeneratorCommand extends Command
         if (! @unlink($path)) {
             $this->warn('   No se ha podido borrar la copia de seguridad: '.$path);
         }
+    }
+
+    /**
+     * Fecha real de modificación de una plantilla Blade como respaldo para `<lastmod>`.
+     */
+    private function viewLastModified(string $relativeViewPath): Carbon
+    {
+        $fullPath = resource_path('views/'.$relativeViewPath);
+
+        if (is_file($fullPath)) {
+            $mtime = filemtime($fullPath);
+
+            if ($mtime !== false) {
+                return Carbon::createFromTimestamp($mtime);
+            }
+        }
+
+        return Carbon::now();
     }
 
     private function handleError(\Exception $e): void

@@ -63,6 +63,10 @@ class ContentFileService
                 : 'Este servidor no puede leer fotos HEIC: conviértela a JPG.');
         }
 
+        if ($isImage && File::exceedsPixelLimit((string) $upload->getRealPath(), $mime)) {
+            throw new ContentUploadException('La imagen supera la resolución máxima permitida (8192×8192 px / 25 MP).');
+        }
+
         $file = File::addFile($upload, self::MODULE, false, validate: false, webpOriginal: true);
 
         if (! $file) {

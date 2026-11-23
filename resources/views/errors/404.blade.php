@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Error 404 · Esta página no existe')
+@section('noindex', '1')
 
 @section('content')
     @include('errors._page', [

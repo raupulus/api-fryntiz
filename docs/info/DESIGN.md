@@ -13,7 +13,7 @@ Se rechaza el aspecto corporativo plano o genérico. El sistema busca **profundi
 
 ## 2. Tipografía
 
-- **Familia Tipográfica Principal:** **`Inter`** (`sans-serif`), cargada desde Google Fonts con pesos de 100 a 900.
+- **Familia Tipográfica Principal:** **`Inter`** (`sans-serif`), autoalojada mediante `@fontsource-variable/inter` (Vite) con pesos de 100 a 900.
   - `--font-family-headline`: `'Inter', sans-serif`
   - `--font-family-body`: `'Inter', sans-serif`
   - `--font-family-label`: `'Inter', sans-serif`
@@ -154,3 +154,7 @@ Se bajó la luminosidad **sólo en el tema claro**, a `#12658f` (6,08:1),
 manteniendo el mismo tono — es el acento de toda la plataforma, así que era una
 decisión de identidad y no un arreglo mecánico. Los iconos que comparten el
 mismo token sólo necesitan 3:1, así que no les afecta negativamente.
+
+---
+
+> Creado: 2026-08-26 · Última revisión: 2026-11-23

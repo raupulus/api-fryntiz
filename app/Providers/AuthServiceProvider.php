@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\AiProvider;
 use App\Models\AirFlight\AirFlightAirPlane;
 use App\Models\AirFlight\AirFlightRoute;
 use App\Models\ApiToken;
@@ -13,6 +14,7 @@ use App\Models\Content\ContentPage;
 use App\Models\CV\Curriculum;
 use App\Models\CV\CurriculumAvailableRepositoryType;
 use App\Models\Email;
+use App\Models\File;
 use App\Models\FileType;
 use App\Models\Gallery;
 use App\Models\GalleryImage;
@@ -25,6 +27,7 @@ use App\Models\KeyCounter\Keyboard;
 use App\Models\KeyCounter\Mouse;
 use App\Models\Newsletter;
 use App\Models\Platform;
+use App\Models\PlatformEditorProfile;
 use App\Models\Printer;
 use App\Models\PrinterStack;
 use App\Models\Referred\ReferredPlatform;
@@ -39,6 +42,7 @@ use App\Models\WeatherStation\Eco2;
 use App\Models\WeatherStation\Humidity;
 use App\Models\WeatherStation\Light;
 use App\Models\WeatherStation\Lightning;
+use App\Models\WeatherStation\MeteorologyResumeToday;
 use App\Models\WeatherStation\Pressure;
 use App\Models\WeatherStation\Rain;
 use App\Models\WeatherStation\Temperature;
@@ -46,6 +50,7 @@ use App\Models\WeatherStation\Tvoc;
 use App\Models\WeatherStation\Wind;
 use App\Models\WeatherStation\WindDirection;
 use App\Policies\AdminCatalogPolicy;
+use App\Policies\AiProviderPolicy;
 use App\Policies\AirFlightPolicy;
 use App\Policies\AirFlightRoutePolicy;
 use App\Policies\ApiTokenPolicy;
@@ -54,6 +59,7 @@ use App\Policies\ContentPagePolicy;
 use App\Policies\ContentPolicy;
 use App\Policies\CurriculumPolicy;
 use App\Policies\EmailPolicy;
+use App\Policies\FilePolicy;
 use App\Policies\GalleryPolicy;
 use App\Policies\GdacsEventPolicy;
 use App\Policies\HardwareEnergyPolicy;
@@ -61,6 +67,7 @@ use App\Policies\HardwarePolicy;
 use App\Policies\KeyCounterKeyboardPolicy;
 use App\Policies\KeyCounterMousePolicy;
 use App\Policies\NewsletterPolicy;
+use App\Policies\PlatformEditorProfilePolicy;
 use App\Policies\PlatformPolicy;
 use App\Policies\PrinterPolicy;
 use App\Policies\ReferredThingPolicy;
@@ -95,6 +102,7 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     private const POLICIES = [
+        AiProvider::class => AiProviderPolicy::class,
         AirFlightAirPlane::class => AirFlightPolicy::class,
         AirFlightRoute::class => AirFlightRoutePolicy::class,
         ApiToken::class => ApiTokenPolicy::class,
@@ -103,6 +111,7 @@ class AuthServiceProvider extends ServiceProvider
         ContentPage::class => ContentPagePolicy::class,
         Curriculum::class => CurriculumPolicy::class,
         Email::class => EmailPolicy::class,
+        File::class => FilePolicy::class,
         Gallery::class => GalleryPolicy::class,
         GalleryImage::class => GalleryPolicy::class,
         GdacsEvent::class => GdacsEventPolicy::class,
@@ -112,6 +121,7 @@ class AuthServiceProvider extends ServiceProvider
         Mouse::class => KeyCounterMousePolicy::class,
         Newsletter::class => NewsletterPolicy::class,
         Platform::class => PlatformPolicy::class,
+        PlatformEditorProfile::class => PlatformEditorProfilePolicy::class,
         Printer::class => PrinterPolicy::class,
         PrinterStack::class => PrinterPolicy::class,
         ReferredThing::class => ReferredThingPolicy::class,
@@ -153,6 +163,7 @@ class AuthServiceProvider extends ServiceProvider
         Humidity::class,
         Light::class,
         Lightning::class,
+        MeteorologyResumeToday::class,
         Pressure::class,
         Rain::class,
         Temperature::class,

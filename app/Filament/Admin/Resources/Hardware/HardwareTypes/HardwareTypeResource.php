@@ -34,13 +34,19 @@ class HardwareTypeResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Tipos de hardware';
 
+    protected static ?string $navigationLabel = 'Tipos de hardware';
+
+    protected static ?string $recordTitleAttribute = 'name';
+
     public static function form(Schema $schema): Schema
     {
         return $schema
             ->components([
                 TextInput::make('name')
                     ->label('Nombre')
-                    ->required(),
+                    ->required()
+                    ->maxLength(80)
+                    ->unique(ignoreRecord: true),
                 Textarea::make('description')
                     ->label('Descripción')
                     ->columnSpanFull(),
@@ -53,6 +59,8 @@ class HardwareTypeResource extends Resource
             ->columns([
                 TextColumn::make('name')
                     ->label('Nombre')
+                    ->limit(40)
+                    ->tooltip(fn (?string $state): ?string => $state)
                     ->searchable(),
                 TextColumn::make('created_at')
                     ->label('Creado el')

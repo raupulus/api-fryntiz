@@ -116,19 +116,27 @@ class KeyCounterService
 
     /**
      * Estadísticas acumuladas de pulsaciones y clicks para un usuario en conjunto,
-     * sumando todos sus dispositivos de hardware.
+     * opcionalmente acotadas a una lista de dispositivos autorizados por el token.
      *
      * @param  int  $userId  ID del usuario.
+     * @param  array<int, int>  $allowedDeviceIds  IDs de dispositivos alcanzables (vacío = todos los del usuario).
      * @return array<string, mixed>
      */
-    public function userStats(int $userId): array
+    public function userStats(int $userId, array $allowedDeviceIds = []): array
     {
         $now = CarbonImmutable::now('UTC');
         $todayStart = $now->startOfDay();
         $lastHourStart = $now->subHour();
 
-        $keyboard = Keyboard::query()
-            ->where('user_id', $userId)
+        $keyboardQuery = Keyboard::query()->where('user_id', $userId);
+        $mouseQuery = Mouse::query()->where('user_id', $userId);
+
+        if ($allowedDeviceIds !== []) {
+            $keyboardQuery->whereIn('hardware_device_id', $allowedDeviceIds);
+            $mouseQuery->whereIn('hardware_device_id', $allowedDeviceIds);
+        }
+
+        $keyboard = $keyboardQuery
             ->toBase()
             ->selectRaw(
                 'COALESCE(SUM(pulsations), 0) AS lifetime_pulsations, '.
@@ -138,8 +146,7 @@ class KeyCounterService
             )
             ->first();
 
-        $mouse = Mouse::query()
-            ->where('user_id', $userId)
+        $mouse = $mouseQuery
             ->toBase()
             ->selectRaw(
                 'COALESCE(SUM(total_clicks), 0) AS lifetime_clicks, '.
@@ -172,12 +179,17 @@ class KeyCounterService
      */
     public function getUserKeyboardStats(int $userId, int $days = 30): array
     {
-        $records = Keyboard::forUser($userId)->lastDays($days)->get();
+        $stats = Keyboard::forUser($userId)
+            ->where('created_at', '>=', now()->subDays($days))
+            ->selectRaw('COALESCE(SUM(pulsations), 0) AS total_keystrokes, COUNT(*) AS records_count')
+            ->first();
+
+        $totalKeystrokes = (int) ($stats->total_keystrokes ?? 0);
 
         return [
-            'total_keystrokes' => $records->sum('pulsations') ?: 0,
-            'average_per_day' => $days > 0 ? round(($records->sum('pulsations') ?: 0) / $days) : 0,
-            'records_count' => $records->count(),
+            'total_keystrokes' => $totalKeystrokes,
+            'average_per_day' => $days > 0 ? round($totalKeystrokes / $days) : 0,
+            'records_count' => (int) ($stats->records_count ?? 0),
         ];
     }
 }

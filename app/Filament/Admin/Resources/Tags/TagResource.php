@@ -64,8 +64,8 @@ class TagResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')->searchable()->sortable()->label('Nombre'),
-                TextColumn::make('slug')->searchable()->toggleable()->label('Slug'),
+                TextColumn::make('name')->searchable()->sortable()->limit(40)->tooltip(fn (?string $state): ?string => $state)->label('Nombre'),
+                TextColumn::make('slug')->searchable()->limit(40)->tooltip(fn (?string $state): ?string => $state)->toggleable()->label('Slug'),
                 ColorColumn::make('color')->label('Color'),
                 TextColumn::make('icon')->toggleable()->label('Icono'),
                 TextColumn::make('created_at')->label('Creado el')->dateTime('d/m/Y')->sortable()->toggleable(isToggledHiddenByDefault: true),

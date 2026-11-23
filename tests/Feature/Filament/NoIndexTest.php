@@ -45,7 +45,7 @@ class NoIndexTest extends TestCase
     {
         // Sin autenticar: una raíz de panel redirige a su login, y la cabecera
         // tiene que viajar también en la redirección.
-        $this->get($route)->assertHeader('X-Robots-Tag', NoIndex::VALOR);
+        $this->get($route)->assertHeader('X-Robots-Tag', NoIndex::VALUE);
     }
 
     #[Test]
@@ -54,7 +54,7 @@ class NoIndexTest extends TestCase
         // Respaldo por si un proxy delante se comiera la cabecera.
         $this->get('/admin/login')
             ->assertOk()
-            ->assertSee('<meta name="robots" content="'.NoIndex::VALOR.'">', escape: false);
+            ->assertSee('<meta name="robots" content="'.NoIndex::VALUE.'">', escape: false);
     }
 
     /**

@@ -43,6 +43,8 @@ class AirFlightAirPlaneResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'icao';
 
+    protected static ?string $slug = 'airplanes';
+
     /**
      * Los aviones los crea y actualiza la API a partir de lo que capta el
      * hardware. El panel sólo los enseña.
@@ -70,7 +72,7 @@ class AirFlightAirPlaneResource extends Resource
                         'A4' => 'A4 — Pesado', 'A5' => 'A5 — Muy pesado', 'A6' => 'A6 — High vortex',
                         'A7' => 'A7 — Rotor', 'B0' => 'B0 — Sin clasificar',
                         'B1' => 'B1 — Glider', 'B2' => 'B2 — Más ligero que el aire',
-                    ])->nullable()->label('Categoría'),
+                    ])->in(['A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'B0', 'B1', 'B2'])->nullable()->label('Categoría'),
                     TextInput::make('country')->maxLength(255)->label('País'),
                     TextInput::make('flag')->url()->maxLength(255)->label('URL bandera'),
                     Select::make('user_id')
@@ -92,9 +94,9 @@ class AirFlightAirPlaneResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('url_flag')->label('🇽')->square(),
+                ImageColumn::make('url_flag')->label('Bandera')->square(),
                 TextColumn::make('icao')->searchable()->sortable()->copyable()->label('ICAO'),
-                TextColumn::make('country')->toggleable()->label('País'),
+                TextColumn::make('country')->limit(30)->tooltip(fn (?string $state): ?string => $state)->toggleable()->label('País'),
                 TextColumn::make('category')->badge()->label('Cat.'),
                 TextColumn::make('routes_count')->counts('routes')->label('Rutas'),
                 TextColumn::make('seen_last_at')->dateTime('d/m/Y H:i')->sortable()->label('Visto'),

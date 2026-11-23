@@ -56,6 +56,8 @@ class ApiTokenResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Tokens de hardware';
 
+    protected static ?string $navigationLabel = 'Tokens de hardware';
+
     protected static ?string $recordTitleAttribute = 'name';
 
     /**
@@ -107,7 +109,11 @@ class ApiTokenResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')->searchable()->label('Nombre'),
+                TextColumn::make('name')
+                    ->searchable()
+                    ->limit(40)
+                    ->tooltip(fn (?string $state): ?string => $state)
+                    ->label('Nombre'),
                 TextColumn::make('abilities')
                     ->formatStateUsing(fn ($state) => is_array($state) ? implode(', ', $state) : (string) $state)
                     ->limit(50)->label('Permisos')->wrap(),

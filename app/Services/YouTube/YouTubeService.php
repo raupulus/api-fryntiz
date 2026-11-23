@@ -86,7 +86,8 @@ class YouTubeService
                     $params['pageToken'] = $pageToken;
                 }
 
-                $response = Http::timeout(6)
+                $response = Http::connectTimeout(5)
+                    ->timeout(6)
                     ->acceptJson()
                     ->get(self::BASE_URL.'/search', $params);
 
@@ -145,7 +146,8 @@ class YouTubeService
 
         return Cache::remember($cacheKey, self::CACHE_TTL_SECONDS * 2, function () use ($videoId): ?array {
             try {
-                $response = Http::timeout(5)
+                $response = Http::connectTimeout(5)
+                    ->timeout(5)
                     ->acceptJson()
                     ->get(self::BASE_URL.'/videos', [
                         'key' => $this->apiKey,

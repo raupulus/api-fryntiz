@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Error 429 · Demasiadas peticiones')
+@section('noindex', '1')
 
 @section('content')
     @include('errors._page', [

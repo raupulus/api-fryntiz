@@ -28,7 +28,7 @@ class ExperienceAccreditedRelationManager extends RelationManager
             TextInput::make('company')->maxLength(511)->label('Empresa'),
             TextInput::make('position')->maxLength(255)->label('Puesto'),
             DateTimePicker::make('start_at')->label('Inicio'),
-            DateTimePicker::make('end_at')->label('Fin'),
+            DateTimePicker::make('end_at')->afterOrEqual('start_at')->label('Fin'),
             Textarea::make('description')->rows(3)->columnSpanFull()->label('Descripción'),
             Textarea::make('note')->rows(2)->columnSpanFull()->label('Notas'),
         ]);

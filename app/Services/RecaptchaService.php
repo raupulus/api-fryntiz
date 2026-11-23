@@ -37,7 +37,7 @@ class RecaptchaService
      *                                `google.recaptcha.min_score`. El login de
      *                                los paneles pasa el suyo, más permisivo.
      */
-    public function verify(?string $token, ?string $ip = null, ?float $minScore = null): CaptchaResult
+    public function verify(?string $token, ?string $ip = null, ?float $minScore = null, ?string $expectedAction = null): CaptchaResult
     {
         $secret = config('google.recaptcha.secret_key');
 
@@ -51,6 +51,7 @@ class RecaptchaService
 
         try {
             $response = Http::asForm()
+                ->connectTimeout(5)
                 ->timeout(10)
                 ->post('https://www.google.com/recaptcha/api/siteverify', array_filter([
                     'secret' => $secret,
@@ -58,41 +59,41 @@ class RecaptchaService
                     'remoteip' => $ip,
                 ]));
         } catch (\Throwable $e) {
-            // FALLO EN ABIERTO — decisión tomada, no un descuido (SEC-05).
-            //
-            // Si Google no responde no se puede afirmar que quien envía sea un
-            // bot, y no se va a cerrar el acceso al sitio porque un tercero se
-            // haya caído. En principio no debería pasar; si pasa y resulta ser
-            // un problema real, la salida es buscar otro proveedor, no dejar a
-            // la gente fuera mientras tanto.
-            //
-            // Este warning y el de más abajo son la señal de alerta: si
-            // aparecen a ráfagas en el log, alguien está provocando el fallo
-            // para saltarse la comprobación. Está documentado en
-            // docs/info/auth.md y en docs/info/decisiones-tecnicas.md.
-            Log::warning('reCAPTCHA: no se ha podido verificar', ['message' => $e->getMessage()]);
+            // FALLO EN ABIERTO — decisión tomada, no un descuido (SEC-05 / D10).
+            Log::warning('reCAPTCHA: could not verify token', ['message' => $e->getMessage()]);
+
+            return new CaptchaResult(valid: true, score: null, configured: true, provider: 'recaptcha');
+        }
+
+        // Igual que TurnstileService: sólo un 5xx es fallo del proveedor (fail-open D10).
+        // Un 4xx indica petición inválida y debe rechazarse en cerrado.
+        if ($response->serverError()) {
+            Log::warning('reCAPTCHA: unsatisfactory upstream response', ['status' => $response->status()]);
 
             return new CaptchaResult(valid: true, score: null, configured: true, provider: 'recaptcha');
         }
 
         if (! $response->successful()) {
-            // Mismo criterio que arriba: fallo en abierto deliberado.
-            Log::warning('reCAPTCHA: respuesta no satisfactoria', ['status' => $response->status()]);
+            Log::warning('reCAPTCHA: client error response', ['status' => $response->status()]);
 
-            return new CaptchaResult(valid: true, score: null, configured: true, provider: 'recaptcha');
+            return new CaptchaResult(valid: false, score: null, configured: true, provider: 'recaptcha');
         }
 
         $valid = $response->json('success') === true;
         $score = $response->json('score');
         $score = is_numeric($score) ? (float) $score : null;
 
-        // El umbral es lo que de verdad separa persona de bot en v3 (AR-S04).
-        // `success` sólo dice que el token está bien formado y no ha caducado,
-        // y eso es cierto también para el token que se saca un bot.
-        //
-        // Si Google no manda puntuación —no debería pasar en v3— se deja pasar
-        // con `success`, que es el mismo criterio de fallo en abierto de D10:
-        // no se cierra la puerta por algo que no podemos afirmar.
+        if ($valid && $expectedAction !== null) {
+            $actualAction = $response->json('action');
+            if (! is_string($actualAction) || $actualAction !== $expectedAction) {
+                Log::warning('reCAPTCHA: action mismatch', [
+                    'expected' => $expectedAction,
+                    'actual' => is_string($actualAction) ? $actualAction : null,
+                ]);
+                $valid = false;
+            }
+        }
+
         if ($valid && $score !== null) {
             $valid = $score >= ($minScore ?? (float) config('google.recaptcha.min_score', 0.5));
         }

@@ -97,6 +97,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -146,7 +149,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - 'keycounter:write'
+          - 'smartplant:read'
         type: 'string[]'
         enumValues:
           - 'hardware:read'
@@ -182,7 +185,7 @@ endpoints:
         name: expires_at
         description: 'Must be a valid date. Must be a date after <code>now</code>.'
         required: false
-        example: '2052-11-21'
+        example: '2052-12-16'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -191,9 +194,9 @@ endpoints:
     cleanBodyParameters:
       device_id: 16
       abilities:
-        - 'keycounter:write'
+        - 'smartplant:read'
       name: 'n'
-      expires_at: '2052-11-21'
+      expires_at: '2052-12-16'
     fileParameters: []
     responses: []
     responseFields: []
@@ -314,6 +317,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -390,9 +396,9 @@ endpoints:
       privacity:
         custom: []
         name: privacity
-        description: ''
-        required: false
-        example: false
+        description: 'Must be accepted.'
+        required: true
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -403,7 +409,7 @@ endpoints:
         name: contactme
         description: ''
         required: false
-        example: true
+        example: false
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -470,8 +476,8 @@ endpoints:
       email: zbailey@example.net
       subject: i
       message: 'y'
-      privacity: false
-      contactme: true
+      privacity: true
+      contactme: false
       attributes:
         - v
       g-recaptcha-response: architecto
@@ -522,7 +528,7 @@ endpoints:
       name:
         custom: []
         name: name
-        description: 'Must not be greater than 255 characters.'
+        description: 'Must not be greater than 100 characters.'
         required: false
         example: m
         type: string
@@ -541,10 +547,70 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
+      privacy_accepted:
+        custom: []
+        name: privacy_accepted
+        description: 'Must be accepted.'
+        required: true
+        example: true
+        type: boolean
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      g-recaptcha-response:
+        custom: []
+        name: g-recaptcha-response
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      recaptcha_token:
+        custom: []
+        name: recaptcha_token
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      cf-turnstile-response:
+        custom: []
+        name: cf-turnstile-response
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      turnstile_token:
+        custom: []
+        name: turnstile_token
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
     cleanBodyParameters:
       email: gbailey@example.net
       name: m
       platform_id: 16
+      privacy_accepted: true
+      g-recaptcha-response: architecto
+      recaptcha_token: architecto
+      cf-turnstile-response: architecto
+      turnstile_token: architecto
     fileParameters: []
     responses: []
     responseFields: []
@@ -591,6 +657,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -645,9 +714,57 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
+      g-recaptcha-response:
+        custom: []
+        name: g-recaptcha-response
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      recaptcha_token:
+        custom: []
+        name: recaptcha_token
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      cf-turnstile-response:
+        custom: []
+        name: cf-turnstile-response
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      turnstile_token:
+        custom: []
+        name: turnstile_token
+        description: ''
+        required: false
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
     cleanBodyParameters:
       email: gbailey@example.net
       platform_id: 16
+      g-recaptcha-response: architecto
+      recaptcha_token: architecto
+      cf-turnstile-response: architecto
+      turnstile_token: architecto
     fileParameters: []
     responses: []
     responseFields: []
@@ -829,6 +946,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -890,6 +1010,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -951,6 +1074,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -1010,6 +1136,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -1074,6 +1203,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -1135,6 +1267,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -1252,6 +1387,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -1362,6 +1500,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -1484,6 +1625,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -1606,6 +1750,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -1677,6 +1824,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -1748,6 +1898,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -1819,6 +1972,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -1890,6 +2046,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -1941,6 +2100,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -1986,6 +2148,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -2657,6 +2822,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -2733,9 +2901,9 @@ endpoints:
       read_at:
         custom: []
         name: read_at
-        description: 'Must be a valid date. Must be a date after or equal to <code>2000-01-01</code>. Must be a date before or equal to <code>2026-10-28 22:08:44</code>.'
+        description: 'Must be a valid date. Must be a date after or equal to <code>2000-01-01</code>. Must be a date before or equal to <code>2026-11-23 12:29:21</code>.'
         required: false
-        example: '2022-11-22'
+        example: '2022-12-17'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2755,7 +2923,7 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       duration: 22
-      read_at: '2022-11-22'
+      read_at: '2022-12-17'
       energy: []
     fileParameters: []
     responses: []
@@ -2803,6 +2971,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -2877,6 +3048,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -2934,9 +3108,9 @@ endpoints:
       temp:
         custom: []
         name: temp
-        description: ''
+        description: 'Must be between -100 and 200.'
         required: false
-        example: 4326.41688
+        example: -99
         type: number
         enumValues: []
         exampleWasSpecified: false
@@ -2945,9 +3119,9 @@ endpoints:
       voltage:
         custom: []
         name: voltage
-        description: ''
+        description: 'Must be between 0 and 1000.'
         required: false
-        example: 4326.41688
+        example: 0
         type: number
         enumValues: []
         exampleWasSpecified: false
@@ -2958,7 +3132,7 @@ endpoints:
         name: battery_level
         description: 'Must be between 0 and 100.'
         required: false
-        example: 0
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -2967,9 +3141,9 @@ endpoints:
       battery_voltage:
         custom: []
         name: battery_voltage
-        description: ''
+        description: 'Must be between 0 and 1000.'
         required: false
-        example: 4326.41688
+        example: 0
         type: number
         enumValues: []
         exampleWasSpecified: false
@@ -2980,7 +3154,7 @@ endpoints:
         name: software_version
         description: 'Must not be greater than 50 characters.'
         required: false
-        example: m
+        example: i
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3002,7 +3176,7 @@ endpoints:
         name: disk
         description: 'Must be between 0 and 100.'
         required: false
-        example: 0
+        example: 1
         type: number
         enumValues: []
         exampleWasSpecified: false
@@ -3024,7 +3198,7 @@ endpoints:
         name: uptime
         description: 'Must be at least 0.'
         required: false
-        example: 42
+        example: 37
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -3065,15 +3239,15 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       hardware_device_id: 16
-      temp: 4326.41688
-      voltage: 4326.41688
-      battery_level: 0
-      battery_voltage: 4326.41688
-      software_version: m
+      temp: -99
+      voltage: 0
+      battery_level: 1
+      battery_voltage: 0
+      software_version: i
       cpu: 0
-      disk: 0
+      disk: 1
       ram: 1
-      uptime: 42
+      uptime: 37
       ip_local: 1.102.226.211
       ip_public: 1.102.226.211
     fileParameters: []
@@ -3125,6 +3299,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -3173,6 +3350,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -3218,6 +3398,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -3292,6 +3475,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -3359,7 +3545,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-10-28 21:08:44'
+        example: '2026-11-23 11:29:21'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3368,9 +3554,9 @@ endpoints:
       end_at:
         custom: []
         name: end_at
-        description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
+        description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>. Must be a date after or equal to <code>start_at</code>.'
         required: true
-        example: '2026-10-28 21:08:44'
+        example: '2052-12-16'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3379,9 +3565,9 @@ endpoints:
       duration:
         custom: []
         name: duration
-        description: ''
+        description: 'Must be at least 0.'
         required: true
-        example: 16
+        example: 39
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -3392,7 +3578,7 @@ endpoints:
         name: pulsations
         description: 'Must be at least 0.'
         required: true
-        example: 39
+        example: 84
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -3403,7 +3589,7 @@ endpoints:
         name: pulsations_special_keys
         description: 'Must be at least 0.'
         required: true
-        example: 84
+        example: 12
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -3414,7 +3600,7 @@ endpoints:
         name: pulsation_average
         description: 'Must be at least 0.'
         required: true
-        example: 12
+        example: 77
         type: number
         enumValues: []
         exampleWasSpecified: false
@@ -3425,7 +3611,7 @@ endpoints:
         name: score
         description: 'Must be at least 0.'
         required: true
-        example: 77
+        example: 8
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -3436,7 +3622,7 @@ endpoints:
         name: weekday
         description: 'Must be at least 0. Must not be greater than 6.'
         required: true
-        example: 5
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -3445,14 +3631,14 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-10-28 21:08:44'
-      end_at: '2026-10-28 21:08:44'
-      duration: 16
-      pulsations: 39
-      pulsations_special_keys: 84
-      pulsation_average: 12
-      score: 77
-      weekday: 5
+      start_at: '2026-11-23 11:29:21'
+      end_at: '2052-12-16'
+      duration: 39
+      pulsations: 84
+      pulsations_special_keys: 12
+      pulsation_average: 77
+      score: 8
+      weekday: 1
     fileParameters: []
     responses: []
     responseFields: []
@@ -3521,7 +3707,7 @@ endpoints:
         name: start_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-10-28 21:08:44'
+        example: '2026-11-23 11:29:21'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3530,9 +3716,9 @@ endpoints:
       end_at:
         custom: []
         name: end_at
-        description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
+        description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>. Must be a date after or equal to <code>start_at</code>.'
         required: true
-        example: '2026-10-28 21:08:44'
+        example: '2052-12-16'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -3541,9 +3727,9 @@ endpoints:
       duration:
         custom: []
         name: duration
-        description: ''
+        description: 'Must be at least 0.'
         required: true
-        example: 16
+        example: 39
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -3554,7 +3740,7 @@ endpoints:
         name: clicks_left
         description: 'Must be at least 0.'
         required: true
-        example: 39
+        example: 84
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -3565,7 +3751,7 @@ endpoints:
         name: clicks_right
         description: 'Must be at least 0.'
         required: true
-        example: 84
+        example: 12
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -3576,7 +3762,7 @@ endpoints:
         name: clicks_middle
         description: 'Must be at least 0.'
         required: true
-        example: 12
+        example: 77
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -3587,7 +3773,7 @@ endpoints:
         name: total_clicks
         description: 'Must be at least 0.'
         required: true
-        example: 77
+        example: 8
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -3598,7 +3784,7 @@ endpoints:
         name: clicks_average
         description: 'Must be at least 0.'
         required: true
-        example: 8
+        example: 76
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -3609,7 +3795,7 @@ endpoints:
         name: weekday
         description: 'Must be at least 0. Must not be greater than 6.'
         required: true
-        example: 1
+        example: 4
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -3618,15 +3804,15 @@ endpoints:
     cleanBodyParameters:
       hardware_device_id: 16
       user_id: 16
-      start_at: '2026-10-28 21:08:44'
-      end_at: '2026-10-28 21:08:44'
-      duration: 16
-      clicks_left: 39
-      clicks_right: 84
-      clicks_middle: 12
-      total_clicks: 77
-      clicks_average: 8
-      weekday: 1
+      start_at: '2026-11-23 11:29:21'
+      end_at: '2052-12-16'
+      duration: 39
+      clicks_left: 84
+      clicks_right: 12
+      clicks_middle: 77
+      total_clicks: 8
+      clicks_average: 76
+      weekday: 4
     fileParameters: []
     responses: []
     responseFields: []
@@ -3673,6 +3859,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -3732,6 +3921,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -3789,8 +3981,8 @@ endpoints:
         name: plant_id
         description: 'Must match an existing stored value.'
         required: true
-        example: 4326.41688
-        type: number
+        example: 16
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
@@ -3800,8 +3992,8 @@ endpoints:
         name: hardware_device_id
         description: 'Must match an existing stored value.'
         required: true
-        example: 4326.41688
-        type: number
+        example: 16
+        type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
@@ -3809,9 +4001,9 @@ endpoints:
       uv:
         custom: []
         name: uv
-        description: ''
+        description: 'Must be between 0 and 20.'
         required: false
-        example: 16
+        example: 1
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -3820,9 +4012,9 @@ endpoints:
       pressure:
         custom: []
         name: pressure
-        description: ''
+        description: 'Must be between 800 and 1100.'
         required: false
-        example: 4326.41688
+        example: 800
         type: number
         enumValues: []
         exampleWasSpecified: false
@@ -3831,9 +4023,9 @@ endpoints:
       temperature:
         custom: []
         name: temperature
-        description: ''
+        description: 'Must be between -50 and 80.'
         required: false
-        example: 4326.41688
+        example: -49
         type: number
         enumValues: []
         exampleWasSpecified: false
@@ -3842,9 +4034,9 @@ endpoints:
       humidity:
         custom: []
         name: humidity
-        description: ''
+        description: 'Must be between 0 and 100.'
         required: false
-        example: 4326.41688
+        example: 0
         type: number
         enumValues: []
         exampleWasSpecified: false
@@ -3855,7 +4047,7 @@ endpoints:
         name: soil_humidity
         description: 'Must be at least 0. Must not be greater than 100.'
         required: true
-        example: 17
+        example: 15
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -3864,9 +4056,9 @@ endpoints:
       soil_humidity_raw:
         custom: []
         name: soil_humidity_raw
-        description: ''
+        description: 'Must be at least 0. Must not be greater than 65535.'
         required: false
-        example: 16
+        example: 8
         type: integer
         enumValues: []
         exampleWasSpecified: false
@@ -3888,7 +4080,7 @@ endpoints:
         name: waterpump_enabled
         description: ''
         required: false
-        example: false
+        example: true
         type: boolean
         enumValues: []
         exampleWasSpecified: false
@@ -3906,16 +4098,16 @@ endpoints:
         nullable: true
         deprecated: false
     cleanBodyParameters:
-      plant_id: 4326.41688
-      hardware_device_id: 4326.41688
-      uv: 16
-      pressure: 4326.41688
-      temperature: 4326.41688
-      humidity: 4326.41688
-      soil_humidity: 17
-      soil_humidity_raw: 16
+      plant_id: 16
+      hardware_device_id: 16
+      uv: 1
+      pressure: 800
+      temperature: -49
+      humidity: 0
+      soil_humidity: 15
+      soil_humidity_raw: 8
       full_water_tank: false
-      waterpump_enabled: false
+      waterpump_enabled: true
       vaporizer_enabled: true
     fileParameters: []
     responses: []
@@ -3955,7 +4147,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - humidity
+          - pressure
         type: 'string[]'
         enumValues:
           - temperature
@@ -3984,7 +4176,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - humidity
+        - pressure
       location_type: indoor
     fileParameters: []
     responses:
@@ -4001,6 +4193,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -4048,7 +4243,7 @@ endpoints:
         description: ''
         required: false
         example:
-          - wind
+          - pressure
         type: 'string[]'
         enumValues:
           - temperature
@@ -4064,7 +4259,7 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       sensors:
-        - wind
+        - pressure
     fileParameters: []
     responses:
       -
@@ -4080,6 +4275,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -4158,6 +4356,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -4233,6 +4434,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -4302,7 +4506,7 @@ endpoints:
       data:
         custom: []
         name: data
-        description: 'Must have at least 1 items.'
+        description: 'Must have at least 1 items. Must not have more than 500 items.'
         required: true
         example:
           - []
@@ -4418,6 +4622,126 @@ endpoints:
     custom: []
     httpMethods:
       - GET
+    uri: 'api/v2/weather-station-official/cities/{id}'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Parte meteorológico y tabla de mareas del día para una ciudad/municipio.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the city.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"success":false,"message":"Unauthenticated"}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          content-language: en
+          vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/v2/weather-station-official/provinces/{id}'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Parte meteorológico y tabla de mareas del día para una provincia.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the province.'
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 401
+        content: '{"success":false,"message":"Unauthenticated"}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          content-language: en
+          vary: 'Accept-Language, Origin'
+          x-content-type-options: nosniff
+          x-frame-options: SAMEORIGIN
+          referrer-policy: strict-origin-when-cross-origin
+          permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
     uri: api/v2/curriculum
     metadata:
       custom: []
@@ -4455,6 +4779,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -4516,6 +4843,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -4575,6 +4905,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -4646,6 +4979,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []
@@ -4710,6 +5046,9 @@ endpoints:
           x-frame-options: SAMEORIGIN
           referrer-policy: strict-origin-when-cross-origin
           permissions-policy: 'accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()'
+          cross-origin-opener-policy: same-origin
+          content-security-policy: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://i.ytimg.com; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https://www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+          cross-origin-resource-policy: cross-origin
         description: null
     responseFields: []
     auth: []

@@ -29,7 +29,7 @@ class AcademicComplementaryOnlineRelationManager extends RelationManager
             TextInput::make('instructor')->maxLength(511)->label('Instructor'),
             TextInput::make('hours')->numeric()->label('Horas'),
             DateTimePicker::make('start_at')->label('Inicio'),
-            DateTimePicker::make('end_at')->label('Fin'),
+            DateTimePicker::make('end_at')->afterOrEqual('start_at')->label('Fin'),
             DateTimePicker::make('expedition_at')->label('Expedición'),
             TextInput::make('credential_id')->maxLength(511)->label('ID credencial'),
             TextInput::make('credential_url')->url()->maxLength(511)->label('URL credencial'),

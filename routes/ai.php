@@ -23,7 +23,7 @@ use Laravel\Mcp\Facades\Mcp;
 |
 */
 
-if (app()->environment('production')) {
+if (! app()->environment('local', 'testing')) {
     return;
 }
 

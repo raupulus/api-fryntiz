@@ -9,6 +9,7 @@ use App\Enums\PrintJobStatusEnum;
 use App\Models\PrinterStack;
 use App\Services\Printers\PrinterService;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ViewAction;
@@ -66,7 +67,7 @@ class PrinterStackRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                TextColumn::make('id')->sortable(),
+                TextColumn::make('id')->label('ID')->sortable(),
                 TextColumn::make('status')
                     ->badge()
                     ->color(fn ($state) => $state instanceof PrintJobStatusEnum ? $state->color() : (PrintJobStatusEnum::tryFrom((string) $state)?->color() ?? 'gray'))
@@ -76,12 +77,16 @@ class PrinterStackRelationManager extends RelationManager
                     ->badge()
                     ->formatStateUsing(fn ($state) => $state instanceof PrintJobFormatEnum ? $state->label() : (PrintJobFormatEnum::tryFrom((string) $state)?->label() ?? $state))
                     ->label('Formato'),
-                TextColumn::make('note')->limit(35)->searchable()->label('Nota'),
-                IconColumn::make('is_favorite')->boolean()->label('Fav'),
+                TextColumn::make('note')
+                    ->limit(35)
+                    ->tooltip(fn (?string $state): ?string => $state)
+                    ->searchable()
+                    ->label('Nota'),
+                IconColumn::make('is_favorite')->boolean()->toggleable(isToggledHiddenByDefault: true)->label('Favorito'),
                 TextColumn::make('priority')->sortable()->label('Prioridad'),
-                TextColumn::make('print_count')->numeric()->sortable()->label('Impresiones'),
-                TextColumn::make('attempts')->numeric()->sortable()->label('Intentos'),
-                TextColumn::make('user.name')->label('Usuario')->toggleable(),
+                TextColumn::make('print_count')->numeric()->sortable()->toggleable(isToggledHiddenByDefault: true)->label('Impresiones'),
+                TextColumn::make('attempts')->numeric()->sortable()->toggleable(isToggledHiddenByDefault: true)->label('Intentos'),
+                TextColumn::make('user.name')->label('Usuario')->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')->dateTime('d/m/Y H:i')->sortable()->label('Encolado'),
                 TextColumn::make('printed_at')->dateTime('d/m/Y H:i')->sortable()->toggleable(isToggledHiddenByDefault: true)->label('Impreso'),
             ])
@@ -103,45 +108,50 @@ class PrinterStackRelationManager extends RelationManager
                     }),
             ])
             ->recordActions([
-                ViewAction::make(),
-                Action::make('reprint')
-                    ->label('Reimprimir')
-                    ->icon(Heroicon::OutlinedArrowPath)
-                    ->action(function (PrinterStack $record, PrinterService $service) {
-                        $service->reprintJob($record, null, auth()->user());
-                        Notification::make()
-                            ->title('Trabajo reencolado para reimpresión')
-                            ->success()
-                            ->send();
-                    }),
-                Action::make('retry')
-                    ->label('Reintentar')
-                    ->icon(Heroicon::OutlinedArrowUturnLeft)
-                    ->color('warning')
-                    ->visible(fn (PrinterStack $record) => $record->status === PrintJobStatusEnum::Failed)
-                    ->action(function (PrinterStack $record) {
-                        $record->update([
-                            'status' => PrintJobStatusEnum::Pending,
-                            'error_message' => null,
-                        ]);
-                        Notification::make()
-                            ->title('Trabajo restablecido a pendiente')
-                            ->info()
-                            ->send();
-                    }),
-                Action::make('cancel')
-                    ->label('Cancelar')
-                    ->icon(Heroicon::OutlinedXCircle)
-                    ->color('danger')
-                    ->visible(fn (PrinterStack $record) => $record->status === PrintJobStatusEnum::Pending)
-                    ->action(function (PrinterStack $record, PrinterService $service) {
-                        $service->cancelJob($record);
-                        Notification::make()
-                            ->title('Trabajo cancelado')
-                            ->warning()
-                            ->send();
-                    }),
-                DeleteAction::make(),
+                ActionGroup::make([
+                    ViewAction::make(),
+                    Action::make('reprint')
+                        ->label('Reimprimir')
+                        ->icon(Heroicon::OutlinedArrowPath)
+                        ->action(function (PrinterStack $record, PrinterService $service) {
+                            $service->reprintJob($record, null, auth()->user());
+                            Notification::make()
+                                ->title('Trabajo reencolado para reimpresión')
+                                ->success()
+                                ->send();
+                        }),
+                    Action::make('retry')
+                        ->label('Reintentar')
+                        ->icon(Heroicon::OutlinedArrowUturnLeft)
+                        ->color('warning')
+                        ->visible(fn (PrinterStack $record) => $record->status === PrintJobStatusEnum::Failed)
+                        ->action(function (PrinterStack $record) {
+                            $record->update([
+                                'status' => PrintJobStatusEnum::Pending,
+                                'error_message' => null,
+                            ]);
+                            Notification::make()
+                                ->title('Trabajo restablecido a pendiente')
+                                ->info()
+                                ->send();
+                        }),
+                    Action::make('cancel')
+                        ->label('Cancelar')
+                        ->icon(Heroicon::OutlinedXCircle)
+                        ->color('danger')
+                        ->visible(fn (PrinterStack $record) => $record->status === PrintJobStatusEnum::Pending)
+                        ->requiresConfirmation()
+                        ->modalHeading('¿Cancelar trabajo de impresión?')
+                        ->modalDescription('El trabajo saldrá de la cola pendiente y no se imprimirá.')
+                        ->action(function (PrinterStack $record, PrinterService $service) {
+                            $service->cancelJob($record);
+                            Notification::make()
+                                ->title('Trabajo cancelado')
+                                ->warning()
+                                ->send();
+                        }),
+                    DeleteAction::make(),
+                ]),
             ]);
     }
 }

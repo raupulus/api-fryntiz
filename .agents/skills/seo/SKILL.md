@@ -4,7 +4,7 @@ description: >-
   SEO técnico y on-page de Api Raupulus (CMS multi-plataforma con Laravel). Cárgala
   SIEMPRE que el trabajo toque metadatos/SEO: el modelo ContentSeo y sus campos
   (description, keywords, robots, og_*, twitter_*), las meta del layout en
-  resources/views/layouts/head.blade.php, el sitemap (spatie/laravel-sitemap,
+  resources/views/layouts/app.blade.php, el sitemap (spatie/laravel-sitemap,
   comando sitemap:generate), datos estructurados JSON-LD/schema.org, canonicals,
   hreflang/multi-idioma, o cuando se hable de posicionamiento, rich snippets,
   indexación o "por qué no aparezco en Google". Úsala ante "SEO", "meta tags",
@@ -35,16 +35,14 @@ Reglas:
 
 ## Meta tags en la vista
 
-El `<head>` se compone en `resources/views/layouts/head.blade.php`
-(y `layouts/app.blade.php`). Cada página debe emitir:
+El `<head>` se compone en `resources/views/layouts/app.blade.php` (no existe `head.blade.php` separado). Cada página debe emitir:
 
 - `title` único y `meta name="description"` (desde `ContentSeo` cuando exista).
-- **Open Graph**: `og:title`, `og:type`, `og:description`, `og:image`,
-  `og:url` — alimentados por los campos `og_*` de `ContentSeo`.
-- **Twitter Card**: `twitter:card`, `twitter:creator` desde los campos `twitter_*`.
-- `meta name="robots"` desde `ContentSeo.robots` (respeta noindex cuando aplique).
-- **Canonical** correcto por plataforma/slug (el CMS es multi-plataforma: la URL
-  canónica depende de `platformSlug` + `contentSlug`).
+- **Open Graph**: `og:title`, `og:type`, `og:description`, `og:image`, `og:image:alt`, `og:locale`,
+  `og:url` — con imagen por defecto (`images/social-thumbnail.jpg`) cuando no se defina `@section('rs-image')`.
+- **Twitter Card**: `twitter:card`, `twitter:title`, `twitter:description`, `twitter:image`, `twitter:creator`.
+- `meta name="robots"` con `noindex, nofollow` (mediante `@section('noindex', '1')`) en páginas privadas/error, **omitiendo `<link rel="canonical">` cuando hay `noindex`**.
+- **Canonical** y JSON-LD (`@stack('json-ld')`) en páginas públicas indexables (incluido `/smartplant/{slug}` con redirección 301 desde el ID numérico).
 
 ## Sitemap
 

@@ -97,16 +97,50 @@ class ContentBlockValidator
         }
 
         return match ($type) {
-            'image' => $this->filled($data['file']['url'] ?? null) ? null : 'no tiene fichero. Quítalo o vuelve a subir la imagen.',
-            'attaches' => $this->filled($data['file']['url'] ?? null) ? null : 'no tiene fichero. Quítalo o vuelve a subir el fichero.',
-            'embed' => $this->filled($data['embed'] ?? $data['source'] ?? null) ? null : 'no tiene la dirección del vídeo. Quítalo o vuelve a pegar el enlace.',
-            'linkTool' => $this->filled($data['link'] ?? null) ? null : 'no tiene enlace. Quítalo o vuelve a pegar la dirección.',
+            'image' => $this->urlProblem($data['file']['url'] ?? null, 'no tiene fichero. Quítalo o vuelve a subir la imagen.', allowRelative: true),
+            'attaches' => $this->urlProblem($data['file']['url'] ?? null, 'no tiene fichero. Quítalo o vuelve a subir el fichero.', allowRelative: true),
+            'embed' => $this->urlProblem($data['embed'] ?? $data['source'] ?? null, 'no tiene la dirección del vídeo. Quítalo o vuelve a pegar el enlace.', allowRelative: false),
+            'linkTool' => $this->urlProblem($data['link'] ?? null, 'no tiene enlace. Quítalo o vuelve a pegar la dirección.', allowRelative: true),
             'table' => $this->hasRows($data['content'] ?? null) ? null : 'no tiene filas. Quítala o añade alguna.',
             'list', 'checklist' => is_array($data['items'] ?? null) && $data['items'] !== [] ? null : 'no tiene elementos. Quítala o escribe alguno.',
             'code' => $this->filled($data['code'] ?? null) ? null : 'no tiene código. Quítalo o escribe alguno.',
             'header' => $this->filled(strip_tags((string) (is_string($data['text'] ?? null) ? $data['text'] : ''))) ? null : 'no tiene texto. Quítalo o escribe el título.',
             default => null,
         };
+    }
+
+    private function urlProblem(mixed $value, string $emptyMessage, bool $allowRelative): ?string
+    {
+        if (! $this->filled($value)) {
+            return $emptyMessage;
+        }
+
+        if (! self::isSafeUrl((string) $value, $allowRelative)) {
+            return 'usa un protocolo de dirección no permitido (solo se admiten http:// o https://).';
+        }
+
+        return null;
+    }
+
+    /**
+     * Comprueba que una URL usa un esquema seguro (http/https, o ruta relativa
+     * interna cuando se permite), rechazando javascript:, data: o vbscript:.
+     */
+    public static function isSafeUrl(string $url, bool $allowRelative = true): bool
+    {
+        $trimmed = trim($url);
+
+        if ($trimmed === '') {
+            return false;
+        }
+
+        if ($allowRelative && str_starts_with($trimmed, '/') && ! str_starts_with($trimmed, '//')) {
+            return true;
+        }
+
+        $scheme = parse_url($trimmed, PHP_URL_SCHEME);
+
+        return is_string($scheme) && in_array(strtolower($scheme), ['http', 'https'], true);
     }
 
     private function filled(mixed $value): bool

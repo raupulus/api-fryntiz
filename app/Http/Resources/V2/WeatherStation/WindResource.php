@@ -18,10 +18,10 @@ class WindResource extends JsonResource
         return [
             'id' => $this->id,
             'hardware_device_id' => $this->hardware_device_id,
-            'speed' => $this->speed,
-            'average' => $this->average,
-            'min' => $this->min,
-            'max' => $this->max,
+            'speed' => $this->speed !== null ? (float) $this->speed : null,
+            'average' => $this->average !== null ? (float) $this->average : null,
+            'min' => $this->min !== null ? (float) $this->min : null,
+            'max' => $this->max !== null ? (float) $this->max : null,
             'created_at' => $this->created_at?->toISOString(),
         ];
     }

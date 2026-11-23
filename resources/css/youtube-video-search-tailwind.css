@@ -34,30 +34,34 @@
   position: fixed;
   top: 50%;
   right: 50%;
-  transform: translate(50%,-50%);
-  width: 90vw;
+  transform: translate(50%, -50%);
+  width: min(94vw, 1400px);
   max-width: 1400px;
   align-items: center;
-  height: 90vh;
+  height: min(92dvh, 900px);
   background-color: #f8f8f8;
   z-index: 1040;
   border: 2px solid #ada2a2;
+  border-radius: 0.75rem;
   color: #5d5d5d;
+  box-sizing: border-box;
+}
+
+.dark .box-modal-youtube-video-search {
+  background-color: #18181b;
+  border-color: #3f3f46;
+  color: #e4e4e7;
 }
 
 .container-modal-youtube-video-search {
   display: grid;
   width: 100%;
   height: 100%;
-  margin:auto;
-  padding: 1.3rem;
-  grid-template-rows: 200px auto 150px;
-  /* Era `overflow-x: scroll`, heredado del original: fuerza una barra de
-     desplazamiento horizontal permanente aunque nunca haya nada que
-     desbordar a los lados, y se veía como una franja blanca fea justo
-     encima de "Página Anterior/Siguiente". El contenido que sí puede crecer
-     (la lista de vídeos) ya tiene su propio scroll vertical más abajo. */
+  margin: auto;
+  padding: 1rem;
+  grid-template-rows: auto minmax(0, 1fr) auto;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .header-modal-youtube-video-search {
@@ -101,34 +105,40 @@
 }
 
 .title-modal-youtube-video-search {
-  font-size: 2.4rem;
+  font-size: clamp(1.15rem, 3vw, 2rem);
   font-weight: bold;
   text-align: center;
   display: block;
+  padding-top: 2.5rem;
 }
 
 .row-search-modal-youtube-video-search {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  width: 90%;
-  margin: 1.3rem auto;
+  width: 100%;
+  max-width: 44rem;
+  margin: 0.75rem auto 1rem;
 }
 
 .input-modal-youtube-video-search {
   display: block;
   flex: 1;
+  min-width: 0;
   margin: 0;
-  padding: 0.3rem;
+  padding: 0.45rem 0.65rem;
   border-radius: 7px;
   text-align: center;
   font-size: 1rem;
-  /* Preflight de Tailwind: sin esto el input queda con fondo transparente
-     y sin borde, invisible sobre el fondo del modal (ver cabecera del
-     fichero). Bootstrap nunca lo pedía porque no tocaba estos valores. */
   border: 1px solid #ada2a2;
   background-color: #fff;
   color: #5d5d5d;
+}
+
+.dark .input-modal-youtube-video-search {
+  border-color: #3f3f46;
+  background-color: #27272a;
+  color: #f4f4f5;
 }
 
 .input-modal-youtube-video-search:focus {
@@ -236,22 +246,41 @@
 .modal-youtube-video-search-card-container {
   display: grid;
   margin: 0.3rem 0;
-  padding: 0.3rem;
-  grid-template-columns: auto 1fr auto;
+  padding: 0.5rem;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 1rem;
   background-color: #c9d0e647;
-  border: 2px solid #ada2a2;
+  border: 1px solid #ada2a2;
   align-items: center;
   border-radius: 7px;
   box-shadow: 1px 1px 1px #ada2a2;
 }
 
+.dark .modal-youtube-video-search-card-container {
+  background-color: #27272a;
+  border-color: #3f3f46;
+  box-shadow: none;
+}
+
+@media (max-width: 40rem) {
+  .modal-youtube-video-search-card-container {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+    gap: 0.65rem;
+  }
+}
+
 .modal-youtube-video-search-card-title {
   display: block;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: bold;
   color: #3272b8;
   text-align: center;
+}
+
+.dark .modal-youtube-video-search-card-title {
+  color: #38bdf8;
 }
 
 
@@ -309,13 +338,15 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  flex: 1 1 280px;
-  min-width: 280px;
+  flex: 1 1 16rem;
+  min-width: 0;
+  width: 100%;
 }
 
 .field-preview-youtube-video-search {
-  flex: 2 1 400px;
-  min-width: 300px;
+  flex: 2 1 20rem;
+  min-width: 0;
+  width: 100%;
 }
 
 .field-input-youtube-video-search {
@@ -330,12 +361,10 @@
   box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  .field-input-youtube-video-search {
-    border-color: #374151;
-    background-color: #111827;
-    color: #f9fafb;
-  }
+.dark .field-input-youtube-video-search {
+  border-color: #374151;
+  background-color: #111827;
+  color: #f9fafb;
 }
 
 .field-btn-youtube-video-search {
@@ -458,11 +487,9 @@
   box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  .confirm-dialog-box-youtube-video-search {
-    background-color: #111827;
-    border-color: #374151;
-  }
+.dark .confirm-dialog-box-youtube-video-search {
+  background-color: #111827;
+  border-color: #374151;
 }
 
 .confirm-dialog-title-youtube-video-search {
@@ -480,9 +507,12 @@
   margin-bottom: 1.5rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  .confirm-dialog-title-youtube-video-search { color: #f9fafb; }
-  .confirm-dialog-text-youtube-video-search { color: #9ca3af; }
+.dark .confirm-dialog-title-youtube-video-search {
+  color: #f9fafb;
+}
+
+.dark .confirm-dialog-text-youtube-video-search {
+  color: #9ca3af;
 }
 
 .confirm-dialog-actions-youtube-video-search {
@@ -500,13 +530,11 @@
   background-color: #e5e7eb;
 }
 
-@media (prefers-color-scheme: dark) {
-  .field-btn-secondary-youtube-video-search {
-    background-color: #1f2937;
-    color: #e5e7eb;
-  }
+.dark .field-btn-secondary-youtube-video-search {
+  background-color: #1f2937;
+  color: #e5e7eb;
+}
 
-  .field-btn-secondary-youtube-video-search:hover {
-    background-color: #374151;
-  }
+.dark .field-btn-secondary-youtube-video-search:hover {
+  background-color: #374151;
 }

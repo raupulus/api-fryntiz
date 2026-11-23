@@ -110,6 +110,7 @@ class ImagesRelationManager extends RelationManager
 
                     Split::make([
                         TextColumn::make('order_label')
+                            ->label('Posición')
                             ->badge()
                             ->state(function (GalleryImage $record): string {
                                 return $record->order === 1

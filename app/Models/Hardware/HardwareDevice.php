@@ -11,6 +11,7 @@ use App\Models\BaseModels\BaseModel;
 use App\Models\File;
 use App\Models\Referred\ReferredThing;
 use App\Models\User;
+use App\Support\Auth\TokenAbilities;
 use App\Traits\BelongsToUser;
 use App\Traits\HasGalleries;
 use Database\Factories\HardwareDeviceFactory;
@@ -187,6 +188,18 @@ class HardwareDevice extends BaseModel
 
                 $device->slug = $slug;
             }
+        });
+
+        static::deleting(static function (HardwareDevice $device): void {
+            if ($device->user_id === null) {
+                return;
+            }
+
+            ApiToken::query()
+                ->where('tokenable_type', User::class)
+                ->where('tokenable_id', $device->user_id)
+                ->whereJsonContains('abilities', TokenAbilities::forDevice($device))
+                ->delete();
         });
     }
 

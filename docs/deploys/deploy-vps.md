@@ -437,24 +437,44 @@ un proceso de PHP de larga vida y un `git pull` no le llega.
 
 ---
 
-## 5. Backups
+## 5. Backups (Estrategia 3-2-1 y ensayo de restauración)
 
-### Base de datos
+> ⚠️ **Regla crítica:** nunca respaldes únicamente `storage/app/public`. El cifrado de secretos de plataforma (`platforms.*_token`), claves de proveedores IA y archivos privados de usuario dependen de **`storage/app/private`** y de **`APP_KEY` (`.env`)**.
+
+### Base de datos (formato custom `pg_dump -Fc`)
 
 ```bash
 # Docker
-docker compose exec postgres pg_dump -U postgres raupulus_api | gzip > backup-$(date +%F).sql.gz
+docker compose exec -T postgres pg_dump -U postgres -Fc raupulus_api > "backup-db-$(date +%F).dump"
 
 # Bare-metal
-sudo -u postgres pg_dump raupulus_api | gzip > backup-$(date +%F).sql.gz
+sudo -u postgres pg_dump -Fc raupulus_api > "backup-db-$(date +%F).dump"
 ```
 
-Recomendado: cron diario que mande el `.sql.gz` a almacenamiento externo (S3, Backblaze B2, etc).
-
-### Storage
+### Storage completo (`public/` y `private/`) y custodia cifrada de `.env`
 
 ```bash
-tar czf storage-$(date +%F).tgz storage/app/public
+# Incluye storage/app/public Y storage/app/private (excluye temporales de Livewire)
+tar czf "storage-$(date +%F).tgz" --exclude='storage/app/livewire-tmp' storage/app
+
+# Cifrar copia del .env (APP_KEY + credenciales) antes de enviarla fuera del VPS
+gpg --symmetric --cipher-algo AES256 -o "env-$(date +%F).gpg" .env
+```
+
+### Automatización, retención (`7d / 4w / 6m`) y almacenamiento externo (3-2-1)
+
+- Programar un cron diario (`03:30`) que genere el `.dump`, el `.tgz` de `storage/app` y la copia `.env.gpg`, los suba a almacenamiento externo (S3 / Backblaze B2 / NAS cifrado con `rclone` o `restic`) y aplique retención: **7 diarios · 4 semanales · 6 mensuales**.
+- No almacenar las credenciales del destino de backup dentro del mismo directorio respaldado sin cifrar.
+
+### Ensayo mensual de restauración (obligatorio)
+
+Un backup que nunca se ha restaurado no cuenta como backup. Verificar mensualmente contra una base temporal y comprobar que los datos cifrados se leen con el `.env` respaldado:
+
+```bash
+createdb -U postgres raupulus_restore_test
+pg_restore -U postgres -d raupulus_restore_test --no-owner "backup-db-$(date +%F).dump"
+psql -U postgres -d raupulus_restore_test -c "SELECT COUNT(*) FROM users;"
+dropdb -U postgres raupulus_restore_test
 ```
 
 ---
@@ -497,4 +517,4 @@ Estrategia mínima:
 - [WebSockets en VPS](../info/websockets.md)
 - [Configuración de autenticación](../info/auth.md)
 
-> Creado: 2026-05-26 · Última revisión: 2026-10-17
+> Creado: 2026-05-26 · Última revisión: 2026-11-23

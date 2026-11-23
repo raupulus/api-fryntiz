@@ -75,7 +75,7 @@ abstract class HttpTextProvider implements AiTextProvider
             if ($response->failed()) {
                 [$message, $code] = $this->apiError($response);
 
-                Log::warning("{$label}: error de la API", ['status' => $response->status(), 'code' => $code, 'error' => $message]);
+                Log::warning("{$label}: API error", ['status' => $response->status(), 'code' => $code, 'error' => $message]);
                 $callback('error', $this->errorMessage($provider, $response->status(), $message, $code));
 
                 return;
@@ -83,7 +83,7 @@ abstract class HttpTextProvider implements AiTextProvider
 
             $this->readEvents($provider, $response, $callback);
         } catch (Throwable $e) {
-            Log::error("{$label}: fallo de conexión: ".$e->getMessage(), ['exception' => $e]);
+            Log::error("{$label}: connection failure: ".$e->getMessage(), ['exception' => $e]);
             $callback('error', "No se ha podido conectar con {$label}. Vuelve a intentarlo en un momento.");
         }
     }

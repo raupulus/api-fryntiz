@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Error 401 · No has iniciado sesión')
+@section('noindex', '1')
 
 @section('content')
     @include('errors._page', [

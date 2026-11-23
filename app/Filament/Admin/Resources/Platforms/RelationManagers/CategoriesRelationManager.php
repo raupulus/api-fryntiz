@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Platforms\RelationManagers;
 
 use App\Models\Category;
+use App\Models\Content\ContentCategory;
 use App\Models\Platform;
 use App\Models\PlatformCategory;
 use Filament\Actions\Action;
@@ -150,7 +151,12 @@ class CategoriesRelationManager extends RelationManager
      */
     private function warning(Collection $records): string
     {
-        $contents = (int) $records->sum(fn (PlatformCategory $record): int => $record->contentCategories()->count());
+        $ids = $records->pluck('id')->all();
+        $contents = $ids === []
+            ? 0
+            : ContentCategory::query()
+                ->whereIn('platform_category_id', $ids)
+                ->count();
 
         return $contents === 0
             ? 'Ningún contenido la tiene marcada.'

@@ -6,6 +6,8 @@ namespace App\Policies;
 
 use App\Models\Content\Content;
 use App\Models\User;
+use App\Policies\Concerns\GuardsAdminAndDeviceAccess;
+use App\Support\Auth\TokenAbilities;
 use Carbon\CarbonInterface;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -30,6 +32,7 @@ use Illuminate\Auth\Access\HandlesAuthorization;
  */
 class ContentPolicy
 {
+    use GuardsAdminAndDeviceAccess;
     use HandlesAuthorization;
 
     /**
@@ -52,7 +55,7 @@ class ContentPolicy
      */
     public function create(User $user): bool
     {
-        return $user->isAdmin() || ($user->isEditor() && $user->platforms()->exists());
+        return $this->isHumanAdmin($user) || ($this->isHumanEditor($user) && $user->platforms()->exists());
     }
 
     /**
@@ -61,7 +64,8 @@ class ContentPolicy
      */
     public function createIn(User $user, ?int $platformId): bool
     {
-        return $user->canManagePlatform($platformId);
+        return ! TokenAbilities::deviceRequest($user)
+            && $user->canManagePlatform($platformId);
     }
 
     public function update(User $user, Content $content): bool
@@ -81,7 +85,7 @@ class ContentPolicy
 
     public function forceDelete(User $user, Content $content): bool
     {
-        return $user->isSuperAdmin();
+        return $this->isHumanSuperAdmin($user);
     }
 
     /**
@@ -124,7 +128,7 @@ class ContentPolicy
     private function reaches(User $user, Content $content): bool
     {
         return $this->owns($user, $content)
-            || ($user->isEditor() && $content->hasContributor($user));
+            || ($this->isHumanEditor($user) && $content->hasContributor($user));
     }
 
     /**
@@ -132,7 +136,15 @@ class ContentPolicy
      */
     private function owns(User $user, Content $content): bool
     {
-        return $user->isAdmin() || $this->isAuthor($user, $content);
+        if (TokenAbilities::deviceRequest($user)) {
+            return false;
+        }
+
+        if ($this->isAuthor($user, $content)) {
+            return true;
+        }
+
+        return $this->adminCanManageOwner($user, $content->author_id !== null ? (int) $content->author_id : null);
     }
 
     /**

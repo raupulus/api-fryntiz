@@ -29,9 +29,8 @@ class ContactSendRequest extends BaseFormRequest
             'email' => ['required', 'email', 'max:255'],
             'subject' => ['required', 'string', 'max:255'],
             'message' => ['required', 'string', 'min:10', 'max:5000'],
-            // Consentimientos: la web los manda, y hay que poder demostrar que
-            // se aceptaron.
-            'privacity' => ['sometimes', 'boolean'],
+            // Consentimientos RGPD: obligatorio aceptar privacidad; opcional aceptar contacto comercial.
+            'privacity' => ['required', 'accepted'],
             'contactme' => ['sometimes', 'boolean'],
             // Campos libres que quiera añadir cada web (teléfono, empresa…).
             'attributes' => ['sometimes', 'array', 'max:20'],

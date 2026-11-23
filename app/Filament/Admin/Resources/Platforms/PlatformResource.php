@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Platforms;
 
 use App\Enums\PlatformColorRoleEnum;
+use App\Enums\UserRoleEnum;
 use App\Filament\Admin\Resources\Platforms\Pages\CreatePlatform;
 use App\Filament\Admin\Resources\Platforms\Pages\EditPlatform;
 use App\Filament\Admin\Resources\Platforms\Pages\ListPlatforms;
@@ -19,7 +20,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\ColorPicker;
-use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -30,6 +30,7 @@ use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
 class PlatformResource extends Resource
@@ -76,7 +77,6 @@ class PlatformResource extends Resource
                     ->unique(ignoreRecord: true)->rule('alpha_dash')->label('Slug'),
                 Textarea::make('description')->maxLength(1023)->rows(3)
                     ->columnSpanFull()->label('Descripción'),
-                Hidden::make('user_id')->default(fn () => auth()->id()),
             ])->columnSpanFull(),
 
             Section::make('Web y enlaces')->columns(2)->schema([
@@ -115,9 +115,17 @@ class PlatformResource extends Resource
             ]),
             Section::make('Redes sociales')->columns(2)->collapsed()->schema([
                 TextInput::make('twitter')->maxLength(255)->prefix('@')->label('Twitter'),
-                TextInput::make('twitter_token')->password()->revealable()->maxLength(511)->label('Twitter token'),
+                TextInput::make('twitter_token')->password()->revealable()->maxLength(511)
+                    ->dehydrated(fn (?string $state): bool => filled($state))
+                    ->formatStateUsing(fn (): string => '')
+                    ->placeholder(fn (?Platform $record): ?string => filled($record?->getRawOriginal('twitter_token')) ? '•••••••• (guardado — dejar vacío para conservar)' : null)
+                    ->label('Twitter token'),
                 TextInput::make('mastodon')->maxLength(255)->label('Mastodon'),
-                TextInput::make('mastodon_token')->password()->revealable()->maxLength(255)->label('Mastodon token'),
+                TextInput::make('mastodon_token')->password()->revealable()->maxLength(255)
+                    ->dehydrated(fn (?string $state): bool => filled($state))
+                    ->formatStateUsing(fn (): string => '')
+                    ->placeholder(fn (?Platform $record): ?string => filled($record?->getRawOriginal('mastodon_token')) ? '•••••••• (guardado — dejar vacío para conservar)' : null)
+                    ->label('Mastodon token'),
                 TextInput::make('twitch')->maxLength(255)->label('Twitch'),
                 TextInput::make('tiktok')->maxLength(255)->label('TikTok'),
                 TextInput::make('instagram')->maxLength(255)->label('Instagram'),
@@ -130,9 +138,9 @@ class PlatformResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('id')->label('ID')->sortable()->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('title')->searchable()->sortable()->label('Título'),
+                TextColumn::make('title')->searchable()->sortable()->limit(40)->tooltip(fn (?string $state): ?string => $state)->label('Título'),
                 TextColumn::make('slug')->searchable()->toggleable()->label('Slug'),
-                TextColumn::make('domain')->url(fn ($state) => $state, true)->toggleable()->label('Dominio'),
+                TextColumn::make('domain')->url(fn ($state) => $state, true)->limit(35)->tooltip(fn (?string $state): ?string => $state)->toggleable()->label('Dominio'),
                 TextColumn::make('user.name')->toggleable()->label('Usuario'),
                 TextColumn::make('created_at')->label('Creado el')->dateTime('d/m/Y')->sortable()->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -141,6 +149,32 @@ class PlatformResource extends Resource
                 BulkActionGroup::make([DeleteBulkAction::make()]),
             ])
             ->defaultSort('title');
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = auth()->user();
+
+        if ($user === null) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if ($user->isSuperAdmin()) {
+            return $query;
+        }
+
+        if ($user->isAdmin()) {
+            return $query->whereDoesntHave(
+                'user',
+                fn (Builder $q) => $q->where('role_id', UserRoleEnum::SuperAdmin->value)
+            );
+        }
+
+        return $query->whereHas(
+            'users',
+            fn (Builder $q) => $q->whereKey($user->id)
+        );
     }
 
     public static function getRelations(): array

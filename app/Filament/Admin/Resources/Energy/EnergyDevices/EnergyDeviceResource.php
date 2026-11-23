@@ -47,6 +47,10 @@ class EnergyDeviceResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Aparatos';
 
+    protected static ?string $recordTitleAttribute = 'name';
+
+    protected static ?string $slug = 'devices';
+
     /**
      * @param  Builder<covariant \Illuminate\Database\Eloquent\Model>  $query
      * @return Builder<covariant \Illuminate\Database\Eloquent\Model>
@@ -74,6 +78,8 @@ class EnergyDeviceResource extends Resource
             ->columns([
                 TextColumn::make('name')
                     ->label('Aparato')
+                    ->limit(35)
+                    ->tooltip(fn (?string $state): ?string => $state)
                     ->description(fn (HardwareDevice $record): string => (string) $record->getRelationValue('type')?->name)
                     ->searchable()
                     ->sortable(),

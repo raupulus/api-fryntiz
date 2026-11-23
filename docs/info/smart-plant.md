@@ -152,6 +152,10 @@ toda la tabla —filtrados por `created_at >=` el inicio de cada ventana—, no
 sobre las últimas 50 lecturas que ya carga la vista: no bastarían para cubrir
 un mes según la cadencia de subida del dispositivo.
 
+### Imagen por defecto (WebP)
+
+La migración `2026_11_23_000008_fix_smartplant_default_image_to_webp` fija el default de `smartplant_plants.image` a `smartplant/default.webp` y normaliza las filas legadas que conservaban `smartplant/default.jpg` (inexistente en disco). Además, `SmartPlantPlant::getUrlImageAttribute()` redirige cualquier cadena vacía o `smartplant/default.jpg` a `storage/smartplant/default.webp`.
+
 ### Comando de debug
 
 ```bash
@@ -160,4 +164,4 @@ php artisan debug:seed-smartplant --plants=5 --registers=50
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-09-13
+> Creado: 2026-05-25 · Última revisión: 2026-11-23

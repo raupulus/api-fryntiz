@@ -10,7 +10,7 @@
             Email: <a href="mailto:{{ $mail->email }}">{{ $mail->email }}</a>
         </p>
         <p>
-            Telefono: {{ $mail->phone }}
+            Teléfono: {{ $mail->phone }}
         </p>
         <p>{{ $mail->body }}</p>
     </div>

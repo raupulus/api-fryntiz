@@ -115,20 +115,20 @@ class GalleryResource extends Resource
                                     $coverFile = $firstImage ? $firstImage->image : $record->image;
 
                                     if (! $coverFile) {
-                                        return new HtmlString('<p class="text-sm text-gray-400">Sin fotos todavía. Sube fotos en la sección inferior para fijar la portada automáticamente.</p>');
+                                        return new HtmlString('<p class="gl-cover-preview__empty">Sin fotos todavía. Sube fotos en la sección inferior para fijar la portada automáticamente.</p>');
                                     }
 
                                     $url = $coverFile->thumbnail('medium') ?? $coverFile->url;
                                     $caption = $firstImage?->caption ? ' · '.e($firstImage->caption) : '';
 
                                     return new HtmlString(
-                                        '<div class="flex items-center gap-4 p-3 rounded-lg bg-gray-900/60 border border-gray-800">
-                                            <img src="'.e($url).'" class="h-20 rounded-md object-cover shadow" style="aspect-ratio: 16/9;" alt="Portada actual" />
-                                            <div class="text-xs text-gray-300 space-y-1">
-                                                <p class="font-semibold text-amber-400">
+                                        '<div class="gl-cover-preview">
+                                            <img src="'.e($url).'" class="gl-cover-preview__img" alt="Portada actual" />
+                                            <div class="gl-cover-preview__copy">
+                                                <p class="gl-cover-preview__title">
                                                     ★ La primera foto de la lista inferior (Posición #1) es siempre la portada'.$caption.'
                                                 </p>
-                                                <p class="text-gray-400">
+                                                <p class="gl-cover-preview__hint">
                                                     Para cambiar la portada, simplemente reordena las fotos arrastrándolas o pulsa «Poner de portada» en la foto deseada en el gestor inferior.
                                                 </p>
                                             </div>
@@ -258,17 +258,22 @@ class GalleryResource extends Resource
                     ->getStateUsing(fn (Gallery $record): ?string => $record->image?->thumbnail('small'))
                     ->square()
                     ->label('Portada'),
-                TextColumn::make('name')->searchable()->sortable()->label('Nombre'),
+                TextColumn::make('name')
+                    ->searchable()
+                    ->sortable()
+                    ->limit(40)
+                    ->tooltip(fn (?string $state): ?string => $state)
+                    ->label('Nombre'),
                 TextColumn::make('aspect_ratio')
                     ->badge()
                     ->formatStateUsing(fn ($state) => $state instanceof GalleryAspectRatioEnum ? $state->value : ($state ?? '16:9'))
                     ->color('info')
                     ->label('Formato'),
                 TextColumn::make('images_count')->counts('images')->label('Fotos'),
-                TextColumn::make('contents_count')->counts('contents')->label('Contenidos'),
-                TextColumn::make('hardware_devices_count')->counts('hardwareDevices')->label('Hardware'),
-                TextColumn::make('user.name')->label('Usuario')->searchable(),
-                TextColumn::make('created_at')->dateTime('d/m/Y')->label('Creada')->sortable(),
+                TextColumn::make('contents_count')->counts('contents')->toggleable(isToggledHiddenByDefault: true)->label('Contenidos'),
+                TextColumn::make('hardware_devices_count')->counts('hardwareDevices')->toggleable(isToggledHiddenByDefault: true)->label('Hardware'),
+                TextColumn::make('user.name')->label('Usuario')->searchable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('created_at')->dateTime('d/m/Y')->label('Creada')->sortable()->toggleable(),
             ])
             ->recordActions([EditAction::make()])
             ->toolbarActions([

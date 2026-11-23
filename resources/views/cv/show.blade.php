@@ -1,14 +1,34 @@
 @extends('layouts.app')
 
 @section('title', $cv->title.' | Currículum | Api Raupulus')
-@section('description', \App\Helpers\HtmlHelper::toMetaDescription($cv->presentation) ?: 'Currículum de Raúl Caro Pastorino: '.$cv->title)
+@section('description', \App\Helpers\HtmlHelper::toMetaDescription($cv->presentation) ?: 'Currículum profesional de Raúl Caro Pastorino (@raupulus): '.$cv->title.', experiencia, habilidades técnicas y proyectos.')
 @section('keywords', 'curriculum, cv, raupulus, Raúl Caro Pastorino, '.$cv->title.', desarrollador, programador')
 
-@section('rs-title', $cv->title.' - Currículum')
+@section('rs-title', $cv->title.' | Currículum | Api Raupulus')
 @section('rs-sitename', 'Api Raupulus')
 @section('rs-description', \App\Helpers\HtmlHelper::toMetaDescription($cv->presentation) ?: 'Currículum de Raúl Caro Pastorino')
 @section('rs-image', $cv->url_image)
 @section('rs-url', route('cv.show', ['slug' => $cv->slug]))
+
+@push('json-ld')
+    @php
+        $cvSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'ProfilePage',
+            'name' => $cv->title.' — Currículum',
+            'url' => route('cv.show', ['slug' => $cv->slug]),
+            'inLanguage' => 'es-ES',
+            'mainEntity' => [
+                '@type' => 'Person',
+                'name' => 'Raúl Caro Pastorino',
+                'alternateName' => 'raupulus',
+                'url' => 'https://raupulus.dev',
+                'jobTitle' => $cv->title,
+            ],
+        ];
+    @endphp
+    <script type="application/ld+json">@json($cvSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG)</script>
+@endpush
 
 @section('content')
     @php
@@ -44,11 +64,11 @@
     @endphp
 
     {{-- Volver y acciones --}}
-    <section class="pt-24 pb-6 bg-surface">
+    <section class="pt-24 pb-6 bg-surface print:hidden">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-wrap items-center justify-between gap-3">
             <a href="{{ route('cv.index') }}"
                class="inline-flex items-center gap-2 px-4 py-2 bg-surface-container rounded-lg text-on-surface hover:bg-surface-container-high transition-colors">
-                <span class="material-symbols-outlined text-sm">arrow_back</span>
+                <span class="material-symbols-outlined text-sm" aria-hidden="true">arrow_back</span>
                 Volver a Currículum
             </a>
 
@@ -68,36 +88,38 @@
 
     <section class="pb-16 bg-surface">
         <div class="max-w-6xl mx-auto px-4 sm:px-6">
-            <article class="bg-surface-container-lowest rounded-xl shadow-xl overflow-clip grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_20rem]">
+            <article class="bg-surface-container-lowest rounded-xl shadow-xl overflow-clip grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_20rem]">
 
                 {{-- Cabecera: nombre, titular y contacto --}}
-                <header class="px-6 pt-8 md:px-10 md:pt-10 md:col-start-1 md:row-start-1">
-                    <h1 class="text-4xl md:text-5xl font-light uppercase tracking-tight text-on-surface">{{ $doc->name() }}</h1>
+                <header class="px-6 pt-8 lg:px-10 lg:pt-10 lg:col-start-1 lg:row-start-1">
+                    <h1 class="text-4xl lg:text-5xl font-light uppercase tracking-tight text-on-surface">{{ $doc->name() }}</h1>
                     <p class="text-lg text-cv-accent mt-2">{{ $doc->headline() }}</p>
 
+                    <address class="not-italic">
                     <ul class="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-2 text-sm text-on-surface">
                         @if($contact['email'])
-                            <li class="flex items-center gap-2 min-w-0"><span class="material-symbols-outlined text-base text-on-surface-variant">mail</span><a href="mailto:{{ $contact['email'] }}" class="underline truncate">{{ $contact['email'] }}</a></li>
+                            <li class="flex items-center gap-2 min-w-0"><span class="material-symbols-outlined text-base text-on-surface-variant" aria-hidden="true">mail</span><a href="mailto:{{ $contact['email'] }}" class="underline truncate py-1 inline-block">{{ $contact['email'] }}</a></li>
                         @endif
                         @if($contact['website'])
-                            <li class="flex items-center gap-2 min-w-0"><span class="material-symbols-outlined text-base text-on-surface-variant">language</span><a href="{{ $contact['website'] }}" target="_blank" rel="noopener" class="underline truncate">{{ $display($contact['website']) }}</a></li>
+                            <li class="flex items-center gap-2 min-w-0"><span class="material-symbols-outlined text-base text-on-surface-variant" aria-hidden="true">language</span><a href="{{ $contact['website'] }}" target="_blank" rel="noopener noreferrer" class="underline truncate py-1 inline-block">{{ $display($contact['website']) }}</a></li>
                         @endif
                         @if($contact['linkedin'])
-                            <li class="flex items-center gap-2 min-w-0"><span class="material-symbols-outlined text-base text-on-surface-variant">link</span><a href="{{ $contact['linkedin'] }}" target="_blank" rel="noopener" class="underline truncate">linkedin.com</a></li>
+                            <li class="flex items-center gap-2 min-w-0"><span class="material-symbols-outlined text-base text-on-surface-variant" aria-hidden="true">link</span><a href="{{ $contact['linkedin'] }}" target="_blank" rel="noopener noreferrer" class="underline truncate py-1 inline-block">linkedin.com</a></li>
                         @endif
                         @if($contact['location'])
-                            <li class="flex items-center gap-2 min-w-0"><span class="material-symbols-outlined text-base text-on-surface-variant">location_on</span>{{ $contact['location'] }}</li>
+                            <li class="flex items-center gap-2 min-w-0"><span class="material-symbols-outlined text-base text-on-surface-variant" aria-hidden="true">location_on</span>{{ $contact['location'] }}</li>
                         @endif
                         @if($contact['details'])
-                            <li class="flex items-center gap-2 min-w-0 lg:col-span-2"><span class="material-symbols-outlined text-base text-on-surface-variant">star</span>{{ implode(' · ', $contact['details']) }}</li>
+                            <li class="flex items-center gap-2 min-w-0 lg:col-span-2"><span class="material-symbols-outlined text-base text-on-surface-variant" aria-hidden="true">star</span>{{ implode(' · ', $contact['details']) }}</li>
                         @endif
                     </ul>
+                    </address>
                 </header>
 
                 {{-- Barra lateral --}}
                 {{-- En pantalla la barra es tan alta como el documento: su contenido acompaña al desplazarse. --}}
-                <aside class="bg-cv-sidebar text-on-cv-sidebar md:col-start-2 md:row-start-1 md:row-span-2 mt-8 md:mt-0">
-                  <div class="md:sticky md:top-20">
+                <aside class="bg-cv-sidebar text-on-cv-sidebar lg:col-start-2 lg:row-start-1 lg:row-span-2 mt-8 lg:mt-0">
+                  <div class="lg:sticky lg:top-20">
                     <div class="px-6 pt-8 pb-6">
                         <img src="{{ $cv->url_image }}" alt="{{ $doc->name() }}" class="w-28 h-28 mx-auto object-contain">
 
@@ -135,7 +157,7 @@
                                 @foreach($repositories as $repository)
                                     <li>
                                         <span class="block text-xs font-bold uppercase tracking-wide">{{ $repository['title'] }}</span>
-                                        <a href="{{ $repository['url'] }}" target="_blank" rel="noopener" class="hover:underline">{{ $display($repository['url']) }}</a>
+                                        <a href="{{ $repository['url'] }}" target="_blank" rel="noopener noreferrer" class="hover:underline py-1 inline-block">{{ $display($repository['url']) }}</a>
                                     </li>
                                 @endforeach
                             </ul>
@@ -146,16 +168,16 @@
                         @if($qr)
                             <div class="bg-cv-sidebar-footer text-center py-5">
                                 <img src="{{ $qr }}" alt="Código QR con el enlace a este currículum" class="w-28 h-28 mx-auto bg-white p-1">
-                                <p class="mt-2 inline-flex items-center gap-1"><span class="material-symbols-outlined text-base">language</span>CV Online</p>
+                                <p class="mt-2 inline-flex items-center gap-1"><span class="material-symbols-outlined text-base" aria-hidden="true">language</span>CV Online</p>
                             </div>
                         @endif
                         @if($contact['linkedin'] || $contact['github'])
                             <div class="grid grid-cols-2 text-sm font-bold text-white">
                                 @if($contact['linkedin'])
-                                    <a href="{{ $contact['linkedin'] }}" target="_blank" rel="noopener" class="bg-cv-linkedin py-3 text-center hover:opacity-90">LinkedIn</a>
+                                    <a href="{{ $contact['linkedin'] }}" target="_blank" rel="noopener noreferrer" class="bg-cv-linkedin py-3 text-center hover:opacity-90">LinkedIn</a>
                                 @endif
                                 @if($contact['github'])
-                                    <a href="{{ $contact['github'] }}" target="_blank" rel="noopener" class="bg-cv-github py-3 text-center hover:opacity-90">GitHub</a>
+                                    <a href="{{ $contact['github'] }}" target="_blank" rel="noopener noreferrer" class="bg-cv-github py-3 text-center hover:opacity-90">GitHub</a>
                                 @endif
                             </div>
                         @endif
@@ -164,7 +186,7 @@
                 </aside>
 
                 {{-- Columna principal --}}
-                <div class="px-6 pb-10 md:px-10 md:col-start-1 md:row-start-2">
+                <div class="px-6 pb-10 lg:px-10 lg:col-start-1 lg:row-start-2">
                     @if(! $doc->inSidebar('profile') && filled($doc->profile()))
                         <h2 class="mt-8 pb-1 mb-4 border-b border-outline-variant text-2xl font-light uppercase text-on-surface">Perfil profesional</h2>
                         <div class="space-y-3 text-sm text-on-surface sm:pl-2">
@@ -197,7 +219,7 @@
                                             @if($sub !== '')
                                                 <p class="text-xs text-on-surface-variant">
                                                     @if($row['credential_url'])
-                                                        <a href="{{ $row['credential_url'] }}" target="_blank" rel="noopener" class="text-cv-accent hover:underline">{{ $sub }}</a>
+                                                        <a href="{{ $row['credential_url'] }}" target="_blank" rel="noopener noreferrer" class="text-cv-accent hover:underline py-0.5 inline-block">{{ $sub }}</a>
                                                     @else
                                                         {{ $sub }}
                                                     @endif

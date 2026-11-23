@@ -78,9 +78,9 @@ class CheckSilentDevicesCommand extends Command
             return self::SUCCESS;
         }
 
-        Log::warning('IoT: hay dispositivos que han dejado de reportar', [
-            'horas' => $hours,
-            'dispositivos' => $silent->map(fn (HardwareDevice $d) => [
+        Log::warning('IoT: devices have stopped reporting', [
+            'hours' => $hours,
+            'devices' => $silent->map(fn (HardwareDevice $d) => [
                 'id' => $d->id,
                 'name' => $d->name,
                 'last_seen_at' => $d->last_seen_at?->toIso8601String(),

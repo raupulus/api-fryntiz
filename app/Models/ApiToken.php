@@ -49,7 +49,7 @@ class ApiToken extends PersonalAccessToken
 
     public function getUserNameAttribute(): ?string
     {
-        if ($this->tokenable_type === User::class || $this->tokenable_type === User::class) {
+        if ($this->tokenable_type === User::class) {
             return optional(User::find($this->tokenable_id))->name;
         }
 

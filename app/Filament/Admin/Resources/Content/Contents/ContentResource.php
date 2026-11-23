@@ -188,7 +188,7 @@ class ContentResource extends Resource
                             ? 'Un contenido publicado no cambia de estado. Para retirarlo de las webs, desmarca «Activo» en Visibilidad; para quitarlo del todo, elimínalo.'
                             : 'Al publicar se pone la fecha de publicación y se marca «Activo».'),
                     Select::make('type_id')
-                        ->relationship('type', 'name')->required()->label('Tipo'),
+                        ->relationship('type', 'name')->searchable()->preload()->required()->label('Tipo'),
                     Select::make('editor_profile_id')->label('Perfil de editor (IA)')
                         ->options(fn (Get $get): array => self::editorProfileOptions($get('platform_id')))
                         ->in(fn (Get $get): array => array_keys(self::editorProfileOptions($get('platform_id'))))

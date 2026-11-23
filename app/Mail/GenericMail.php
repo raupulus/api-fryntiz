@@ -71,7 +71,7 @@ class GenericMail extends Mailable implements ShouldQueue
     public function build()
     {
         return $this->view($this->view, $this->data)
-            ->to($this->to, $this->from)
+            ->to($this->to)
             ->subject($this->subject)
             ->from(config('mail.from.address'), config('mail.from.name'));
     }

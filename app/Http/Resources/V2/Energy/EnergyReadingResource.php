@@ -44,12 +44,12 @@ class EnergyReadingResource extends JsonResource
             'role' => $this->hardwareEnergy?->role,
 
             'measured' => [
-                'amperage' => $this->redondea('amperage', $this->amperage),
-                'voltage' => $this->redondea('voltage', $this->voltage),
-                'power' => $this->redondea('power', $this->power),
+                'amperage' => $this->roundField('amperage', $this->amperage),
+                'voltage' => $this->roundField('voltage', $this->voltage),
+                'power' => $this->roundField('power', $this->power),
                 'delta_seconds' => $this->delta_seconds,
-                'temperature' => $this->redondea('temperature', $this->temperature),
-                'battery_voltage' => $this->redondea('battery_voltage', $this->battery_voltage),
+                'temperature' => $this->roundField('temperature', $this->temperature),
+                'battery_voltage' => $this->roundField('battery_voltage', $this->battery_voltage),
                 'battery_percentage' => $this->battery_percentage,
                 'fan' => $this->fan,
                 'charging_status' => $this->charging_status,
@@ -59,8 +59,8 @@ class EnergyReadingResource extends JsonResource
             ],
 
             'derived' => [
-                'energy_wh' => $this->redondea('energy_wh', $this->energy_wh),
-                'energy_ah' => $this->redondea('energy_ah', $this->energy_ah),
+                'energy_wh' => $this->roundField('energy_wh', $this->energy_wh),
+                'energy_ah' => $this->roundField('energy_ah', $this->energy_ah),
             ],
 
             'sources' => [
@@ -78,8 +78,8 @@ class EnergyReadingResource extends JsonResource
     /**
      * Redondea una magnitud a los decimales de su columna, respetando el null.
      */
-    private function redondea(string $campo, mixed $valor): ?float
+    private function roundField(string $field, mixed $value): ?float
     {
-        return $valor === null ? null : round((float) $valor, self::PRECISION[$campo]);
+        return $value === null ? null : round((float) $value, self::PRECISION[$field]);
     }
 }

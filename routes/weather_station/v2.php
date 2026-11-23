@@ -67,7 +67,7 @@ Route::prefix('weather-stations')->group(function () use ($sensors) {
         });
 
     // # Escrituras IoT
-    Route::middleware(['auth:sanctum', 'ability:'.TokenAbilities::WEATHERSTATION_WRITE, 'throttle:api-store'])
+    Route::middleware(['auth:sanctum', 'ability:'.TokenAbilities::WEATHERSTATION_WRITE])
         ->group(function () use ($sensors) {
             // Lote multi-sensor. Excepción consciente al REST: en REST puro
             // serían once peticiones, y para un microcontrolador con batería
@@ -81,6 +81,7 @@ Route::prefix('weather-stations')->group(function () use ($sensors) {
             Route::post('/{station}/{sensor}', [SensorReadingController::class, 'store'])
                 ->whereNumber('station')
                 ->where('sensor', $sensors)
+                ->middleware('throttle:api-store')
                 ->name('api.v2.weather_stations.readings.store');
         });
 });

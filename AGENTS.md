@@ -1,6 +1,6 @@
 # AGENTS.md — Api Raupulus
 
-> **Última revisión:** 2026-09-19 · Verificado contra la rama `v2`.
+> **Última revisión:** 2026-11-23 · Verificado contra la rama `v2`.
 > Todo lo que hay aquí se ha comprobado contra el código. Si encuentras una discrepancia,
 > **corrige este fichero en el mismo commit** en el que la detectes.
 
@@ -116,7 +116,7 @@ Atajo obligatorio: `composer check` (formato + análisis estático + tests).
    son utilidades de Tailwind.** El panel sólo carga el `app.css` precompilado de Filament más ese
    fichero (vía `App\Support\FilamentPanelCss`), así que `flex`, `grid`, `sm:…` o `dark:…` escritos en
    `resources/views/filament/` no existen en el navegador. Nada de `<style>` sueltos en las vistas.
-   Tras tocar `panel.css`, `npm run build` y commitear `public/build`. Ha roto dos despliegues.
+   Tras tocar `panel.css`, `pnpm build` y commitear `public/build`. Ha roto dos despliegues.
    Detalle en la skill `filament-admin`.
 10. **No afirmes la causa de un fallo sin haberla comprobado.** Una explicación plausible sin verificar
     («falta compilar el CSS») hace perder un despliegue entero cuando es falsa.
@@ -192,7 +192,10 @@ No usar ninguna otra dirección.
 Usar `pnpm`, nunca `npm` ni `yarn`.
 
 **Entrypoints de Vite:** `resources/css/app.css`, `resources/js/app.js`, `resources/js/vue.js`,
-`resources/css/filament/admin/theme.css`.
+`resources/js/keycounter-chart.js`, `resources/js/airflight-map.js`,
+`resources/css/filament/admin/panel.css`, `resources/js/youtube-video-search.js`,
+`resources/js/filament/editorjs.js`, `resources/js/filament/content-pages.js`,
+`resources/js/filament/ai-images.js`.
 
 ### Infraestructura
 
@@ -222,15 +225,8 @@ PostgreSQL 17 · Redis 7 (recomendado en producción) · Docker (`docker/app` PH
   (`ChipionaWeatherComponent`). Los colores son tokens de `@theme` en
   `resources/css/app.css`: **en las vistas no se escribe un color literal**.
   Ver `docs/info/frontend.md`.
-- **Eventos:** uno, `App\Events\WeatherStation\ReadingsReceived` (`readings.received` en el
-  canal), emitido desde `SensorReadingController` una vez por subida al canal público
-  `weather-station.{id}`. `laravel/reverb`, `laravel-echo` y `pusher-js` **ya están
-  instalados**; sigue **apagado por defecto** (`BROADCAST_CONNECTION=null`) porque encenderlo
-  es una decisión de despliegue (configurar `.env` y levantar el demonio), no de código.
-  Ver `docs/info/websockets.md`.
-  Los nueve eventos anteriores colgaban de `$dispatchesEvents` de los modelos y **no se
-  emitieron nunca**, porque la escritura usa `insert()` del query builder.
-- **Jobs:** `ProcessContentViewJob`. ⚠️ Con `QUEUE_CONNECTION=sync` corre en la petición.
+- **Eventos:** 3 eventos broadcast (`App\Events\WeatherStation\ReadingsReceived` en `weather-station.{id}`, más `PrintJobCreated` y `PrintJobStatusUpdated` en el canal privado de impresora). `laravel/reverb`, `laravel-echo` y `pusher-js` se cargan de forma diferida desde `resources/js/echo.js` únicamente cuando `VITE_REVERB_APP_KEY` está configurada; el driver sigue apagado por defecto (`BROADCAST_CONNECTION=null`). Ver `docs/info/websockets.md`.
+- **Jobs:** `ProcessContentViewJob` y `SendContactEmailJob`. ⚠️ Con `QUEUE_CONNECTION=sync` corren en la petición; en Docker/producción se recomienda `database` o `redis`.
 - **MCP:** `app/Mcp/Servers/ApiRaupulusServer.php` con 4 tools (`GetModelInfoTool`,
   `GetSystemStatusTool`, `InspectDatabaseSchemaTool`, `RunSpecificTestTool`).
 
@@ -244,27 +240,27 @@ PostgreSQL 17 · Redis 7 (recomendado en producción) · Docker (`docker/app` PH
 api-fryntiz/
 ├── app/                      # Lógica principal de la aplicación (arquitectura MVC + Service Layer)
 │   ├── Actions/              # Operaciones atómicas reutilizables (Fortify, PublishContent, StoreSensorData)
-│   ├── Console/Commands/     # 41 comandos Artisan propios (AEMET/, CV/, Debug/, Energy/, IoT/, Mcp/, User/, Project...)
+│   ├── Console/Commands/     # 52 comandos Artisan propios (AEMET/, CV/, Debug/, Energy/, IoT/, Mcp/, User/, Project...)
 │   ├── Enums/                # Backed Enums tipados en PHP 8.4 (sufijo Enum)
-│   ├── Events/               # Eventos de dominio (WeatherStationUpdateEvent y sub-eventos)
+│   ├── Events/               # 3 Eventos broadcast (WeatherStation\ReadingsReceived, Printer\PrintJob*)
 │   ├── Exceptions/           # Excepciones personalizadas (JsonValidationException, JsonAuthorizationException)
 │   ├── Filament/             # Configuración de los paneles de Filament
-│   │   ├── Admin/            # Panel Admin: 26 Resources, 33 RelationManagers, 4 Clusters, 8 Widgets, 5 Pages
-│   │   ├── Tenant/           # Panel Tenant/Usuario: Pages/Dashboard.php
+│   │   ├── Admin/            # Panel Admin: 30 Resources, 34 RelationManagers, 4 Clusters, 9 Widgets, 6 Pages
+│   │   ├── Tenant/           # Panel Tenant/Usuario: 3 Pages y ApiTokenResource
 │   │   ├── Components/       # Componentes Filament (EditorJsField, ImageCropperUpload, YoutubeVideoField)
 │   │   └── Concerns/         # Traits de Filament (HasImageFileUpload)
-│   ├── Helpers/              # Clases auxiliares con namespace (TextFormatParseHelper)
+│   ├── Helpers/              # Clases auxiliares con namespace (TextFormatParseHelper, HtmlHelper)
 │   ├── Http/                 # Capa de transporte HTTP
-│   │   ├── Api/               # CollectionQuery: paginación/filtros/orden comunes a la API V2
+│   │   ├── Api/              # CollectionQuery: paginación/filtros/orden comunes a la API V2
 │   │   ├── Controllers/Api/  # Controladores API V2 organizados por módulo
-│   │   ├── Controllers/      # Controladores web para vistas públicas y streaming de ficheros
-│   │   ├── Middleware/       # Vacío. Los 3 que había estaban muertos y se retiraron en la fase 8
-│   │   ├── Requests/         # 21 FormRequests con reglas estrictas de validación
-│   │   └── Resources/V2/     # 30 JsonResources para transformación de datos en API V2
-│   ├── Jobs/                 # Trabajos en cola asíncronos (ProcessContentViewJob)
+│   │   ├── Controllers/      # Controladores web para vistas públicas, Scribe y streaming de ficheros
+│   │   ├── Middleware/       # SecurityHeaders (CSP/COOP/CORP/HSTS), NoIndex, SetLocale, VerifySameOrigin
+│   │   ├── Requests/         # 28 FormRequests con reglas estrictas de validación
+│   │   └── Resources/V2/     # 40 JsonResources para transformación de datos en API V2
+│   ├── Jobs/                 # Trabajos en cola asíncronos (ProcessContentViewJob, SendContactEmailJob)
 │   ├── Mail/                 # Clases Mailable para notificaciones y suscripciones por correo
 │   ├── Mcp/                  # Implementación del servidor Model Context Protocol (Servers/ y Tools/)
-│   ├── Models/               # 103 Modelos Eloquent con PHPDoc completo
+│   ├── Models/               # 110 archivos de Modelos Eloquent con PHPDoc completo
 │   │   ├── BaseModels/       # BaseModel con métodos y scopes comunes
 │   │   ├── WeatherStation/   # Sensores meteorológicos físicos e integración AEMET
 │   │   ├── Content/          # CMS: Artículos, Páginas, Metadatos, Categorías, Tags, Tecnologías
@@ -273,17 +269,17 @@ api-fryntiz/
 │   │   ├── Referred/         # Enlaces de afiliados y plataformas de venta (Amazon, AliExpress...)
 │   │   └── (raíz)            # User, Platform, File, FileThumbnail, Gallery, Printer, Newsletter...
 │   ├── Notifications/        # Notificaciones del sistema
-│   ├── Policies/             # 25 Policies. Registro EXPLÍCITO en AuthServiceProvider
+│   ├── Policies/             # 30 Policies. Registro EXPLÍCITO en AuthServiceProvider
 │   ├── Providers/            # Service Providers de Laravel y paneles Filament (AdminPanelProvider, TenantPanelProvider)
 │   ├── Rules/                # Reglas de validación personalizadas (OwnedHardwareDevice, OwnedSmartPlant, KnownSensor)
-│   ├── Services/             # Service Layer con toda la lógica de negocio dividida por dominio (20 servicios + el DTO `CaptchaResult`)
+│   ├── Services/             # Service Layer con toda la lógica de negocio dividida por dominio (60 ficheros)
 │   ├── Support/              # Clases de soporte general (Auth, TokenAbilities, FilamentValidationRules)
 │   └── Traits/               # Traits reutilizables (ApiResponseTrait, BelongsToUser, HasSlug, Filterable...)
 ├── bootstrap/                # Arranque del framework y configuración de excepciones y middlewares (app.php, providers.php)
 ├── config/                   # Archivos de configuración de Laravel, Filament, Sanctum, CORS, AEMET y base de datos
 ├── database/                 # Base de datos PostgreSQL
-│   ├── factories/            # 98 Factories para generación de datos de prueba
-│   ├── migrations/           # 122 migraciones comentadas en todas sus tablas y columnas
+│   ├── factories/            # 99 Factories para generación de datos de prueba
+│   ├── migrations/           # 143 migraciones comentadas en todas sus tablas y columnas
 │   └── seeders/              # 18 Seeders ordenados para carga de catálogos y datos esenciales
 ├── docs/                     # Documentación técnica viva del proyecto (con fecha de revisión obligatoria)
 │   ├── apis/                 # Documentación técnica de referencia de APIs de terceros (AEMET OpenData)

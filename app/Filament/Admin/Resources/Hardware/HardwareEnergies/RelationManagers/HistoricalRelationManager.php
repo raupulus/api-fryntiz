@@ -49,7 +49,8 @@ class HistoricalRelationManager extends RelationManager
                         default => (string) $state,
                     })
                     ->label('Origen Wh')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('energy_wh')
                     ->suffix(' Wh')
                     ->sortable()
@@ -63,7 +64,8 @@ class HistoricalRelationManager extends RelationManager
                         default => (string) $state,
                     })
                     ->label('Origen Ah')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('energy_ah')
                     ->suffix(' Ah')
                     ->sortable()
@@ -79,11 +81,11 @@ class HistoricalRelationManager extends RelationManager
                 TextColumn::make('number_battery_full_charges')
                     ->numeric()
                     ->label('Cargas completas')
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('number_battery_over_discharges')
                     ->numeric()
                     ->label('Sobredescargas')
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
                     ->dateTime('d/m/Y H:i')
                     ->sortable()

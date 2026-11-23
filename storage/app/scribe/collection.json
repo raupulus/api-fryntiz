@@ -10,7 +10,7 @@
     ],
     "info": {
         "name": "Api Raupulus API Documentation",
-        "_postman_id": "6f621067-8f23-4085-9ee6-9b3cfe29f6d9",
+        "_postman_id": "0e3c2a34-bb90-40c8-b97c-ad93a55b26fe",
         "description": "",
         "schema": "https:\/\/schema.getpostman.com\/json\/collection\/v2.1.0\/collection.json"
     },
@@ -110,6 +110,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 401,
@@ -140,7 +152,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"device_id\":16,\"abilities\":[\"keycounter:write\"],\"name\":\"n\",\"expires_at\":\"2052-11-21\"}"
+                            "raw": "{\"device_id\":16,\"abilities\":[\"smartplant:read\"],\"name\":\"n\",\"expires_at\":\"2052-12-16\"}"
                         },
                         "description": "Va por `DeviceTokenService`, que es la fuente \u00fanica: comprueba que las\nabilities est\u00e1n en el cat\u00e1logo, que el dispositivo es del usuario, y\na\u00f1ade `device:{id}`. No emite nunca el comod\u00edn ni la ability de sesi\u00f3n.",
                         "auth": {
@@ -273,6 +285,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 401,
@@ -303,7 +327,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"name\":\"b\",\"email\":\"zbailey@example.net\",\"subject\":\"i\",\"message\":\"y\",\"privacity\":false,\"contactme\":true,\"attributes\":[\"v\"],\"g-recaptcha-response\":\"architecto\",\"recaptcha_token\":\"architecto\",\"cf-turnstile-response\":\"architecto\",\"turnstile_token\":\"architecto\"}"
+                            "raw": "{\"name\":\"b\",\"email\":\"zbailey@example.net\",\"subject\":\"i\",\"message\":\"y\",\"privacity\":true,\"contactme\":false,\"attributes\":[\"v\"],\"g-recaptcha-response\":\"architecto\",\"recaptcha_token\":\"architecto\",\"cf-turnstile-response\":\"architecto\",\"turnstile_token\":\"architecto\"}"
                         },
                         "description": "",
                         "auth": {
@@ -334,7 +358,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"email\":\"gbailey@example.net\",\"name\":\"m\",\"platform_id\":16}"
+                            "raw": "{\"email\":\"gbailey@example.net\",\"name\":\"m\",\"platform_id\":16,\"privacy_accepted\":true,\"g-recaptcha-response\":\"architecto\",\"recaptcha_token\":\"architecto\",\"cf-turnstile-response\":\"architecto\",\"turnstile_token\":\"architecto\"}"
                         },
                         "description": "",
                         "auth": {
@@ -403,6 +427,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 401,
@@ -433,7 +469,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"email\":\"gbailey@example.net\",\"platform_id\":16}"
+                            "raw": "{\"email\":\"gbailey@example.net\",\"platform_id\":16,\"g-recaptcha-response\":\"architecto\",\"recaptcha_token\":\"architecto\",\"cf-turnstile-response\":\"architecto\",\"turnstile_token\":\"architecto\"}"
                         },
                         "description": "Responde siempre lo mismo exista o no la suscripci\u00f3n: antes devolv\u00eda 404\nsi el email no estaba suscrito y 200 si s\u00ed, o sea un or\u00e1culo p\u00fablico para\ncomprobar si una direcci\u00f3n est\u00e1 en la lista (auditor\u00eda A6).",
                         "auth": {
@@ -618,6 +654,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 200,
@@ -702,6 +750,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 404,
@@ -786,6 +846,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 404,
@@ -870,6 +942,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 404,
@@ -954,6 +1038,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 404,
@@ -1038,6 +1134,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 404,
@@ -1131,6 +1239,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 422,
@@ -1224,6 +1344,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 422,
@@ -1323,6 +1455,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 422,
@@ -1422,6 +1566,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 422,
@@ -1512,6 +1668,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 404,
@@ -1602,6 +1770,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 404,
@@ -1692,6 +1872,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 404,
@@ -1782,6 +1974,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 404,
@@ -1850,6 +2054,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 401,
@@ -1918,6 +2134,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 401,
@@ -2048,6 +2276,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 401,
@@ -2078,7 +2318,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"hardware_device_id\":16,\"duration\":22,\"read_at\":\"2022-11-22\",\"energy\":[]}"
+                            "raw": "{\"hardware_device_id\":16,\"duration\":22,\"read_at\":\"2022-12-17\",\"energy\":[]}"
                         },
                         "description": "Requiere ability `energy:write`. Procesa subsistemas de generador, bater\u00eda y consumos.",
                         "auth": {
@@ -2147,6 +2387,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 401,
@@ -2234,6 +2486,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 404,
@@ -2272,7 +2536,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"hardware_device_id\":16,\"temp\":4326.41688,\"voltage\":4326.41688,\"battery_level\":0,\"battery_voltage\":4326.41688,\"software_version\":\"m\",\"cpu\":0,\"disk\":0,\"ram\":1,\"uptime\":42,\"ip_local\":\"1.102.226.211\",\"ip_public\":\"1.102.226.211\"}"
+                            "raw": "{\"hardware_device_id\":16,\"temp\":-99,\"voltage\":0,\"battery_level\":1,\"battery_voltage\":0,\"software_version\":\"i\",\"cpu\":0,\"disk\":1,\"ram\":1,\"uptime\":37,\"ip_local\":\"1.102.226.211\",\"ip_public\":\"1.102.226.211\"}"
                         },
                         "description": "PUT y no POST: no se est\u00e1 creando un recurso nuevo cada vez, se est\u00e1\nsobrescribiendo el mismo. Repetir la petici\u00f3n deja el sistema igual.",
                         "auth": {
@@ -2341,6 +2605,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 401,
@@ -2409,6 +2685,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 401,
@@ -2477,6 +2765,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 401,
@@ -2548,6 +2848,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 401,
@@ -2578,7 +2890,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"hardware_device_id\":16,\"user_id\":16,\"start_at\":\"2026-10-28 21:08:44\",\"end_at\":\"2026-10-28 21:08:44\",\"duration\":16,\"pulsations\":39,\"pulsations_special_keys\":84,\"pulsation_average\":12,\"score\":77,\"weekday\":5}"
+                            "raw": "{\"hardware_device_id\":16,\"user_id\":16,\"start_at\":\"2026-11-23 11:29:21\",\"end_at\":\"2052-12-16\",\"duration\":39,\"pulsations\":84,\"pulsations_special_keys\":12,\"pulsation_average\":77,\"score\":8,\"weekday\":1}"
                         },
                         "description": "",
                         "auth": {
@@ -2609,7 +2921,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"hardware_device_id\":16,\"user_id\":16,\"start_at\":\"2026-10-28 21:08:44\",\"end_at\":\"2026-10-28 21:08:44\",\"duration\":16,\"clicks_left\":39,\"clicks_right\":84,\"clicks_middle\":12,\"total_clicks\":77,\"clicks_average\":8,\"weekday\":1}"
+                            "raw": "{\"hardware_device_id\":16,\"user_id\":16,\"start_at\":\"2026-11-23 11:29:21\",\"end_at\":\"2052-12-16\",\"duration\":39,\"clicks_left\":84,\"clicks_right\":12,\"clicks_middle\":77,\"total_clicks\":8,\"clicks_average\":76,\"weekday\":4}"
                         },
                         "description": "",
                         "auth": {
@@ -2678,6 +2990,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 401,
@@ -2762,6 +3086,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 404,
@@ -2800,7 +3136,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"plant_id\":4326.41688,\"hardware_device_id\":4326.41688,\"uv\":16,\"pressure\":4326.41688,\"temperature\":4326.41688,\"humidity\":4326.41688,\"soil_humidity\":17,\"soil_humidity_raw\":16,\"full_water_tank\":false,\"waterpump_enabled\":false,\"vaporizer_enabled\":true}"
+                            "raw": "{\"plant_id\":16,\"hardware_device_id\":16,\"uv\":1,\"pressure\":800,\"temperature\":-49,\"humidity\":0,\"soil_humidity\":15,\"soil_humidity_raw\":8,\"full_water_tank\":false,\"waterpump_enabled\":true,\"vaporizer_enabled\":true}"
                         },
                         "description": "",
                         "auth": {
@@ -2831,7 +3167,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"sensors\":[\"humidity\"],\"location_type\":\"indoor\"}"
+                            "raw": "{\"sensors\":[\"pressure\"],\"location_type\":\"indoor\"}"
                         },
                         "description": "?zone=chipiona\n  ?location_type=indoor|outdoor",
                         "auth": {
@@ -2872,6 +3208,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 401,
@@ -2910,7 +3258,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"sensors\":[\"wind\"]}"
+                            "raw": "{\"sensors\":[\"pressure\"]}"
                         },
                         "description": "",
                         "auth": {
@@ -2951,6 +3299,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 401,
@@ -3041,6 +3401,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 404,
@@ -3131,6 +3503,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 404,
@@ -3224,6 +3608,182 @@
                     "response": []
                 },
                 {
+                    "name": "Parte meteorol\u00f3gico y tabla de mareas del d\u00eda para una ciudad\/municipio.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v2\/weather-station-official\/cities\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v2\/weather-station-official\/cities\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "architecto",
+                                    "description": "The ID of the city."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "content-language",
+                                    "value": "en"
+                                },
+                                {
+                                    "key": "vary",
+                                    "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
+                                }
+                            ],
+                            "code": 401,
+                            "body": "{\"success\":false,\"message\":\"Unauthenticated\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
+                    "name": "Parte meteorol\u00f3gico y tabla de mareas del d\u00eda para una provincia.",
+                    "request": {
+                        "url": {
+                            "host": "{{baseUrl}}",
+                            "path": "api\/v2\/weather-station-official\/provinces\/:id",
+                            "query": [],
+                            "raw": "{{baseUrl}}\/api\/v2\/weather-station-official\/provinces\/:id",
+                            "variable": [
+                                {
+                                    "id": "id",
+                                    "key": "id",
+                                    "value": "architecto",
+                                    "description": "The ID of the province."
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application\/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application\/json"
+                            }
+                        ],
+                        "body": null,
+                        "description": "",
+                        "auth": {
+                            "type": "noauth"
+                        }
+                    },
+                    "response": [
+                        {
+                            "header": [
+                                {
+                                    "key": "cache-control",
+                                    "value": "no-cache, private"
+                                },
+                                {
+                                    "key": "content-type",
+                                    "value": "application\/json"
+                                },
+                                {
+                                    "key": "content-language",
+                                    "value": "en"
+                                },
+                                {
+                                    "key": "vary",
+                                    "value": "Accept-Language, Origin"
+                                },
+                                {
+                                    "key": "x-content-type-options",
+                                    "value": "nosniff"
+                                },
+                                {
+                                    "key": "x-frame-options",
+                                    "value": "SAMEORIGIN"
+                                },
+                                {
+                                    "key": "referrer-policy",
+                                    "value": "strict-origin-when-cross-origin"
+                                },
+                                {
+                                    "key": "permissions-policy",
+                                    "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
+                                }
+                            ],
+                            "code": 401,
+                            "body": "{\"success\":false,\"message\":\"Unauthenticated\"}",
+                            "name": ""
+                        }
+                    ]
+                },
+                {
                     "name": "Listado p\u00fablico. S\u00f3lo los marcados como p\u00fablicos (B3).",
                     "request": {
                         "url": {
@@ -3291,6 +3851,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 500,
@@ -3375,6 +3947,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 404,
@@ -3459,6 +4043,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 404,
@@ -3549,6 +4145,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 404,
@@ -3633,6 +4241,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 404,
@@ -3707,6 +4327,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 401,
@@ -3727,7 +4359,7 @@
                                 {
                                     "id": "id",
                                     "key": "id",
-                                    "value": 16,
+                                    "value": 2,
                                     "description": "The ID of the printer."
                                 }
                             ]
@@ -3783,6 +4415,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 401,
@@ -3803,7 +4447,7 @@
                                 {
                                     "id": "printer_id",
                                     "key": "printer_id",
-                                    "value": 16,
+                                    "value": 2,
                                     "description": "The ID of the printer."
                                 }
                             ]
@@ -3859,6 +4503,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 401,
@@ -3879,7 +4535,7 @@
                                 {
                                     "id": "printer_id",
                                     "key": "printer_id",
-                                    "value": 16,
+                                    "value": 2,
                                     "description": "The ID of the printer."
                                 }
                             ]
@@ -3935,6 +4591,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 401,
@@ -4011,6 +4679,18 @@
                                 {
                                     "key": "permissions-policy",
                                     "value": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+                                },
+                                {
+                                    "key": "cross-origin-opener-policy",
+                                    "value": "same-origin"
+                                },
+                                {
+                                    "key": "content-security-policy",
+                                    "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https:\/\/fonts.googleapis.com; img-src 'self' data: blob: https:\/\/tile.openstreetmap.org https:\/\/*.tile.openstreetmap.org https:\/\/i.ytimg.com; font-src 'self' data: https:\/\/fonts.gstatic.com; connect-src 'self' ws: wss:; frame-src 'self' https:\/\/www.youtube-nocookie.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+                                },
+                                {
+                                    "key": "cross-origin-resource-policy",
+                                    "value": "cross-origin"
                                 }
                             ],
                             "code": 401,
@@ -4031,7 +4711,7 @@
                                 {
                                     "id": "printer_id",
                                     "key": "printer_id",
-                                    "value": 16,
+                                    "value": 2,
                                     "description": "The ID of the printer."
                                 }
                             ]
@@ -4127,7 +4807,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"is_favorite\":false}"
+                            "raw": "{\"is_favorite\":true}"
                         },
                         "description": "",
                         "auth": {
@@ -4184,7 +4864,7 @@
                                 {
                                     "id": "printer_id",
                                     "key": "printer_id",
-                                    "value": 16,
+                                    "value": 2,
                                     "description": "The ID of the printer."
                                 }
                             ]
@@ -4241,7 +4921,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\"status\":\"out_of_paper\",\"error_message\":\"b\"}"
+                            "raw": "{\"status\":\"completed\",\"error_message\":\"v\"}"
                         },
                         "description": "Consumido por el microcontrolador para reportar el \u00e9xito ('completed') o fallo ('failed')\nde la ejecuci\u00f3n del ticket.",
                         "auth": {
@@ -4262,7 +4942,7 @@
                                 {
                                     "id": "printer_id",
                                     "key": "printer_id",
-                                    "value": 16,
+                                    "value": 2,
                                     "description": "The ID of the printer."
                                 }
                             ]

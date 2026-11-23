@@ -11,6 +11,7 @@ use App\Filament\Admin\Resources\Hardware\HardwareDevices\Pages\ListHardwareDevi
 use App\Filament\Components\ImageCropperUpload;
 use App\Filament\Concerns\ScopesToOwner;
 use App\Models\Hardware\HardwareDevice;
+use App\Support\FilamentValidationRules;
 use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -51,6 +52,8 @@ class HardwareDeviceResource extends Resource
     protected static ?string $modelLabel = 'Dispositivo';
 
     protected static ?string $pluralModelLabel = 'Dispositivos';
+
+    protected static ?string $recordTitleAttribute = 'name';
 
     /**
      * Columnas del estado que rellena el propio dispositivo por la API.
@@ -198,11 +201,15 @@ class HardwareDeviceResource extends Resource
                     ->schema([
                         Select::make('user_id')
                             ->relationship('user', 'name')
+                            ->searchable()
+                            ->preload()
                             ->default(fn (): ?int => auth()->id())
                             ->label('Usuario')
                             ->helperText('Por defecto, quien crea el dispositivo. Sin usuario no se pueden emitir tokens.'),
                         Select::make('hardware_type_id')
                             ->relationship('type', 'name')
+                            ->searchable()
+                            ->preload()
                             ->label('Tipo de hardware'),
                         TextInput::make('name')
                             ->label('Nombre')
@@ -219,25 +226,28 @@ class HardwareDeviceResource extends Resource
                             ->required()
                             ->maxLength(255)
                             ->unique(ignoreRecord: true)
-                            ->rule('alpha_dash')
+                            ->rules(FilamentValidationRules::slug())
                             ->helperText('Identificador único amigable para URLs públicas (ej. raspberry-pi-5).'),
-                        TextInput::make('name_friendly')->label('Nombre amigable'),
-                        TextInput::make('ref')->label('Referencia'),
-                        TextInput::make('brand')->label('Marca'),
-                        TextInput::make('model')->label('Modelo'),
-                        TextInput::make('software_version')->label('Versión de software'),
-                        TextInput::make('hardware_version')->label('Versión de hardware'),
-                        TextInput::make('serial_number')->label('Número de serie'),
-                        TextInput::make('battery_type')->label('Tipo de batería'),
+                        TextInput::make('name_friendly')->maxLength(255)->label('Nombre amigable'),
+                        TextInput::make('ref')->maxLength(255)->label('Referencia'),
+                        TextInput::make('brand')->maxLength(255)->label('Marca'),
+                        TextInput::make('model')->maxLength(255)->label('Modelo'),
+                        TextInput::make('software_version')->maxLength(255)->label('Versión de software'),
+                        TextInput::make('hardware_version')->maxLength(255)->label('Versión de hardware'),
+                        TextInput::make('serial_number')->maxLength(255)->label('Número de serie'),
+                        TextInput::make('battery_type')->maxLength(255)->label('Tipo de batería'),
                         TextInput::make('battery_nominal_capacity')
                             ->integer()
+                            ->minValue(0)
                             ->label('Capacidad nominal de batería')
                             ->helperText('En mAh, sin decimales. EJ: 4200.'),
                         TextInput::make('battery_nominal_voltage')
                             ->numeric()
+                            ->minValue(0)
+                            ->maxValue(1000)
                             ->label('Tensión nominal de batería')
                             ->helperText('Tensión de diseño que declara el fabricante, EJ: 12. No es una medida.'),
-                        TextInput::make('url_company')->label('Sitio web empresa'),
+                        TextInput::make('url_company')->url()->maxLength(255)->label('Sitio web empresa'),
                         TextInput::make('ip_local')
                             ->label('IP Local')
                             ->disabled()
@@ -283,10 +293,13 @@ class HardwareDeviceResource extends Resource
             ->columns([
                 TextColumn::make('user.name')
                     ->label('Usuario')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('image_id')->numeric()->sortable()->toggleable(isToggledHiddenByDefault: true)->label('ID Imagen'),
                 TextColumn::make('type.name')
                     ->label('Tipo de hardware')
+                    ->limit(30)
+                    ->tooltip(fn (?string $state): ?string => $state)
                     ->sortable()
                     ->toggleable(),
                 TextColumn::make('referredThing.name') // Assumes related model has name
@@ -295,6 +308,8 @@ class HardwareDeviceResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('name')
                     ->label('Nombre')
+                    ->limit(35)
+                    ->tooltip(fn (?string $state): ?string => $state)
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('slug')
@@ -304,6 +319,8 @@ class HardwareDeviceResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('name_friendly')
                     ->label('Nombre amigable')
+                    ->limit(35)
+                    ->tooltip(fn (?string $state): ?string => $state)
                     ->searchable(),
                 TextColumn::make('location_type')
                     ->label('Ubicación')
@@ -314,19 +331,26 @@ class HardwareDeviceResource extends Resource
                     ->toggleable(),
                 TextColumn::make('zone')
                     ->label('Zona')
+                    ->limit(30)
+                    ->tooltip(fn (?string $state): ?string => $state)
                     ->searchable()
                     ->placeholder('—')
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('ref')
                     ->label('Referencia')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('brand')
                     ->label('Marca')
+                    ->limit(25)
+                    ->tooltip(fn (?string $state): ?string => $state)
                     ->searchable(),
                 TextColumn::make('model')
                     ->label('Modelo')
-                    ->searchable(),
+                    ->limit(25)
+                    ->tooltip(fn (?string $state): ?string => $state)
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('software_version')
                     ->label('Versión software')
                     ->searchable()
@@ -355,6 +379,8 @@ class HardwareDeviceResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('url_company')
                     ->label('Sitio web')
+                    ->limit(35)
+                    ->tooltip(fn (?string $state): ?string => $state)
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('buy_at')
@@ -376,10 +402,12 @@ class HardwareDeviceResource extends Resource
                     ->sortable(),
                 TextColumn::make('ip_local')
                     ->label('IP Local')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('ip_public')
                     ->label('IP Pública')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('created_at')
                     ->label('Creado')
                     ->dateTime()

@@ -63,7 +63,7 @@ class KeyCounterRemoveDuplicate extends Command
     /**
      * Execute the console command.
      */
-    public function handle(): void
+    public function handle(): int
     {
         $force = (bool) $this->option('force');
         $full = (bool) $this->option('full');
@@ -84,6 +84,8 @@ class KeyCounterRemoveDuplicate extends Command
             $full,
             $force,
         );
+
+        return self::SUCCESS;
     }
 
     /**

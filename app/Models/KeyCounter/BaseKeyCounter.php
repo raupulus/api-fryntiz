@@ -57,7 +57,7 @@ class BaseKeyCounter extends BaseModel
      */
     public function setUpdatedAt($value)
     {
-        // Do-nothing
+        return $this;
     }
 
     /**

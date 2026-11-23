@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Consolida y recalcula los agregados diarios e históricos de energía para
@@ -92,7 +93,12 @@ class AggregateDailyEnergyCommand extends Command
         if (is_string($dateOption) && $dateOption !== '') {
             try {
                 return Carbon::createFromFormat('Y-m-d', $dateOption, 'UTC')?->toDateString();
-            } catch (\Exception) {
+            } catch (\Exception $e) {
+                Log::warning('AggregateDailyEnergyCommand: invalid --date option', [
+                    'date' => $dateOption,
+                    'error' => $e->getMessage(),
+                ]);
+
                 return null;
             }
         }

@@ -54,21 +54,25 @@ class GdacsEventResource extends Resource
                 ->schema([
                     TextInput::make('event_type')
                         ->label('Tipo de desastre')
-                        ->formatStateUsing(fn (?string $state): string => $state !== null
-                            ? (GdacsEventTypeEnum::tryFrom($state)?->label() ?? $state)
-                            : ''),
+                        ->formatStateUsing(fn (GdacsEventTypeEnum|string|null $state): string => match (true) {
+                            $state instanceof GdacsEventTypeEnum => $state->label(),
+                            is_string($state) => GdacsEventTypeEnum::tryFrom($state)?->label() ?? $state,
+                            default => '',
+                        }),
                     TextInput::make('alert_level')
                         ->label('Nivel de alerta')
-                        ->formatStateUsing(fn (?string $state): string => $state !== null
-                            ? (GdacsAlertLevelEnum::tryFrom($state)?->label() ?? $state)
-                            : ''),
+                        ->formatStateUsing(fn (GdacsAlertLevelEnum|string|null $state): string => match (true) {
+                            $state instanceof GdacsAlertLevelEnum => $state->label(),
+                            is_string($state) => GdacsAlertLevelEnum::tryFrom($state)?->label() ?? $state,
+                            default => '',
+                        }),
                     TextInput::make('name')->label('Título')->columnSpanFull(),
                     TextInput::make('is_current')
                         ->label('¿Sigue activo?')
                         ->formatStateUsing(fn (?bool $state): string => $state ? 'Sí' : 'No'),
                     TextInput::make('distance_km')
                         ->label('Distancia')
-                        ->formatStateUsing(fn (?float $state): string => $state !== null ? number_format($state, 1).' km' : ''),
+                        ->formatStateUsing(fn (mixed $state): string => is_numeric($state) ? number_format((float) $state, 1).' km' : ''),
                 ])->columnSpanFull(),
 
             Section::make('Fechas')

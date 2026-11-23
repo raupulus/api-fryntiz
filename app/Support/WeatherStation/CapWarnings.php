@@ -67,8 +67,24 @@ final class CapWarnings
      */
     public static function fromTar(string $bytes): array
     {
+        // Si AEMET o un proxy entrega el paquete comprimido en gzip (magic bytes 1f 8b),
+        // lo descomprimimos antes de validar la firma POSIX ustar del tar.
+        if (str_starts_with($bytes, "\x1f\x8b")) {
+            $inflated = @gzdecode($bytes);
+
+            if (! is_string($inflated)) {
+                Log::warning('AEMET warnings: gzip payload could not be decoded.', [
+                    'bytes' => strlen($bytes),
+                ]);
+
+                return [];
+            }
+
+            $bytes = $inflated;
+        }
+
         if (! self::isTar($bytes)) {
-            Log::warning('AEMET avisos: la descarga no es un tar (sin firma «ustar» en el offset 257).', [
+            Log::warning('AEMET warnings: payload is not a valid tar archive (missing ustar signature at offset 257).', [
                 'bytes' => strlen($bytes),
             ]);
 
@@ -79,24 +95,24 @@ final class CapWarnings
         // mismo sitio se pisaban los XML, y el paquete anterior se quedaba ahí
         // para que lo leyera la ejecución siguiente.
         $directory = sys_get_temp_dir().'/aemet-avisos-'.bin2hex(random_bytes(8));
-        $paquete = $directory.'/avisos.tar';
+        $archivePath = $directory.'/avisos.tar';
 
         if (! @mkdir($directory, 0700, true) && ! is_dir($directory)) {
-            Log::error('AEMET avisos: no se ha podido crear el directorio temporal.', [
-                'directorio' => $directory,
+            Log::error('AEMET warnings: failed to create temporary directory.', [
+                'directory' => $directory,
             ]);
 
             return [];
         }
 
         try {
-            if (file_put_contents($paquete, $bytes) === false) {
-                Log::error('AEMET avisos: no se ha podido escribir el paquete temporal.');
+            if (file_put_contents($archivePath, $bytes) === false) {
+                Log::error('AEMET warnings: failed to write temporary tar archive.');
 
                 return [];
             }
 
-            $tar = new PharData($paquete);
+            $tar = new PharData($archivePath);
             $tar->extractTo($directory, null, true);
 
             $warnings = [];
@@ -115,7 +131,7 @@ final class CapWarnings
 
             return $warnings;
         } catch (Throwable $e) {
-            Log::error('AEMET avisos: fallo leyendo el paquete.', ['message' => $e->getMessage()]);
+            Log::error('AEMET warnings: failed to read tar archive.', ['message' => $e->getMessage()]);
 
             return [];
         } finally {

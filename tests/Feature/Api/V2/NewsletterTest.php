@@ -7,6 +7,7 @@ namespace Tests\Feature\Api\V2;
 use App\Models\Newsletter;
 use App\Models\Platform;
 use App\Support\Auth\TokenAbilities;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\Test;
@@ -31,9 +32,10 @@ class NewsletterTest extends ApiTestCase
         $response = $this->postJson($this->apiUrl('newsletter/subscriptions'), [
             'email' => 'subscriber@example.com',
             'platform_id' => $this->platform->id,
+            'privacy_accepted' => true,
         ]);
         $this->assertSuccessResponse($response, 201);
-        $response->assertJson(['message' => 'Suscripcion creada. Revisa tu email para verificar.']);
+        $response->assertJson(['message' => 'Suscripción creada. Revisa tu email para verificar.']);
     }
 
     #[Test]
@@ -44,8 +46,38 @@ class NewsletterTest extends ApiTestCase
             'email' => 'test@example.com',
             'name' => 'Nombre Test',
             'platform_id' => $this->platform->id,
+            'privacy_accepted' => true,
         ]);
         $this->assertSuccessResponse($response, 201);
+    }
+
+    #[Test]
+    public function subscribe_fails_without_privacy_consent(): void
+    {
+        $response = $this->postJson($this->apiUrl('newsletter/subscriptions'), [
+            'email' => 'noconsent@example.com',
+            'platform_id' => $this->platform->id,
+            'privacy_accepted' => false,
+        ]);
+        $this->assertErrorResponse($response, 422);
+        $response->assertJsonValidationErrors(['privacy_accepted']);
+    }
+
+    #[Test]
+    public function subscribe_rejects_invalid_captcha_when_configured(): void
+    {
+        config(['services.turnstile.secret_key' => 'turnstile-secret']);
+        Http::fake(['challenges.cloudflare.com/*' => Http::response(['success' => false])]);
+
+        $response = $this->postJson($this->apiUrl('newsletter/subscriptions'), [
+            'email' => 'bot@example.com',
+            'platform_id' => $this->platform->id,
+            'privacy_accepted' => true,
+            'cf-turnstile-response' => 'invalid-token',
+        ]);
+
+        $this->assertErrorResponse($response, 422);
+        $response->assertJson(['message' => 'Verificación de seguridad fallida']);
     }
 
     #[Test]
@@ -109,6 +141,7 @@ class NewsletterTest extends ApiTestCase
         $this->postJson($this->apiUrl('newsletter/subscriptions'), [
             'email' => 'existe@example.com',
             'platform_id' => $this->platform->id,
+            'privacy_accepted' => true,
         ])->assertStatus(201);
 
         $existing = $this->postJson($this->apiUrl('newsletter/subscriptions/verification'), [

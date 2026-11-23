@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Error 503 · Estamos en mantenimiento')
+@section('noindex', '1')
 
 @section('content')
     @include('errors._page', [

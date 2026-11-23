@@ -64,7 +64,7 @@ class ProjectDummyCommand extends Command
             $user = User::create([
                 'name' => 'Raúl Caro Pastorino',
                 'nick' => 'raupulus',
-                'email' => 'demo@raupulus.dev',
+                'email' => 'demo@example.test',
                 'password' => bcrypt('password'),
                 'role_id' => 1,
                 'is_active' => true,
@@ -219,13 +219,13 @@ class ProjectDummyCommand extends Command
         $contacts = [
             [
                 'name' => 'Alejandro Martínez Gómez',
-                'email' => 'amartinez@agroinnovacion.es',
+                'email' => 'amartinez@example.test',
                 'subject' => 'Consulta sobre telemetría para monitorización agrícola',
                 'message' => 'Estimado equipo de Raupulus, hemos revisado su arquitectura de sensores y nos gustaría evaluar una prueba de concepto para nuestra cooperativa agrícola. Quedamos a su disposición para coordinar una reunión.',
             ],
             [
                 'name' => 'Elena Romero Soler',
-                'email' => 'eromero@solartech-solutions.com',
+                'email' => 'eromero@example.test',
                 'subject' => 'Integración de API de monitorización solar',
                 'message' => 'Hola Raúl, requerimos integrar la telemetría de vuestros inversores en nuestro panel corporativo. ¿Sería posible agendar una videollamada para revisar los contratos de la API V2?',
             ],
@@ -244,8 +244,8 @@ class ProjectDummyCommand extends Command
         }
 
         $newsletters = [
-            ['email' => 'director.tecnico@smartcitigroup.com', 'name' => 'Carlos Varela'],
-            ['email' => 'investigacion@climatologia-andalucia.org', 'name' => 'Dra. Carmen Santos'],
+            ['email' => 'director.tecnico@example.test', 'name' => 'Carlos Varela'],
+            ['email' => 'investigacion@example.test', 'name' => 'Dra. Carmen Santos'],
         ];
 
         foreach ($newsletters as $nl) {

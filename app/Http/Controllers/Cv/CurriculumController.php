@@ -10,7 +10,6 @@ use App\Services\Cv\CurriculumPdfService;
 use App\Services\Cv\CurriculumService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 /**
@@ -59,19 +58,21 @@ class CurriculumController extends Controller
     /**
      * PDF del currículum predeterminado.
      */
-    public function defaultPdf(Request $request): BinaryFileResponse|Response
+    public function defaultPdf(Request $request): BinaryFileResponse
     {
         $cv = $this->service->defaultCurriculum();
 
-        return $cv === null
-            ? $this->missingPdf()
-            : $this->deliver($cv, $request->boolean('download'));
+        if ($cv === null) {
+            $this->missingPdf();
+        }
+
+        return $this->deliver($cv, $request->boolean('download'));
     }
 
     /**
      * PDF de un currículum público, por su slug.
      */
-    public function pdf(Request $request, string $slug): BinaryFileResponse|Response
+    public function pdf(Request $request, string $slug): BinaryFileResponse
     {
         $cv = $this->service->bySlug($slug);
 
@@ -85,7 +86,7 @@ class CurriculumController extends Controller
     /**
      * PDF de un currículum compartido por enlace privado.
      */
-    public function sharedPdf(Request $request, string $shareToken): BinaryFileResponse|Response
+    public function sharedPdf(Request $request, string $shareToken): BinaryFileResponse
     {
         $cv = $this->service->byShareToken($shareToken);
 
@@ -93,14 +94,17 @@ class CurriculumController extends Controller
             abort(404);
         }
 
-        return $this->deliver($cv, $request->boolean('download'))->header('X-Robots-Tag', 'noindex, nofollow');
+        $response = $this->deliver($cv, $request->boolean('download'));
+        $response->headers->set('X-Robots-Tag', 'noindex, nofollow');
+
+        return $response;
     }
 
     /**
      * Entrega el PDF: por defecto se abre en el navegador (`inline`); con
      * `?download=1` se fuerza la descarga (botón «Descargar PDF» de la vista).
      */
-    private function deliver(Curriculum $cv, bool $download = false): BinaryFileResponse|Response
+    private function deliver(Curriculum $cv, bool $download = false): BinaryFileResponse
     {
         if (! $cv->is_downloadable) {
             abort(404);
@@ -122,7 +126,7 @@ class CurriculumController extends Controller
         }
 
         if ($path === null) {
-            return $this->missingPdf();
+            $this->missingPdf();
         }
 
         return response()->download($path, $this->fileName($cv), [], $download ? 'attachment' : 'inline');
@@ -138,8 +142,8 @@ class CurriculumController extends Controller
         return str(($cv->user->full_name ?? '').' '.$cv->slug)->slug().'.pdf';
     }
 
-    private function missingPdf(): Response
+    private function missingPdf(): never
     {
-        return response('El curriculum en PDF no esta disponible ahora mismo.', 404);
+        abort(404, 'El currículum en PDF no está disponible ahora mismo.');
     }
 }

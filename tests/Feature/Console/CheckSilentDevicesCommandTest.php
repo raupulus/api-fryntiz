@@ -27,9 +27,9 @@ class CheckSilentDevicesCommandTest extends TestCase
 
         Log::shouldReceive('warning')->once()->withArgs(
             function (string $message, array $context): bool {
-                return str_contains($message, 'dejado de reportar')
-                    && $context['horas'] === 24
-                    && $context['dispositivos'][0]['name'] === 'Pico Display';
+                return str_contains($message, 'stopped reporting')
+                    && $context['hours'] === 24
+                    && $context['devices'][0]['name'] === 'Pico Display';
             }
         );
 

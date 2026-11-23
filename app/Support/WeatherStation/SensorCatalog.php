@@ -68,7 +68,7 @@ final class SensorCatalog
         ],
         'humidities' => [
             'modelo' => Humidity::class,
-            'reglas' => ['value' => ['required', 'numeric']],
+            'reglas' => ['value' => ['required', 'numeric', 'between:0,100']],
             'resource' => HumidityResource::class,
             'clave' => 'humidity',
         ],

@@ -9,6 +9,7 @@ use App\Models\SmartPlant\SmartPlantPlant;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 
@@ -50,21 +51,32 @@ class SmartPlantController extends Controller
     }
 
     /**
-     * Muestra el perfil completo de una planta con sus últimas 50 lecturas.
-     *
-     * @return Application|Factory|View
+     * Muestra el perfil completo de una planta por su slug o redirige con 301
+     * desde las URLs numéricas antiguas (`/smartplant/{id}`) para preservar SEO.
      */
-    public function show(SmartPlantPlant $smartplant)
+    public function show(string $smartplant): Application|Factory|View|RedirectResponse
     {
-        $registers = $smartplant->registers()
+        if (ctype_digit($smartplant)) {
+            $plant = SmartPlantPlant::find((int) $smartplant);
+
+            if (! $plant) {
+                abort(404);
+            }
+
+            return redirect()->route('smartplant.show', ['smartplant' => $plant->slug], 301);
+        }
+
+        $plant = SmartPlantPlant::where('slug', $smartplant)->firstOrFail();
+
+        $registers = $plant->registers()
             ->latest()
             ->take(50)
             ->get();
 
         return view('smartplant.show')->with([
-            'plant' => $smartplant,
+            'plant' => $plant,
             'registers' => $registers,
-            'statCards' => $this->buildStatCards($smartplant),
+            'statCards' => $this->buildStatCards($plant),
         ]);
     }
 
@@ -103,11 +115,15 @@ class SmartPlantController extends Controller
                         // `toBase()` para que el resultado sea un stdClass y no un
                         // modelo a medio hidratar con dos columnas que no existen en
                         // la tabla.
-                        $aggregate = $smartplant->registers()
+                        $baseQuery = $smartplant->registers()
                             ->toBase()
                             ->where('created_at', '>=', $window['from'])
-                            ->whereNotNull($field)
-                            ->selectRaw("MIN({$field}) as min_value, MAX({$field}) as max_value")
+                            ->whereNotNull($field);
+
+                        $wrappedField = $baseQuery->getGrammar()->wrap($field);
+
+                        $aggregate = $baseQuery
+                            ->selectRaw("MIN({$wrappedField}) as min_value, MAX({$wrappedField}) as max_value")
                             ->first();
 
                         $stats[$key] = [

@@ -81,7 +81,7 @@ class ContentMetadata extends BaseModel
      */
     public function getYoutubeVideoIframeUrlAttribute(): ?string
     {
-        return $this->youtube_video_id ? 'https://www.youtube.com/embed/'.$this->youtube_video_id : null;
+        return $this->youtube_video_id ? 'https://www.youtube-nocookie.com/embed/'.$this->youtube_video_id : null;
     }
 
     /**

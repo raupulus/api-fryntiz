@@ -123,7 +123,7 @@ return [
     /*
      * Formulario de contacto. Por IP y por hora.
      */
-    'contact_per_hour' => (int) env('RATE_LIMIT_CONTACTO', 5),
+    'contact_per_hour' => (int) env('RATE_LIMIT_CONTACT', env('RATE_LIMIT_CONTACTO', 5)),
 
     /*
      * Widgets JSON de una página propia sin token (weather_station, airflight
