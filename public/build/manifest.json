@@ -55,7 +55,7 @@
     "isEntry": true
   },
   "resources/js/airflight-map.js": {
-    "file": "assets/airflight-map-BDhLWucV.js",
+    "file": "assets/airflight-map-BrjOIVhB.js",
     "name": "airflight-map",
     "src": "resources/js/airflight-map.js",
     "isEntry": true,
@@ -64,7 +64,7 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-CjPRLGPJ.js",
+    "file": "assets/app-DPZ3X66u.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true
@@ -88,13 +88,13 @@
     "isEntry": true
   },
   "resources/js/keycounter-chart.js": {
-    "file": "assets/keycounter-chart-DmHxaXgm.js",
+    "file": "assets/keycounter-chart-ZUdbw1iR.js",
     "name": "keycounter-chart",
     "src": "resources/js/keycounter-chart.js",
     "isEntry": true
   },
   "resources/js/vue.js": {
-    "file": "assets/vue-C0ltvc0k.js",
+    "file": "assets/vue-0MBT0uW1.js",
     "name": "vue",
     "src": "resources/js/vue.js",
     "isEntry": true,
