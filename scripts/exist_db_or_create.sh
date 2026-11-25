@@ -28,7 +28,10 @@ if [[ -z ${DB_USERNAME} ]]; then
     exit 1
 fi
 
-CONN="user=${DB_USERNAME} password=${DB_PASSWORD}"
+DB_HOST=${DB_HOST:-127.0.0.1}
+DB_PORT=${DB_PORT:-5432}
+
+CONN="host=${DB_HOST} port=${DB_PORT} user=${DB_USERNAME} password=${DB_PASSWORD} dbname=postgres"
 
 ## Compruebo si existe la db, en ese caso devolverá "1"
 db_exist=$(psql -tAc "SELECT 1 FROM pg_database WHERE datname='${DB_DATABASE}'" "${CONN}")

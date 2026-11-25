@@ -1,37 +1,39 @@
 #!/usr/bin/env bash
 
-
 ##
-## Comprueba si la línea recibida existe en el archivo o la crea
-##
-##        (NO IMPLEMENTADO AÚN)
-##
-replace_or_add_line_in_file() {
-    local FILE="${1}"
-    local LINE="${2}"
-
-    echo "La línea recibida es: ${LINE}"
-}
-
-##
-## Comprueba si existe una variable=valor en un archivo o la añade.
-## La comprobación se hace: Comienza por el nombre de la variable hasta
-## encontrar un "=", por ejemplo "mi_variable="
+## Comprueba si existe una línea activa VAR=... en un archivo y la actualiza,
+## o la añade al final si no existe. Usa ENVIRON de awk para evitar problemas
+## con caracteres especiales (&, /, \, +, =, $, comillas) y nunca imprime
+## secretos por salida estándar.
 ##
 replace_or_add_var_in_file() {
     local FILE="${1}"
     local VAR="${2}"
     local VALUE_RAW="${3}"
 
-    VALUE=$(echo ${VALUE_RAW} | sed 's/\//\\\//g')
+    local TMP_FILE
+    TMP_FILE="$(mktemp)"
 
-    ## Almaceno la línea compuesta de variable=valor.
-    local LINE="${VAR}=${VALUE}"
+    _ENV_VAR="${VAR}" _ENV_VAL="${VALUE_RAW}" awk '
+        BEGIN {
+            var = ENVIRON["_ENV_VAR"]
+            val = ENVIRON["_ENV_VAL"]
+            found = 0
+            pattern = "^[[:space:]]*" var "[[:space:]]*="
+        }
+        $0 ~ pattern {
+            print var "=" val
+            found = 1
+            next
+        }
+        { print }
+        END {
+            if (!found) {
+                print var "=" val
+            }
+        }
+    ' "${FILE}" > "${TMP_FILE}"
 
-    local REGEXP="s/^.*${VAR}\s*=.*$/${LINE}/"
-
-    echo "La línea completa quedará así: ${LINE}"
-    echo "La expresión regular quedará así: ${REGEXP}"
-
-    sed -r -i "${REGEXP}" "${FILE}"
+    cat "${TMP_FILE}" > "${FILE}"
+    rm -f "${TMP_FILE}"
 }
