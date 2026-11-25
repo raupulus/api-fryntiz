@@ -75,7 +75,7 @@ class KeyCounterPersistenceTest extends ApiTestCase
             'clicks_right' => 486,
             'clicks_middle' => 71,
             'total_clicks' => 3677,
-            'clicks_average' => 1,
+            'clicks_average' => 1.65,
             'weekday' => 0,
         ];
     }
