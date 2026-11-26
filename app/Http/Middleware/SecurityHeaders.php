@@ -90,6 +90,9 @@ class SecurityHeaders
                 filled(config('google.recaptcha.site_key')) && $request->is('admin/login', 'panel/login') => self::RECAPTCHA_LOGIN_CSP,
                 default => self::DEFAULT_CSP,
             };
+
+            $csp = $this->appendLocalViteDevOrigins($csp);
+
             $response->headers->set('Content-Security-Policy', $csp);
         }
 
@@ -116,5 +119,87 @@ class SecurityHeaders
         $response->headers->remove('X-Powered-By');
 
         return $response;
+    }
+
+    /**
+     * En desarrollo local con Vite HMR activo (`public/hot`), permite cargar
+     * hojas de estilo, módulos JS, fuentes y WebSocket desde el servidor de
+     * desarrollo local sin relajar jamás la CSP en producción ni en tests.
+     */
+    private function appendLocalViteDevOrigins(string $csp): string
+    {
+        if (! app()->isLocal()) {
+            return $csp;
+        }
+
+        $hotFile = public_path('hot');
+        if (! is_file($hotFile)) {
+            return $csp;
+        }
+
+        $hotOrigin = rtrim(trim((string) file_get_contents($hotFile)), '/');
+        $parsed = parse_url($hotOrigin);
+
+        if (! is_array($parsed)) {
+            return $csp;
+        }
+
+        $scheme = $parsed['scheme'] ?? '';
+        $host = strtolower((string) ($parsed['host'] ?? ''));
+
+        if (! in_array($scheme, ['http', 'https'], true) || $host === '') {
+            return $csp;
+        }
+
+        $isLocalHost = in_array($host, ['localhost', '127.0.0.1', '::1', '[::1]', '0.0.0.0'], true)
+            || str_ends_with($host, '.test')
+            || str_ends_with($host, '.local');
+
+        if (! $isLocalHost) {
+            return $csp;
+        }
+
+        $port = isset($parsed['port']) ? ':'.$parsed['port'] : '';
+        $isIpv6Loopback = in_array($host, ['::1', '[::1]'], true);
+
+        // CSP Level 3 no admite literales IPv6 (`http://[::1]:5173`) como
+        // host-source en navegadores Chromium/WebKit: los ignora y bloquea Vite.
+        // Si Vite sigue escuchando en `[::1]` en local, permitimos el esquema
+        // `http:`/`ws:` (solo en `APP_ENV=local` con `public/hot` presente).
+        if ($isIpv6Loopback) {
+            $httpSourceList = $scheme.':';
+            $connectSourceList = $scheme.': '.($scheme === 'https' ? 'wss:' : 'ws:');
+        } else {
+            $httpOrigins = array_values(array_unique([
+                $hotOrigin,
+                $scheme.'://localhost'.$port,
+                $scheme.'://127.0.0.1'.$port,
+            ]));
+            $wsScheme = $scheme === 'https' ? 'wss' : 'ws';
+            $wsOrigins = array_values(array_unique([
+                $wsScheme.'://'.$host.$port,
+                $wsScheme.'://localhost'.$port,
+                $wsScheme.'://127.0.0.1'.$port,
+            ]));
+
+            $httpSourceList = implode(' ', $httpOrigins);
+            $connectSourceList = implode(' ', array_merge($httpOrigins, $wsOrigins));
+        }
+
+        foreach (['script-src', 'style-src', 'img-src', 'font-src'] as $directive) {
+            $csp = (string) preg_replace(
+                '/(\b'.preg_quote($directive, '/').'\b[^;]*)/',
+                '$1 '.$httpSourceList,
+                $csp,
+                1,
+            );
+        }
+
+        return (string) preg_replace(
+            '/(\bconnect-src\b[^;]*)/',
+            '$1 '.$connectSourceList,
+            $csp,
+            1,
+        );
     }
 }

@@ -28,7 +28,7 @@
     "src": "node_modules/.pnpm/@fontsource-variable+inter@5.3.0/node_modules/@fontsource-variable/inter/files/inter-vietnamese-wght-normal.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app-DR9OhBaP.css",
+    "file": "assets/app-DbDMRBnh.css",
     "name": "app",
     "names": [
       "app.css"
@@ -55,7 +55,7 @@
     "isEntry": true
   },
   "resources/js/airflight-map.js": {
-    "file": "assets/airflight-map-BrjOIVhB.js",
+    "file": "assets/airflight-map-BAB8u_Jl.js",
     "name": "airflight-map",
     "src": "resources/js/airflight-map.js",
     "isEntry": true,
@@ -94,12 +94,12 @@
     "isEntry": true
   },
   "resources/js/vue.js": {
-    "file": "assets/vue-0MBT0uW1.js",
+    "file": "assets/vue-D5qklCyw.js",
     "name": "vue",
     "src": "resources/js/vue.js",
     "isEntry": true,
     "css": [
-      "assets/vue-Le4VXqfU.css"
+      "assets/vue-4LwpELRp.css"
     ],
     "assets": [
       "assets/chipiona-BKWz67is.webp"

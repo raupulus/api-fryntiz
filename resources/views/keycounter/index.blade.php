@@ -15,12 +15,10 @@
 
 @section('content')
     {{-- Hero --}}
-    <section class="hero-gradient min-h-[40svh] flex items-center pt-20 pb-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 text-on-primary">
-            <h1 class="text-4xl md:text-6xl font-bold tracking-tighter mb-4">Keycounter</h1>
-            <p class="text-xl text-on-primary/85">Contador de teclas pulsadas (KeyCounter && Mousecounter)</p>
-        </div>
-    </section>
+    <x-page-hero image="images/heroes/keycounter.webp" min-height="min-h-[40svh]">
+        <h1 class="text-4xl md:text-6xl font-bold tracking-tighter mb-4">Keycounter</h1>
+        <p class="text-xl text-on-hero/90">Contador de teclas pulsadas (KeyCounter && Mousecounter)</p>
+    </x-page-hero>
 
     {{-- Aviso de privacidad --}}
     <div class="max-w-5xl mx-auto px-4 sm:px-6 mt-6">

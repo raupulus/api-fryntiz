@@ -58,20 +58,18 @@
 
 @section('content')
     {{-- Hero --}}
-    <section class="hero-gradient min-h-[30svh] flex items-center pt-20 pb-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 text-on-primary">
-            <h1 class="text-4xl md:text-5xl font-bold tracking-tighter mb-2">#{{ $plant->id }} - {{ $plant->name }}</h1>
-            @if($plant->name_scientific)
-                <p class="text-lg text-on-primary/85 italic">{{ $plant->name_scientific }}</p>
-            @endif
-            @if($plant->start_at)
-                <div class="inline-flex items-center gap-2 bg-on-primary/15 rounded-full px-4 py-1.5 text-sm text-on-primary mt-4">
-                    <span class="material-symbols-outlined text-base" aria-hidden="true">eco</span>
-                    Siembra: <time datetime="{{ $plant->start_at->toDateString() }}">{{ $plant->start_at->format('d/m/Y') }}</time>
-                </div>
-            @endif
-        </div>
-    </section>
+    <x-page-hero image="images/heroes/smartplant.webp" min-height="min-h-[30svh]">
+        <h1 class="text-4xl md:text-5xl font-bold tracking-tighter mb-2">#{{ $plant->id }} - {{ $plant->name }}</h1>
+        @if($plant->name_scientific)
+            <p class="text-lg text-on-hero/90 italic">{{ $plant->name_scientific }}</p>
+        @endif
+        @if($plant->start_at)
+            <div class="inline-flex items-center gap-2 bg-on-hero/15 border border-on-hero/25 backdrop-blur-md rounded-full px-4 py-1.5 text-sm text-on-hero mt-4">
+                <span class="material-symbols-outlined text-base" aria-hidden="true">eco</span>
+                Siembra: <time datetime="{{ $plant->start_at->toDateString() }}">{{ $plant->start_at->format('d/m/Y') }}</time>
+            </div>
+        @endif
+    </x-page-hero>
 
     {{-- Volver --}}
     <section class="pt-8 bg-surface">

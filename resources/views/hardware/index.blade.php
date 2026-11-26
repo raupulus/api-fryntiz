@@ -11,30 +11,28 @@
 
 @section('content')
     {{-- Hero --}}
-    <section class="hero-gradient min-h-[35svh] flex items-center pt-20 pb-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 text-on-primary w-full">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div>
-                    <h1 class="text-4xl md:text-6xl font-bold tracking-tighter mb-3">Hardware</h1>
-                    <p class="text-xl text-on-primary/85 max-w-2xl">
-                        Catálogo de equipos, nodos IoT y microcontroladores con telemetría de salud en tiempo real.
-                    </p>
-                </div>
+    <x-page-hero image="images/heroes/hardware.webp" min-height="min-h-[35svh]">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div>
+                <h1 class="text-4xl md:text-6xl font-bold tracking-tighter mb-3">Hardware</h1>
+                <p class="text-xl text-on-hero/90 max-w-2xl">
+                    Catálogo de equipos, nodos IoT y microcontroladores con telemetría de salud en tiempo real.
+                </p>
+            </div>
 
-                {{-- Badges de resumen --}}
-                <div class="flex flex-wrap gap-3">
-                    <div class="bg-on-primary/10 backdrop-blur-md rounded-xl px-5 py-3 border border-on-primary/15 text-center">
-                        <span class="block text-2xl font-extrabold text-on-primary">{{ $totalCount }}</span>
-                        <span class="text-xs uppercase tracking-wider text-on-primary/80">Dispositivos</span>
-                    </div>
-                    <div class="bg-on-primary/10 backdrop-blur-md rounded-xl px-5 py-3 border border-on-primary/15 text-center">
-                        <span class="block text-2xl font-extrabold text-on-primary">{{ $onlineCount }}</span>
-                        <span class="text-xs uppercase tracking-wider text-on-primary/80">En línea</span>
-                    </div>
+            {{-- Badges de resumen --}}
+            <div class="flex flex-wrap gap-3">
+                <div class="bg-on-hero/15 backdrop-blur-md rounded-xl px-5 py-3 border border-on-hero/25 text-center">
+                    <span class="block text-2xl font-extrabold text-on-hero">{{ $totalCount }}</span>
+                    <span class="text-xs uppercase tracking-wider text-on-hero/85">Dispositivos</span>
+                </div>
+                <div class="bg-on-hero/15 backdrop-blur-md rounded-xl px-5 py-3 border border-on-hero/25 text-center">
+                    <span class="block text-2xl font-extrabold text-on-hero">{{ $onlineCount }}</span>
+                    <span class="text-xs uppercase tracking-wider text-on-hero/85">En línea</span>
                 </div>
             </div>
         </div>
-    </section>
+    </x-page-hero>
 
     {{-- Contenedor interactivo con filtros Alpine.js --}}
     <div x-data="{

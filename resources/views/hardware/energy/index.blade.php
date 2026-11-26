@@ -14,29 +14,10 @@
 
 @section('content')
     {{-- Hero --}}
-    <section class="hero-gradient min-h-[40svh] flex items-center pt-20 pb-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 text-on-primary">
-            <h1 class="text-4xl md:text-6xl font-bold tracking-tighter mb-4">Energy</h1>
-            <p class="text-xl text-on-primary/85">Generación y consumo de energía</p>
-        </div>
-    </section>
-
-    {{-- Imagen de portada --}}
-    <section class="pt-8 bg-surface">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6">
-            <div class="rounded-xl overflow-hidden shadow-lg h-56 md:h-72">
-                <img src="{{ asset('images/energy/energy.webp') }}"
-                     srcset="{{ asset('images/energy/energy-640w.webp') }} 640w, {{ asset('images/energy/energy.webp') }} 1200w"
-                     sizes="(max-width: 768px) 100vw, 1024px"
-                     width="1200"
-                     height="500"
-                     fetchpriority="high"
-                     decoding="async"
-                     alt="Monitorización de energía solar"
-                     class="w-full h-full object-cover">
-            </div>
-        </div>
-    </section>
+    <x-page-hero image="images/heroes/energy.webp" min-height="min-h-[40svh]">
+        <h1 class="text-4xl md:text-6xl font-bold tracking-tighter mb-4">Energy</h1>
+        <p class="text-xl text-on-hero/90">Generación y consumo de energía</p>
+    </x-page-hero>
 
     {{-- Estadísticas en tiempo real --}}
     <section class="py-12 bg-surface">
@@ -46,7 +27,7 @@
                 @foreach($currentStats as $stat)
                     <div class="bg-surface-container-lowest rounded-xl shadow-lg p-4 text-center">
                         <div class="flex justify-center mb-2">
-                            <div class="w-10 h-10 bg-warning-container rounded-lg flex items-center justify-center">
+                            <div class="w-10 h-10 bg-warning-container dark:bg-white/95 rounded-lg flex items-center justify-center shadow-sm">
                                 <img src="{{ $stat['image'] }}" alt="" aria-hidden="true" class="w-6 h-6">
                             </div>
                         </div>
@@ -66,7 +47,7 @@
                 @foreach($todayStats as $stat)
                     <div class="bg-surface-container-lowest rounded-xl shadow-lg p-4 text-center">
                         <div class="flex justify-center mb-2">
-                            <div class="w-10 h-10 bg-info-container rounded-lg flex items-center justify-center">
+                            <div class="w-10 h-10 bg-info-container dark:bg-white/95 rounded-lg flex items-center justify-center shadow-sm">
                                 <img src="{{ $stat['image'] }}" alt="" aria-hidden="true" class="w-6 h-6">
                             </div>
                         </div>
@@ -86,7 +67,7 @@
                 @foreach($historicalStats as $stat)
                     <div class="bg-surface-container-lowest rounded-xl shadow-lg p-4 text-center">
                         <div class="flex justify-center mb-2">
-                            <div class="w-10 h-10 bg-primary-container/15 rounded-lg flex items-center justify-center">
+                            <div class="w-10 h-10 bg-primary-container/15 dark:bg-white/95 rounded-lg flex items-center justify-center shadow-sm">
                                 <img src="{{ $stat['image'] }}" alt="" aria-hidden="true" class="w-6 h-6">
                             </div>
                         </div>

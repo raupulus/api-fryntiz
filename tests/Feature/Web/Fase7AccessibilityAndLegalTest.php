@@ -71,4 +71,17 @@ class Fase7AccessibilityAndLegalTest extends TestCase
         $this->assertStringNotContainsString('style="background-image', $previewHtml);
         $this->assertStringContainsString('<img src="https://example.test/cover.webp"', $previewHtml);
     }
+
+    #[Test]
+    public function footer_renders_beating_heart_and_full_color_technology_icons(): void
+    {
+        $footerHtml = view('components.footer')->render();
+
+        $this->assertStringContainsString('<animateTransform', $footerHtml);
+        $this->assertStringContainsString('fill="tomato"', $footerHtml);
+        $this->assertStringNotContainsString('grayscale', $footerHtml);
+        $this->assertStringContainsString('fill="#FF2D20"', $footerHtml);
+        $this->assertStringContainsString('fill="url(#footer-tw-grad)"', $footerHtml);
+        $this->assertStringContainsString('fill="#336791"', $footerHtml);
+    }
 }

@@ -49,23 +49,30 @@
 @endpush
 
 @section('content')
-    {{-- 1. HERO con logo grande y CTA --}}
-    <section class="hero-gradient min-h-[60svh] flex items-center pt-20 pb-8">
-        <div class="max-w-7xl mx-auto px-6 w-full flex flex-col md:flex-row items-center gap-8">
+    {{-- 1. HERO con imagen temática, logo grande y CTA --}}
+    <section class="hero-banner hero-gradient min-h-[60svh] flex items-center pt-24 pb-16">
+        <img src="{{ asset('images/heroes/about.webp') }}"
+             alt=""
+             aria-hidden="true"
+             fetchpriority="high"
+             decoding="async"
+             class="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none"/>
+        <div class="hero-banner-scrim pointer-events-none" aria-hidden="true"></div>
+        <div class="hero-banner-content max-w-7xl mx-auto px-6 w-full flex flex-col md:flex-row items-center gap-8 text-on-hero">
             {{-- Texto y CTA --}}
             <div class="flex flex-col w-full md:w-2/5 justify-center items-center md:items-start text-center md:text-left">
-                <h1 class="my-4 text-4xl md:text-5xl font-bold leading-tight text-white">
+                <h1 class="my-4 text-4xl md:text-5xl font-bold leading-tight text-on-hero">
                     API<br/>Raúl Caro Pastorino
                 </h1>
 
-                <p class="leading-normal text-xl md:text-2xl mb-8 text-white/80">
+                <p class="leading-normal text-xl md:text-2xl mb-8 text-on-hero/90">
                     Una api para depurarlas a todas...
                 </p>
 
                 <x-button href="https://raupulus.dev"
                           target="_blank"
                           rel="noopener noreferrer"
-                          variant="surface"
+                          variant="hero"
                           size="lg">
                     Sobre Mí
                 </x-button>
@@ -73,7 +80,7 @@
 
             {{-- Logo --}}
             <div class="w-full md:w-3/5 py-4 flex justify-center">
-                <img class="w-48 sm:w-64 md:w-4/5 max-w-sm h-auto"
+                <img class="w-48 sm:w-64 md:w-4/5 max-w-sm h-auto drop-shadow-[0_12px_28px_rgba(0,0,0,0.55)]"
                      src="{{ asset('images/logo-fryntiz-512x512.webp') }}"
                      width="512"
                      height="512"
@@ -437,7 +444,7 @@
     <section class="defer-section bg-surface-dim/30 py-24">
         <div class="max-w-7xl mx-auto px-6 text-center">
             <p class="text-secondary font-bold text-xs uppercase tracking-widest mb-12">Potenciado por Tecnologías Modernas</p>
-            <div class="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+            <div class="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-85 transition-opacity duration-300">
                 <span class="font-bold text-2xl text-on-surface">Laravel</span>
                 <span class="font-bold text-2xl text-on-surface">Vue.js</span>
                 <span class="font-bold text-2xl text-on-surface">Python</span>

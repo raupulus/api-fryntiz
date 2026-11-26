@@ -10,14 +10,12 @@
 
 @section('content')
     {{-- Hero --}}
-    <section class="hero-gradient min-h-[30svh] flex items-center pt-20 pb-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 text-on-primary">
-            <h1 class="text-4xl md:text-5xl font-bold tracking-tighter mb-4">Alertas GDACS</h1>
-            <p class="text-lg text-on-primary/85">
-                Terremotos, ciclones, inundaciones, volcanes, sequías e incendios dentro del radio de Chipiona.
-            </p>
-        </div>
-    </section>
+    <x-page-hero image="images/heroes/gdacs.webp" min-height="min-h-[30svh]">
+        <h1 class="text-4xl md:text-5xl font-bold tracking-tighter mb-4">Alertas GDACS</h1>
+        <p class="text-lg text-on-hero/90">
+            Terremotos, ciclones, inundaciones, volcanes, sequías e incendios dentro del radio de Chipiona.
+        </p>
+    </x-page-hero>
 
     <section class="py-12 bg-surface">
         <div class="max-w-7xl mx-auto px-4 sm:px-6">

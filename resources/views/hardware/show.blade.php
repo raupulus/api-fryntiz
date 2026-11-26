@@ -61,66 +61,64 @@
 
 @section('content')
     {{-- Hero --}}
-    <section class="hero-gradient min-h-[30svh] flex items-center pt-20 pb-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 text-on-primary w-full">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    {{-- Migas de pan / Volver --}}
-                    <div class="mb-3">
-                        <a href="{{ route('hardware.index') }}"
-                           class="inline-flex items-center gap-1 text-xs text-on-primary/85 hover:text-on-primary transition-colors">
-                            <span class="material-symbols-outlined text-sm" aria-hidden="true">arrow_back</span>
-                            Volver al catálogo de hardware
-                        </a>
-                    </div>
-
-                    <h1 class="text-3xl md:text-5xl font-bold tracking-tighter mb-2">
-                        {{ $device->displayName }}
-                    </h1>
-
-                    <div class="flex flex-wrap items-center gap-3 mt-2">
-                        @if($device->typeName)
-                            <span class="bg-on-primary/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold">
-                                {{ $device->typeName }}
-                            </span>
-                        @endif
-
-                        @if($device->locationTypeLabel)
-                            <span class="bg-on-primary/10 backdrop-blur-md px-3 py-1 rounded-full text-xs">
-                                {{ $device->locationTypeLabel }}
-                            </span>
-                        @endif
-
-                        {{-- Estado de conexión --}}
-                        @if($device->isOnline)
-                            <span class="inline-flex items-center gap-1.5 bg-surface-container-lowest/95 text-success px-3 py-1 rounded-full text-xs font-semibold border border-success/40">
-                                <span class="relative flex h-2 w-2" aria-hidden="true">
-                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
-                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-success"></span>
-                                </span>
-                                En línea
-                            </span>
-                        @else
-                            <span class="inline-flex items-center gap-1.5 bg-on-primary/10 text-on-primary/80 px-3 py-1 rounded-full text-xs font-medium">
-                                <span class="h-2 w-2 rounded-full bg-on-primary/50" aria-hidden="true"></span>
-                                Desconectado
-                            </span>
-                        @endif
-                    </div>
+    <x-page-hero image="images/heroes/hardware.webp" min-height="min-h-[30svh]">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                {{-- Migas de pan / Volver --}}
+                <div class="mb-3">
+                    <a href="{{ route('hardware.index') }}"
+                       class="inline-flex items-center gap-1 text-xs text-on-hero/90 hover:text-on-hero transition-colors">
+                        <span class="material-symbols-outlined text-sm" aria-hidden="true">arrow_back</span>
+                        Volver al catálogo de hardware
+                    </a>
                 </div>
 
-                {{-- Última conexión / Uptime --}}
-                <div class="text-right text-on-primary/85 text-xs hidden md:block">
-                    @if($device->lastSeenDiff)
-                        <p class="mb-1">Última señal: <strong class="text-on-primary">{{ $device->lastSeenDiff }}</strong></p>
+                <h1 class="text-3xl md:text-5xl font-bold tracking-tighter mb-2">
+                    {{ $device->displayName }}
+                </h1>
+
+                <div class="flex flex-wrap items-center gap-3 mt-2">
+                    @if($device->typeName)
+                        <span class="bg-on-hero/20 border border-on-hero/25 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold text-on-hero">
+                            {{ $device->typeName }}
+                        </span>
                     @endif
-                    @if($device->uptimeFormatted)
-                        <p>Tiempo en marcha: <strong class="text-on-primary">{{ $device->uptimeFormatted }}</strong></p>
+
+                    @if($device->locationTypeLabel)
+                        <span class="bg-on-hero/15 border border-on-hero/20 backdrop-blur-md px-3 py-1 rounded-full text-xs text-on-hero">
+                            {{ $device->locationTypeLabel }}
+                        </span>
+                    @endif
+
+                    {{-- Estado de conexión --}}
+                    @if($device->isOnline)
+                        <span class="inline-flex items-center gap-1.5 bg-surface-container-lowest/95 text-success px-3 py-1 rounded-full text-xs font-semibold border border-success/40">
+                            <span class="relative flex h-2 w-2" aria-hidden="true">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-success"></span>
+                            </span>
+                            En línea
+                        </span>
+                    @else
+                        <span class="inline-flex items-center gap-1.5 bg-on-hero/15 border border-on-hero/20 text-on-hero/90 px-3 py-1 rounded-full text-xs font-medium">
+                            <span class="h-2 w-2 rounded-full bg-on-hero/70" aria-hidden="true"></span>
+                            Desconectado
+                        </span>
                     @endif
                 </div>
             </div>
+
+            {{-- Última conexión / Uptime --}}
+            <div class="text-right text-on-hero/90 text-xs hidden md:block">
+                @if($device->lastSeenDiff)
+                    <p class="mb-1">Última señal: <strong class="text-on-hero">{{ $device->lastSeenDiff }}</strong></p>
+                @endif
+                @if($device->uptimeFormatted)
+                    <p>Tiempo en marcha: <strong class="text-on-hero">{{ $device->uptimeFormatted }}</strong></p>
+                @endif
+            </div>
         </div>
-    </section>
+    </x-page-hero>
 
     {{-- Contenido principal --}}
     <div class="bg-surface py-12">

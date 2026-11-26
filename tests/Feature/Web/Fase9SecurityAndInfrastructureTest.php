@@ -57,4 +57,13 @@ class Fase9SecurityAndInfrastructureTest extends TestCase
 
         $this->assertSame('cross-origin', $response->headers->get('Cross-Origin-Resource-Policy'));
     }
+
+    #[Test]
+    public function non_local_environment_never_allows_vite_dev_origin_in_csp(): void
+    {
+        $response = $this->get(route('home'))->assertOk();
+        $csp = (string) $response->headers->get('Content-Security-Policy');
+
+        $this->assertStringNotContainsString(':5173', $csp);
+    }
 }

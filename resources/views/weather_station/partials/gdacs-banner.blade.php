@@ -34,7 +34,7 @@
             </a>
         @else
             <a href="{{ route('weather_station.gdacs.index') }}"
-               class="hero-gradient rounded-xl p-5 shadow-lg text-on-primary hover:shadow-xl hover:scale-[1.01] transition-all flex items-center gap-3">
+               class="hero-gradient rounded-xl p-5 shadow-lg text-on-hero hover:shadow-xl hover:scale-[1.01] transition-all flex items-center gap-3">
                 <span class="material-symbols-outlined text-2xl" aria-hidden="true">public</span>
                 <span class="font-bold text-sm">No hay alertas GDACS vigentes actualmente — ver anteriores →</span>
             </a>

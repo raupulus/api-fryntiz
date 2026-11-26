@@ -11,12 +11,10 @@
 
 @section('content')
     {{-- Hero --}}
-    <section class="hero-gradient min-h-[30svh] flex items-center pt-20 pb-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 text-on-primary">
-            <h1 class="text-4xl md:text-6xl font-bold tracking-tighter mb-4">Currículum</h1>
-            <p class="text-xl text-on-primary/85">Un perfil distinto según lo que busques: frontend, backend, o un resumen rápido.</p>
-        </div>
-    </section>
+    <x-page-hero image="images/heroes/cv.webp" min-height="min-h-[30svh]">
+        <h1 class="text-4xl md:text-6xl font-bold tracking-tighter mb-4">Currículum</h1>
+        <p class="text-xl text-on-hero/90">Un perfil distinto según lo que busques: frontend, backend, o un resumen rápido.</p>
+    </x-page-hero>
 
     <section class="py-12 bg-surface-container-low">
         <div class="max-w-5xl mx-auto px-4 sm:px-6">

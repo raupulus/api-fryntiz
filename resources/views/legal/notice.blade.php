@@ -4,12 +4,10 @@
 @section('description', 'Información identificativa del titular, condiciones de uso y propiedad intelectual de la plataforma Api Raupulus.')
 
 @section('content')
-    <section class="hero-gradient min-h-[30svh] flex items-center pt-20 pb-8">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 text-on-primary w-full">
-            <h1 class="text-4xl md:text-5xl font-bold tracking-tighter mb-3">Aviso Legal</h1>
-            <p class="text-lg text-on-primary/85">Información general y condiciones de uso conforme a la LSSI-CE.</p>
-        </div>
-    </section>
+    <x-page-hero image="images/heroes/about.webp" min-height="min-h-[30svh]" max-width="max-w-5xl">
+        <h1 class="text-4xl md:text-5xl font-bold tracking-tighter mb-3">Aviso Legal</h1>
+        <p class="text-lg text-on-hero/90">Información general y condiciones de uso conforme a la LSSI-CE.</p>
+    </x-page-hero>
 
     <section class="py-12 bg-surface">
         <div class="max-w-3xl mx-auto px-4 sm:px-6">

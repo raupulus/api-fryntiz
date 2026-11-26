@@ -51,6 +51,8 @@
     --color-on-info-container: #075985;
     --color-footer-surface: #27313f;
     --color-footer-on-surface: #eaf1ff;
+    --color-hero-surface: #081226;
+    --color-on-hero: #ffffff;
     --color-surface: #f8f9ff;
     --color-surface-dim: #d0dbed;
     --color-surface-container: #e6eeff;
@@ -129,6 +131,8 @@ html.dark {
     --color-on-info-container: #bae6fd;
     --color-footer-surface: #090e17;
     --color-footer-on-surface: #dee2f0;
+    --color-hero-surface: #060d1c;
+    --color-on-hero: #ffffff;
     --color-surface: #0f131d;
     --color-surface-dim: #0f131d;
     --color-surface-container: #1b2029;
@@ -175,13 +179,47 @@ html.dark .glass-nav {
     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
-/* Gradiente hero principal (contraste WCAG AA/AAA con text-white en ambos temas) */
+/* Gradiente hero principal (contraste WCAG AA/AAA con text-on-hero en ambos temas) */
 .hero-gradient {
     background: linear-gradient(135deg, #050765, #1d3a6d);
 }
 
 html.dark .hero-gradient {
     background: linear-gradient(135deg, #0b1e3d, #0f3a4a);
+}
+
+/* Cabecera con imagen temática y velo oscuro para contraste WCAG AAA en ambos temas */
+.hero-banner {
+    position: relative;
+    overflow: hidden;
+    background-color: var(--color-hero-surface);
+    color: var(--color-on-hero);
+}
+
+.hero-banner-scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        105deg,
+        rgba(5, 10, 22, 0.88) 0%,
+        rgba(8, 18, 38, 0.72) 48%,
+        rgba(8, 18, 38, 0.44) 100%
+    );
+}
+
+html.dark .hero-banner-scrim {
+    background: linear-gradient(
+        105deg,
+        rgba(4, 8, 18, 0.90) 0%,
+        rgba(7, 15, 32, 0.76) 48%,
+        rgba(7, 15, 32, 0.50) 100%
+    );
+}
+
+.hero-banner-content {
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55);
 }
 
 /* Gradiente para botones CTA */

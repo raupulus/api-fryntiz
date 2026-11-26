@@ -66,9 +66,14 @@ class ContrastTest extends TestCase
 
             // Footer y bloques invertidos.
             'texto invertido' => ['inverse-surface', 'inverse-on-surface'],
+            'texto sobre footer' => ['footer-surface', 'footer-on-surface'],
+            'texto sobre cabecera hero' => ['hero-surface', 'on-hero'],
 
-            // Botones primarios.
+            // Botones primarios y alertas.
             'botón primario' => ['primary-container', 'on-primary'],
+            'alerta warning' => ['warning-container', 'on-warning-container'],
+            'alerta info' => ['info-container', 'on-info-container'],
+            'alerta error' => ['error-container', 'on-error-container'],
 
             // Enlace de acento en páginas principales.
             'enlace acento sobre surface' => ['surface', 'on-tertiary-container'],
@@ -170,6 +175,26 @@ class ContrastTest extends TestCase
             .'cambia con el tema. Usa un token del sistema, o añade la variante si el color '
             .'va sobre un fondo sólido propio: '
             .json_encode($culprits, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE),
+        );
+    }
+
+    #[Test]
+    public function hero_sections_never_pair_dark_hero_gradient_with_theme_inverting_on_primary(): void
+    {
+        $culprits = [];
+
+        foreach ($this->views() as $view) {
+            $content = (string) file_get_contents($view);
+
+            if (preg_match('/(hero-gradient|x-page-hero)[\s\S]{0,600}text-on-primary/', $content) === 1) {
+                $culprits[] = str_replace(base_path().'/', '', $view);
+            }
+        }
+
+        $this->assertSame(
+            [],
+            $culprits,
+            'Las cabeceras `.hero-gradient` / `<x-page-hero>` tienen fondo oscuro en ambos temas y deben usar `text-on-hero`, nunca `text-on-primary` (que es azul marino oscuro en modo oscuro).',
         );
     }
 

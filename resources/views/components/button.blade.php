@@ -16,6 +16,7 @@
         'danger' => 'bg-error text-on-error hover:bg-error/90 focus-visible:ring-error shadow-sm hover:shadow active:scale-[0.98]',
         'success' => 'bg-success text-on-success hover:bg-success/90 focus-visible:ring-success shadow-sm active:scale-[0.98]',
         'surface' => 'bg-surface-container text-on-surface hover:bg-surface-container-high focus-visible:ring-outline active:scale-[0.98]',
+        'hero' => 'bg-on-hero text-hero-surface hover:bg-on-hero/90 focus-visible:ring-on-hero shadow-md hover:shadow-lg active:scale-[0.98]',
         'outline' => 'border border-outline bg-transparent text-on-surface hover:bg-surface-container-low focus-visible:ring-outline active:scale-[0.98]',
         'ghost' => 'bg-transparent text-on-surface hover:bg-surface-container hover:text-on-surface focus-visible:ring-primary',
     ];

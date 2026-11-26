@@ -35,7 +35,7 @@ resources/
 `@vite('resources/js/vue.js')` desde la vista que lo necesita, hoy sólo
 `weather_station/index`.
 
-## Los colores
+## Los colores y cabeceras hero
 
 Están en `@theme` dentro de `resources/css/app.css`, con los nombres del
 sistema de diseño (Material-ish): `--color-surface`, `--color-on-surface`,
@@ -44,6 +44,17 @@ sistema de diseño (Material-ish): `--color-surface`, `--color-on-surface`,
 Tailwind 4 genera las clases solo: `bg-surface-container`,
 `text-on-surface-variant`, `border-outline`. **En las vistas no se escribe un
 color literal**: si hace falta uno nuevo, se añade el token.
+
+- **Cabeceras con imagen temática (`<x-page-hero>`):** todas las secciones
+  públicas sustituyen el degradado plano por una imagen WebP propia bajo
+  `public/images/heroes/` (`home`, `weather-station`, `airflight`, `keycounter`,
+  `smartplant`, `energy`, `hardware`, `cv`, `gdacs`, `about`) con velo oscuro
+  direccional (`.hero-banner-scrim`) y los tokens invariantes
+  `--color-hero-surface` / `--color-on-hero` (`#ffffff` en ambos temas).
+  Nunca debe usarse `text-on-primary` sobre `.hero-gradient` porque en modo
+  oscuro `--color-on-primary` se invierte a azul marino oscuro (`#00234a`).
+- **Footer:** corazón `tomato` con animación SVG `<animateTransform>` centrada
+  e iconos del stack (Laravel, Tailwind, PostgreSQL) a color sin `grayscale`.
 
 ## El componente Vue
 
@@ -119,4 +130,4 @@ Cosas que necesitan un navegador de verdad y no se pueden cerrar desde aquí:
 
 ---
 
-> Creado: 2026-08-30 · Última revisión: 2026-11-23
+> Creado: 2026-08-30 · Última revisión: 2026-11-25

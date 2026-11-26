@@ -13,12 +13,10 @@
 
 @section('content')
     {{-- Hero --}}
-    <section class="hero-gradient min-h-[40svh] flex items-center pt-20 pb-8">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 text-on-primary">
-            <h1 class="text-4xl md:text-6xl font-bold tracking-tighter mb-4">Airflight</h1>
-            <p class="text-xl text-on-primary/85">Registros de vuelos en tiempo real — Chipiona</p>
-        </div>
-    </section>
+    <x-page-hero image="images/heroes/airflight.webp" min-height="min-h-[40svh]">
+        <h1 class="text-4xl md:text-6xl font-bold tracking-tighter mb-4">Airflight</h1>
+        <p class="text-xl text-on-hero/90">Registros de vuelos en tiempo real — Chipiona</p>
+    </x-page-hero>
 
     {{-- Descripción --}}
     <section class="py-12 bg-surface">
