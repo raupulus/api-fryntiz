@@ -58,9 +58,10 @@
     @endif
 
     {{-- Favicons y Manifiesto PWA --}}
-    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any"/>
-    <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('images/favicons/favicon-96x96.png') }}"/>
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/favicons/apple-icon-180x180.png') }}"/>
+    <link rel="icon" href="{{ asset('favicon.ico') }}?v=2" sizes="any"/>
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/favicons/favicon-32x32.png') }}?v=2"/>
+    <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('images/favicons/favicon-96x96.png') }}?v=2"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/favicons/apple-icon-180x180.png') }}?v=2"/>
     <link rel="manifest" href="{{ asset('site.webmanifest') }}"/>
 
     @yield('meta')
