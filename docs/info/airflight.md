@@ -579,7 +579,7 @@ hora local del propio navegador — con ese formato la hora mostrada podía
 variar varias horas según el navegador de quien mirara la página.
 
 El frontend (`resources/views/airflight/index.blade.php`, función global
-`window.formatFechaEsLocal`) coge ese ISO-8601 y lo formatea con
+`window.formatLocalEsDate`) coge ese ISO-8601 y lo formatea con
 `Intl.DateTimeFormat('es-ES', { timeZone: ... })`:
 
 1. Detecta la zona horaria del navegador con
@@ -725,4 +725,4 @@ cuyo caso sí son un duplicado exacto, tengan o no posición.
 
 ---
 
-> Creado: 2026-05-25 · Última revisión: 2026-11-25
+> Creado: 2026-05-25 · Última revisión: 2026-11-27

@@ -384,13 +384,13 @@
 @push('scripts')
     @vite('resources/js/airflight-map.js')
 
-    {{-- Fechas en hora local del navegador, formato español. --}}
+    {{-- Fechas en hora local del navegador, formato español.
 
          El backend manda `seen_last_at` en ISO-8601 UTC sin ambigüedad
          (`AirFlightController::seenLastAtAsUtcIso()`). Aquí se convierte a
          la zona horaria que detecte el navegador (`Intl.DateTimeFormat`);
          si no se puede detectar o no la admite el motor de fechas, cae a
-         Europe/Madrid. `window.formatFechaEsLocal` queda expuesta para que
+         Europe/Madrid. `window.formatLocalEsDate` queda expuesta para que
          la use también el sondeo de más abajo al reconstruir filas nuevas.
 
          Independiente de la paginación: reformatea las fechas que ya trae

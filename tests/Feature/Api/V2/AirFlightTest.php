@@ -282,7 +282,7 @@ class AirFlightTest extends ApiTestCase
      * `seen_last_at` tiene que llegar al frontend sin ambigüedad de zona
      * horaria: `getDetectedQuery()` no es Eloquent, así que el valor sale de
      * Postgres tal cual ("2026-09-08 09:29:34", sin zona). El navegador lo
-     * convierte a la hora local del visitante (`formatFechaEsLocal` en la
+     * convierte a la hora local del visitante (`formatLocalEsDate` en la
      * vista); para eso necesita ISO-8601 con la zona explícita, no esa
      * cadena — algunos navegadores la interpretan como hora local en vez de
      * UTC, desplazando la hora mostrada.
@@ -447,5 +447,15 @@ class AirFlightTest extends ApiTestCase
         // avión, así que el mapa no debe ofrecer reproducción de recorrido.
         $this->getJson($this->apiUrl('airflight/receiver'), $this->readHeaders())
             ->assertJsonPath('data.history', 0);
+    }
+
+    #[Test]
+    public function public_index_does_not_leak_blade_comments(): void
+    {
+        $response = $this->get(route('airflight.index'));
+
+        $response->assertOk()
+            ->assertDontSee('--}}', false)
+            ->assertDontSee('AirFlightController::seenLastAtAsUtcIso()', false);
     }
 }
