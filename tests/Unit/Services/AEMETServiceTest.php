@@ -60,6 +60,41 @@ class AEMETServiceTest extends TestCase
         Http::assertSent(fn ($request) => $request->url() === 'https://opendata.aemet.es/opendata/api/red/especial/contaminacionfondo/estacion/17');
     }
 
+    #[Test]
+    public function get_daily_prediction_decodes_iso_8859_15_payload_even_when_aemet_declares_utf8_charset(): void
+    {
+        $isoPayload = mb_convert_encoding(
+            json_encode([['origen' => ['productor' => 'Agencia Estatal de Meteorología - AEMET'], 'nombre' => 'Chipiona']], JSON_UNESCAPED_UNICODE),
+            'ISO-8859-15',
+            'UTF-8'
+        );
+
+        $this->fakeEnvelope('/prediccion/especifica/municipio/diaria/11016', $isoPayload);
+
+        $result = app(AEMETService::class)->getDailyPrediction('11016');
+
+        $this->assertIsArray($result);
+        $this->assertSame('Agencia Estatal de Meteorología - AEMET', $result[0]['origen']['productor'] ?? null);
+        $this->assertSame('Chipiona', $result[0]['nombre'] ?? null);
+    }
+
+    #[Test]
+    public function get_daily_prediction_preserves_valid_utf8_payload_without_double_encoding(): void
+    {
+        $utf8Payload = json_encode(
+            [['origen' => ['productor' => 'Agencia Estatal de Meteorología - AEMET'], 'nombre' => 'Cádiz']],
+            JSON_UNESCAPED_UNICODE
+        );
+
+        $this->fakeEnvelope('/prediccion/especifica/municipio/diaria/11012', $utf8Payload);
+
+        $result = app(AEMETService::class)->getDailyPrediction('11012');
+
+        $this->assertIsArray($result);
+        $this->assertSame('Agencia Estatal de Meteorología - AEMET', $result[0]['origen']['productor'] ?? null);
+        $this->assertSame('Cádiz', $result[0]['nombre'] ?? null);
+    }
+
     private function fakeEnvelope(string $endpoint, string $body): void
     {
         config(['aemet.api_key' => 'test-key']);

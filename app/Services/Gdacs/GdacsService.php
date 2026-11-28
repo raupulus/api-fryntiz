@@ -82,6 +82,12 @@ class GdacsService
                     return $exception instanceof ConnectionException;
                 }, throw: false)
                 ->get(config('gdacs.base_url'), $params);
+        } catch (ConnectionException $e) {
+            Log::warning('GDACS: connection timeout or network error fetching events list', [
+                'message' => $e->getMessage(),
+            ]);
+
+            return null;
         } catch (\Throwable $e) {
             Log::error('GDACS: exception fetching events list', [
                 'message' => $e->getMessage(),

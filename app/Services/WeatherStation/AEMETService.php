@@ -532,6 +532,18 @@ class AEMETService
 
         $data = json_decode($body, true);
 
+        // Fallback seguro: algunos endpoints de AEMET declaran `charset=UTF-8`
+        // enviando bytes ISO-8859-15. Solo se reconvierte si `json_decode` falla
+        // específicamente por UTF-8 inválido, preservando intactos los payloads
+        // UTF-8 reales (ozono, radiación solar, resumen climatológico).
+        if (! is_array($data) && $charset === 'UTF-8' && json_last_error() === JSON_ERROR_UTF8) {
+            $fallback = @mb_convert_encoding($body, 'UTF-8', self::DEFAULT_CHARSET);
+
+            if (is_string($fallback)) {
+                $data = json_decode($fallback, true);
+            }
+        }
+
         if (! is_array($data)) {
             Log::warning('AEMET: payload is not valid JSON', [
                 'endpoint' => $endpoint,
